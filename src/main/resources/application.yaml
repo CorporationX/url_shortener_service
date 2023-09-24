@@ -14,31 +14,9 @@ spring:
       hibernate:
         format_sql: true
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    default-schema: url_shortener
-
-  data:
-    redis:
-      port: 6379
-      host: localhost
-      channels:
-        calculations_channel:
-          name: calculations_channel
-
 server:
   port: 8080
 
 logging:
   level:
     root: info
-
-project-service:
-  host: localhost
-  port: 8082
-
-calculations_messages_processing:
-  enabled: true
-
-sequence:
-  name: hash_sequence
