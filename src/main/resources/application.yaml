@@ -14,9 +14,15 @@ spring:
       hibernate:
         format_sql: true
 
+  liquibase:
+    changelog: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+
