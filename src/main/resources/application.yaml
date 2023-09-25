@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -15,7 +15,7 @@ spring:
         format_sql: true
 
 server:
-  port: 8080
+  port: 8091
 
 logging:
   level:
