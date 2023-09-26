@@ -14,6 +14,13 @@ spring:
       hibernate:
         format_sql: true
 
+  async_config:
+    core_pool_size: 5
+    max_pool_size: 10
+    queue_capacity: 50
+    thread_name_prefix: AsyncTaskThread
+
+
 server:
   port: 8080
 
