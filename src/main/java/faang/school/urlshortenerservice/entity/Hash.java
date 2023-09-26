@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,7 +14,8 @@ import java.time.LocalDateTime;
 @Table(name = "hash")
 public class Hash {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_number_seq")
+    @SequenceGenerator(name = "unique_number_seq", sequenceName = "unique_number_sequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Column(name = "hash", length = 6, nullable = false, unique = true)
