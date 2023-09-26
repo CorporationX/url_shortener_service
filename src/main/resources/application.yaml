@@ -20,6 +20,8 @@ spring:
     queue_capacity: 50
     thread_name_prefix: AsyncTaskThread
 
+  config:
+    import: properties.yaml
 
 server:
   port: 8080
