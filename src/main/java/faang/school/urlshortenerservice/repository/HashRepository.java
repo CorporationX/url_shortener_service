@@ -24,7 +24,7 @@ public class HashRepository {
         jdbcTemplate.batchUpdate("INSERT INTO hash VALUES (?)", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setString(1, hashes.get(i).getHashName());
+                ps.setString(1, hashes.get(i).getHash());
             }
 
             @Override
