@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "hash")
 public class Hash {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_number_seq")
-    @SequenceGenerator(name = "unique_number_seq", sequenceName = "unique_number_sequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Column(name = "hash", length = 6, nullable = false, unique = true)
