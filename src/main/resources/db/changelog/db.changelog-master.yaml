@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/url-shortener_V000__initial.sql
+  - include:
+      file: db/changelog/changeset/url-shortener_V001__crerate_hash.sql
