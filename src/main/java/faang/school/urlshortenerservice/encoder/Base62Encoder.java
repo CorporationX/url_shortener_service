@@ -8,7 +8,6 @@ import java.util.List;
 @Component
 public class Base62Encoder {
     public List<Hash> encode(List<Long> numbers) {
-
         return null;
     }
 }

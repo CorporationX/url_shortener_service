@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class HashRepository{
+public class HashRepository {
 
     public List<Long> getUniqueNumbers(int uniqueNumbers) {
         return null;
