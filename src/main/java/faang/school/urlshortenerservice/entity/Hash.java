@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "hash")
 public class Hash {
     @Id
-    private Long id;
-
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
 }

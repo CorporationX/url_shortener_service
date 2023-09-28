@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +16,6 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url {
     @Id
-    private Long id;
-
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
 
