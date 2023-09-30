@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -10,12 +9,9 @@ import java.util.List;
 public class Base62Encoder {
     private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    public List<Hash> encodeSequence(List<Long> emptySequences) {
+    public List<String> encodeSequence(List<Long> emptySequences) {
         return emptySequences.stream()
-                .map(id -> Hash.builder()
-                        .id(id)
-                        .value(generateBase62Hash(id))
-                        .build())
+                .map(this::generateBase62Hash)
                 .toList();
     }
 

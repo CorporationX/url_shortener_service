@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS hash (
-    id    bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
-    value VARCHAR(8) UNIQUE
-);
-
-INSERT INTO hash (value)
-SELECT NULL
-FROM generate_series(1, 100000);

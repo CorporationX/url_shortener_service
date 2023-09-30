@@ -1,11 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +19,11 @@ public class HashGenerator {
 
     @Async("taskExecutor")
     @Transactional
-    public void generateBatch(@Value("${spring.application.sequence.batch-size}") int batchSize) {
-        List<Long> emptyIds = hashRepository.findByValueIsNull(PageRequest.of(0, batchSize))
-                .stream()
-                .map(Hash::getId)
-                .toList();
+    public void generateBatch() {
+        List<Long> emptyIds = hashRepository.getUniqueNumbers();
 
-        List<Hash> hashes = encoder.encodeSequence(emptyIds);
-        hashRepository.saveAll(hashes);
+        List<String> hashes = encoder.encodeSequence(emptyIds);
+        hashRepository.save(hashes);
 
         log.info("Generated new hash sequence from id: {} to id: {}",
                 emptyIds.get(0), emptyIds.get(emptyIds.size() - 1));
