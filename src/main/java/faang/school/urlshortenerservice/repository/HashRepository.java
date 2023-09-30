@@ -1,18 +1,49 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, Long> {
+@RequiredArgsConstructor
+public class HashRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    @Query(nativeQuery = true, value = "SELECT h.id FROM hash h WHERE value IS NULL ORDER BY h.id LIMIT ?1")
-    List<Long> findNUniqueNumbers(int n); // с этим запросом Hibernate делает n разных запросов в базу, т.к. limit не поддерживается им
+    @Value("${spring.application.sequence.batch-size}")
+    private int batchSize;
 
-    List<Hash> findByValueIsNull(Pageable pageable);
+
+    public List<Long> getUniqueNumbers() {
+        return jdbcTemplate.queryForList(
+                "SELECT NEXTVAL('unique_number_seq') FROM generate_series(1, ?)", Long.class, batchSize);
+    }
+
+    @Modifying
+    public void save(List<String> hashes) {
+        List<List<String>> partitions = ListUtils.partition(hashes, batchSize);
+        partitions.forEach(partition -> jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)",
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                        preparedStatement.setString(1, partition.get(i));
+                    }
+
+                    public int getBatchSize() {
+                        return partition.size();
+                    }
+                }));
+    }
+
+    public List<String> getHashBatch(int n) {
+        return jdbcTemplate.queryForList(
+                "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash TABLESAMPLE BERNOULLI(1) LIMIT ?) RETURNING hash",
+                String.class, n);
+    }
 }

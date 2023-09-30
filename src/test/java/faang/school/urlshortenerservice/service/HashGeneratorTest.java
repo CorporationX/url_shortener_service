@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
@@ -25,31 +28,22 @@ public class HashGeneratorTest {
     private HashRepository hashRepository;
     @Mock
     private Base62Encoder encoder;
-    private int batchSize;
     private List<Long> emptyIds;
 
     @BeforeEach
     void setUp() {
-        batchSize = 10;
-        emptyIds = List.of(1L, 2L, 3L);
+        emptyIds = List.of(10L, 20L, 30L);
 
-        when(hashRepository.findByValueIsNull(PageRequest.of(0, batchSize))).thenReturn(emptyIds.stream()
-                .map(id -> Hash.builder().id(id).build())
-                .toList());
-
-        when(encoder.encodeSequence(emptyIds)).thenReturn(List.of(
-                Hash.builder().id(1L).value("A").build(),
-                Hash.builder().id(2L).value("B").build(),
-                Hash.builder().id(3L).value("C").build()
-        ));
+        when(hashRepository.getUniqueNumbers()).thenReturn(List.of(10L, 20L, 30L));
+        when(encoder.encodeSequence(emptyIds)).thenReturn(List.of("A", "B", "C"));
     }
 
     @Test
     void generateBatchTest() {
-        hashGenerator.generateBatch(batchSize);
+        hashGenerator.generateBatch();
 
-        verify(hashRepository, times(1)).findByValueIsNull(PageRequest.of(0, batchSize));
+        verify(hashRepository, times(1)).getUniqueNumbers();
         verify(encoder, times(1)).encodeSequence(emptyIds);
-        verify(hashRepository, times(1)).saveAll(anyList());
+        verify(hashRepository, times(1)).save(anyList());
     }
 }

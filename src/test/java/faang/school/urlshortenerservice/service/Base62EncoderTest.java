@@ -21,23 +21,15 @@ class Base62EncoderTest {
 
     @ParameterizedTest
     @MethodSource("generateTestData")
-    void encodeSequence(List<Long> input, List<Hash> expected) {
-        List<Hash> result = base62Encoder.encodeSequence(input);
+    void encodeSequence(List<Long> input, List<String> expected) {
+        List<String> result = base62Encoder.encodeSequence(input);
         assertEquals(expected, result);
     }
 
     private static Stream<Arguments> generateTestData() {
         return Stream.of(
-                arguments(List.of(10L, 11L, 12L), List.of(
-                        Hash.builder().id(10L).value("A").build(),
-                        Hash.builder().id(11L).value("B").build(),
-                        Hash.builder().id(12L).value("C").build()
-                )),
-                arguments(List.of(1L, 2L, 3L), List.of(
-                        Hash.builder().id(1L).value("1").build(),
-                        Hash.builder().id(2L).value("2").build(),
-                        Hash.builder().id(3L).value("3").build()
-                ))
+                arguments(List.of(10L, 11L, 12L), List.of("A", "B", "C")),
+                arguments(List.of(1L, 2L, 3L), List.of("1", "2", "3"))
         );
     }
 }

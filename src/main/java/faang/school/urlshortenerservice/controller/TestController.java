@@ -15,6 +15,6 @@ public class TestController {
 
     @GetMapping
     public void test() {
-        hashGenerator.generateBatch(10); // для теста
+        hashGenerator.generateBatch(); // для теста
     }
 }
