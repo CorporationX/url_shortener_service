@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +14,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HashCache {
-    @Value("${hash-cache.queue.size}")
+    @Value("${hash-cache.queue.size:1000}")
     private int queueSize;
 
-    @Value("${hash-cache.queue.threshold}")
+    @Value("${hash-cache.queue.threshold:20}")
     private int fillThreshold;
 
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
@@ -28,16 +31,33 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
 
+    @PostConstruct
+    public void init() {
+        if (hashQueue.size() == 0) {
+            addHashes();
+        }
+    }
+
     public Hash getHash() {
         if (hashQueue.size() <= getMinQueueSize() && isFilling.compareAndSet(false, true)) {
-            executorService.submit(() -> {
+            addHashes();
+        }
+
+        return hashQueue.poll();
+    }
+
+    private void addHashes() {
+        executorService.submit(() -> {
+            try {
                 List<Hash> newHashes = hashRepository.findAll();
                 hashGenerator.generateHashes();
                 hashQueue.addAll(newHashes);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            } finally {
                 isFilling.set(false);
-            });
-        }
-        return hashQueue.poll();
+            }
+        });
     }
 
     private int getMinQueueSize() {
