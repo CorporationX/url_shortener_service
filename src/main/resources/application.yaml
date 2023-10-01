@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+url-shortener-service:
+  base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  batch-size: 100
