@@ -23,3 +23,17 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  unique-number:
+    range: 100
+  generation:
+    scheduler:
+      cron: " 0 */12 * * * " # every 12 hours
+
+async:
+  thread-pool:
+    settings:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
