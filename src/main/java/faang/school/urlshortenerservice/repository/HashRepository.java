@@ -14,16 +14,15 @@ import java.util.List;
 public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
     private final String GET_UNIQUE_NUMBERS_SQL = """
-            SELECT nextval('unique_number_sequence') FROM unique_number_sequence(1, ?)
+            SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
             """;
     private final String SAVE_HASHES_SQL = """
-            INSERT INTO hash(hash) VALUES(?)
-            
+            INSERT INTO hash(hash) VALUES(?)   
             """;
     private final String GET_HASHES_SQL = """
             DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *
-            
             """;
 
     public List<Long> getUniqueNumbers(long uniqueNumber) {
