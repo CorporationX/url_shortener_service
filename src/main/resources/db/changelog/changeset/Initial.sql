@@ -1,1 +1,16 @@
-SELECT 1; // Без этого не стартует(
+CREATE SEQUENCE unique_number_seq
+    START WITH 1
+    INCREMENT BY 1;
+
+CREATE TABLE IF NOT EXISTS url (
+    id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
+    hash VARCHAR(8),
+    url TEXT,
+    created_at TIMESTAMP
+);
+
+-- Создание таблицы hash
+CREATE TABLE IF NOT EXISTS hash (
+    id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
+    hash VARCHAR(8)
+);

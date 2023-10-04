@@ -1,7 +1,6 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
@@ -27,3 +26,13 @@ hash-thread-pool:
   maxPoolSize: 4
   corePoolSize: 4
   threadNamePrefix: "hashPoolThread-"
+
+hash:
+  cache:
+    maxCapacity: 100
+    border: 0.2
+  range: 100
+  generate-cron: "0 */10 * * * ?"
+  clean:
+    cron : "0 */10 * * * ?" #every 10 seconds
+    days: 365
