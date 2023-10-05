@@ -34,5 +34,6 @@ hash:
   range: 100
   generate-cron: "0 */10 * * * ?"
   clean:
-    cron : "0 */10 * * * ?" #every 10 seconds
+    cron : "0 */10 * * * ?" #every 10 minutes
+#    cron : "*/10 * * * * ?" #every 10 seconds
     days: 365

@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CleanerScheduler {
     private final HashRepository hashRepository;
-    @Value("${hash.clean.days}")
-    Integer days;
+    @Value("${hash.clean.days:365}")
+    private int days;
 
     @Scheduled(cron = "${hash.clean.cron}")
     public void clearHashes() {
         LocalDateTime time = LocalDateTime.now().minusDays(days);
         var freeHashes = hashRepository.findAndDeleteOldHashes(time);
+        System.out.println(freeHashes);
         hashRepository.saveHashes(freeHashes);
     }
 }

@@ -20,7 +20,7 @@ public class HashGenerator {
     private static final String BASE62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Value("${hash.range:100}")
-    private Integer maxRange;
+    private int maxRange;
 
     @Transactional
     @Scheduled(cron = "${hash.generate-cron}")

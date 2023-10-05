@@ -16,9 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCache {
     @Value("${hash.cache.maxCapacity:1000}")
-    Integer maxCapacity;
+    private Integer maxCapacity;
     @Value("${hash.cache.border:0.2}")
-    Double border;
+    private Double border;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean fillingNow = new AtomicBoolean(false);
     private Queue<String> hashQueue;
