@@ -13,6 +13,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  scheduler:
+    cleaner:
+      cron: "0 0 12 * * ?"
 
 server:
   port: 8080
