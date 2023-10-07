@@ -17,9 +17,16 @@ spring:
   liquibase:
     changelog: classpath:/db/changelog/db.changelog-master.yaml
 
+  config:
+    import: value.yaml
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+executor:
+  pool:
+    nThreads: 10
