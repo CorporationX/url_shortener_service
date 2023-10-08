@@ -9,3 +9,6 @@ hash_cache:
     capacity: 100
     min_size: 0.2
     amount_fill: 0.8
+
+cleaner_scheduler:
+    cron: 0 0 0 * * ? # every day at midnight
