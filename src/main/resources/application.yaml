@@ -34,3 +34,6 @@ logging:
 application:
   hashGenerator:
     batchSize: 100
+  hashCache:
+    capacity: 1000
+    fillFactor: 20
