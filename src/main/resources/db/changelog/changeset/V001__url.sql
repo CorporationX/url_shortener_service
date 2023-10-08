@@ -1,5 +1,5 @@
 CREATE TABLE url (
-    hash varchar(6) NOT NULL,
+    hash varchar(6) PRIMARY KEY,
     text varchar(256),
     created_at timestamptz
 );
