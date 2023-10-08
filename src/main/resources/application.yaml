@@ -33,3 +33,14 @@ server:
 logging:
   level:
     root: info
+
+executor:
+  thread-pool:
+    size: 1
+  queue:
+   capacity: 100
+
+hash-cache:
+  queue:
+    size: 1000
+    threshold: 20
