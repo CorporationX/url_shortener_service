@@ -50,7 +50,7 @@ public class HashCache {
         executorService.submit(() -> {
             try {
                 List<Hash> newHashes = hashRepository.findAll();
-                hashGenerator.generateHashes();
+                hashGenerator.generateBatch();
                 hashQueue.addAll(newHashes);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

@@ -4,6 +4,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HashGenerator {
-    public void generateHashes() {
+    public void generateBatch() {
     }
 }
