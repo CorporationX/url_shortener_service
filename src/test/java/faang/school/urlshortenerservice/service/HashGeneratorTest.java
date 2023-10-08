@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ public class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
     @Mock
-    private HashRepository hashRepository;
+    private HashRepositoryImpl hashRepositoryImpl;
     @Mock
     private Base62Encoder encoder;
     private List<Long> emptyIds;
@@ -32,7 +32,7 @@ public class HashGeneratorTest {
     void setUp() {
         emptyIds = List.of(10L, 20L, 30L);
 
-        when(hashRepository.getUniqueNumbers()).thenReturn(List.of(10L, 20L, 30L));
+        when(hashRepositoryImpl.getUniqueNumbers()).thenReturn(List.of(10L, 20L, 30L));
         when(encoder.encodeSequence(emptyIds)).thenReturn(List.of("A", "B", "C"));
     }
 
@@ -40,8 +40,8 @@ public class HashGeneratorTest {
     void generateBatchTest() {
         hashGenerator.generateBatch();
 
-        verify(hashRepository, times(1)).getUniqueNumbers();
+        verify(hashRepositoryImpl, times(1)).getUniqueNumbers();
         verify(encoder, times(1)).encodeSequence(emptyIds);
-        verify(hashRepository, times(1)).save(anyList());
+        verify(hashRepositoryImpl, times(1)).save(anyList());
     }
 }

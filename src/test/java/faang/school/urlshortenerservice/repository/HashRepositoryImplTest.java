@@ -22,9 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HashRepositoryTest {
+class HashRepositoryImplTest {
     @InjectMocks
-    private HashRepository hashRepository;
+    private HashRepositoryImpl hashRepositoryImpl;
     @Mock
     private JdbcTemplate jdbcTemplate;
     private int batchSize;
@@ -32,7 +32,7 @@ class HashRepositoryTest {
     @BeforeEach
     void setUp() {
         batchSize = 5;
-        ReflectionTestUtils.setField(hashRepository, "batchSize", batchSize);
+        ReflectionTestUtils.setField(hashRepositoryImpl, "batchSize", batchSize);
     }
 
     @Test
@@ -40,7 +40,7 @@ class HashRepositoryTest {
         when(jdbcTemplate.queryForList(anyString(), eq(Long.class), eq(batchSize)))
                 .thenReturn(Arrays.asList(1L, 2L, 3L, 4L, 5L));
 
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers();
+        List<Long> uniqueNumbers = hashRepositoryImpl.getUniqueNumbers();
 
         assertEquals(5, uniqueNumbers.size());
         assertEquals(1L, uniqueNumbers.get(0));
@@ -53,8 +53,8 @@ class HashRepositoryTest {
     void testSave() {
         List<String> hashes = Arrays.asList("hash1", "hash2", "hash3");
         batchSize = 2;
-        ReflectionTestUtils.setField(hashRepository, "batchSize", batchSize);
-        hashRepository.save(hashes);
+        ReflectionTestUtils.setField(hashRepositoryImpl, "batchSize", batchSize);
+        hashRepositoryImpl.save(hashes);
 
         verify(jdbcTemplate, times(2))
                 .batchUpdate(eq("INSERT INTO hash (hash) VALUES (?)"), any(BatchPreparedStatementSetter.class));
@@ -68,7 +68,7 @@ class HashRepositoryTest {
         when(jdbcTemplate.queryForList(anyString(), eq(String.class), eq(n)))
                 .thenReturn(expectedHashes);
 
-        List<String> result = hashRepository.getHashBatch(n);
+        List<String> result = hashRepositoryImpl.getHashBatch(n);
 
         assertEquals(expectedHashes, result);
 
