@@ -4,3 +4,8 @@ base62:
 
 hash_generator:
     unique_numbers: 100
+
+hash_cache:
+    capacity: 100
+    min_size: 0.2
+    amount_fill: 0.8
