@@ -13,6 +13,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  async:
+    hashGenerator:
+      corePoolSize: 2
+      maxPoolSize: 2
+      queueCapacity: 100
+      keepAliveTime: 60
+      threadNamePrefix: HashGenerator-
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +30,7 @@ server:
 logging:
   level:
     root: info
+
+application:
+  hashGenerator:
+    batchSize: 100

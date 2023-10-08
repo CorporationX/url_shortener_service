@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Table(name = "hash")
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Hash {
-
     private String hash;
 }
