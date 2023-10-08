@@ -1,0 +1,58 @@
+package faang.school.urlshortenerservice.service;
+
+import faang.school.urlshortenerservice.entity.HashEntity;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.utils.Base62Encoder;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class HashService {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
+
+    @Value("${hash.maxRange}")
+    private int maxRange;
+    @Value("${hash.batchSize}")
+    private int batchSize;
+
+    @Transactional(readOnly = true)
+    public List<Long> getUniqueNumbers(int maxRange) {
+        return hashRepository.getUniqueNumbers(maxRange);
+    }
+
+    @Transactional
+    public void saveHashesBatch(List<Long> uniqueNumbers) {
+        List<String> encodedHashes = base62Encoder.encodeNumbers(uniqueNumbers);
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
+                ps.setString(1, encodedHashes.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return encodedHashes.size();
+            }
+        });
+    }
+
+    @Transactional(readOnly = true)
+    List<HashEntity> getHashBatch(int batchSize) {
+        return hashRepository.getHashBatch(batchSize);
+    }
+}
