@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
@@ -16,4 +17,6 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             """)
     @Modifying
     List<Url> cleanOldUrl();
+
+    Optional<Url> findByHash(String hash);
 }
