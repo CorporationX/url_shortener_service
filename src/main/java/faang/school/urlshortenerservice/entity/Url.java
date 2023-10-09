@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "url")
 public class Url {
-
-    @Column(name = "Hash", nullable = false)
-    public long hash;
+    @Id
+    @Column(name = "hash", nullable = false)
+    public String hash;
 
     @Column(name = "text")
     public String text;

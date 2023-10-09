@@ -22,3 +22,11 @@ logging:
     root: info
 
 batchSize: 100
+
+uniqueNumbers: 50
+
+thread-pool:
+  queueCapacity: 100
+  maxPoolSize: 4
+  corePoolSize: 4
+  threadNamePrefix: "poolThread-"
