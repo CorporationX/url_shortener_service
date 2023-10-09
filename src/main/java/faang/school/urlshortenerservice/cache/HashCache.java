@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
@@ -35,8 +37,13 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
+        log.info("HashCache init start");
         hashes = new ArrayBlockingQueue<>(capacity);
-        fillHashes();
+
+        List<Hash> hashBatch = hashGenerator.generateBatchNotAsync();
+        hashes.addAll(hashBatch);
+
+        log.info("HashCache init end");
     }
 
     public Hash getHash() {
@@ -59,6 +66,8 @@ public class HashCache {
             hashGenerator.generateBatch();
 
             running.set(false);
+
+            log.info("HashCache filled");
         }
     }
 
