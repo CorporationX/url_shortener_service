@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,16 +19,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping({"/url"})
-    public void getShortUrl(UrlDto urlDto) throws MalformedURLException {
-        isValid(urlDto.getUrl());
+    public void getShortUrl(@RequestBody UrlDto urlDto) {
         urlService.getShortUrl(urlDto);
-    }
-    private boolean isValid(String url) throws MalformedURLException {
-        try {
-            new URL(url).toURI();
-            return true;
-        } catch (MalformedURLException | URISyntaxException e) {
-            throw new MalformedURLException("Invalid url " + url);
-        }
     }
 }
