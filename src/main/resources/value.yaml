@@ -12,6 +12,7 @@ hash_cache:
 
 cleaner_scheduler:
     cron: 0 0 0 * * ? # every day at midnight
+    period: 365 # days
 
 redis_cache:
     ttl: 60
