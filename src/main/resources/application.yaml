@@ -32,6 +32,7 @@ logging:
     root: info
 
 application:
+  host: localhost
   hashGenerator:
     batchSize: 100
   hashCache:

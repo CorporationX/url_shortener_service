@@ -31,7 +31,7 @@ public class UrlService {
         optionalUrl = repository.getByHash(shortenedUrl);
 
         return optionalUrl
-                .orElseThrow(() -> new RuntimeException("Url not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Url not found"));
 
     }
 

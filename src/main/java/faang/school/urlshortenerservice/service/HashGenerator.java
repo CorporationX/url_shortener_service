@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class HashGenerator {
     @Value("${application.hashGenerator.batchSize:100}")
-    private final int batchSize;
+    private int batchSize;
 
     private final Base62Encoder encoder;
     private final HashRepository hashRepository;
