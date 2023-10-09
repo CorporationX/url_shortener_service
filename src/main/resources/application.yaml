@@ -37,3 +37,6 @@ application:
   hashCache:
     capacity: 1000
     fillFactor: 20
+  schedule:
+    cleaner: 0 0 * * *
+    period: 1:0:0:0:0
