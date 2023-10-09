@@ -26,7 +26,7 @@ public class CleanerScheduler {
     @Value("${application.schedule.period:1:0:0:0:0}")
     private String period; //Значение должно быть вида "y:m:w:d:h"
 
-    @Scheduled(cron = "${application.schedule.cleaner}:0 0 * * *")
+    @Scheduled(cron = "${application.schedule.cleaner:0 0 * * *}")
     @Transactional
     public void clean() {
         log.info("Staring cleaning old urls");
