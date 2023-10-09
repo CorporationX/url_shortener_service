@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +12,14 @@ import lombok.Data;
 @Builder
 public class Hash {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "hash", unique = true)
     private String hash;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }

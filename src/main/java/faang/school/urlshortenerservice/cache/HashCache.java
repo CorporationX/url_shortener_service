@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -22,7 +21,7 @@ public class HashCache {
     @Value("${application.hashCache.fillFactor:20}")
     private short fillFactor;
     private AtomicBoolean filling;
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private final Queue<String> hashes;
     private final HashGenerator generator;
 
     @PostConstruct

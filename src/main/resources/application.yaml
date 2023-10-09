@@ -21,6 +21,11 @@ spring:
       keepAliveTime: 60
       threadNamePrefix: HashGenerator-
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -39,5 +44,5 @@ application:
     capacity: 1000
     fillFactor: 20
   schedule:
-    cleaner: 0 0 * * *
+    cleaner: 0 0 0 * * *
     period: 1:0:0:0:0

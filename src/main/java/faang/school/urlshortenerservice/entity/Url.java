@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Url {
 
+
+    @Id
     @Column(name = "hash", nullable = false, unique = true, length = 6)
     private String hash;
 

@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -20,6 +22,8 @@ public class AsyncConfiguration {
     private int keepAliveTime;
     @Value("${spring.async.hashGenerator.threadNamePrefix:HashGenerator-}")
     private String threadNamePrefix;
+    @Value("${application.hashCache.capacity:1000}")
+    private int cacheCapacity;
 
     @Bean
     public Executor hashGeneratorExecutor() {
@@ -31,5 +35,10 @@ public class AsyncConfiguration {
         executor.setThreadNamePrefix(threadNamePrefix);
 
         return executor;
+    }
+
+    @Bean
+    Queue<String> hashes() {
+        return new ArrayBlockingQueue<>(cacheCapacity);
     }
 }
