@@ -15,7 +15,7 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class HashJpaRepository {
+public class HashJdbcRepository {
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener";
     private static final String DB_USER = "user";
     private static final String DB_PASSWORD = "password";

@@ -23,6 +23,8 @@ logging:
 
 batchSize: 100
 
+cron_expression: "0 0 0 * * * ?"
+
 uniqueNumbers: 50
 
 thread-pool:
