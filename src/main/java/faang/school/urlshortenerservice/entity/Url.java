@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "url")
-public class url {
+public class Url {
 
     @Column(name = "hash", nullable = false)
     public long hash;
 
-    @Column(name = "text")
-    public String text;
+    @Column(name = "url")
+    public String url;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

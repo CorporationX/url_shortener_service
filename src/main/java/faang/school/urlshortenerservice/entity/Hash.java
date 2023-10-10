@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "hash")
-public class hash {
+public class Hash {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long hash;
