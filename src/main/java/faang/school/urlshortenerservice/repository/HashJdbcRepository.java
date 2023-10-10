@@ -34,6 +34,7 @@ public class HashJdbcRepository {
             hashRepository.saveAll(sub);
             result.addAll(sub);
         }
+        log.info("Hashes was successfully saved {}", hashes);
         return result;
     }
 

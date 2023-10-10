@@ -1,9 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashJpaRepository;
+import faang.school.urlshortenerservice.repository.HashJdbcRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,9 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HashGenerator {
-    private final HashJpaRepository hashJpaRepository;
+    private final HashJdbcRepository hashJpaRepository;
     private final Base62Encoder base62Encoder;
     @Value("${uniqueNumbers}")
     private long uniqueNumber;
@@ -29,5 +31,6 @@ public class HashGenerator {
             hashes.add(new Hash(string));
         }
         hashJpaRepository.saveBatch(hashes);
+        log.info("Hashes was successfully generated {}", hashes);
     }
 }
