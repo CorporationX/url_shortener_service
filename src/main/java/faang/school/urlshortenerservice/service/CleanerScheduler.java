@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 @Component
@@ -39,8 +39,8 @@ public class CleanerScheduler {
     }
 
     private LocalDateTime getTargetDate() {
-        Period periodOf = Period.parse(period);
+        Duration duration = Duration.parse(period);
         return LocalDateTime.now()
-                .minus(periodOf);
+                .minus(duration);
     }
 }

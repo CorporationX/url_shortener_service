@@ -13,6 +13,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 5
+        order_inserts: true
+        order_updates: true
+        order_deletes: true
+        generate_statistics: true
   async:
     hashGenerator:
       corePoolSize: 2
@@ -38,11 +44,14 @@ logging:
 
 application:
   host: localhost
+  protocol: http
+  port: 8080
+  path: /url/
   hashGenerator:
     batchSize: 100
   hashCache:
     capacity: 1000
     fillFactor: 20
   schedule:
-    cleaner: 0 0 0 * * *
-    period: P1Y
+    cleaner: 0 * * ? * *
+    period: PT1M

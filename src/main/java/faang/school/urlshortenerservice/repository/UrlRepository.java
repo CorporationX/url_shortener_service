@@ -12,10 +12,10 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
 
-    Optional<String> getByHash(String hash);
+    Optional<Url> getByHash(String hash);
 
     @Query(nativeQuery = true, value = """
-            DELETE * FROM url
+            DELETE FROM url
             WHERE created_at < :targetDate
             RETURNING *
             """)
