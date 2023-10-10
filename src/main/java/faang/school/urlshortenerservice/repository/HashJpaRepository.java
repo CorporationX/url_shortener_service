@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashJpaRepository {
-    private final HashRepository projectJpaRepository;
+    private final HashRepository hashRepository;
     @Value("${batchSize}")
     private int batchSize;
 
@@ -27,7 +27,7 @@ public class HashJpaRepository {
                 size = hashes.size();
             }
             List<Hash> sub = hashes.subList(i, size);
-            projectJpaRepository.saveAll(sub);
+            hashRepository.saveAll(sub);
             result.addAll(sub);
         }
         return result;
