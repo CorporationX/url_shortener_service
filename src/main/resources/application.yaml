@@ -32,3 +32,6 @@ thread-pool:
   maxPoolSize: 4
   corePoolSize: 4
   threadNamePrefix: "poolThread-"
+
+queue-size: 10000
+percent: 0.2
