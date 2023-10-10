@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "hash")
 public class HashEntity {
 
+    @Id
     @Column(name = "hash", nullable = false)
     private String hash;
 }

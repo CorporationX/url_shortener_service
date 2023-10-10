@@ -1,5 +1,6 @@
-package faang.school.urlshortenerservice.utils;
+package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.service.Base62Encoder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

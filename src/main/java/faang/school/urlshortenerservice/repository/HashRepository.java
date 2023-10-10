@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.HashEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public interface HashRepository extends CrudRepository<HashEntity, Long> {
             """)
     List<Long> getUniqueNumbers(int maxRange);
 
+    @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *
             """)
