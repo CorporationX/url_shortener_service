@@ -16,12 +16,13 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "url")
 public class Url {
+
     @Id
-    @Column(name = "hash", nullable = false)
+    @Column(name = "hash")
     public String hash;
 
-    @Column(name = "text")
-    public String text;
+    @Column(name = "url")
+    public String url;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
