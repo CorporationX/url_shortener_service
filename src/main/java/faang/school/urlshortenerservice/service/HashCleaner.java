@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashJdbcRepository;
-import faang.school.urlshortenerservice.repository.UrlJdbcRepository;
+import faang.school.urlshortenerservice.repository.HashJpaRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class Cleaner {
-    private final HashJdbcRepository hashJdbcRepository;
-    private final UrlJdbcRepository urlJdbcRepository;
+public class HashCleaner {
+    private final HashJpaRepository hashJdbcRepository;
+    private final UrlRepository urlRepository;
 
     @Transactional
     public void hashClear() {
         List<Hash> hashes = new ArrayList<>();
-        List<String> list = urlJdbcRepository.deleteExpiredHashes();
+        List<String> list = urlRepository.deleteExpiredHashes();
         for (String hash : list) {
             hashes.add(new Hash(hash));
         }

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.job;
 
-import faang.school.urlshortenerservice.service.Cleaner;
+import faang.school.urlshortenerservice.service.HashCleaner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class CleanerScheduler {
-    private final Cleaner cleaner;
+    private final HashCleaner cleaner;
 
     @Scheduled(cron = "${cron_expression}")
     public void hashClear() {
