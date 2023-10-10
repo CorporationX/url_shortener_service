@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashJdbcRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +17,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    private final HashJdbcRepository hashJpaRepository;
+    private final HashJpaRepository hashJpaRepository;
+    private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     @Value("${uniqueNumbers}")
-    private long uniqueNumber;
+    private int uniqueNumber;
 
     @Async("batchExecutor")
     public void generateBatch() {
-        Set<Long> uniqueNumbers = hashJpaRepository.getUniqueNumbers(uniqueNumber);
+        Set<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumber);
         List<String> encode = base62Encoder.encode(uniqueNumbers);
         List<Hash> hashes = new ArrayList<>();
         for (String string : encode) {
