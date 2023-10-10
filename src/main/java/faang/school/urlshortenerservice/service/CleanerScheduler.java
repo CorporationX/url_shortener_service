@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.Period;
 import java.util.List;
 
 @Component
@@ -23,8 +23,8 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${application.schedule.period:1:0:0:0:0}")
-    private String period; //Значение должно быть вида "y:m:w:d:h"
+    @Value("${application.schedule.period:P1Y}")
+    private String period; // ISO-8601 format
 
     @Scheduled(cron = "${application.schedule.cleaner:0 0 0 * * *}")
     @Transactional
@@ -39,14 +39,8 @@ public class CleanerScheduler {
     }
 
     private LocalDateTime getTargetDate() {
-        int[] values = Arrays.stream(period.split(":"))
-                .mapToInt(Integer::parseInt)
-                .toArray();
+        Period periodOf = Period.parse(period);
         return LocalDateTime.now()
-                .minusYears(values[0])
-                .minusMonths(values[1])
-                .minusWeeks(values[2])
-                .minusDays(values[3])
-                .minusHours(values[4]);
+                .minus(periodOf);
     }
 }

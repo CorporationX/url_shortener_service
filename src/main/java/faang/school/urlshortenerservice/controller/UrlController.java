@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,10 +10,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.net.URL;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/url")
 public class UrlController {
 
     private final UrlService urlService;
@@ -26,10 +25,13 @@ public class UrlController {
     }
 
     @GetMapping("/{url}")
-    public ResponseEntity<Void> getOriginalUrl(@PathVariable String url) {
+    public ResponseEntity<String> getOriginalUrl(@PathVariable String url) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(urlService.getOriginalUrl(url)));
 
-        return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .body("Redirected");
     }
 }

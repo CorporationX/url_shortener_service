@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.UrlNotFound;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class UrlService {
         optionalUrl = repository.getByHash(shortenedUrl);
 
         return optionalUrl
-                .orElseThrow(() -> new IllegalArgumentException("Url not found"));
+                .orElseThrow(UrlNotFound::new);
 
     }
 

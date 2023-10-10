@@ -45,6 +45,6 @@ public class HashCache {
     }
 
     private boolean isRunningOut() {
-        return fillFactor <= hashes.size() / (capacity * 100);
+        return fillFactor <= (hashes.size() / capacity) * 100;
     }
 }
