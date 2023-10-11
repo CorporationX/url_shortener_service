@@ -23,3 +23,9 @@ server:
 logging:
   level:
     root: info
+
+hashgenerator:
+  batch-size: 100
+  threadpool-size: 5
+  threadpool-queue-capacity: 100
+  base62-alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
