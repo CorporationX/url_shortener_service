@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -9,23 +10,41 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @Configuration
+@ConfigurationProperties(prefix = "async")
 @EnableAsync
 public class SpringAsyncConfig {
 
-    @Value("${async.thread-pool.settings.core-pool-size}")
-    private int corePoolSize;
-    @Value("${async.thread-pool.settings.max-pool-size}")
-    private int maxPoolSize;
-    @Value("${async.thread-pool.settings.queue-capacity}")
-    private int queueCapacity;
+    @Value("${generator-thread-pool.settings.core-pool-size}")
+    private int generatorCorePoolSize;
+    @Value("${generator-thread-pool.settings.max-pool-size}")
+    private int generatorMaxPoolSize;
+    @Value("${generator-thread-pool.settings.queue-capacity}")
+    private int generatorQueueCapacity;
+    @Value("${cache-thread-pool.settings.core-pool-size}")
+    private int cacheCorePoolSize;
+    @Value("${cache-thread-pool.settings.max-pool-size}")
+    private int cacheMaxPoolSize;
+    @Value("${cache-thread-pool.settings.queue-capacity}")
+    private int cacheQueueCapacity;
 
     @Bean("threadPoolForGenerateBatch")
     public Executor threadPoolForGenerateBatch() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
+        executor.setCorePoolSize(generatorCorePoolSize);
+        executor.setMaxPoolSize(generatorMaxPoolSize);
+        executor.setQueueCapacity(generatorQueueCapacity);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean("hashCacheThreadPool")
+    public Executor hashCacheThreadPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(cacheCorePoolSize);
+        executor.setMaxPoolSize(cacheMaxPoolSize);
+        executor.setQueueCapacity(cacheQueueCapacity);
         executor.initialize();
         return executor;
     }

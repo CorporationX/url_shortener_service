@@ -30,9 +30,17 @@ hash:
   generation:
     scheduler:
       cron: " 0 */12 * * * " # every 12 hours
+  cache:
+    size: 10
+    min-fill: 20 # percentage
 
 async:
-  thread-pool:
+  generator-thread-pool:
+    settings:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
+  cache-thread-pool:
     settings:
       core-pool-size: 4
       max-pool-size: 8
