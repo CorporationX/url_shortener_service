@@ -9,6 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -19,22 +24,47 @@ class HashCacheTest {
     private HashGenerator generator;
     @Mock
     private HashRepository repository;
+    @InjectMocks
     private HashCache hashCache;
+    private BlockingQueue<String> cache;
+    private int CACHE_SIZE;
+    private int MIN_FILL;
+    private Lock lock = new ReentrantLock();
 
     @BeforeEach
-    public void setUp(){
-        hashCache =new HashCache(generator, repository, 10, 20);
+    public void setUp() {
+        CACHE_SIZE = 10;
+        MIN_FILL = 20;
+        cache = new ArrayBlockingQueue<>(CACHE_SIZE);
+        hashCache.setCACHE_SIZE(CACHE_SIZE);
+        hashCache.setMIN_FILL(MIN_FILL);
+        hashCache.setCache(cache);
     }
 
     @Test
-    void getHash() {
+    void testGetHash() {
+        String expected = "1";
+        cache.add(expected);
+        String actual = hashCache.getHash();
+        verify(repository).getHashBatch(9L);
+        verify(generator).generateBatch();
+        assertEquals(expected, actual);
     }
 
     @Test
-    void fillCache() {
+    void testFillCache() {
+        hashCache.fillCache();
+        verify(repository).getHashBatch(CACHE_SIZE - cache.size());
+        verify(generator).generateBatch();
     }
 
     @Test
-    void addHash() {
+    void testAddHash() {
+        int expected = cache.size() + 1;
+        String hash = "*";
+        hashCache.addHash(hash);
+        int actual = cache.size();
+        assertEquals(expected, actual);
+        assertTrue(cache.contains(hash));
     }
 }

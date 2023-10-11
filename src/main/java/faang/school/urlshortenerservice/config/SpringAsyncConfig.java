@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -10,21 +9,20 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @Configuration
-@ConfigurationProperties(prefix = "async")
 @EnableAsync
 public class SpringAsyncConfig {
 
-    @Value("${generator-thread-pool.settings.core-pool-size}")
+    @Value("${async.generator-thread-pool.settings.core-pool-size}")
     private int generatorCorePoolSize;
-    @Value("${generator-thread-pool.settings.max-pool-size}")
+    @Value("${async.generator-thread-pool.settings.max-pool-size}")
     private int generatorMaxPoolSize;
-    @Value("${generator-thread-pool.settings.queue-capacity}")
+    @Value("${async.generator-thread-pool.settings.queue-capacity}")
     private int generatorQueueCapacity;
-    @Value("${cache-thread-pool.settings.core-pool-size}")
+    @Value("${async.cache-thread-pool.settings.core-pool-size}")
     private int cacheCorePoolSize;
-    @Value("${cache-thread-pool.settings.max-pool-size}")
+    @Value("${async.cache-thread-pool.settings.max-pool-size}")
     private int cacheMaxPoolSize;
-    @Value("${cache-thread-pool.settings.queue-capacity}")
+    @Value("${async.cache-thread-pool.settings.queue-capacity}")
     private int cacheQueueCapacity;
 
     @Bean("threadPoolForGenerateBatch")

@@ -29,7 +29,7 @@ hash:
     range: 100
   generation:
     scheduler:
-      cron: " 0 */12 * * * " # every 12 hours
+      cron: " 0 */12 * * * * " # every 12 hours
   cache:
     size: 10
     min-fill: 20 # percentage

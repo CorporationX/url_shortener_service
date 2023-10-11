@@ -4,8 +4,7 @@ import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @RequiredArgsConstructor
+@Getter
+@Setter
 @Slf4j
 public class HashCache {
 
@@ -28,22 +29,16 @@ public class HashCache {
     @Value("${hash.cache.min-fill}")
     private int MIN_FILL;
     private Lock lock = new ReentrantLock();
-    private BlockingQueue<String> cache = new ArrayBlockingQueue<>(CACHE_SIZE);
-
-    public HashCache(HashGenerator generator, HashRepository repository, int CACHE_SIZE, int MIN_FILL) {
-        this.generator = generator;
-        this.repository = repository;
-        this.CACHE_SIZE = CACHE_SIZE;
-        this.MIN_FILL = MIN_FILL;
-    }
+    private BlockingQueue<String> cache;
 
     @PostConstruct
     private void cacheInit() {
+        cache = new ArrayBlockingQueue<>(CACHE_SIZE);
         fillCache();
     }
 
     public String getHash() {
-        if (cache.size() / CACHE_SIZE < MIN_FILL / 100) {
+        if (cache.size() * 100 / CACHE_SIZE < MIN_FILL) {
             log.info("HashCache starter filling cache.");
             fillCache();
         }
