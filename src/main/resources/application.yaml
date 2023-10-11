@@ -23,7 +23,7 @@ spring:
       host: localhost
 
 server:
-  port: 8080
+  port: 8091
 
 logging:
   level:
@@ -32,3 +32,16 @@ logging:
 url:
   shortener:
     address: https://sh.c/
+hash:
+  unique-number:
+    range: 100
+  generation:
+    scheduler:
+      cron: " 0 */12 * * * " # every 12 hours
+
+async:
+  thread-pool:
+    settings:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
