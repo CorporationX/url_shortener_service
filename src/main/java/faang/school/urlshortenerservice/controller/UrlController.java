@@ -33,15 +33,12 @@ public class UrlController {
 
         validateUrlOnFormat(url);
         UrlDto dto = urlService.associateHashWithURL(urlDto);
-        return generateShortUrl(dto);
-    }
 
-    private UrlDto generateShortUrl(UrlDto urlDto) {
-        String shortUlr = serverAddress + urlDto.getHash();
-        urlDto.setUrl(shortUlr);
+        String shortUlr = serverAddress + dto.getHash();
+        dto.setUrl(shortUlr);
 
         log.info("Short URL: {} are generated", shortUlr);
-        return urlDto;
+        return dto;
     }
 
     private void validateUrlOnFormat(String url) {
