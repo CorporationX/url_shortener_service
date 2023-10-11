@@ -11,6 +11,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Base62Encoder {
 
+    private final int ENCODING_FACTOR = 62;
+
     @Value("{hashgenerator.base62-alphabet}")
     private final String base62Alphabet;
 
@@ -28,7 +30,7 @@ public class Base62Encoder {
         }
         StringBuilder sb = new StringBuilder();
         while (value > 0) {
-            sb.append(base62Alphabet.charAt((int)(value % 62)));
+            sb.append(base62Alphabet.charAt((int)(value % ENCODING_FACTOR)));
             value /= 62;
         }
         return sb.reverse().toString();
