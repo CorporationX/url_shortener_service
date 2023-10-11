@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -56,6 +58,25 @@ class HashCacheTest {
         hashCache.fillCache();
         verify(repository).getHashBatch(CACHE_SIZE - cache.size());
         verify(generator).generateBatch();
+    }
+
+    @Test
+    void testAsyncFilling() {
+        var executor = Executors.newFixedThreadPool(2);
+        Runnable runnable = () -> {
+            hashCache.fillCache();
+            try {
+                executor.awaitTermination(0, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.shutdown();
+
+        verify(repository, times(1)).getHashBatch(CACHE_SIZE - cache.size());
+        verify(generator, times(1)).generateBatch();
     }
 
     @Test
