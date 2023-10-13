@@ -12,20 +12,37 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class SpringAsyncConfig {
 
-    @Value("${async.thread-pool.settings.core-pool-size}")
-    private int corePoolSize;
-    @Value("${async.thread-pool.settings.max-pool-size}")
-    private int maxPoolSize;
-    @Value("${async.thread-pool.settings.queue-capacity}")
-    private int queueCapacity;
+    @Value("${async.generator-thread-pool.settings.core-pool-size}")
+    private int generatorCorePoolSize;
+    @Value("${async.generator-thread-pool.settings.max-pool-size}")
+    private int generatorMaxPoolSize;
+    @Value("${async.generator-thread-pool.settings.queue-capacity}")
+    private int generatorQueueCapacity;
+    @Value("${async.cache-thread-pool.settings.core-pool-size}")
+    private int cacheCorePoolSize;
+    @Value("${async.cache-thread-pool.settings.max-pool-size}")
+    private int cacheMaxPoolSize;
+    @Value("${async.cache-thread-pool.settings.queue-capacity}")
+    private int cacheQueueCapacity;
 
     @Bean("threadPoolForGenerateBatch")
     public Executor threadPoolForGenerateBatch() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
+        executor.setCorePoolSize(generatorCorePoolSize);
+        executor.setMaxPoolSize(generatorMaxPoolSize);
+        executor.setQueueCapacity(generatorQueueCapacity);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean("hashCacheThreadPool")
+    public Executor hashCacheThreadPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(cacheCorePoolSize);
+        executor.setMaxPoolSize(cacheMaxPoolSize);
+        executor.setQueueCapacity(cacheQueueCapacity);
         executor.initialize();
         return executor;
     }
