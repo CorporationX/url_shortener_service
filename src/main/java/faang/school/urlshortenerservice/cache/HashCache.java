@@ -6,8 +6,6 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +22,7 @@ public class HashCache {
 
     private final HashGenerator generator;
     private final HashRepository repository;
-    private final Executor hashCacheThreadPool ;
+    private final Executor hashCacheThreadPool;
     @Value("${hash.cache.poll-timeout}")
     private long cachePollTimeout;
     @Value("${hash.cache.size}")
