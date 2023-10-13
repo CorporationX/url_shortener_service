@@ -6,12 +6,12 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,43 +24,45 @@ public class HashCache {
 
     private final HashGenerator generator;
     private final HashRepository repository;
+    private final Executor hashCacheThreadPool ;
+    @Value("${hash.cache.poll-timeout}")
+    private long cachePollTimeout;
     @Value("${hash.cache.size}")
-    private int CACHE_SIZE;
+    private int cacheSize;
     @Value("${hash.cache.min-fill}")
-    private int MIN_FILL;
+    private int minFill;
     private Lock lock = new ReentrantLock();
     private BlockingQueue<String> cache;
 
     @PostConstruct
     private void cacheInit() {
-        cache = new ArrayBlockingQueue<>(CACHE_SIZE);
+        cache = new ArrayBlockingQueue<>(cacheSize);
         fillCache();
     }
 
     public String getHash() {
-        if (cache.size() * 100 / CACHE_SIZE < MIN_FILL) {
+        if (cache.size() * 100 / cacheSize < minFill) {
             log.info("HashCache starter filling cache.");
-            fillCache();
+            hashCacheThreadPool.execute(this::fillCache);
         }
 
         String hash;
         try {
-            hash = cache.take();
+            hash = cache.poll(cachePollTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            log.error("Cache has interrupted while waiting method take()");
+            log.error("Cache has interrupted while waiting method poll() ", e);
             throw new HashCacheException(e);
         }
 
         return hash;
     }
 
-    @Async("hashCacheThreadPool")
     public void fillCache() {
         boolean isLockAcquired = lock.tryLock();
         if (isLockAcquired) {
             log.info("Thread {} acquired HashCache lock.", Thread.currentThread().getName());
             try {
-                repository.getHashBatch(CACHE_SIZE - cache.size())
+                repository.getHashBatch(cacheSize - cache.size())
                         .forEach(this::addHash);
                 generator.generateBatch();
             } finally {
@@ -74,7 +76,7 @@ public class HashCache {
         try {
             cache.put(hash);
         } catch (InterruptedException e) {
-            log.error("Cache has interrupted while waiting method put()");
+            log.error("Cache has interrupted while waiting method put() ", e);
             throw new HashCacheException(e);
         }
     }

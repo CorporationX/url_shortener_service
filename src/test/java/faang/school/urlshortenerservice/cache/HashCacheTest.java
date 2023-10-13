@@ -7,12 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,20 +25,25 @@ class HashCacheTest {
     private HashGenerator generator;
     @Mock
     private HashRepository repository;
+    @Mock
+    private Executor hashCacheThreadPool;
     @InjectMocks
     private HashCache hashCache;
     private BlockingQueue<String> cache;
-    private int CACHE_SIZE;
-    private int MIN_FILL;
+    private int cacheSize;
+    private int minFill;
+    private long cachePollTimeout;
     private Lock lock = new ReentrantLock();
 
     @BeforeEach
     public void setUp() {
-        CACHE_SIZE = 10;
-        MIN_FILL = 20;
-        cache = new ArrayBlockingQueue<>(CACHE_SIZE);
-        hashCache.setCACHE_SIZE(CACHE_SIZE);
-        hashCache.setMIN_FILL(MIN_FILL);
+        cacheSize = 10;
+        minFill = 20;
+        cachePollTimeout = 100;
+        cache = new ArrayBlockingQueue<>(cacheSize);
+        hashCache.setCachePollTimeout(cachePollTimeout);
+        hashCache.setCacheSize(cacheSize);
+        hashCache.setMinFill(minFill);
         hashCache.setCache(cache);
     }
 
@@ -48,15 +52,14 @@ class HashCacheTest {
         String expected = "1";
         cache.add(expected);
         String actual = hashCache.getHash();
-        verify(repository).getHashBatch(9L);
-        verify(generator).generateBatch();
+        verify(hashCacheThreadPool).execute(any());
         assertEquals(expected, actual);
     }
 
     @Test
     void testFillCache() {
         hashCache.fillCache();
-        verify(repository).getHashBatch(CACHE_SIZE - cache.size());
+        verify(repository).getHashBatch(cacheSize - cache.size());
         verify(generator).generateBatch();
     }
 
@@ -75,7 +78,7 @@ class HashCacheTest {
         executor.execute(runnable);
         executor.shutdown();
 
-        verify(repository, times(1)).getHashBatch(CACHE_SIZE - cache.size());
+        verify(repository, times(1)).getHashBatch(cacheSize - cache.size());
         verify(generator, times(1)).generateBatch();
     }
 
