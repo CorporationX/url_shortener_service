@@ -1,4 +1,7 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,6 +16,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
   port: 8091
