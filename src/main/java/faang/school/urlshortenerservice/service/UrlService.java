@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
@@ -15,14 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UrlService {
 
-    private final HashCacheService hashCacheService;
+    private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlMapper urlMapper;
 
-    public UrlDto associateHashWithURL(UrlDto urlDto) {
-        String hash = hashCacheService.getHash();
+    private final String URL_SCHEMA_REGEX = "^(https?://)";
 
+    public UrlDto associateHashWithURL(UrlDto urlDto) {
+        String hash = hashCache.getHash();
+        String url = urlDto.getUrl();
+
+        urlDto.setUrl(formatUrl(url));
         Url entityToSave = urlMapper.toEntity(urlDto);
         entityToSave.setHash(hash);
 
@@ -38,5 +43,11 @@ public class UrlService {
     @Transactional
     public Url save(Url url) {
         return urlRepository.save(url);
+    }
+
+    private String formatUrl(String url) {
+        String formattedUrl = url.trim()
+                .replaceFirst(URL_SCHEMA_REGEX, "");
+        return formattedUrl.endsWith("/") ? formattedUrl.substring(0, formattedUrl.length() - 1) : formattedUrl;
     }
 }

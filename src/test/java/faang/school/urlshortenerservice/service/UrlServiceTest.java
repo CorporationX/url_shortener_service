@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 class UrlServiceTest {
 
     @Mock
-    private HashCacheService hashCacheService;
+    private HashCache hashCache;
     @Mock
     private UrlRepository urlRepository;
     @Mock
@@ -38,17 +39,18 @@ class UrlServiceTest {
     private Url fromSave;
     private final LocalDateTime createdAt = LocalDateTime.now();
     private final String url = "https://www.oracle.com/cis/";
+    private final String formattedUrl = "www.oracle.com/cis";
     private final String hash = "6FgV8";
 
     @BeforeEach
     void setUp() {
         toSave = Url.builder()
                 .hash(hash)
-                .url(url)
+                .url(formattedUrl)
                 .build();
         fromSave = Url.builder()
                 .hash(hash)
-                .url(url)
+                .url(formattedUrl)
                 .createdAt(createdAt)
                 .build();
     }
@@ -59,13 +61,13 @@ class UrlServiceTest {
                 .url(url)
                 .build();
 
-        when(hashCacheService.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(hash);
         when(urlRepository.save(toSave)).thenReturn(fromSave);
 
         UrlDto expected = UrlDto
                 .builder()
                 .hash(hash)
-                .url(url)
+                .url(formattedUrl)
                 .createdAt(createdAt)
                 .build();
 
@@ -73,7 +75,7 @@ class UrlServiceTest {
 
         assertEquals(expected, result);
 
-        verify(hashCacheService).getHash();
+        verify(hashCache).getHash();
         verify(urlRepository).save(toSave);
         verify(urlCacheRepository).save(fromSave);
     }
