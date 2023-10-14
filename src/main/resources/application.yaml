@@ -14,11 +14,17 @@ spring:
       hibernate:
         format_sql: true
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  redis:
+    host: localhost
+    port: 6379
+
   cache:
     capacity: 10000
     min-size-percent: 20
     limit: 8000
-
 
   url-service:
     url: "https://sh.c/"

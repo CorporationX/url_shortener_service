@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HashEntity {
 
+    @Id
     @Column(name = "hash", nullable = false)
     private String hash;
 }

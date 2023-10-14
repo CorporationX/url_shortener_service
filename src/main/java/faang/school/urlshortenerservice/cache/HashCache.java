@@ -1,15 +1,14 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.service.HashService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +21,12 @@ public class HashCache {
 
     @Value("${spring.cache.min-size-percent}")
     private int minSizePercent;
-    BlockingQueue<String> hashQueue = new ArrayBlockingQueue<>(cacheCapacity);
+
+    BlockingQueue<String> hashQueue;
+    @PostConstruct
+    private void init() {
+        hashQueue = new ArrayBlockingQueue<>(cacheCapacity);
+    }
 
     public boolean add(String hash) {
         return hashQueue.add(hash);
