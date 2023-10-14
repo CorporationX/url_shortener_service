@@ -13,4 +13,8 @@ public interface HashRepository extends CrudRepository<HashEntity, Long> {
                 SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :maxRange)
             """)
     List<Long> getNextRange(int maxRange);
+
+
+    @Query(value = "DELETE FROM hash LIMIT ?1 RETURNING hash", nativeQuery = true)
+    List<String> findAndDelete(int limit);
 }

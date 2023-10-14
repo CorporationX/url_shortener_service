@@ -17,6 +17,21 @@ spring:
     cleaner:
       cron: "0 0 12 * * ?"
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  redis:
+    host: localhost
+    port: 6379
+
+  cache:
+    capacity: 10000
+    min-size-percent: 20
+    limit: 8000
+
+  url-service:
+    url: "https://sh.c/"
+
 server:
   port: 8080
 
