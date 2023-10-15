@@ -18,6 +18,13 @@ spring:
     changelog: classpath:db/changelog/db.changelog-master.yaml
     default-schema: public
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      cache:
+        urlByHash: url_by_hash
+
 server:
   port: 8080
 

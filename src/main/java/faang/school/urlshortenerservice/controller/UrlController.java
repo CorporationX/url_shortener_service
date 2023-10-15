@@ -2,15 +2,10 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,5 +16,10 @@ public class UrlController {
     @PostMapping({"/url"})
     public void getShortUrl(@RequestBody UrlDto urlDto) {
         urlService.getShortUrl(urlDto);
+    }
+
+    @GetMapping("/{hash}")
+    public RedirectView redirect(@PathVariable @NotBlank String hash) {
+        return new RedirectView(urlService.getUrl(hash));
     }
 }
