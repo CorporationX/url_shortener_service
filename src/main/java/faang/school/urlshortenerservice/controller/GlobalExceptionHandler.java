@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.exception.BadRequestException;
-import faang.school.urlshortenerservice.exception.BusinessException;
 import faang.school.urlshortenerservice.exception.ForbiddenException;
 import faang.school.urlshortenerservice.exception.NotFoundException;
 import faang.school.urlshortenerservice.response.ErrorResponse;
@@ -12,12 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {

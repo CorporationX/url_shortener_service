@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Cacheable("hashCash")
+    @Cacheable(value = "hashCash", key = "#hash")
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url);
         log.info("Url was successfully saved {}", url);
