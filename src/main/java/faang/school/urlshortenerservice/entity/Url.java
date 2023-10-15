@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Data
 @Table(name = "url")
 public class Url {
     @Id
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, length = 4096)
     private String url;
 
     @CreationTimestamp

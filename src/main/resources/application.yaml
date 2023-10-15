@@ -17,6 +17,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8091
 
@@ -34,3 +39,7 @@ hash-cache:
   queue:
     size: 1000
     threshold: 20
+
+url:
+  shortener-service:
+    address: https://sh.c/
