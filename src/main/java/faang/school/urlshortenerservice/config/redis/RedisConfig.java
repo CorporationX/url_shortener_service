@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @Configuration
 @Slf4j
-@EnableRedisRepositories
+@EnableRedisRepositories("faang.school.urlshortenerservice.repository")
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
@@ -28,7 +28,7 @@ public class RedisConfig {
     public JedisConnectionFactory redisConnectionFactory() {
         log.info("Created redis connection factory with host: {}, port: {}", host, port);
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-        return new JedisConnectionFactory();
+        return new JedisConnectionFactory(config);
     }
 
     @Bean
@@ -40,13 +40,13 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig() //
-                .prefixCacheNameWith(this.getClass().getPackageName() + ".") //
-                .entryTtl(Duration.ofHours(1)) //
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .prefixCacheNameWith(this.getClass().getPackageName() + ".")
+                .entryTtl(Duration.ofHours(1))
                 .disableCachingNullValues();
 
-        return RedisCacheManager.builder(connectionFactory) //
-                .cacheDefaults(config) //
+        return RedisCacheManager.builder(connectionFactory)
+                .cacheDefaults(config)
                 .build();
     }
 }

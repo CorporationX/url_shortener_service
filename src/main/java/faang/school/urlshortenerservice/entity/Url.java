@@ -4,22 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 @Entity
-@RedisHash
 @Table(name = "url")
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Indexed
     @Column(name = "hash", nullable = false, unique = true, length = 6)
     private String hash;
 

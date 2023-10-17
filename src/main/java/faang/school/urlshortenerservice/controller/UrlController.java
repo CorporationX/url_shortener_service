@@ -22,7 +22,7 @@ public class UrlController {
     @GetMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.FOUND)
     public String redirectToLongUrl(@PathVariable String shortUrl) {
-        String longUrl =  urlService.redirectToLongUrl(shortUrl);
+        String longUrl =  urlService.getLongUrl(shortUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(longUrl));
         return new  ResponseEntity<>(headers, HttpStatus.FOUND).toString();
