@@ -14,7 +14,7 @@ public class Base62Encoder {
     private final int ENCODING_FACTOR = 62;
     private static final String BASE_62_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    @Value("{hashgenerator.base62-alphabet}")
+    @Value("${hashgenerator.base62-alphabet}")
     private final String base62Alphabet;
 
     public List<String> encode(List<Long> numbers) {
