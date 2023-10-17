@@ -12,8 +12,9 @@ import java.util.List;
 public class Base62Encoder {
 
     private final int ENCODING_FACTOR = 62;
+    private static final String BASE_62_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    @Value("{hashgenerator.base62-alphabet}")
+    @Value("${hashgenerator.base62-alphabet}")
     private final String base62Alphabet;
 
     public List<String> encode(List<Long> numbers) {
@@ -34,5 +35,20 @@ public class Base62Encoder {
             value /= 62;
         }
         return sb.reverse().toString();
+    }
+
+    public List<String> encodeNumbers(List<Long> numbers) {
+        return numbers.stream()
+                .map(this::encodeNumber)
+                .toList();
+    }
+
+    private String encodeNumber(Long number) {
+        StringBuilder sb = new StringBuilder();
+        while (number > 0) {
+            sb.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
+            number /= BASE_62_CHARACTERS.length();
+        }
+        return sb.toString();
     }
 }

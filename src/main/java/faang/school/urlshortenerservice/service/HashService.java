@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import faang.school.urlshortenerservice.entity.HashEntity;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -16,6 +20,14 @@ public class HashService {
 
     private final HashRepository hashRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final Base62Encoder base62Encoder;
+
+    @Value("${hash.maxRange}")
+    private int maxRange;
+    @Value("${hash.batchSize}")
+    private int batchSize;
+
+    private static final String SQL_INSERT_HASH = "INSERT INTO hash (hash) VALUES (?)";
 
     public void saveHashes(List<String> hashes) {
 
@@ -29,5 +41,32 @@ public class HashService {
                 return hashes.size();
             }
         });
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> getUniqueNumbers(int maxRange) {
+        return hashRepository.getUniqueNumbers(maxRange);
+    }
+
+    @Transactional
+    public void saveHashesBatch(List<Long> uniqueNumbers) {
+        List<String> encodedHashes = base62Encoder.encodeNumbers(uniqueNumbers);
+
+        jdbcTemplate.batchUpdate(SQL_INSERT_HASH, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
+                ps.setString(1, encodedHashes.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return encodedHashes.size();
+            }
+        });
+    }
+
+    @Transactional
+    List<HashEntity> getHashBatch(int batchSize) {
+        return hashRepository.getHashBatch(batchSize);
     }
 }

@@ -23,4 +23,10 @@ public interface HashRepository extends CrudRepository<HashEntity, Long> {
             FROM generate_series(1, :limit)
     """, nativeQuery = true)
     List<Long> getUniqueNumbers(@Param("limit") int limit);
+
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *
+            """)
+    List<HashEntity> getHashBatch(int batchSize);
 }

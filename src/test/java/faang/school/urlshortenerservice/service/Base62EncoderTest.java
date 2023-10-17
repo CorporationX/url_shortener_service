@@ -26,4 +26,15 @@ public class Base62EncoderTest {
         assertNotNull(encodedStrings);
         assertEquals(3, encodedStrings.size());
     }
+
+    @Test
+    void testEncodeNumbers() {
+        Base62Encoder base62Encoder = new Base62Encoder(TEST_ALPHABET);
+        List<Long> numbers = Arrays.asList(1L, 22L, 2232323L);
+        List<String> expected = Arrays.asList("1", "m", "dJm9");
+
+        List<String> actual = base62Encoder.encodeNumbers(numbers);
+
+        assertEquals(expected, actual);
+    }
 }
