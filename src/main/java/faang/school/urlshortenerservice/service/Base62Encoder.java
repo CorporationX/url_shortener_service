@@ -37,6 +37,12 @@ public class Base62Encoder {
         return sb.reverse().toString();
     }
 
+    public List<String> encodeNumbers(List<Long> numbers) {
+        return numbers.stream()
+                .map(this::encodeNumber)
+                .toList();
+    }
+
     private String encodeNumber(Long number) {
         StringBuilder sb = new StringBuilder();
         while (number > 0) {

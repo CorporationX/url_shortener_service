@@ -29,7 +29,7 @@ public class Base62EncoderTest {
 
     @Test
     void testEncodeNumbers() {
-        Base62Encoder base62Encoder = new Base62Encoder();
+        Base62Encoder base62Encoder = new Base62Encoder(TEST_ALPHABET);
         List<Long> numbers = Arrays.asList(1L, 22L, 2232323L);
         List<String> expected = Arrays.asList("1", "m", "dJm9");
 
