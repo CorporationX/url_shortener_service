@@ -1,5 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.repository.HashRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.NonNull;
@@ -18,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashService {
 
-    private final JdbcTemplate jdbcTemplate;
     private final HashRepository hashRepository;
+    private final JdbcTemplate jdbcTemplate;
     private final Base62Encoder base62Encoder;
 
     @Value("${hash.maxRange}")
@@ -28,6 +33,20 @@ public class HashService {
     private int batchSize;
 
     private static final String SQL_INSERT_HASH = "INSERT INTO hash (hash) VALUES (?)";
+
+    public void saveHashes(List<String> hashes) {
+
+        String sql = "INSERT INTO hash (hash) VALUES(?)";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setString(1, hashes.get(i));
+            }
+
+            public int getBatchSize() {
+                return hashes.size();
+            }
+        });
+    }
 
     @Transactional(readOnly = true)
     public List<Long> getUniqueNumbers(int maxRange) {

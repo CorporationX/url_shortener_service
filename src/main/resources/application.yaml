@@ -13,6 +13,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  scheduler:
+    cleaner:
+      cron: "0 0 12 * * ?"
 
 server:
   port: 8080
@@ -21,6 +24,11 @@ logging:
   level:
     root: info
 
+hashgenerator:
+  batch-size: 100
+  threadpool-size: 5
+  threadpool-queue-capacity: 100
+  base62-alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 hash:
   maxRange: 10000
   batchSize: 1000
