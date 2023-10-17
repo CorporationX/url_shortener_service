@@ -16,8 +16,10 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,5 +91,28 @@ class UrlServiceTest {
         assertEquals(fromSave, result);
 
         verify(urlRepository).save(toSave);
+    }
+
+    @Test
+    void getOriginalUrlTest() {
+        String hash = "exampleHash";
+
+        Url urlFromCache = new Url();
+        urlFromCache.setHash(hash);
+        urlFromCache.setUrl("exampleUrl");
+
+        Url urlFromDb = new Url();
+        urlFromDb.setHash(hash);
+        urlFromDb.setUrl("exampleUrl");
+        urlFromCache.setCreatedAt(createdAt);
+
+        when(urlCacheRepository.get(hash)).thenReturn(Optional.of(urlFromCache));
+
+        urlService = new UrlService(hashCache, urlRepository, urlCacheRepository, urlMapper);
+
+        Url result = urlService.getOriginalUrl(hash);
+
+        assertNotNull(result);
+        assertEquals("exampleUrl", result.getUrl());
     }
 }

@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -43,6 +44,21 @@ public class UrlService {
     @Transactional
     public Url save(Url url) {
         return urlRepository.save(url);
+    }
+
+    public Url getOriginalUrl(String hash) {
+        Url urlFromCache = urlCacheRepository.get(hash)
+                .orElseThrow(() -> new UrlNotFoundException("Not found URL from cache"));
+        if (urlFromCache != null) {
+            return urlFromCache;
+        }
+        Url urlFromDb = urlRepository.findByHash(hash)
+                .orElseThrow(() -> new UrlNotFoundException("Not found URL from DB"));
+        if (urlFromDb != null) {
+            urlCacheRepository.save(urlFromDb);
+            return urlFromDb;
+        }
+        throw new UrlNotFoundException("Url not found");
     }
 
     private String formatUrl(String url) {
