@@ -18,4 +18,8 @@ public class Hash {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hash_sequence")
     @SequenceGenerator(name = "hash_sequence", sequenceName = "unique_number_sequence", allocationSize = 1)
     private String hash;
+    
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }
