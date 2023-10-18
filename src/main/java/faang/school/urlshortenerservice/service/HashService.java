@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,9 @@ public class HashService {
     private final HashRepository hashRepository;
     private final JdbcTemplate jdbcTemplate;
 
+    @Value("${spring.cache.limit}")
+    private int limit;
+
     public void saveHashes(List<String> hashes) {
 
         String sql = "INSERT INTO hash (hash) VALUES(?)";
@@ -39,13 +43,9 @@ public class HashService {
         });
     }
 
-    @Value("${spring.cache.limit}")
-    private int limit;
-
-    @Async
+    @Async("hashGeneratorExecutor")
     @Transactional
     public CompletableFuture<List<String>> findAndDelete() {
         return CompletableFuture.supplyAsync(() -> hashRepository.findAndDelete(limit));
     }
-
 }

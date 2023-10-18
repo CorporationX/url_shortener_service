@@ -24,6 +24,14 @@ spring:
     host: localhost
     port: 6379
 
+  hash:
+    range: 100000
+    executor:
+      core_pool_size: 10
+      max_pool_size: 10
+      queue_capacity: 25
+      thread_name_prefix: "HashGenerator-"
+
   cache:
     capacity: 10000
     min-size-percent: 20
