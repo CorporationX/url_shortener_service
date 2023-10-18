@@ -66,6 +66,8 @@ dependencies {
      * Swagger
      */
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+
+    implementation ("org.springframework.retry:spring-retry:1.3.1")
 }
 
 tasks.withType<Test> {

@@ -1,4 +1,4 @@
-CREATE TABLE url
+CREATE TABLE urls
 (
     hash       varchar(6) PRIMARY KEY NOT NULL,
     url        varchar(4096)          NOT NULL,

@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,20 +24,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("api/v1/url")
 public class UrlController {
     private final UrlService urlService;
+    @Value("${url.shortener-service.address}")
+    private String serverAddress;
 
     @PostMapping
-    public String shortenUrl(@RequestBody UrlDTO requestDTO) {
-        String longUrl = requestDTO.getUrl();
-        log.info("Received request to shorten URL: {}", longUrl);
-        if (!isValidUrl(longUrl)) {
+    public ResponseEntity<String> shortenUrl(@RequestBody UrlDTO urlDTO) {
+        String shortUrl = urlService.shortenUrl(urlDTO.getUrl());
+        log.info("Received request to shorten URL: {}", urlDTO.getUrl());
+
+        if (!isValidUrl(urlDTO.getUrl())) {
             throw new InvalidUrlException("Invalid URL");
         }
-        return urlService.shortenUrl(longUrl);
+
+        return ResponseEntity.ok(shortUrl);
     }
+
 
     @GetMapping("/{hash}")
     public void redirectToOriginalURL(@PathVariable String hash, HttpServletResponse response) {
-        String originalURL = urlService.getOriginalURL(hash);
+        String originalURL = urlService.getOriginalURL(serverAddress + hash);
         if (originalURL != null) {
             response.setHeader("Location", originalURL);
             response.setStatus(HttpServletResponse.SC_FOUND);
@@ -49,4 +56,5 @@ public class UrlController {
 
         return urlValidator.isValid(url);
     }
+
 }

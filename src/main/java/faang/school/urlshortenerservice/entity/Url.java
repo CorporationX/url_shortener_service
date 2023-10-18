@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Data
-@Table(name = "url")
+@Table(name = "urls")
 public class Url {
     @Id
     @Column(name = "hash", length = 6, nullable = false, unique = true)

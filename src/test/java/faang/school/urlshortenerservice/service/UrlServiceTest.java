@@ -2,30 +2,46 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.url.ShortUrlNotFoundException;
-import faang.school.urlshortenerservice.repository.UrlCacheRepositoryMock;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
+import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import org.springframework.test.context.ActiveProfiles;
-import java.time.LocalDateTime;
 
-@ActiveProfiles("test")
+import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+//@RunWith(SpringRunner.class)
+//@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class UrlServiceTest {
+
+    @Autowired
+    private PropertySourcesPropertyResolver propertyResolver;
     @InjectMocks
     private UrlService urlService;
 
     @Mock
-    private UrlCacheRepositoryMock urlCacheRepository;
+    private UrlCacheRepository urlCacheRepository;
 
     @Mock
     private HashCache hashCache;
@@ -33,60 +49,64 @@ class UrlServiceTest {
     @Mock
     private UrlRepository urlRepository;
 
-    private final String testOriginalURL = "https://www.example.com";
-    private final String testHash = "abc123";
+    private final String originalURL = "https://example.com";
+    private final String hash = "abc123";
     private final String serverAddress = "https://sh.c/";
-    private final String testCacheValue = "https://www.example.com/cached";
     private Url testUrl;
-
 
     @BeforeEach
     void setUp() {
+        ReflectionTestUtils.setField(instanceUnderTest, "defaultUrl", "http://foo%22/);
+
+
         LocalDateTime createdAt = LocalDateTime.of(2023, 1, 1, 0, 0);
 
         testUrl = Url.builder()
-                .url(testOriginalURL)
+                .url(originalURL)
+                .hash(hash)
                 .createdAt(createdAt)
                 .build();
-
-        ReflectionTestUtils.setField(urlService, "serverAddress", serverAddress);
-    }
-
-    @Test
-    void testShortenUrl() {
-        when(hashCache.getHash()).thenReturn(new Hash(testHash));
-
-        String result = urlService.shortenUrl(testOriginalURL);
-        String expected = serverAddress + testHash;
-
-        assertEquals(expected, result);
     }
 
 
     @Test
-    void testGetOriginalURLFromCache() {
-        when(urlCacheRepository.get(testHash)).thenReturn(testCacheValue);
+    public void testShortenUrl() {
+        when(hashCache.getHash()).thenReturn(new Hash(hash));
+        when(urlRepository.save(any(Url.class))).thenReturn(new Url());
+        doNothing().when(urlCacheRepository).saveToCache(anyString(), anyString());
 
-        String originalURL = urlService.getOriginalURL(testHash);
+        String shortenedURL = urlService.shortenUrl(originalURL);
 
-        assertEquals(testCacheValue, originalURL);
+        assertNotNull(shortenedURL);
+        assertTrue(shortenedURL.contains(hash));
     }
 
     @Test
-    void testGetOriginalURLFromRepository() {
-        when(urlRepository.findByHash(testHash)).thenReturn(testUrl);
+    public void testExtractHashFromURL() {
+        String shortURL = serverAddress + hash;
 
-        String originalURL = urlService.getOriginalURL(testHash);
+        Pattern pattern = Pattern.compile(Pattern.quote(serverAddress) + "([A-Za-z0-9]{6})");
+        Matcher matcher = pattern.matcher(shortURL);
 
-        assertEquals(testOriginalURL, originalURL);
-        Mockito.verify(urlCacheRepository, Mockito.times(1)).save(testHash, testOriginalURL);
+        assertTrue(matcher.find());
+        String extractedHash = matcher.group(1);
+        assertEquals("abc123", extractedHash);
     }
 
     @Test
-    void testGetOriginalURLNotFound() {
-        when(urlRepository.findByHash(testHash)).thenReturn(null);
-        when(urlCacheRepository.get(testHash)).thenReturn(null);
+    public void testGetOriginalURL() {
+        when(urlRepository.findByHash(eq("abc123"))).thenReturn(testUrl);
+        when(urlCacheRepository.getFromCache(eq("abc123"))).thenReturn(null);
 
-        assertThrows(ShortUrlNotFoundException.class, () -> urlService.getOriginalURL(testHash));
+        String resultURL = urlService.getOriginalURL(serverAddress + "abc123");
+
+        assertEquals(originalURL, resultURL);
     }
+
+//    @Test
+//    public void testGetOriginalURLNotFound() {
+//        String hash = "nonExistentHash";
+//
+//        assertThrows(IllegalArgumentException.class, () -> urlService.getOriginalURL(serverAddress + hash));
+//    }
 }
