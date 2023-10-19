@@ -1,3 +1,3 @@
 databaseChangeLog:
   - include:
-      file:
+      file: db/changelog/changeset/V001_initial.sql
