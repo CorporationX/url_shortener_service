@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +23,13 @@ public class HashGenerator {
     @Value("${spring.hash.range:100000}")
     private int maxRange;
 
+    @PostConstruct
+    private void init() {
+        generatorHash();
+    }
+
     @Async("hashGeneratorExecutor")
     @Transactional
-    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
     public void generatorHash() {
         List<Long> range = hashRepository.generateBatch(maxRange);
         List<HashEntity> hashes = range.stream()
@@ -33,15 +38,6 @@ public class HashGenerator {
                 .toList();
         hashRepository.saveAll(hashes);
     }
-
-//    public List<HashEntity> getHashes(long amount) {
-//        List<HashEntity> hashes = hashRepository.findAndDelete(amount);
-//        if (hashes.size() < amount) {
-//            generatorHash();
-//            hashes.addAll(getHashes(amount - hashes.size()));
-//        }
-//        return hashes;
-//    }
 
     private String applyBase62Encoding(long number) {
         StringBuilder builder = new StringBuilder();

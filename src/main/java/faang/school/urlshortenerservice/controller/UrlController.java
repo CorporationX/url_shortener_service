@@ -19,7 +19,7 @@ public class UrlController {
     @PostMapping("/shorten")
     @ResponseStatus(HttpStatus.CREATED)
     public ShortUrlDto shorten(@RequestBody @Valid OriginalUrlDto urlDto) {
-        return urlService.create(urlDto);
+        return urlService.shorten(urlDto);
     }
 
     @GetMapping("/{hash}")

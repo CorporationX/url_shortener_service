@@ -16,6 +16,8 @@ spring:
   scheduler:
     cleaner:
       cron: "0 0 12 * * ?"
+    generate-hash:
+      cron: "0 0 0 * * ?"
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -25,7 +27,8 @@ spring:
     port: 6379
 
   hash:
-    range: 100000
+    limit: 10
+    range: 100
     executor:
       core_pool_size: 10
       max_pool_size: 10
@@ -33,7 +36,7 @@ spring:
       thread_name_prefix: "HashGenerator-"
 
   cache:
-    capacity: 10000
+    capacity: 50
     min-size-percent: 20
     limit: 8000
 

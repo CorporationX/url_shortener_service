@@ -29,10 +29,7 @@ public class HashCache {
     @PostConstruct
     private void init() {
         hashQueue = new ArrayBlockingQueue<>(cacheCapacity);
-    }
-
-    public boolean add(String hash) {
-        return hashQueue.add(hash);
+        fillCache();
     }
 
     public Optional<String> get() {

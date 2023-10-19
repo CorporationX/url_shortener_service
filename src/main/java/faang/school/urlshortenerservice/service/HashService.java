@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,6 +48,10 @@ public class HashService {
     @Async("hashGeneratorExecutor")
     @Transactional
     public CompletableFuture<List<String>> findAndDelete() {
-        return CompletableFuture.supplyAsync(() -> hashRepository.findAndDelete(limit));
+        return CompletableFuture.supplyAsync(() -> hashRepository.findAndDelete(limit))
+                .exceptionally((e) -> {
+                    e.printStackTrace();
+                    return Collections.emptyList();
+                });
     }
 }
