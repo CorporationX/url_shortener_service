@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+hashgenerator:
+  batch-size: 100
+  threadpool-size: 5
+  threadpool-queue-capacity: 100
+
+hash:
+  maxRange: 10000
+  batchSize: 1000
