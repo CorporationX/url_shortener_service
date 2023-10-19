@@ -2,26 +2,22 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.url.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,14 +25,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-//@RunWith(SpringRunner.class)
-//@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 class UrlServiceTest {
 
-    @Autowired
-    private PropertySourcesPropertyResolver propertyResolver;
     @InjectMocks
     private UrlService urlService;
 
@@ -56,8 +47,7 @@ class UrlServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(instanceUnderTest, "defaultUrl", "http://foo%22/);
-
+        ReflectionTestUtils.setField(urlService, "serverAddress", serverAddress);
 
         LocalDateTime createdAt = LocalDateTime.of(2023, 1, 1, 0, 0);
 
@@ -103,10 +93,10 @@ class UrlServiceTest {
         assertEquals(originalURL, resultURL);
     }
 
-//    @Test
-//    public void testGetOriginalURLNotFound() {
-//        String hash = "nonExistentHash";
-//
-//        assertThrows(IllegalArgumentException.class, () -> urlService.getOriginalURL(serverAddress + hash));
-//    }
+    @Test
+    public void testGetOriginalURLNotFound() {
+        String hash = "nonExistentHash";
+
+        assertThrows(UrlNotFoundException.class, () -> urlService.getOriginalURL(serverAddress + hash));
+    }
 }

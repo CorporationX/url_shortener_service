@@ -39,7 +39,6 @@ public class UrlController {
         return ResponseEntity.ok(shortUrl);
     }
 
-
     @GetMapping("/{hash}")
     public void redirectToOriginalURL(@PathVariable String hash, HttpServletResponse response) {
         String originalURL = urlService.getOriginalURL(serverAddress + hash);
@@ -56,5 +55,4 @@ public class UrlController {
 
         return urlValidator.isValid(url);
     }
-
 }

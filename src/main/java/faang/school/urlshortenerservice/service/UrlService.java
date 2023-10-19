@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -22,9 +23,7 @@ public class UrlService {
     @Value("${url.shortener-service.address}")
     private String serverAddress;
 
-    //    private String serverAddress = "https://sh.c/";
-
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String shortenUrl(String originalURL) {
         String hash = hashCache.getHash().getHash();
 
@@ -47,7 +46,7 @@ public class UrlService {
         return serverAddress + hash;
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED)
     public String getOriginalURL(String shortURL) {
         if (serverAddress == null) {
             throw new IllegalArgumentException("Server address is null");
