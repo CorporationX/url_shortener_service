@@ -46,6 +46,7 @@ public class UrlController {
     @ResponseStatus(HttpStatus.FOUND)
     public RedirectView redirectToOriginalUrl(@PathVariable String hash) {
         Url originalUrl = urlService.getOriginalUrl(hash);
+        log.info("Received request to redirect to original URL: {}", originalUrl);
         return new RedirectView(Objects.requireNonNullElse(originalUrl, "/").toString());
     }
 

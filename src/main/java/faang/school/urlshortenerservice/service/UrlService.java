@@ -48,17 +48,14 @@ public class UrlService {
 
     public Url getOriginalUrl(String hash) {
         Url urlFromCache = urlCacheRepository.get(hash)
-                .orElseThrow(() -> new UrlNotFoundException("Not found URL from cache"));
+                .orElseThrow(() -> new UrlNotFoundException(String.format("Not found URL from cache by hash %s", hash)));
         if (urlFromCache != null) {
             return urlFromCache;
         }
         Url urlFromDb = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new UrlNotFoundException("Not found URL from DB"));
-        if (urlFromDb != null) {
+                .orElseThrow(() -> new UrlNotFoundException(String.format("Not found URL from DB by hash %s", hash)));
             urlCacheRepository.save(urlFromDb);
-            return urlFromDb;
-        }
-        throw new UrlNotFoundException("Url not found");
+        throw new UrlNotFoundException("Url wasn't found anywhere!");
     }
 
     private String formatUrl(String url) {
