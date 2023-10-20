@@ -53,9 +53,9 @@ public class UrlService {
             return urlFromCache;
         }
         Url urlFromDb = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new UrlNotFoundException(String.format("Not found URL from DB by hash %s", hash)));
+                .orElseThrow(() -> new UrlNotFoundException(String.format("URL wasn't found anywhere by hash %s", hash)));
             urlCacheRepository.save(urlFromDb);
-        throw new UrlNotFoundException("Url wasn't found anywhere!");
+        return urlFromDb;
     }
 
     private String formatUrl(String url) {
