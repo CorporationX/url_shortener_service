@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class UrlCacheRepository {
+public class RedisCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Cacheable(value = "hashCash", key = "#hash")

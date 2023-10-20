@@ -9,10 +9,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/url")
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/url")
+    @PostMapping("/")
     public ResponseEntity<String> getUrl(@RequestBody UrlDto urlDto) {
         return ResponseEntity
                 .ok(urlService.getShortUrl(urlDto));

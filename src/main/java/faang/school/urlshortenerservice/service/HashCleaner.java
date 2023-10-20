@@ -14,13 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashCleaner {
-    private final HashJpaRepository hashJdbcRepository;
+    private final HashJpaRepository hashJpaRepository;
     private final UrlRepository urlRepository;
 
     @Transactional
     public void hashClear() {
         List<Hash> hashes = urlRepository.deleteExpiredHashes();
-        hashJdbcRepository.saveBatch(hashes);
+        hashJpaRepository.saveBatch(hashes);
         log.info("Saved: {}", hashes);
     }
 }

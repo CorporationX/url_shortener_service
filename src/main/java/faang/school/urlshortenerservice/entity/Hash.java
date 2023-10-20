@@ -8,20 +8,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Table(name = "hash")
 public class Hash {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long id;
-
     @Column(name = "hash")
     public String hash;
-
-    public Hash(String hash) {
-        this.hash = hash;
-    }
 }

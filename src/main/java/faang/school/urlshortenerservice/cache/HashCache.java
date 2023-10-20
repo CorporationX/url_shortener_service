@@ -29,9 +29,9 @@ public class HashCache {
         List<String> generatedHashes = hashGenerator.getHashes(queueSize);
         for (String hash : generatedHashes) {
             if (hashes.offer(hash)) {
-                log.info("The element added in queue: {}", hash);
+                log.warn("The element added in queue: {}", hash);
             } else {
-                log.info("Queue is full");
+                log.warn("Queue is full");
             }
         }
     }

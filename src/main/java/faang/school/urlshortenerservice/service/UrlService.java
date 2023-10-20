@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.NotFoundException;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.RedisCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.cache.HashCache;
 import lombok.RequiredArgsConstructor;
@@ -19,24 +19,27 @@ import java.util.Optional;
 @Slf4j
 public class UrlService {
     private final HashCache hashCache;
-    private final UrlCacheRepository urlCacheRepository;
+    private final RedisCacheRepository redisCacheRepository;
     private final UrlRepository urlRepository;
 
     @Transactional
     public String getShortUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
         String shortUrl = buildShortUrl(urlDto, hash).orElseThrow();
-        urlCacheRepository.save(hash, urlDto.getUrl());
+
+        redisCacheRepository.save(hash, urlDto.getUrl());
         urlRepository.save(hash, urlDto.getUrl());
+
         log.info("Short url was successfully created: {}", shortUrl);
         return shortUrl;
     }
 
     public String getOriginalUrl(String hash) {
-        String cacheUrl = urlCacheRepository.getUrl(hash);
+        String cacheUrl = redisCacheRepository.getUrl(hash);
         if (!cacheUrl.isEmpty()) {
             return cacheUrl;
         }
+
         Optional<String> urlByHash = urlRepository.findUrlByHash(hash);
         if (urlByHash.isPresent()) {
             return urlByHash.get();
@@ -57,7 +60,9 @@ public class UrlService {
         String protocol = url.getProtocol();
         String host = url.getHost();
         int port = url.getPort();
+
         String portString = (port == -1) ? "" : ":" + port;
+
         return Optional.of(protocol + "://" + host + portString + "/" + hash);
     }
 }
