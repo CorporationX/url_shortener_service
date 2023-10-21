@@ -25,4 +25,7 @@ logging:
   level:
     root: info
 
-
+hash-generator:
+  unique-batch: 100
+  thread-pool-size: 5
+  thread-queue: 100
