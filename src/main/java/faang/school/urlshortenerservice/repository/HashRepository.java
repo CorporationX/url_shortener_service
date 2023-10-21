@@ -15,4 +15,14 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
             SELECT NEXTVAL('unique_numbers_seq') FROM GENERATE_SERIES(1, :n)
             """)
     List<Long> getUniqueNumbers(@Param("n") long n);
+
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash WHERE hash IN (
+                SELECT hash FROM hash
+                ORDER BY RANDOM()
+                LIMIT :batchSize
+            )
+            RETURNING *
+            """)
+    List<String> getHashBatch(@Param("batchSize") int batchSize);
 }

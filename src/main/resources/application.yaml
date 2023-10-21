@@ -24,4 +24,4 @@ logging:
   level:
     root: info
 
-batch-size: 100
+batchSize: 100
