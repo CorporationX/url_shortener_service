@@ -4,11 +4,9 @@ CREATE TABLE IF NOT EXISTS hash (
 
 CREATE TABLE IF NOT EXISTS url
 (
-    hash            VARCHAR(6) PRIMARY KEY,
-    url             VARCHAR,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash (hash)
+    hash            VARCHAR(6) PRIMARY KEY NOT NULL,
+    url             TEXT,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE SEQUENCE unique_numbers_seq START WITH 1 INCREMENT BY 1;
