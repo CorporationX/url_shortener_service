@@ -22,7 +22,7 @@ public class Url {
 
     @Id
     @Column(name = "hash")
-    private Hash hash;
+    private String hash;
 
     @Column(name = "url")
     private String url;
