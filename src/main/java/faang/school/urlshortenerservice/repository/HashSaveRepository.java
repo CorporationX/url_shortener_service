@@ -26,9 +26,9 @@ public class HashSaveRepository {
             if (size > hashList.size()) {
                 size = hashList.size();
             }
-            List<Hash> sub = hashList.subList(i, size);
-            hashRepository.saveAll(sub);
-            hashBatch.addAll(sub);
+            List<Hash> hashes = hashList.subList(i, size);
+            hashRepository.saveAll(hashes);
+            hashBatch.addAll(hashes);
         }
         log.info("Hashes saved successfully {}", hashList);
         return hashBatch;
