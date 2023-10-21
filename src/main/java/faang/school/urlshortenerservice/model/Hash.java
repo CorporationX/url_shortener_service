@@ -15,5 +15,7 @@ import lombok.NoArgsConstructor;
 public class Hash {
     @Id
     @Column(name = "hash")
+    @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 100)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_auto_gen")
     public String hash;
 }
