@@ -12,13 +12,20 @@ import org.springframework.stereotype.Repository;
 public class RedisCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Cacheable(value = "hashCash", key = "#hash")
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url);
         log.info("Url was successfully saved {}", url);
     }
 
+    @Cacheable(value = "hashCash", key = "#hash")
     public String getUrl(String hash) {
-        return redisTemplate.opsForValue().get(hash);
+        String hashCache = redisTemplate.opsForValue().get(hash);
+        if (hashCache != null) {
+            log.warn("Hash {} found in cache", hash);
+        }
+        else {
+            log.warn("Hash {} not found in cache", hash);
+        }
+        return hashCache;
     }
 }
