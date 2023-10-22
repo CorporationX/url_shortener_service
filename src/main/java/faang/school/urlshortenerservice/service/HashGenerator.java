@@ -17,20 +17,18 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    private static final char[] BASE62 = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
     @Value("${uniqueNumbers}")
     private int uniqueNumbers;
     private final HashRepository repository;
     private final HashSaveRepository saveRepository;
+    private final Base62Encoder encoder;
 
     @Transactional
     public void generateHash() {
         List<Long> unique = repository.getUniqueNumbers(uniqueNumbers);
         List<Hash> hashes = unique
                 .stream()
-                .map(uniq -> encode(uniq))
+                .map(uniq -> encoder.encode(uniq))
                 .map(uniq -> new Hash(uniq))
                 .toList();
         saveRepository.save(hashes);
@@ -47,15 +45,5 @@ public class HashGenerator {
         }
         saveRepository.save(hashes);
         return CompletableFuture.completedFuture(hashes);
-    }
-
-    private String encode(long number) {
-        StringBuilder string = new StringBuilder();
-        do {
-            int remainder = Math.round(number % 62);
-            string.insert(0, BASE62[remainder]);
-            number /= 62;
-        } while (number > 0);
-        return string.toString();
     }
 }
