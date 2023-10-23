@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +30,9 @@ public class HashCache {
     @PostConstruct
     private void init() {
         hashQueue = new ArrayBlockingQueue<>(cacheCapacity);
-        fillCache();
+        hashGenerator.generateHash()
+                .thenCompose(ignored -> hashService.findAndDelete())
+                .thenAccept(hashQueue::addAll);
     }
 
     public Optional<String> get() {
@@ -41,7 +44,7 @@ public class HashCache {
     private void fillCache() {
         hashService.findAndDelete()
                 .thenAccept(hashQueue::addAll);
-        hashGenerator.generatorHash();
+        hashGenerator.generateHash();
     }
 
     private boolean hasReachedAllowedPercentCapacity() {

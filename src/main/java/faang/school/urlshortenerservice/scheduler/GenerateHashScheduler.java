@@ -13,6 +13,6 @@ public class GenerateHashScheduler {
 
     @Scheduled(cron = "${spring.scheduler.generate-hash.cron:0 0 0 * * ?}")
     public void generateHash() {
-        hashGenerator.generatorHash();
+        hashGenerator.generateHash();
     }
 }

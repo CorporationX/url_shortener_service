@@ -23,20 +23,16 @@ public class HashGenerator {
     @Value("${spring.hash.range:100000}")
     private int maxRange;
 
-    @PostConstruct
-    private void init() {
-        generatorHash();
-    }
-
     @Async("hashGeneratorExecutor")
     @Transactional
-    public void generatorHash() {
+    public CompletableFuture<Void> generateHash() {
         List<Long> range = hashRepository.generateBatch(maxRange);
         List<HashEntity> hashes = range.stream()
                 .map(this::applyBase62Encoding)
                 .map(HashEntity::new)
                 .toList();
         hashRepository.saveAll(hashes);
+        return CompletableFuture.completedFuture(null);
     }
 
     private String applyBase62Encoding(long number) {
