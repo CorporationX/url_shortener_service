@@ -13,6 +13,4 @@ public interface UrlRepository extends JpaRepository<Url, String> {
              WHERE hash = :hash
             """)
     String findUrlByHash(String hash);
-
-    String findByHash(String hash);
 }
