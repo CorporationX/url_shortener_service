@@ -1,29 +1,29 @@
 package faang.school.urlshortenerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "url")
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "hash", nullable = false, unique = true, length = 6)
+    @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
 
-    @Column(name = "url", nullable = false, length = 100)
+    @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "created_at", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private ZonedDateTime createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

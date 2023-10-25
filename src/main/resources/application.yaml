@@ -8,6 +8,9 @@ spring:
     username: user
     password: password
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -16,6 +19,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  application:
+    sequence:
+      batch-size: 100
+
+  async:
+    corePoolSize: 8
+    maxPoolSize: 10
+    queueCapacity: 1000
+    threadNamePrefix: "task-executor-thread-"
 
   data:
     redis:
@@ -28,3 +41,14 @@ server:
 logging:
   level:
     root: info
+
+executor:
+  thread-pool:
+    size: 1
+  queue:
+   capacity: 100
+
+hash-cache:
+  queue:
+    size: 1000
+    threshold: 20
