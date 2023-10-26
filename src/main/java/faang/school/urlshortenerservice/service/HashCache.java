@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCache {
     @Value("${queue-size}")
-    private int queueSize;
+    private int queueSize = 1;
     @Value("${percent}")
     private int fillPercent;
     private final HashGenerator hashGenerator;
@@ -27,8 +28,8 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        List<String> generatedHashes = hashGenerator.getHashes(queueSize).join();
-        for (String hash : generatedHashes) {
+        CompletableFuture<List<String>> generatedHashes = hashGenerator.getHashes(queueSize);
+        for (String hash : generatedHashes.join()) {
             if (hashes.offer(hash)) {
                 log.warn("The element added to queue: {}", hash);
             } else {
