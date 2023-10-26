@@ -27,9 +27,9 @@ public class HashCache {
     private final Queue<String> hashes = new ArrayBlockingQueue<>(queueSize);
 
     @PostConstruct
-    public void init() {
+    public void init() throws ExecutionException, InterruptedException {
         CompletableFuture<List<String>> generatedHashes = hashGenerator.getHashes(queueSize);
-        for (String hash : generatedHashes.join()) {
+        for (String hash : generatedHashes.get()) {
             if (hashes.offer(hash)) {
                 log.warn("The element added to queue: {}", hash);
             } else {
