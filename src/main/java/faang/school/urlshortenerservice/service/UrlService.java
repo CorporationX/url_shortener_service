@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.repository.HashSaveRepository;
 import faang.school.urlshortenerservice.repository.RedisCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,22 @@ public class UrlService {
 
         log.info("The short URL has been successfully created: {}", shortUrl);
         return shortUrl;
+    }
+
+    public String getOriginalUrl(String hash) {
+        String cacheUrl = redisCacheRepository.getUrl(hash);
+        if (!cacheUrl.isEmpty()) {
+            return cacheUrl;
+        }
+
+        Optional<String> urlByHash = urlRepository.findUrlByHash(hash);
+        if (urlByHash.isPresent()) {
+            return urlByHash.get();
+        } else {
+            EntityNotFoundException hashDoesNotExist = new EntityNotFoundException("Hash does not exist");
+            log.error("Hash does not exist", hashDoesNotExist);
+            throw hashDoesNotExist;
+        }
     }
 
     private Optional<String> buildShortUrl(UrlDto urlDto, String hash) {
