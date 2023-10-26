@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.UrlDTO;
 import faang.school.urlshortenerservice.exception.url.InvalidUrlException;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -42,22 +41,21 @@ class UrlControllerTest {
 
     @Test
     void testShortenUrl_ValidUrl() {
-        UrlDTO urlDTO = new UrlDTO("https://example.com", LocalDateTime.now());
+        String url = "https://example.com";
 
-        when(urlService.shortenUrl(urlDTO.getUrl())).thenReturn("shortened-url");
+        when(urlService.shortenUrl(url)).thenReturn("shortened-url");
 
-        ResponseEntity<String> response = urlController.shortenUrl(urlDTO);
+        ResponseEntity<String> response = urlController.shortenUrl(url);
 
-        verify(urlService, times(1)).shortenUrl(urlDTO.getUrl());
+        verify(urlService, times(1)).shortenUrl(url);
         assertEquals("shortened-url", response.getBody());
     }
 
-
     @Test
     void testShortenUrl_InvalidUrl2() {
-        UrlDTO requestDTO = new UrlDTO("invalid_url", LocalDateTime.now());
+        String invalidUrl = "invalid_url";
 
-        assertThrows(InvalidUrlException.class, () -> urlController.shortenUrl(requestDTO));
+        assertThrows(InvalidUrlException.class, () -> urlController.shortenUrl(invalidUrl));
     }
 
     @Test

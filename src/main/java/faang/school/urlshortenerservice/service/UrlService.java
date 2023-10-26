@@ -4,11 +4,14 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.exception.url.*;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,30 +30,33 @@ public class UrlService {
     public String shortenUrl(String originalURL) {
         String hash = hashCache.getHash().getHash();
 
+        saveUrlToRepository(hash, originalURL);
+        saveUrlToCache(hash, originalURL);
+
+        return serverAddress + hash;
+    }
+
+    private void saveUrlToRepository(String hash, String originalURL) {
         try {
             urlRepository.save(Url.builder()
                     .hash(hash)
                     .url(originalURL)
                     .build());
-
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             log.error("Error while saving URL in repository: {}", e.getMessage());
         }
+    }
 
+    private void saveUrlToCache(String hash, String originalURL) {
         try {
             urlCacheRepository.saveToCache(hash, originalURL);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             log.error("Error while saving URL in cache: {}", e.getMessage());
         }
-
-        return serverAddress + hash;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public String getOriginalURL(String shortURL) {
-        if (serverAddress == null) {
-            throw new IllegalArgumentException("Server address is null");
-        }
 
         String hash = extractHashFromURL(shortURL);
 
@@ -77,10 +83,6 @@ public class UrlService {
         if (shortURL == null || shortURL.isEmpty()) {
             log.error("Invalid short URL: null or empty");
             throw new IllegalArgumentException("Invalid short URL");
-        }
-        if (serverAddress == null) {
-            log.error("Server address is null");
-            throw new IllegalArgumentException("Server address is null");
         }
 
         Pattern pattern = Pattern.compile(Pattern.quote(serverAddress) + "([A-Za-z0-9]{6})");

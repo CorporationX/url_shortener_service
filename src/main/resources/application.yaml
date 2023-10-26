@@ -43,3 +43,5 @@ hash-cache:
 url:
   shortener-service:
     address: https://sh.c/
+
+  prefix: api/v1

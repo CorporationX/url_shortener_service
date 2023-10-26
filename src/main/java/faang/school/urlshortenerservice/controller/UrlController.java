@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.UrlDTO;
 import faang.school.urlshortenerservice.exception.url.InvalidUrlException;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,26 +12,26 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/url")
+@RequestMapping("${url.prefix}/url")
 public class UrlController {
     private final UrlService urlService;
     @Value("${url.shortener-service.address}")
     private String serverAddress;
 
     @PostMapping
-    public ResponseEntity<String> shortenUrl(@RequestBody UrlDTO urlDTO) {
-        String shortUrl = urlService.shortenUrl(urlDTO.getUrl());
-        log.info("Received request to shorten URL: {}", urlDTO.getUrl());
+    public ResponseEntity<String> shortenUrl(@RequestBody String url) {
+        String shortUrl = urlService.shortenUrl(url);
+        log.info("Received request to shorten URL: {}", url);
 
-        if (!isValidUrl(urlDTO.getUrl())) {
+        if (!isValidUrl(url)) {
             throw new InvalidUrlException("Invalid URL");
         }
 

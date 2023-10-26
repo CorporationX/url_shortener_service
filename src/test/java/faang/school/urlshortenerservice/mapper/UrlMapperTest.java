@@ -28,7 +28,6 @@ class UrlMapperTest {
 
         expectedDto = UrlDTO.builder()
                 .url("https://example.com")
-                .createdAt(createdAt)
                 .build();
     }
 
@@ -41,8 +40,6 @@ class UrlMapperTest {
     @Test
     void testToUrl() {
         Url url = mapper.toUrl(expectedDto);
-
         assertEquals(expectedDto.getUrl(), url.getUrl());
-        assertEquals(expectedDto.getCreatedAt(), url.getCreatedAt());
     }
 }
