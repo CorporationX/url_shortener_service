@@ -23,7 +23,7 @@ public class HashCache {
     private int fillPercent;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean filling = new AtomicBoolean(false);
-    public final Queue<String> hashes = new ArrayBlockingQueue<>(queueSize);
+    private final Queue<String> hashes = new ArrayBlockingQueue<>(queueSize);
 
     @PostConstruct
     public void init() {
