@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCache {
     @Value("${queue-size}")
-    private int queueSize = 1;
+    private int queueSize;
     @Value("${percent}")
     private int fillPercent;
     private final HashGenerator hashGenerator;
@@ -27,10 +27,10 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        List<Hash> generatedHashes = hashGenerator.getHashes(queueSize).join();
-        for (Hash hash : generatedHashes) {
-            if (hashes.offer(hash.getHash())) {
-                log.warn("The element added in queue: {}", hash);
+        List<String> generatedHashes = hashGenerator.getHashes(queueSize).join();
+        for (String hash : generatedHashes) {
+            if (hashes.offer(hash)) {
+                log.warn("The element added to queue: {}", hash);
             } else {
                 log.warn("Queue is full");
             }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +38,16 @@ public class HashGenerator {
 
     @Transactional
     @Async("batchExecutor")
-    public CompletableFuture<List<Hash>> getHashes(long amount) {
+    public CompletableFuture<List<String>> getHashes(long amount) {
         List<Hash> hashes = repository.findAndDelete(amount);
         if (hashes.size() < amount) {
             generateHash();
             hashes.addAll(repository.findAndDelete(amount - hashes.size()));
         }
         saveRepository.save(hashes);
-        return CompletableFuture.completedFuture(hashes);
+        return CompletableFuture.completedFuture(hashes
+                .stream()
+                .map(Hash::getHash)
+                .toList());
     }
 }

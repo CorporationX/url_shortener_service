@@ -14,7 +14,7 @@ public class RedisCacheRepository {
 
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url);
-        log.info("Url was successfully saved {}", url);
+        log.info("URL saved successfully {}", url);
     }
 
     @Cacheable(value = "hashCash", key = "#hash")
