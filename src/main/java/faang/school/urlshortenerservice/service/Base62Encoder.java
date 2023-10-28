@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +9,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class Base62Encoder {
     @Value("${url-shortener-service.base62}")
-    private final String BASE62_CHARS;
+    private String BASE62_CHARS;
     @Value("${url-shortener-service.batch-size}")
-    private final int BATCH_SIZE;
+    private int BATCH_SIZE;
 
     public List<String> encode(List<Long> numbers) {
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();

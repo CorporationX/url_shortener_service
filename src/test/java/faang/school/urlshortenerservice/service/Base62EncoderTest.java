@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +24,8 @@ class Base62EncoderTest {
 
     @BeforeEach
     public void setUp() {
-        base62Encoder = new Base62Encoder(base62Chars, batchSize);
+        ReflectionTestUtils.setField(base62Encoder, "BASE62_CHARS", base62Chars);
+        ReflectionTestUtils.setField(base62Encoder, "BATCH_SIZE", batchSize);
     }
 
     @Test
