@@ -20,15 +20,15 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
 
     @Transactional
-    public void clear() {
+    public void release() {
         List<Hash> hashes = urlRepository.removeExpiredHashes();
         repository.save(hashes);
         log.info("Saved: {}", hashes);
     }
 
     @Scheduled(cron = "${cron}")
-    public void hashClear() {
-        clear();
+    public void hashRelease() {
+        release();
         log.info("Hashes successfully removed");
     }
 }
