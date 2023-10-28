@@ -33,7 +33,7 @@ public class HashCache {
             if (hashes.offer(hash)) {
                 log.warn("The element added to queue: {}", hash);
             } else {
-                log.warn("Queue is full");
+                break;
             }
         }
     }

@@ -21,7 +21,7 @@ public class RedisCacheRepository {
     public String getUrl(String hash) {
         String hashCache = redisTemplate.opsForValue().get(hash);
         if (hashCache != null) {
-            log.warn("Hash {} found in cache", hash);
+            log.info("Hash {} found in cache", hash);
         }
         else {
             log.warn("Hash {} not found in cache", hash);
