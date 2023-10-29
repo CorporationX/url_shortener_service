@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +10,14 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
 public class HashCache {
 
     private final HashService hashService;
+    private final HashGenerator hashGenerator;
 
     @Value("${spring.cache.capacity}")
     private int cacheCapacity;
@@ -23,13 +26,13 @@ public class HashCache {
     private int minSizePercent;
 
     BlockingQueue<String> hashQueue;
+
     @PostConstruct
     private void init() {
         hashQueue = new ArrayBlockingQueue<>(cacheCapacity);
-    }
-
-    public boolean add(String hash) {
-        return hashQueue.add(hash);
+        hashGenerator.generateHash()
+                .thenCompose(ignored -> hashService.findAndDelete())
+                .thenAccept(hashQueue::addAll);
     }
 
     public Optional<String> get() {
@@ -41,6 +44,7 @@ public class HashCache {
     private void fillCache() {
         hashService.findAndDelete()
                 .thenAccept(hashQueue::addAll);
+        hashGenerator.generateHash();
     }
 
     private boolean hasReachedAllowedPercentCapacity() {

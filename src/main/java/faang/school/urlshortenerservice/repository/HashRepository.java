@@ -10,11 +10,12 @@ import java.util.List;
 @Repository
 public interface HashRepository extends CrudRepository<HashEntity, Long> {
     @Query(nativeQuery = true, value = """
-                SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :maxRange)
+                SELECT nextval('unique_number_seq') FROM generate_series(1, :maxRange)
             """)
-    List<Long> getNextRange(int maxRange);
+    List<Long> generateBatch(int maxRange);
 
-
-    @Query(value = "DELETE FROM hash LIMIT ?1 RETURNING hash", nativeQuery = true)
+    @Query(value = "DELETE FROM hash WHERE hash IN " +
+            "(SELECT hash FROM hash LIMIT ?1) " +
+            "RETURNING hash", nativeQuery = true)
     List<String> findAndDelete(int limit);
 }
