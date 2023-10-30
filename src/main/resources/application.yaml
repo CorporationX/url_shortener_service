@@ -1,4 +1,7 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -26,6 +29,11 @@ spring:
     maxPoolSize: 10
     queueCapacity: 1000
     threadNamePrefix: "task-executor-thread-"
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
   port: 8091
