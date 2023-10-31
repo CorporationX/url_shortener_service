@@ -9,7 +9,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "hash-generator")
 public class HashGeneratorConfig {
     @Value("${url-shortener-service.hash-generator.unique-batch}")
     private int uniqueBatch;
