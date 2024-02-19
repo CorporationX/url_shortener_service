@@ -13,6 +13,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        jdbc:
+          batch_size: 1000
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: url_shortener
 
 server:
   port: 8080
