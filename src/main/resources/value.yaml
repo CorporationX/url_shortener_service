@@ -1,3 +1,0 @@
-base62:
-    alphabet: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    batch_size: 100
