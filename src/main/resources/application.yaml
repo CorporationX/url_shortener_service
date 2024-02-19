@@ -17,12 +17,6 @@ spring:
   liquibase:
     changelog: classpath:/db/changelog/db.changelog-master.yaml
 
-  async_config:
-    core_pool_size: 5
-    max_pool_size: 10
-    queue_capacity: 50
-    thread_name_prefix: AsyncTaskThread
-
   config:
     import: value.yaml
 
