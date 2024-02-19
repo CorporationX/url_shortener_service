@@ -7,11 +7,9 @@ import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -39,10 +37,8 @@ public class UrlService {
         String url = urlCacheRepository.getUrl(hash);
 
         if (url == null) {
-            log.info("url not found in cache");
-
-            Url urlRep = urlRepository.findByHash(hash).orElseThrow(() -> new EntityNotFoundException("Url not found"));
-            url = urlRep.getUrl();
+           Url urlRep = urlRepository.findByHash(hash).orElseThrow(() -> new EntityNotFoundException("Url not found"));
+           url = urlRep.getUrl();
         }
         return url;
     }

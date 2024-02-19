@@ -4,13 +4,11 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
@@ -20,14 +18,10 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${cleaner_scheduler.cron}")
     public void clean() {
-        log.info("CleanerScheduler started in {}", System.currentTimeMillis());
-
         List<Hash> hashes = urlRepository.cleanOldUrl().stream()
                 .map(url -> new Hash(url.getHash()))
                 .toList();
 
         hashRepository.save(hashes);
-
-        log.info("CleanerScheduler finished in {}", System.currentTimeMillis());
     }
 }

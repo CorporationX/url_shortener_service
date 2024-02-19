@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.encoder;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class Base62Encoder {
@@ -25,7 +23,6 @@ public class Base62Encoder {
     private final Executor executor;
 
     public List<Hash> encode(List<Long> numbers) {
-        log.info("Encoding {} to base62", numbers);
 
         List<CompletableFuture<List<Hash>>> futures = new ArrayList<>();
 
@@ -51,7 +48,6 @@ public class Base62Encoder {
 
     private Hash decimalToBase62(long number) {
         if (number < 0) {
-            log.error("Decimal number cannot be negative");
             throw new IllegalArgumentException("Decimal number cannot be negative");
         }
 
@@ -61,6 +57,7 @@ public class Base62Encoder {
             base62.append(alphabet.charAt(remainder));
             number /= alphabet.length();
         }
+
         return new Hash(base62.reverse().toString());
     }
 }
