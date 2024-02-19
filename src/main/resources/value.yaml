@@ -12,6 +12,3 @@ hash_cache:
 
 cleaner_scheduler:
     cron: 0 0 0 * * ? # every day at midnight
-
-redis_cache:
-    ttl: 60
