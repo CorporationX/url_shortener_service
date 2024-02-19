@@ -33,8 +33,6 @@ logging:
   level:
     root: info
 
-executor_thread_pool:
-  queue_capacity: 100
-  max_pool_size: 10
-  core_pool_size: 10
-  thread_name_prefix: ExecutorTaskThread
+executor:
+  pool:
+    nThreads: 10

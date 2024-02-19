@@ -17,7 +17,7 @@ public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Long> getUniqueNumbers(long uniqueNumbers) {
-        String sql = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?)";
+        String sql = "SELECT nextval('unique_numbers_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, uniqueNumbers);
     }
 

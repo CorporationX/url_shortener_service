@@ -17,7 +17,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     @Value("${hash_generator.unique_numbers}")
-    private int uniqueNumbers;
+    private final int uniqueNumbers;
 
     @Async
     public void generateBatch() {

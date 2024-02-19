@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class Base62Encoder {
     @Value("${base62.batch_size}")
     private int batchSize;
 
-    private final Executor executor;
+    private final ExecutorService executor;
 
     public List<Hash> encode(List<Long> numbers) {
 
