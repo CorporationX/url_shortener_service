@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    servlet:
+      path: /api
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
@@ -13,7 +17,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        generate_statistics: true
         order_inserts: true
         jdbc:
           batch_size: 5000
@@ -43,3 +46,5 @@ async:
 
 cleaner_scheduler:
   cron: 0 0 0 * * ?
+
+url: http://localhost:8080/api/

@@ -21,6 +21,7 @@ public class HashGenerator {
     @Value("${hash.generator.max_range}")
     private int maxRange;
 
+    @Async
     @Scheduled(cron = "${hash.generator.cron}")
     @Transactional
     public void generateBatch() {
