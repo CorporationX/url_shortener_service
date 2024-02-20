@@ -13,4 +13,6 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM url u WHERE u.created_at < NOW() - INTERVAL '1 year' RETURNING u.hash")
     List<String> deleteOlderThanOneYearUrl();
+
+    Url findByHash(String hash);
 }
