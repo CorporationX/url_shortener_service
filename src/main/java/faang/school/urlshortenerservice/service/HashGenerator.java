@@ -21,7 +21,7 @@ public class HashGenerator {
     @Value("${hash.generator.max_range}")
     private int maxRange;
 
-    @Async
+    @Async("taskExecutor")
     @Scheduled(cron = "${hash.generator.cron}")
     @Transactional
     public void generateBatch() {
@@ -41,6 +41,7 @@ public class HashGenerator {
     }
 
     @Async("taskExecutor")
+    @Transactional
     public CompletableFuture<List<String>> getHashAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }
