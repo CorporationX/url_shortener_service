@@ -14,9 +14,21 @@ spring:
       hibernate:
         format_sql: true
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 1000
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  range: 10000
