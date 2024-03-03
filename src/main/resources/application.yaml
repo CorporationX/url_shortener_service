@@ -32,3 +32,4 @@ logging:
 
 hash:
   range: 10000
+  capacity: 10000

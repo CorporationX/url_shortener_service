@@ -15,5 +15,9 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             """)
     List<Long> getUniqueNumbers(int range);
 
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash WHERE id IN (SELECT id FROM hash ORDER BY id ASC LIMIT :amount) RETURNING *
+                    """)
+    List<Hash> getHashBatch(long amount);
 
 }

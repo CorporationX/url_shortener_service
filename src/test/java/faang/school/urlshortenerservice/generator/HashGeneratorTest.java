@@ -36,4 +36,11 @@ public class HashGeneratorTest {
         hashGenerator.generateBatch();
         verify(base62Encoder, times(1)).encodeList(expectedList);
     }
+
+    @Test
+    void testGetHashes() {
+        hashGenerator.getHashes(5);
+        verify(hashRepository, times(2)).getHashBatch(5);
+
+    }
 }
