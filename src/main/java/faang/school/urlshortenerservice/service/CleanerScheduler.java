@@ -16,6 +16,7 @@ import java.util.List;
 public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+
     @Async("taskExecutor")
     @Scheduled(cron = "${cleaner_scheduler.cron}")
     @Transactional

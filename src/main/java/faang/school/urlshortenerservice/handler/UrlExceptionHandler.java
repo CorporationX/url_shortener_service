@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.controller;
+package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.exception.ErrorResponse;

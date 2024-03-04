@@ -13,15 +13,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
     private final HashGenerator hashGenerator;
-    @Value("${hash.capacity}")
-    private int capacity = 10001;
-    @Value("${hash.fill_percent}")
+    @Value("${hash.capacity:10000}")
+    private int capacity;
+    @Value("${hash.fill_percent:20}")
     private int fillPercent;
     private final AtomicBoolean filling = new AtomicBoolean(false);
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
     }
 

@@ -37,7 +37,7 @@ hash:
   fill_percent: 20
   generator:
     cron: 0 0 0 * * ?
-    max_range: 10001
+    max_range: 10000
 
 async:
   core: 10
