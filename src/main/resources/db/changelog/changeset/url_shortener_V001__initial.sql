@@ -3,6 +3,12 @@ CREATE TABLE hash (
     hash VARCHAR(7) NOT NULL
 );
 
+CREATE TABLE url (
+    hash PRIMARY KEY,
+    url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP
+);
+
 CREATE SEQUENCE unique_hash_number_sequences
     START WITH 56800235584
     INCREMENT BY 1;
