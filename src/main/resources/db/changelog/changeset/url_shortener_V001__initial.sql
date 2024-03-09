@@ -1,10 +1,10 @@
 CREATE TABLE hash (
     id BIGSERIAL PRIMARY KEY,
-    hash VARCHAR(7) NOT NULL
+    hash VARCHAR(7) NOT NULL UNIQUE
 );
 
 CREATE TABLE url (
-    hash PRIMARY KEY,
+    hash VARCHAR(7) PRIMARY KEY,
     url VARCHAR(255) NOT NULL,
     created_at TIMESTAMP
 );

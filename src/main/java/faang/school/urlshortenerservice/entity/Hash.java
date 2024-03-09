@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Hash {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "hash", length = 7, unique = true, nullable = false)
     private String hash;

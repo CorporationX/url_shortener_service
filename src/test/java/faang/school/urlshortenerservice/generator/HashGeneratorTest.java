@@ -41,6 +41,5 @@ public class HashGeneratorTest {
     void testGetHashes() {
         hashGenerator.getHashes(5);
         verify(hashRepository, times(2)).getHashBatch(5);
-
     }
 }

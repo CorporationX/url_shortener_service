@@ -18,6 +18,11 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: public
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   async:
     core-pool-size: 5
     max-pool-size: 10

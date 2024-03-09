@@ -17,14 +17,19 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url {
     @Id
-    @Column(name = "hash", length = 7, unique = true, nullable = false)
-    private Hash hash;
+    @Column(name = "hash", length = 7, nullable = false, unique = true)
+    private String hash;
 
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "createdAt", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    public Url(String hash, String url) {
+        this.hash = hash;
+        this.url = url;
+    }
 }
