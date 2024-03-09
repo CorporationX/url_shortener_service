@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UrlRepository extends CrudRepository<Url, Long> {
-
+    Url findByHash(String hash);
 }

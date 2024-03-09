@@ -23,4 +23,10 @@ public class UrlControllerTest {
         urlController.createShortUrl(urlDto);
         verify(urlService, times(1)).createShortUrl(urlDto);
     }
+
+    @Test
+    void testRedirectLongUrl() {
+        urlController.redirectLongUrl("Hash");
+        verify(urlService, times(1)).redirectLongUrl("Hash");
+    }
 }
