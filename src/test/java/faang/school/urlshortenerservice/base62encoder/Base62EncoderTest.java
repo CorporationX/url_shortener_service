@@ -27,5 +27,4 @@ public class Base62EncoderTest {
         List<String> expectedHashes = List.of("a000001", "b000001");
         assertEquals(expectedHashes, hashes);
     }
-
 }

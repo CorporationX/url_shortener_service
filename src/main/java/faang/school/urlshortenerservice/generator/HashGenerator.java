@@ -21,8 +21,8 @@ public class HashGenerator {
     @Value("${hash.range:10000}")
     private int range;
 
-    @Async("taskExecutor")
     @Transactional
+    @Async("taskExecutor")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(range);
         List<String> encoded = base62Encoder.encodeList(uniqueNumbers);
@@ -40,10 +40,9 @@ public class HashGenerator {
         return hashes;
     }
 
-    @Async("taskExecutor")
     @Transactional
+    @Async("taskExecutor")
     public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }
-
 }

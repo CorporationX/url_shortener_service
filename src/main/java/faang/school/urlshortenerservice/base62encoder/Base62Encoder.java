@@ -20,5 +20,4 @@ public class Base62Encoder {
         }
         return String.valueOf(stringBuilder);
     }
-
 }
