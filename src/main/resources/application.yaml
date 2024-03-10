@@ -38,3 +38,7 @@ logging:
 hash:
   range: 10000
   capacity: 10000
+
+scheduler:
+  clearUrls:
+    cronExpression: "0 0 0 * * ?" # Каждый день в полночь
