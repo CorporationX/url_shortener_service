@@ -1,0 +1,16 @@
+CREATE SEQUENCE unique_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE url(
+    hash VARCHAR(6) PRIMARY KEY NOT NULL ,
+    url VARCHAR (228) NOT NULL ,
+    created_at TIMESTAMP DEFAULT current_timestamp
+);
+
+CREATE TABLE hash(
+    hash VARCHAR(6) PRIMARY KEY
+);
