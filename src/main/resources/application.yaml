@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -12,7 +12,14 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 5
+        order_inserts: true
+        generate_statistics: true
         format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
@@ -20,3 +27,6 @@ server:
 logging:
   level:
     root: info
+
+hashgenerator:
+  base62-alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
