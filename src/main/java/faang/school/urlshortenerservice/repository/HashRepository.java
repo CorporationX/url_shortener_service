@@ -16,8 +16,8 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
     List<Long> getUniqueValues(int maxRange);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash WHERE hash IN(SELECT hash FROM hash LIMIT ?) RETURNING *
+            DELETE FROM hash WHERE hash IN(SELECT hash FROM hash ORDER BY hash ASC LIMIT :amount) RETURNING *
             """)
-    List<Hash> getHashBatch(int batchSize);
+    List<Hash> findAndDelete(int amount);
 
 }
