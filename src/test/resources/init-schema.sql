@@ -1,0 +1,19 @@
+CREATE SCHEMA IF NOT EXISTS url_shortener;
+
+CREATE TABLE hash
+(
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE url
+(
+    hash VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE SEQUENCE unique_number_seq
+    START 1
+    INCREMENT 1;
+

@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    servlet:
+      path: /api
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
@@ -13,6 +17,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        jdbc:
+          batch_size: 5000
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: url_shortener
 
 server:
   port: 8080
@@ -20,3 +31,20 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  capacity: 10000
+  fill_percent: 20
+  generator:
+    cron: 0 0 0 * * ?
+    max_range: 10000
+
+async:
+  core: 10
+  max: 20
+  queue_capacity: 50
+
+cleaner_scheduler:
+  cron: 0 0 0 * * ?
+
+url: http://localhost:8080/api/

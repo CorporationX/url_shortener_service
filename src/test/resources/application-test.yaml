@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: url-shortener-service-test
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    enabled: false
+
+  data:
+    redis:
+      port: 6378
+      ssl: false
+      host: localhost
+
+server:
+  port: 0
+
+hash:
+  capacity: 6
+  fill_percent: 50
+  generator:
+    cron: 0 0 0 * * ?
+    max_range: 6
+
+async:
+  core: 10
+  max: 20
+  queue_capacity: 50
+
+cleaner_scheduler:
+  cron: 0 0 0 * * ?
+
+url:
+  shortener:
+    base-url: http://localhost:${local.server.port}
