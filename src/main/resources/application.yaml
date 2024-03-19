@@ -14,6 +14,10 @@ spring:
       hibernate:
         format_sql: true
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    liquibase-schema: url_shortener
+
 server:
   port: 8080
 
