@@ -1,63 +1,63 @@
 package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.LongConsumer;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Component
-public class Base62Encoder implements LongConsumer {
+@RequiredArgsConstructor
+public class Base62Encoder {
 
-    private final CharBuffer charBuffer = CharBuffer.allocate(1);
-    private final StringBuilder builder = new StringBuilder();
-    private static final char[] BASE_DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+    @Value("${url-shortener-service.base62}")
+    private final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    @Value("${url-shortener-service.batch-size}")
+    private final int BATCH_SIZE = 100;
 
     public List<Hash> encode(List<Long> numbers) {
-        List<Hash> hashes = new ArrayList<>();
-        for(long num : numbers) {
-            accept(num);
-            Hash hash = Hash.builder()
-                    .hash(toString())
-                    .build();
-            hashes.add(hash);
+        List<CompletableFuture<List<Hash>>> futures = new ArrayList<>();
+        int len = numbers.size();
+
+        for (int i = 0; i < len; i += BATCH_SIZE) {
+            List<Long> batch = numbers.subList(i, Math.min(i + BATCH_SIZE, len));
+            CompletableFuture<List<Hash>> future = createFuture(batch);
+            futures.add(future);
         }
-        return hashes;
+
+        return runThreads(futures);
     }
 
-    @Override
-    public void accept(long value) {
-        if (value < 0) {
-            for (int i = 10; i > 0; i--) {
-                putDigits(i, (int) (-(value % 62)));
-                value /= 62;
-            }
-            putDigits(0, (int) (-(value - 31)));
+    private CompletableFuture<List<Hash>> createFuture(List<Long> batch) {
+        return CompletableFuture.supplyAsync(() ->
+                batch.stream()
+                        .map(this::encodeBase62)
+                        .collect(Collectors.toList())
+        );
+    }
 
-        } else {
-            for (int i = 10; i > 0; i--) {
-                putDigits(i, (int) (value % 62));
-                value /= 62;
-            }
-            putDigits(0, (int) value);
+    private List<Hash> runThreads(List<CompletableFuture<List<Hash>>> futures) {
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(thread -> futures.stream()
+                        .flatMap(newList -> newList.join().stream())
+                        .collect(Collectors.toList()))
+                .join();
+    }
+
+    private Hash encodeBase62(long number) {
+        StringBuilder sb = new StringBuilder();
+        do {
+            int remainder = (int) (number % 62);
+            sb.append(BASE62_CHARS.charAt(remainder));
+            number /= 62;
         }
-        builder.append(charBuffer);
-        charBuffer.clear();
-    }
-
-    public void putDigits(int index, int charIndex) {
-        charBuffer.put(index, getDigits(charIndex));
-
-    }
-
-    public char getDigits(int index) {
-        return BASE_DIGITS[index];
-    }
-
-    @Override
-    public String toString() {
-        return builder.toString();
+        while (number > 0);
+        return Hash.builder()
+                .hash(sb.reverse().toString())
+                .build();
     }
 }

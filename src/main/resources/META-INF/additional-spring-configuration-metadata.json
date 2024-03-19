@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "url-shortener-service.base62",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.base62."
+    },
+    {
+      "name": "url-shortener-service.batch-size",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.batch-size."
+    }
+  ]
+}
