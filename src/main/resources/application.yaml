@@ -26,3 +26,7 @@ logging:
 batch:
   sublists: 1000
   hashes: 1000
+
+thread-pool:
+  size: 5
+  queue: 10
