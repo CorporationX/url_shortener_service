@@ -28,5 +28,18 @@ logging:
   level:
     root: info
 
-hashgenerator:
+hash-generator:
   base62-alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  range: 100
+
+async:
+  generator-thread-pool:
+    settings:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
+  cache-thread-pool:
+    settings:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
