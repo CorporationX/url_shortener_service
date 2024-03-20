@@ -9,6 +9,41 @@
       "name": "url-shortener-service.batch-size",
       "type": "java.lang.String",
       "description": "Description for url-shortener-service.batch-size."
+    },
+    {
+      "name": "url-shortener-service.hashSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.hashSize."
+    },
+    {
+      "name": "url-shortener-service.async.hash.maxPoolSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.hash.maxPoolSize."
+    },
+    {
+      "name": "url-shortener-service.async.hash.corePoolSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.hash.corePoolSize."
+    },
+    {
+      "name": "url-shortener-service.async.hash.queueCapacity",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.hash.queueCapacity."
+    },
+    {
+      "name": "url-shortener-service.async.cache.maxPoolSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.cache.maxPoolSize."
+    },
+    {
+      "name": "url-shortener-service.async.cache.corePoolSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.cache.corePoolSize."
+    },
+    {
+      "name": "url-shortener-service.async.cache.queueCapacity",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.async.cache.queueCapacity."
     }
   ]
 }
