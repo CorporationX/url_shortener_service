@@ -1,9 +1,12 @@
-package faang.school.urlshortenerservice.config;
+package faang.school.urlshortenerservice.config.threadpool;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class ThreadPoolConfig {
@@ -20,5 +23,10 @@ public class ThreadPoolConfig {
         executor.setThreadNamePrefix("Async-");
         executor.initialize();
         return executor;
+    }
+
+    @Bean
+    public ExecutorService executorService() {
+        return Executors.newCachedThreadPool();
     }
 }

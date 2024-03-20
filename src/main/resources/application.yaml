@@ -30,3 +30,7 @@ batch:
 thread-pool:
   size: 5
   queue: 10
+
+cache:
+  size: 10000
+  fill-threshold: 0.2
