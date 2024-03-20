@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context;
+package faang.school.urlshortenerservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class AsyncConfig {
     @Value("${async.cache-thread-pool.settings.queue-pool-size}")
     private int cacheQueueCapacity;
 
-    @Bean("threadPoolGenerateBatch")
+    @Bean
     public Executor threadPoolForGenerateBatch() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
@@ -36,8 +36,8 @@ public class AsyncConfig {
         return executor;
     }
 
-    @Bean("threadPoolHashCache")
-    public Executor hashCacheThreadPool() {
+    @Bean
+    public Executor threadPoolHashCache() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
         executor.setCorePoolSize(cacheCorePoolSize);

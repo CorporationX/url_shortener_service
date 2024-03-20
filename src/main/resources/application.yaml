@@ -18,6 +18,11 @@ spring:
         generate_statistics: true
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -29,8 +34,14 @@ logging:
     root: info
 
 hash-generator:
-  base62-alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  range: 100
+  unique-number:
+    range: 100
+
+  cache:
+    pool-timeout: 100 #milliseconds
+    size: 10
+    min-fill: 20 #percent
+
 
 async:
   generator-thread-pool:

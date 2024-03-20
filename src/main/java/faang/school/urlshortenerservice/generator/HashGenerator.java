@@ -18,11 +18,11 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    @Value("${hash-generator.range}")
+    @Value("${hash-generator.unique-number.range}")
     private int uniqueNumberRange;
 
     @Transactional
-    @Async("threadPoolGenerateBatch")
+    @Async("threadPoolForGenerateBatch")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumberRange);
         log.info("List of unique numbers in the amount of {} was taken from DB successfully", uniqueNumberRange);

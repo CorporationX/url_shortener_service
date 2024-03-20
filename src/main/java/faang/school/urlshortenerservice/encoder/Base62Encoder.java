@@ -7,11 +7,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class Base62Encoder {
 
-    @Value("${hash-generator.base62-alphabet}")
-    private final String base62Alphabet;
+    private final String base62Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
