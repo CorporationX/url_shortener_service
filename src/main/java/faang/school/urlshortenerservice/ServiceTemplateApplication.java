@@ -4,13 +4,17 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
-@EnableScheduling
 @EnableAsync
-@EnableFeignClients("school.faang.servicetemplate.client")
+@EnableScheduling
+@SpringBootApplication
+@EnableFeignClients("faang.school.urlshortenerservice.client")
+@EnableJpaRepositories(basePackages = "faang.school.urlshortenerservice.repository")
+@EnableRedisRepositories(basePackages = "faang.school.urlshortenerservice.repository")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)

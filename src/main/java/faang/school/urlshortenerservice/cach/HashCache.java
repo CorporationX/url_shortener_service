@@ -28,9 +28,7 @@ public class HashCache {
     private int cacheSize;
     @Value("${cache.fill-threshold}")
     private double fillThreshold;
-
-    private final ArrayBlockingQueue<String> hashCash = new ArrayBlockingQueue<>(cacheSize);
-
+    private final ArrayBlockingQueue<String> hashCash = new ArrayBlockingQueue<>(1000);
 
     @PostConstruct
     @Transactional(readOnly = true)
@@ -38,7 +36,6 @@ public class HashCache {
         List<String> hashes = hashRepository.getHashBatch(cacheSize);
         hashCash.addAll(hashes);
     }
-
 
     public String getHash() {
         String hash = null;

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -42,8 +43,9 @@ public class HashRepository {
         }
     }
 
+    @Transactional
     public List<String> getHashBatch(int numberOfValue) {
-        String sql = "WITH deleted AS(DELETE FROM hash RETURNING hash LIMIT ?) SELECT hash deleted";
-        return jdbcTemplate.queryForList(sql,new Object[]{numberOfValue},String.class);
+        String sql = "WITH deleted AS (DELETE FROM hash RETURNING hash) SELECT hash FROM deleted LIMIT ?";
+        return jdbcTemplate.queryForList(sql, String.class, numberOfValue);
     }
 }
