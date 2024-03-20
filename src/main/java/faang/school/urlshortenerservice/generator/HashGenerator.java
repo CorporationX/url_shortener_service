@@ -22,7 +22,7 @@ public class HashGenerator {
     private int uniqueNumberRange;
 
     @Transactional
-    @Async("executorGenerateBatch")
+    @Async("threadPoolGenerateBatch")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumberRange);
         log.info("List of unique numbers in the amount of {} was taken from DB successfully", uniqueNumberRange);
