@@ -20,3 +20,18 @@ server:
 logging:
   level:
     root: info
+
+async:
+  max-pool-size: 15
+  core-pool-size: 10
+  queue-capacity: 10000
+  thread-name-prefix: AsyncExecutorThread-
+
+hash:
+  range: 1000
+  cache:
+    capacity: 1000
+    fill-percent: 20
+
+base62:
+  size:
