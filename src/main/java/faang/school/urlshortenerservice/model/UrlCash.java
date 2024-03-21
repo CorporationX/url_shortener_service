@@ -1,23 +1,19 @@
 package faang.school.urlshortenerservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
-@Entity
-@Table(name = "hash")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Hash {
-
+@RedisHash("urlCash")
+public class UrlCash {
     @Id
-    @Column(name = "hash",length = 6)
     private String hash;
-
+    @Indexed
+    private String url;
 }

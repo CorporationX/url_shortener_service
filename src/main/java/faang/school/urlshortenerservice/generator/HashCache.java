@@ -17,7 +17,7 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
     @Value("${hash.capacity}")
-    private int capacity = 1000;
+    private int capacity =10;
     @Value("${hash.check-percent}")
     private int percent;
     private final AtomicBoolean filling = new AtomicBoolean(false);
@@ -26,10 +26,11 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
+        System.out.println(hashes.toString());
     }
 
-    @Async("executorService")
-    public Hash getHash() {
+//    @Async("executorService")
+    public String getHash() {
         if (hashes.size() / capacity * 100 < percent) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
@@ -37,6 +38,6 @@ public class HashCache {
                         .thenRun(() -> filling.set(false));
             }
         }
-        return hashes.poll();
+        return hashes.poll().getHash();
     }
 }

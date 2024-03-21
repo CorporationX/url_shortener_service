@@ -27,7 +27,6 @@ public class HashGenerator {
         hashRepository.saveAllAndFlush(hashes);
     }
 
-    //    @Async("executorService")
     @Transactional
     public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashRepository.getAndDeleteHashBatch(amount);
@@ -35,6 +34,7 @@ public class HashGenerator {
             generateBatch();
             hashes.addAll(hashRepository.getAndDeleteHashBatch(amount - hashes.size()));
         }
+        System.out.println(hashes);
         return hashes;
     }
 
