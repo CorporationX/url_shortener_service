@@ -20,5 +20,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                         DELETE FROM url_shortener.hash h WHERE h.hash IN (SELECT * FROM url_shortener.hash LIMIT :count)
                         RETURNING *
             """)
-    List<String> getHashBatch(int count);
+    List<Hash> getAndDeleteHashBatch(int count);
 }
