@@ -25,3 +25,13 @@ server:
 logging:
   level:
     root: info
+
+hash_generator:
+  batch_size: 100
+
+thread_pool:
+  core_pool_size: 5
+  max_pool_size: 10
+  queue_capacity: 25
+
+cache.size: 1000
