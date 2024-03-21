@@ -27,10 +27,20 @@ public class HashGenerator {
         hashRepository.saveAllAndFlush(hashes);
     }
 
+    //    @Async("executorService")
+    @Transactional
+    public List<Hash> getHashes(int amount) {
+        List<Hash> hashes = hashRepository.getAndDeleteHashBatch(amount);
+        if (hashes.size() < amount) {
+            generateBatch();
+            hashes.addAll(hashRepository.getAndDeleteHashBatch(amount - hashes.size()));
+        }
+        return hashes;
+    }
+
     @Async("executorService")
     @Transactional
-    public CompletableFuture<List<Hash>> getHash(int amount) {
-        List<Hash> hashes = hashRepository.getAndDeleteHashBatch(amount);
-        return CompletableFuture.completedFuture(hashes);
+    public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }

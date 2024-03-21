@@ -27,3 +27,5 @@ logging:
 
 hash:
   range: 10
+  capacity: 1000
+  check-percent: 20
