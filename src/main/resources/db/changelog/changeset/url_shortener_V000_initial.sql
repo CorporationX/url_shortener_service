@@ -7,8 +7,8 @@ CREATE SEQUENCE unique_number_seq
 
 CREATE TABLE url(
     hash VARCHAR(6) PRIMARY KEY NOT NULL ,
-    url VARCHAR (228) NOT NULL ,
-    created_at TIMESTAMP DEFAULT current_timestamp
+    url VARCHAR (500) NOT NULL ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE hash(

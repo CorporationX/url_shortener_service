@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class Base62Encoder {
         return numbers.stream()
                 .map(this::encode)
                 .toList();
+
     }
 
     private String encode(long number) {
@@ -20,6 +22,7 @@ public class Base62Encoder {
             sb.append(BASE62.charAt((int) (number % 62)));
             number /= 62;
         }
-        return sb.reverse().toString();
+        String encodedString = sb.toString();
+        return encodedString.length() > 6 ? encodedString.substring(0, 6) : encodedString;
     }
 }

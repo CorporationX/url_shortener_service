@@ -16,7 +16,7 @@ public class ThreadPoolConfig {
     private int threadPoolQueue;
 
     @Bean
-    public ThreadPoolTaskExecutor treadPool() {
+    public ThreadPoolTaskExecutor threadPool() {
         var executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(threadPoolSize);
         executor.setQueueCapacity(threadPoolQueue);

@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -21,8 +22,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.retry:spring-retry:2.0.2")
 
     /**
      * Database
@@ -66,4 +69,39 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.jacocoTestCoverageVerification)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            isEnabled = true
+            element = "CLASS"
+            includes = listOf("school.faang.user_service.service.*",
+                "school.faang.user_service.cash.*",
+                "school.faang.user_service.controller.*",
+                "school.faang.user_service.encoder.*",
+                "school.faang.user_service.generator.*",
+                "school.faang.user_service.validator.*")
+            limit {
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
 }

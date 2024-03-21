@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    servlet:
+      path: /api
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -29,13 +33,19 @@ logging:
     root: info
 
 batch:
-  sublists: 1000
-  hashes: 1000
+  sublists: 10
+  hashes: 10
 
 thread-pool:
   size: 5
   queue: 10
 
+static-url:
+  url: https://sh.c/
+
 cache:
-  size: 10000
+  size: 100
   fill-threshold: 0.2
+
+scheduler:
+  cron: "0 0 0 * * *"

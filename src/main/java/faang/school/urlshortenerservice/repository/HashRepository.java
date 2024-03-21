@@ -1,10 +1,14 @@
 package faang.school.urlshortenerservice.repository;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +24,14 @@ public class HashRepository {
     @Value("${batch.sublists}")
     private int HashBatchSize;
 
-    public List<Long> getUniqueNumbers(int numberOfValue) {
-        return jdbcTemplate.queryForList("SELECT nextval('unique_number_seq') FROM generate_series(1,?)",
-                new Object[]{numberOfValue}, Long.class);
+    @Transactional
+    @Retryable(retryFor = DataAccessException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    public List<Long> getUniqueValue(@NotNull int numberOfValue) {
+        return jdbcTemplate.queryForList("SELECT nextval('unique_number_seq') FROM generate_series(1,?)", Long.class, numberOfValue);
     }
 
-    public void save(List<String> hashes) {
+    @Transactional
+    public void save(@NotNull List<String> hashes) {
         List<List<String>> hashBathes = ListUtils.partition(hashes, HashBatchSize);
         for (List<String> hashBatch : hashBathes) {
             String sql = "INSERT INTO hash (hash) VALUES (?)";
@@ -34,7 +40,6 @@ public class HashRepository {
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setString(1, hashBatch.get(i));
                 }
-
                 @Override
                 public int getBatchSize() {
                     return hashBatch.size();
@@ -44,8 +49,13 @@ public class HashRepository {
     }
 
     @Transactional
-    public List<String> getHashBatch(int numberOfValue) {
+    @Retryable(retryFor = DataAccessException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    public List<String> getHashBatch(@NotNull int numberOfValue) {
         String sql = "WITH deleted AS (DELETE FROM hash RETURNING hash) SELECT hash FROM deleted LIMIT ?";
         return jdbcTemplate.queryForList(sql, String.class, numberOfValue);
+    }
+
+    public int count(){
+        return  jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);
     }
 }

@@ -1,0 +1,45 @@
+name: Java CI with Gradle (Cerberus)
+
+on:
+  pull_request:
+    branches:
+      - cerberus-master-bc2
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    #использование бд для тестирования в GitHubActions
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        # Опции для ожидания запуска PostgreSQL перед началом тестов
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build Gradle
+        run: ./gradlew build
+
+      - name: Run tests
+        env:
+          JDBC_URL: jdbc:postgresql://localhost:5432/testdb
+          JDBC_USER: user
+          JDBC_PASSWORD: password
+        run: ./gradlew test

@@ -7,4 +7,5 @@ import lombok.Data;
 public class RequestUrl {
     @Pattern(regexp = "^https?://.*", message = "Invalid URL")
     private String url;
+
 }

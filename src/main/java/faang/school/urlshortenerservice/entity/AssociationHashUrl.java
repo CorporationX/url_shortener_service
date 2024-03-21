@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 public class AssociationHashUrl {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @Column(name = "hash", length = 19, nullable = false)
     private String hash;
 
-    @Column(name = "url", length = 228, nullable = false)
+    @Column(name = "url", length = 500, nullable = false)
     private String url;
 
     @CreationTimestamp
