@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UrlCashRepository extends CrudRepository<UrlCache, String> {
+
+    UrlCache findByHash(String hash);
 }
