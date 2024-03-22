@@ -20,6 +20,6 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(numbers);
-        hashRepository.save(hashes);
+        hashRepository.saveAll(hashes);
     }
 }

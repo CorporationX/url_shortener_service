@@ -22,7 +22,7 @@ public class HashRepositoryImpl implements HashRepository {
     }
 
     @Override
-    public void save(List<String> hashes) {
+    public void saveAll(List<String> hashes) {
         jdbcTemplate.batchUpdate("INSERT INTO hash VALUES (?)",
                 hashes,
                 batchSize,

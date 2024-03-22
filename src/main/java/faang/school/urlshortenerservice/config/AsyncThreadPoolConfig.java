@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
-public class ThreadPoolConfig {
+public class AsyncThreadPoolConfig {
 
     @Value("${thread_pool.core_pool_size}")
     private int corePoolSize;

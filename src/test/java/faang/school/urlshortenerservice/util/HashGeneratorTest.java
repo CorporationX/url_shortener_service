@@ -35,6 +35,6 @@ class HashGeneratorTest {
 
         Mockito.verify(hashRepository, Mockito.times(1)).getUniqueNumbers(batchSize);
         Mockito.verify(base62Encoder, Mockito.times(1)).encode(numbers);
-        Mockito.verify(hashRepository, Mockito.times(1)).save(hashes);
+        Mockito.verify(hashRepository, Mockito.times(1)).saveAll(hashes);
     }
 }

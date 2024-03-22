@@ -34,4 +34,6 @@ thread_pool:
   max_pool_size: 10
   queue_capacity: 25
 
-cache.size: 1000
+cache:
+  size: 1000
+  fill_percent: 20.0
