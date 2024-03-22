@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -38,9 +38,6 @@ hash:
     capacity: 1000
     fill-percent: 20
 
-base62:
-  size:
-
 schedule:
-    cron:
-      clear-urls: "0 0 0 * * ?" # Запуск каждый день в полночь
+  cron:
+    clear-urls: "0 0 3 * * ?" # Запуск каждый день в 3 утра

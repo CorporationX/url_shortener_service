@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -26,12 +28,14 @@ public class HashGenerator {
 
     @Transactional
     @Async("asyncExecutor")
-    public void generateHash() {
+    public CompletableFuture<Void>  generateHash() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumberRange);
         log.info("Получили список уникальных номеров кол-вом: {} из БД", uniqueNumberRange);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
+        log.info("Получили список хэшей {} из энкодера", uniqueNumbers);
         hashRepository.save(hashes);
         log.info("Список новых хэшей кол-вом {} сохранен в БД", uniqueNumberRange);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Transactional
@@ -44,8 +48,8 @@ public class HashGenerator {
         return hashes;
     }
 
-    @Transactional
     @Async("asyncExecutor")
+    @Transactional
     public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(geHashes(amount));
     }

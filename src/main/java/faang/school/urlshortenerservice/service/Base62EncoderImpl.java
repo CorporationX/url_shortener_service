@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,7 +9,7 @@ public class Base62EncoderImpl implements Base62Encoder {
 
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private final int alphabetSize = ALPHABET.length(); // перейменовать
+    private final int alphabetSize = ALPHABET.length();
 
     @Override
     public String encode(long number) {

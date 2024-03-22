@@ -22,7 +22,10 @@ public class CleanerScheduler {
     public void clearUrls() {
         List<Hash> hashes = urlRepository.deleteOlderThanYear().stream()
                 .map(Hash::new).toList();
-        hashRepository.save(hashes);
+        hashRepository.save(hashes.stream()
+                .map(Hash::getHash)
+                .toList()
+        );
     }
 
 }

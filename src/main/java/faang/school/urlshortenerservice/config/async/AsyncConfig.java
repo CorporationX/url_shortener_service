@@ -10,11 +10,11 @@ import java.util.concurrent.ExecutorService;
 @Configuration
 public class AsyncConfig {
 
-    @Value("${async.corePoolSize}")
+    @Value("${async.core-pool-size}")
     private int corePoolSize;
-    @Value("${async.maxPoolSize}")
+    @Value("${async.max-pool-size}")
     private int maxPoolSize;
-    @Value("${async.queueCapacity}")
+    @Value("${async.queue-capacity}")
     private int queueCapacity;
     @Value("${async.thread-name-prefix}")
     private String threadNamePrefix;

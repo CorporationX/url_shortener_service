@@ -16,6 +16,12 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             DELETE FROM url WHERE createdAt < NOW() - INTERVAL '1 year' RETURNING hash
             """)
     List<String> deleteOlderThanYear();
+
+//    @Modifying
+//    @Query(nativeQuery = true, value =
+//            "INSERT INTO url (hash, url, created_at) VALUES (:hash, :url, CURRENT_TIMESTAMP)")
+//    void saveCustom(String hash, String url);
+
 }
 
 
