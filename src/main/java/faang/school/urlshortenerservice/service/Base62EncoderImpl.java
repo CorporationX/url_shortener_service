@@ -9,7 +9,7 @@ import java.util.List;
 public class Base62EncoderImpl implements Base62Encoder {
 
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    @Value("${base62.size:ALPHABET.length()}")
+
     private final int alphabetSize = ALPHABET.length(); // перейменовать
 
     @Override

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,8 +37,9 @@ public class HashRepository {
             }
         });
     }
-    public List<String> getHashBatch(int batch) {
-        return jdbcTemplate.queryForList(GET_HASHES_AND_DELETE_SQL, String.class, batch);
+
+    public List<Hash> getHashBatch(int batch) {
+        return jdbcTemplate.queryForList(GET_HASHES_AND_DELETE_SQL, Hash.class, batch);
     }
 
 }

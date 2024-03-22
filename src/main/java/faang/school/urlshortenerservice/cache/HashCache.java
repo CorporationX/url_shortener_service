@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.async.AsyncConfig;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
@@ -17,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private final HashGenerator hashGenerator;
-    private final AsyncConfig asyncConfig;
 
     @Value("${hash.cache.capacity:10000}")
     private int capacity;
@@ -32,13 +30,11 @@ public class HashCache {
         hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
     }
 
-    public String getHash() {
-        if (hashes.size() / (capacity / 100.0) < fillPercent) {
-            if (filling.compareAndSet(false, true)) {
+    public Hash getHash() {
+        if (hashes.size() / (capacity / 100.0) < fillPercent && (filling.compareAndSet(false, true))) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> filling.set(false));
-            }
         }
         return hashes.poll();
     }
