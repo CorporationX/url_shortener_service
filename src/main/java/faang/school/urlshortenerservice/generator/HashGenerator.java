@@ -18,10 +18,10 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
 
     @Value("${hash.range}")
-    private int batchSize = 10;
+    private int batchSize;
 
     @Transactional
-    public void generateBatch() {
+    public void generateHashes() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = base62Encoder.encode(numbers);
         hashRepository.saveAllAndFlush(hashes);
@@ -31,10 +31,9 @@ public class HashGenerator {
     public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashRepository.getAndDeleteHashBatch(amount);
         if (hashes.size() < amount) {
-            generateBatch();
+            generateHashes();
             hashes.addAll(hashRepository.getAndDeleteHashBatch(amount - hashes.size()));
         }
-        System.out.println(hashes);
         return hashes;
     }
 

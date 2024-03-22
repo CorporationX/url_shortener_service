@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-@EnableRedisRepositories
 @EnableFeignClients("school.faang.servicetemplate.client")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {

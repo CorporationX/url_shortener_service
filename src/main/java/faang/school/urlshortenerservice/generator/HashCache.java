@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.model.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
@@ -17,7 +16,7 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
     @Value("${hash.capacity}")
-    private int capacity =10;
+    private int capacity = 50;
     @Value("${hash.check-percent}")
     private int percent;
     private final AtomicBoolean filling = new AtomicBoolean(false);
@@ -25,19 +24,21 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
-        System.out.println(hashes.toString());
+        hashes.addAll(hashGenerator.getHashes(capacity));
     }
 
-//    @Async("executorService")
     public String getHash() {
-        if (hashes.size() / capacity * 100 < percent) {
+        generateHashCash();
+        return hashes.poll().getHash();
+    }
+
+    public void generateHashCash() {
+        if (hashes.size() * 100 / capacity < percent) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
+                        .thenApply(hashes::addAll)
                         .thenRun(() -> filling.set(false));
             }
         }
-        return hashes.poll().getHash();
     }
 }

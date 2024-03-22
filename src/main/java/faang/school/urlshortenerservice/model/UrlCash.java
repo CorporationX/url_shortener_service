@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash("urlCash")
+@RedisHash(value = "urlCash", timeToLive = 86400L)
 public class UrlCash {
     @Id
     private String hash;

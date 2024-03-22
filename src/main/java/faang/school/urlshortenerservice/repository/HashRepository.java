@@ -17,7 +17,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(int count);
 
     @Query(nativeQuery = true, value = """
-                        DELETE FROM url_shortener.hash h WHERE h.hash IN (SELECT * FROM url_shortener.hash LIMIT :count)
+                        DELETE FROM hash h WHERE h.hash IN (SELECT * FROM hash LIMIT :count)
                         RETURNING *
             """)
     List<Hash> getAndDeleteHashBatch(int count);

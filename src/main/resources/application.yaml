@@ -31,6 +31,12 @@ logging:
     root: info
 
 hash:
-  range: 10
-  capacity: 10
+  range: 100
+  capacity: 50
   check-percent: 20
+
+scheduler:
+  cleaner:
+    cron: 0 0 0 * * * # every day
+  get-hash:
+    cron: 0 0 * * * *
