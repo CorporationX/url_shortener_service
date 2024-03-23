@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +25,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
     private final Executor threadPoolHashCache;
-    @Value("${hash-generator.cache.poll-timeout}")
+    @Value("${hash-generator.cache.pool-timeout}")
     private long cachePollTimeout;
     @Value("${hash-generator.cache.size}")
     private int cacheSize;

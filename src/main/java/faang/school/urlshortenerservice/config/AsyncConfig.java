@@ -22,7 +22,7 @@ public class AsyncConfig {
     private int cacheCorePoolSize;
     @Value("${async.cache-thread-pool.settings.max-pool-size}")
     private int cacheMaxPoolSize;
-    @Value("${async.cache-thread-pool.settings.queue-pool-size}")
+    @Value("${async.cache-thread-pool.settings.queue-capacity}")
     private int cacheQueueCapacity;
 
     @Bean
