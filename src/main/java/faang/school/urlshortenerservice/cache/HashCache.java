@@ -1,19 +1,15 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.async.AsyncConfig;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -36,7 +32,7 @@ public class HashCache {
         filling = new AtomicBoolean(false);
         hashes = new ArrayBlockingQueue<>(capacity);
         hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
-        log.info("Инициализировали кэш хэшей: {}", capacity);
+        log.info("Проинициализировали кэш хэшей: {}", capacity);
     }
 
     public Hash getHash() {
@@ -46,7 +42,6 @@ public class HashCache {
             hashGenerator.getHashesAsync(capacity)
                     .thenAccept(hashes::addAll)
                     .thenRun(() -> filling.set(false));
-
         }
         log.info("Получили хэши из кэша: {}", hashes.size());
         return hashes.poll();

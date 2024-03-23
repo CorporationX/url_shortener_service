@@ -24,7 +24,7 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
 
     @Transactional
-    public String shortenUrl(UrlDto url) {
+    public String getShortenUrl(UrlDto url) {
         Hash hash = hashCache.getHash();
         urlRepository.save(new Url(hash.getHash(), url.getUrl(), LocalDateTime.now()));
         urlCacheRepository.save(hash.getHash(), url.getUrl());
@@ -34,7 +34,6 @@ public class UrlServiceImpl implements UrlService {
 
     public String getOriginalUrl(String hash) {
         log.info("Получили запрос на получение оригинальной ссылки по хэшу: {}", hash);
-
         return urlCacheRepository.get(hash) // Попробуем найти URL в кэше.
                 .orElseGet(() -> {
                     log.info("URL не найден в кэше: {}", hash);
@@ -44,7 +43,7 @@ public class UrlServiceImpl implements UrlService {
                             ));
                     log.info("URL найден в БД: {}", hash);
 
-                    urlCacheRepository.save(hash, urlFromDb.getUrl()); // Найденный URL в базе данных сохраняем в кэш для будущего использования.
+                    urlCacheRepository.save(hash, urlFromDb.getUrl()); // Найденный URL в БД сохраняем в кэш
                     log.info("URL сохранен в кэше: {}", hash);
                     return urlFromDb.getUrl();
                 });

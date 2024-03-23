@@ -1,15 +1,19 @@
 package faang.school.urlshortenerservice.exception;
 
+import faang.school.urlshortenerservice.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -22,16 +26,18 @@ public class GlobalExceptionHandler {
         return getErrorResponse(request.getRequestURI(), HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleException(DataIntegrityViolationException e) {
-        String message = "Ошибка целостности данных: ";
-        if (e.getCause() instanceof ConstraintViolationException cve) {
-            message += "нарушение ограничения - " + cve.getConstraintName();
-        } else {
-            message += e.getMessage();
-        }
-        return message;
+    public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        BindingResult result = ex.getBindingResult();
+        List<FieldError> fieldErrors = result.getFieldErrors();
+
+        String errorMessage = fieldErrors.stream()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        log.error("Ошибка валидации: {}", errorMessage);
+        return getErrorResponse(request.getRequestURI(), HttpStatus.BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler({Exception.class})

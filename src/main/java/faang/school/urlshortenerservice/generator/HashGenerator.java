@@ -44,11 +44,11 @@ public class HashGenerator {
             generateHash();
             hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
         }
+        log.info("Получили хэши из БД в кол-ве {}", amount);
         return hashes;
     }
 
     @Async("asyncExecutor")
-    @Transactional
     public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }

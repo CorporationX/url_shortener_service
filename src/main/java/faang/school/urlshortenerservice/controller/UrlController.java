@@ -26,7 +26,7 @@ public class UrlController {
     @PostMapping()
     public String createShortUrl(@RequestBody @Valid UrlDto url) {
         log.info("Получили запрос {}, на создание короткой ссылки.", url.getUrl());
-        return urlService.shortenUrl(url);
+        return urlService.getShortenUrl(url);
     }
 
     @GetMapping("/{hash}")
