@@ -33,6 +33,10 @@ logging:
   level:
     root: info
 
+url:
+  shortener:
+    address: https://shortlink/
+
 hash-generator:
   unique-number:
     range: 100
