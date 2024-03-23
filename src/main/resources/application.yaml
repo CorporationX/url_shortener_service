@@ -17,6 +17,11 @@ spring:
         jdbc:
           batch_size: 5
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8087
 
@@ -25,16 +30,17 @@ logging:
     root: info
 
 url-shortener-service:
-  async:
-    hash:
-      maxPoolSize: 10
-      corePoolSize: 25
-      queueCapacity: 100
-    cache:
-      maxPoolSize: 10
-      corePoolSize: 25
-      queueCapacity: 100
   hashSize: 150
   base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   batch-size: 100
+
+async:
+  hash:
+    maxPoolSize: 10
+    corePoolSize: 25
+    queueCapacity: 100
+  cache:
+    maxPoolSize: 10
+    corePoolSize: 25
+    queueCapacity: 100
 

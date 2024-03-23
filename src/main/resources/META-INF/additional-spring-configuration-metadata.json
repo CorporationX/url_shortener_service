@@ -16,34 +16,34 @@
       "description": "Description for url-shortener-service.hashSize."
     },
     {
-      "name": "url-shortener-service.async.hash.maxPoolSize",
+      "name": "async.hash.maxPoolSize",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.hash.maxPoolSize."
+      "description": "Description for async.hash.maxPoolSize."
     },
     {
-      "name": "url-shortener-service.async.hash.corePoolSize",
+      "name": "async.hash.corePoolSize",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.hash.corePoolSize."
+      "description": "Description for async.hash.corePoolSize."
     },
     {
-      "name": "url-shortener-service.async.hash.queueCapacity",
+      "name": "async.hash.queueCapacity",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.hash.queueCapacity."
+      "description": "Description for async.hash.queueCapacity."
     },
     {
-      "name": "url-shortener-service.async.cache.maxPoolSize",
+      "name": "async.cache.maxPoolSize",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.cache.maxPoolSize."
+      "description": "Description for async.cache.maxPoolSize."
     },
     {
-      "name": "url-shortener-service.async.cache.corePoolSize",
+      "name": "async.cache.corePoolSize",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.cache.corePoolSize."
+      "description": "Description for async.cache.corePoolSize."
     },
     {
-      "name": "url-shortener-service.async.cache.queueCapacity",
+      "name": "async.cache.queueCapacity",
       "type": "java.lang.String",
-      "description": "Description for url-shortener-service.async.cache.queueCapacity."
+      "description": "Description for async.cache.queueCapacity."
     }
   ]
 }
