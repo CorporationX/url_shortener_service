@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -23,9 +24,9 @@ class HashCacheTest {
     private HashGenerator hashGenerator;
     @Mock
     private HashRepository hashRepository;
-    @Mock
-    private ExecutorService executorService;
-    @Mock
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+
     private final Queue<String> cache = new ArrayBlockingQueue<>(1000);
     @Mock
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
@@ -33,10 +34,14 @@ class HashCacheTest {
     private HashCache hashCache;
 
     @Test
-    void getHash() {
+    void getHash() throws InterruptedException {
+        hashCache = new HashCache(hashGenerator, hashRepository, executorService);
+
         List<String> hashes = List.of("hash1", "hash2", "hash3");
         Mockito.when(hashRepository.getHashBatch()).thenReturn(hashes);
         ReflectionTestUtils.setField(hashCache, "cache", cache);
+        ReflectionTestUtils.setField(hashCache, "cacheSize", 1000);
+        ReflectionTestUtils.setField(hashCache, "fillPercent", 20.0);
 
         hashCache.getHash();
 
