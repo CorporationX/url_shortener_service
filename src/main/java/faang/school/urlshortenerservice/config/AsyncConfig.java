@@ -24,6 +24,12 @@ public class AsyncConfig {
     private int cacheMaxPoolSize;
     @Value("${async.cache-thread-pool.settings.queue-capacity}")
     private int cacheQueueCapacity;
+    @Value("${async.scheduler-thread-pool.settings.core-pool-size}")
+    private int schedulerCorePoolSize;
+    @Value("${async.scheduler-thread-pool.settings.max-pool-size}")
+    private int schedulerMaxPoolSize;
+    @Value("${async.scheduler-thread-pool.settings.queue-capacity}")
+    private int schedulerQueueCapacity;
 
     @Bean
     public Executor threadPoolForGenerateBatch() {
@@ -38,6 +44,17 @@ public class AsyncConfig {
 
     @Bean
     public Executor threadPoolHashCache() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(cacheCorePoolSize);
+        executor.setCorePoolSize(cacheMaxPoolSize);
+        executor.setCorePoolSize(cacheQueueCapacity);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean
+    public Executor threadPoolScheduler() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
         executor.setCorePoolSize(cacheCorePoolSize);
