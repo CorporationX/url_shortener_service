@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class HashGenerator {
 
     private final HashRepository hashRepository;
