@@ -39,6 +39,7 @@ public class HashGenerator {
     @Transactional
     public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashRepository.getHashBatch(amount);
+        log.info("Получили {} хэшей из БД", amount);
         if (hashes.size() < amount) {
             generateHash();
             hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,41 +28,26 @@ public class UrlServiceImpl implements UrlService {
         Hash hash = hashCache.getHash();
         urlRepository.save(new Url(hash.getHash(), url.getUrl(), LocalDateTime.now()));
         urlCacheRepository.save(hash.getHash(), url.getUrl());
+        log.info("URL сохранен в БД и кэше: {}", url.getUrl());
         return hash.getHash();
     }
 
-    public Url getOriginalUrl(String hash) {
-        // Сначала попробуем найти URL в кэше.
-        Optional<Url> optionalUrl = urlCacheRepository.get(hash);
-        if (optionalUrl.isPresent()) {
-            // Если URL найден в кэше, возвращаем его.
-            return optionalUrl.get();
-        }
+    public String getOriginalUrl(String hash) {
+        log.info("Получили запрос на получение оригинальной ссылки по хэшу: {}", hash);
 
-        // Если URL не найден в кэше, ищем в базе данных.
-        Url urlFromDb = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new UrlNotFoundException(
-                        String.format("URL по хешу не найден ни в кэше, ни в БД: %s", hash)
-                ));
+        return urlCacheRepository.get(hash) // Попробуем найти URL в кэше.
+                .orElseGet(() -> {
+                    log.info("URL не найден в кэше: {}", hash);
+                    Url urlFromDb = urlRepository.findByHash(hash)    // Если URL не найден в кэше, ищем в базе данных.
+                            .orElseThrow(() -> new UrlNotFoundException(
+                                    String.format("URL по хешу не найден ни в кэше, ни в БД: %s", hash)
+                            ));
+                    log.info("URL найден в БД: {}", hash);
 
-        // Найденный URL в базе данных сохраняем в кэш для будущего использования.
-        urlCacheRepository.save(hash, urlFromDb.getUrl());
-
-        return urlFromDb;
+                    urlCacheRepository.save(hash, urlFromDb.getUrl()); // Найденный URL в базе данных сохраняем в кэш для будущего использования.
+                    log.info("URL сохранен в кэше: {}", hash);
+                    return urlFromDb.getUrl();
+                });
     }
-
-
-//    public Url getOriginalUrl(String hash) {
-//        Url urlFromCache = urlCacheRepository.get(hash)
-//                .orElseThrow(() -> new UrlNotFoundException(String.format("Url в кэше не найден по хэшу: %s", hash)));
-//
-//        if (urlFromCache != null) {
-//            return urlFromCache;
-//        }
-//        Url urlFromDb = urlRepository.findByHash(hash)
-//                .orElseThrow(() -> new UrlNotFoundException(String.format("URL по хешу нигде не найден %s", hash)));
-//        urlCacheRepository.save(urlFromDb.getHash(), urlFromDb.getUrl());
-//        return urlFromDb;
-//    }
 
 }

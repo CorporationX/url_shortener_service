@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +31,10 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToUrl(@PathVariable String hash) {
-        Url originalUrl = urlService. getOriginalUrl(hash);
-        log.info("Received request to redirect to original URL: {}", originalUrl);
+        String originalUrl = urlService.getOriginalUrl(hash);
+        log.info("Получен запрос на перенаправление на исходный URL: {}", originalUrl);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(Objects.requireNonNullElse(originalUrl, "/").toString()));
+        headers.setLocation(URI.create(Objects.requireNonNullElse(originalUrl, "/")));
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 

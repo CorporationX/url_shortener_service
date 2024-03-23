@@ -23,32 +23,32 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
 
-    @Value("${hash.cache.capacity:10}")
+    @Value("${hash.cache.capacity:1000}")
     private int capacity;
     @Value("${hash.cache.fill-percent:2}")
     private int fillPercent;
-
-    private AtomicBoolean filling;//  = new AtomicBoolean(false);
-    private Queue<Hash> hashes;//  = new ArrayBlockingQueue<>(capacity);
+    private AtomicBoolean filling;
+    private Queue<Hash> hashes;
 
 
     @PostConstruct
     public void init() {
         filling = new AtomicBoolean(false);
         hashes = new ArrayBlockingQueue<>(capacity);
-        log.info("иницилизация");
         hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
-        log.info("проиницилизировался");
+        log.info("Инициализировали кэш хэшей: {}", capacity);
     }
 
     public Hash getHash() {
-        if ((hashes.size() / (capacity / 100) < fillPercent)) {
-            if (filling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
-                        .thenRun(() -> filling.set(false));
-            }
+        if ((hashes.size() / (capacity / 100) < fillPercent)
+                && (filling.compareAndSet(false, true))) {
+            log.info("Заполняем кэш хэшей: {}", capacity);
+            hashGenerator.getHashesAsync(capacity)
+                    .thenAccept(hashes::addAll)
+                    .thenRun(() -> filling.set(false));
+
         }
+        log.info("Получили хэши из кэша: {}", hashes.size());
         return hashes.poll();
     }
 

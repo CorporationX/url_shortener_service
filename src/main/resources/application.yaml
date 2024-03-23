@@ -33,9 +33,9 @@ async:
   thread-name-prefix: AsyncExecutorThread-
 
 hash:
-  range: 1000
+  range: 10000
   cache:
-    capacity: 1000
+    capacity: 10000
     fill-percent: 20
 
 schedule:

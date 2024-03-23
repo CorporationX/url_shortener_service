@@ -13,35 +13,8 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByHash(String hash);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM url WHERE createdAt < NOW() - INTERVAL '1 year' RETURNING hash
+            DELETE FROM url WHERE created_at < NOW() - INTERVAL '1 year' RETURNING hash
             """)
     List<String> deleteOlderThanYear();
 
-//    @Modifying
-//    @Query(nativeQuery = true, value =
-//            "INSERT INTO url (hash, url, created_at) VALUES (:hash, :url, CURRENT_TIMESTAMP)")
-//    void saveCustom(String hash, String url);
-
 }
-
-
-//    @Transactional
-//    public List<String> deleteOldUrlsAndGetHashes(EntityManager entityManager) {
-//        // Сначала получаем хэши
-//        List<String> hashes = entityManager.createQuery(
-//                        "SELECT u.hash FROM Url u WHERE u.createdAt <= :cutoffDate", String.class)
-//                .setParameter("cutoffDate", LocalDateTime.now().minusYears(1))
-//                .getResultList();
-//
-//        // Теперь удаляем старые URL
-//        if (!hashes.isEmpty()) {
-//            entityManager.createQuery(
-//                            "DELETE FROM Url u WHERE u.createdAt <= :cutoffDate")
-//                    .setParameter("cutoffDate", LocalDateTime.now().minusYears(1))
-//                    .executeUpdate();
-//        }
-//
-//        return hashes;
-//    }
-
-//}
