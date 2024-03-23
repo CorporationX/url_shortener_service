@@ -44,12 +44,13 @@ public class UrlController {
         String shortUrl = serverAddress + dto.getHash();
         dto.setUrl(shortUrl);
         log.info("Short URL are generated: {}", shortUrl);
+
         return dto;
     }
 
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
-    public RedirectView redorectToOriginalUrl(@PathVariable String hash) {
+    public RedirectView redirectToOriginalUrl(@PathVariable String hash) {
         Url originalUrl = urlService.getOriginalUrl(hash);
         log.info("Received request to original URL: {}", originalUrl);
         return new RedirectView(Objects.requireNonNullElse(originalUrl, "/").toString());
