@@ -16,8 +16,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public void createUrl(@RequestBody @Valid UrlDto urlDto) {
-        urlService.saveUrl(urlDto);
+    public String createUrl(@RequestBody @Valid UrlDto urlDto) {
+        return urlService.associateUrlAndHash(urlDto);
     }
-
 }

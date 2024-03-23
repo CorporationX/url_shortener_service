@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.HashCache;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +20,24 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlMapper urlMapper;
+    @Value("${url-shortener-service.domain}")
+    private String shortUrlDomain;
 
     @Transactional
-    public void saveUrl(UrlDto urlDto) {
-        Url url = getUrl(urlDto);
-        urlRepository.save(url);
-        urlCacheRepository.save(url);
+    public String associateUrlAndHash(UrlDto urlDto) {
+        String hash = hashCache.getHash().getHash();
+        urlDto.setHash(hash);
+
+        Url longUrl = urlMapper.toEntity(urlDto);
+
+        urlDto.setUrl(shortUrlDomain + hash);
+        Url shortUrl = urlMapper.toEntity(urlDto);
+
+        urlRepository.save(longUrl);
+        urlCacheRepository.save(shortUrl);
+
+        return shortUrl.getUrl();
+
     }
 
     private Url getUrl(UrlDto urlDto) {

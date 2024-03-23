@@ -44,6 +44,11 @@
       "name": "async.cache.queueCapacity",
       "type": "java.lang.String",
       "description": "Description for async.cache.queueCapacity."
+    },
+    {
+      "name": "url-shortener-service.domain",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.domain."
     }
   ]
 }

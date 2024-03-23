@@ -33,6 +33,7 @@ url-shortener-service:
   hashSize: 150
   base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   batch-size: 100
+  domain: https://shrturl.com/
 
 async:
   hash:
