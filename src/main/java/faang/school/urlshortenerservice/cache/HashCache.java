@@ -7,10 +7,13 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -39,7 +42,7 @@ public class HashCache {
     }
 
     public Hash getHash() {
-        if ((hashes.size() / capacity) * 100 < fillPercent) {
+        if ((hashes.size() / (capacity / 100) < fillPercent)) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
@@ -48,4 +51,5 @@ public class HashCache {
         }
         return hashes.poll();
     }
+
 }

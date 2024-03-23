@@ -24,7 +24,6 @@ public class UrlCacheRepository {
     }
 
     public Optional<Url> get(String hash) {
-
         String json = redisUrlTemplate.opsForValue().get(hash);
         try {
             UrlDto dto = objectMapper.readValue(json, UrlDto.class);

@@ -17,11 +17,11 @@ public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String SAVE_HASHES_SQL = "INSERT INTO hash(hash) VALUES (?)";
-    private static final String GET_UNIQUE_NUMBER_SQL = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
+    private static final String GET_UNIQUE_HASH_NUMBER_SQL = "SELECT nextval('unique_hash_number_seq') FROM generate_series(1, ?)";
     private static final String GET_HASHES_AND_DELETE_SQL = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *";
 
     public List<Long> getUniqueNumbers(int batch) {
-        return jdbcTemplate.queryForList(GET_UNIQUE_NUMBER_SQL, Long.class, batch);
+        return jdbcTemplate.queryForList(GET_UNIQUE_HASH_NUMBER_SQL, Long.class, batch);
     }
 
     public void save(List<String> hashes) {
