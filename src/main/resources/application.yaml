@@ -39,3 +39,6 @@ cache:
 
 url:
   short_url_prefix: http://localhost:8080/
+
+cleaner_scheduler:
+  cron: 0 0 0 * * ?
