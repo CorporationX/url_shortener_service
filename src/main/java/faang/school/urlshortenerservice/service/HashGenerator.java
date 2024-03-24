@@ -21,8 +21,9 @@ public class HashGenerator {
     @Transactional
     @Async("generateBatchThreadPool")
     public List<Hash> generateBatch() {
-        List<Hash> hashes = hashRepository.getNextRange(batchSize).stream()
-                .map(encoder::encode)
+        List<String> encoded = encoder.encode(hashRepository.getNextBatch(batchSize));
+
+        List<Hash> hashes = encoded.stream()
                 .map(Hash::new)
                 .toList();
 
