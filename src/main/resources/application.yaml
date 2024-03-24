@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -12,11 +12,36 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        order_inserts: true
         format_sql: true
+        jdbc:
+          batch_size: 5
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
-  port: 8080
+  port: 8087
 
 logging:
   level:
     root: info
+
+url-shortener-service:
+  hashSize: 150
+  base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  batch-size: 100
+  domain: https://shrturl.com/
+
+async:
+  hash:
+    maxPoolSize: 10
+    corePoolSize: 25
+    queueCapacity: 100
+  cache:
+    maxPoolSize: 10
+    corePoolSize: 25
+    queueCapacity: 100
+
