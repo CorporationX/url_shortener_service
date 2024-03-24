@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.Assert;
@@ -64,5 +65,11 @@ class UrlServiceTest {
         Mockito.when(urlRepository.findByHash(hash)).thenReturn(new Url(hash, origianUrl, LocalDateTime.now()));
 
         Assert.assertEquals(origianUrl, urlService.getOriginalUrl(hash));
+    }
+
+    @Test
+    void getOriginalUrlNotFoundTest() {
+        Mockito.when(urlRepository.findByHash(hash)).thenReturn(null);
+        Assert.assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrl(hash));
     }
 }

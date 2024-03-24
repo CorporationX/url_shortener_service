@@ -29,15 +29,15 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String hash) {
-        String url = urlCacheRepository.get(hash);
-        if (url == null) {
-            url = urlRepository.findByHash(hash).getUrl();
+        String foundedUrl = urlCacheRepository.get(hash);
+        if (foundedUrl == null) {
+            Url url = urlRepository.findByHash(hash);
+            if (url != null) {
+                foundedUrl = url.getUrl();
+            } else {
+                throw new EntityNotFoundException("Url not found");
+            }
         }
-
-        if (url == null) {
-            throw new EntityNotFoundException("Url not found");
-        }
-
-        return url;
+        return foundedUrl;
     }
 }
