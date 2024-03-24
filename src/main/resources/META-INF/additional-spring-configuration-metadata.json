@@ -49,6 +49,11 @@
       "name": "url-shortener-service.domain",
       "type": "java.lang.String",
       "description": "Description for url-shortener-service.domain."
+    },
+    {
+      "name": "url-shortener-service.cron",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.cron."
     }
   ]
 }

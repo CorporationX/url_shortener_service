@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -44,5 +47,16 @@ public class HashCache {
             cachedThreadPool.execute(this::addCache);
         }
         return cache.poll();
+    }
+
+    @Transactional
+    public void saveHashes(List<String> hashesStrings) {
+        List<Hash> hashes = new ArrayList<>();
+        for (String str : hashesStrings) {
+            hashes.add(Hash.builder()
+                    .hash(str)
+                    .build());
+        }
+        hashRepository.saveAll(hashes);
     }
 }

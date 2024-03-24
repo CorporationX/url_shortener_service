@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Data
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,13 @@ public class UrlService {
         } else {
             return urlRepository.findById(hash).orElseThrow(
                     () -> new EntityNotFoundException("Utl with hash " + hash + " doesnt exists."));
+        }
+    }
+
+    public void removeOldHashes() {
+        List<String> hashes = urlRepository.deleteOldHashes();
+        if (hashes.size() > 0) {
+            hashCache.saveHashes(hashes);
         }
     }
 }
