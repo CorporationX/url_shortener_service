@@ -13,7 +13,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        generate_statistics: true
         jdbc.batch_size: 30
 
   liquibase:
@@ -37,3 +36,6 @@ thread_pool:
 cache:
   size: 1000
   fill_percent: 20.0
+
+url:
+  short_url_prefix: http://localhost:8080/
