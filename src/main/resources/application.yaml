@@ -20,3 +20,12 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  range: 10000
+
+executor:
+  settings:
+    max_pool_size: 15
+    core_pool_size: 8
+    queue_capacity: 10
