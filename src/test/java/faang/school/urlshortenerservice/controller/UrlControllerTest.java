@@ -26,4 +26,13 @@ class UrlControllerTest {
         Mockito.when(urlService.getShortUrl(url)).thenReturn(shortUrl);
         assertEquals(shortUrl, urlController.getShortUrl(new UrlDto(url)));
     }
+
+    @Test
+    void getOriginalUrlTest() {
+        String shortUrl = "abc123";
+        String url = "https://www.test.com";
+        Mockito.when(urlService.getOriginalUrl(shortUrl)).thenReturn(url);
+
+        assertEquals(url, urlController.getOriginalUrl(shortUrl).getUrl());
+    }
 }

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.Entity;
+package faang.school.urlshortenerservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
