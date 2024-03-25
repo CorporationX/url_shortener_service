@@ -12,18 +12,23 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig {
 
+    //generatorCorePool
     @Value("${async.generator-thread-pool.settings.core-pool-size}")
     private int generatorCorePoolSize;
     @Value("${async.generator-thread-pool.settings.max-pool-size}")
     private int generatorMaxPoolSize;
     @Value("${async.generator-thread-pool.settings.queue-capacity}")
     private int generatorQueueCapacity;
+
+    //cacheCorePool
     @Value("${async.cache-thread-pool.settings.core-pool-size}")
     private int cacheCorePoolSize;
     @Value("${async.cache-thread-pool.settings.max-pool-size}")
     private int cacheMaxPoolSize;
     @Value("${async.cache-thread-pool.settings.queue-capacity}")
     private int cacheQueueCapacity;
+
+    //schedulerCorePool
     @Value("${async.scheduler-thread-pool.settings.core-pool-size}")
     private int schedulerCorePoolSize;
     @Value("${async.scheduler-thread-pool.settings.max-pool-size}")

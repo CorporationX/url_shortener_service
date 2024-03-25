@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UrlExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
-    public final ResponseEntity<ErrorResponse> handleAllException(ServerException ex) {
+    protected final ResponseEntity<ErrorResponse> handleAllException(ServerException ex) {
         log.error("Internal Server Error", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -22,7 +22,7 @@ public class UrlExceptionHandler {
     }
 
     @ExceptionHandler(DataValidationException.class)
-    public final ResponseEntity<Object> handleBadRequest(DataValidationException ex) {
+    protected final ResponseEntity<Object> handleBadRequest(DataValidationException ex) {
         log.error("Bad request", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
