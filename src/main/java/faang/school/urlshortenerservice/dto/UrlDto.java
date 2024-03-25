@@ -1,18 +1,25 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class UrlDto {
-    @Pattern(regexp = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)")
-    private String url;
 
+    @Size(max = 6, message = "Hash should not exceed 6 characters")
     private String hash;
+    @NotNull(message = "URL cant be null")
+    @NotBlank(message = "URL cant be blank")
+    private String url;
+    private LocalDateTime createdAt;
 }
