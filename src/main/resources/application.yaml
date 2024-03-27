@@ -20,3 +20,9 @@ server:
 logging:
   level:
     root: info
+
+async:
+  generator-thread-pool:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 50
