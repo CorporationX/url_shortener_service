@@ -20,3 +20,6 @@ server:
 logging:
   level:
     root: info
+
+hashgenerator:
+  base62: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
