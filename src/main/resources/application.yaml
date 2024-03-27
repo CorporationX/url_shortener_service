@@ -14,9 +14,29 @@ spring:
       hibernate:
         format_sql: true
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    liquibase-schema: url_shortener
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  range: 100
+  capacity: 50
+  check-percent: 20
+
+scheduler:
+  cleaner:
+    cron: 0 0 0 * * * # every day
+  get-hash:
+    cron: 0 0 * * * *
