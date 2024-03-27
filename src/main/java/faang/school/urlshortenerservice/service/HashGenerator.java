@@ -20,13 +20,27 @@ public class HashGenerator {
 
     @Transactional
     @Async("generateBatchThreadPool")
-    public List<Hash> generateBatch() {
-        List<String> encoded = encoder.encode(hashRepository.getNextBatch(batchSize));
+    public void generateBatchAsync() {
+        generateBatch();
+    }
 
-        List<Hash> hashes = encoded.stream()
+    @Transactional
+    public List<Hash> getHashes (int amount) {
+        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        while (hashes.size() < amount) {
+            generateBatch();
+            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+        }
+        return hashes;
+    }
+
+    private void generateBatch() {
+        List<Hash> hashes = hashRepository.getNextBatch(batchSize)
+                .stream()
+                .map(encoder::encode)
                 .map(Hash::new)
                 .toList();
 
-        return hashRepository.saveAll(hashes);
+        hashRepository.saveAll(hashes);
     }
 }

@@ -19,7 +19,7 @@ public class Base62Encoder {
                 .toList();
     }
 
-    private String encode(Long value) {
+    public String encode(Long value) {
         StringBuilder encoded = new StringBuilder();
         int length = base62.length();
 
