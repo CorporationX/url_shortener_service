@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface HashRepository extends JpaRepository<Hash, Long> {
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :maxRange)         
+            SELECT nextval('unique_number_seq') FROM generate_series(1, :maxRange)         
             """)
     List<Long> getNextBatch(int batchSize);
 
