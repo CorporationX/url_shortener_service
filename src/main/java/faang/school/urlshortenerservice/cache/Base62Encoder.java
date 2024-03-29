@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.cache;
 
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
