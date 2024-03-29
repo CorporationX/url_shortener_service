@@ -12,7 +12,6 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepository {
-
     private final RedisTemplate<String, String> redisUrlTemplate;
     private final ObjectMapper objectMapper;
 

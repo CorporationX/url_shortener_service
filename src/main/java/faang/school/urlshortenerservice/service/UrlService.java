@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,9 +16,12 @@ public class UrlService {
     public String getUrl(String hash) {
         return urlCacheRepository
                 .get(hash)
-                .orElseGet(() -> urlRepository.findById(hash)
-                        .orElseThrow(() -> new EntityNotFoundException(String.format("Url %s not found for hash", hash)))
-                )
-                .toString();
+                .orElseGet(() -> {
+                    Url url = urlRepository.findById(hash)
+                            .orElseThrow(() -> new EntityNotFoundException(String.format("Url %s not found for hash", hash)));
+                    urlCacheRepository.save(url);
+                    return url;
+                })
+                .getUrl();
     }
 }
