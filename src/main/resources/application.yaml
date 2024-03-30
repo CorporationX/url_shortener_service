@@ -25,3 +25,17 @@ data:
   redis:
     port: 6379
     host: localhost
+
+async:
+  max: 15
+  core: 10
+  queue-capacity: 10000
+
+hash:
+  range: 10000
+  capacity: 10000
+  fill-percent: 20
+  cron: "0 0 2 * * ?"
+
+schedule:
+  cron: "0 0 1 * * ?"
