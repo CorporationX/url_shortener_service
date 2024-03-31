@@ -7,10 +7,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class Base62Encoder {
-
-    @Value("${hashgenerator.base62}")
+    @Value("${hash.generator.base62}")
     private String base62;
 
     public List<String> encode(List<Long> values) {
