@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -12,15 +12,19 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 5
+        order_inserts: true
+        generate_statistics: true
         format_sql: true
-
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
 
   data:
     redis:
       port: 6379
       host: localhost
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
@@ -28,3 +32,17 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  cache:
+    min-size: 0.2
+    capacity: 1000
+  batchSize: 1000
+
+async:
+  generator-thread-pool:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 50
