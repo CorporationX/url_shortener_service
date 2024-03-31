@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,8 +24,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlMapper urlMapper;
 
-    private final String URL_SCHEMA_REGEX = "^(https?://)";
-
+    @Transactional
     public UrlDto associateHashWithUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
         String url = urlDto.getUrl();
@@ -32,7 +33,7 @@ public class UrlService {
         Url entityToSave = urlMapper.toEntity(urlDto);
         entityToSave.setHash(hash);
 
-        Url savedEntity = save(entityToSave);
+        Url savedEntity = urlRepository.save(entityToSave);
         log.info("Url redirect have been successfully saved to DB");
 
         urlCacheRepository.save(savedEntity);
@@ -41,11 +42,11 @@ public class UrlService {
         return urlMapper.toDto(savedEntity);
     }
 
+    @Transactional
     public Url getOriginalUrl(String hash) {
-        Url urlFromCache = urlCacheRepository.get(hash)
-                .orElseThrow(() -> new UrlNotFoundException(String.format("Not found URL from cache by hash %s", hash)));
-        if (urlFromCache != null) {
-            return urlFromCache;
+        Optional<Url> urlFromCache = urlCacheRepository.get(hash);
+        if (urlFromCache.isPresent()) {
+            return urlFromCache.get();
         }
         Url urlFromDB = urlRepository.findByHash(hash)
                 .orElseThrow(() -> new UrlNotFoundException(String.format("URL not found in DB by hash %s", hash)));
@@ -54,14 +55,10 @@ public class UrlService {
         return urlFromDB;
     }
 
-    @Transactional
-    public Url save(Url entityToSave) {
-        return urlRepository.save(entityToSave);
-    }
-
     private String formatUrl(String url) {
+        String urlSchemaRegex = "^(https?://)";
         String formattedUrl = url.trim()
-                .replaceFirst(URL_SCHEMA_REGEX, "");
+                .replaceFirst(urlSchemaRegex, "");
         return formattedUrl.endsWith("/") ? formattedUrl.substring(0, formattedUrl.length() - 1) : formattedUrl;
     }
 }

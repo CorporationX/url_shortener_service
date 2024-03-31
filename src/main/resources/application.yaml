@@ -18,6 +18,10 @@ spring:
         generate_statistics: true
         format_sql: true
 
+  mvc:
+    servlet:
+      path: /api/v1
+
   data:
     redis:
       port: 6379
@@ -42,7 +46,6 @@ hash-generator:
     range: 100
 
   cache:
-    pool-timeout: 100 #milliseconds
     size: 10
     min-fill: 20 #percent
 

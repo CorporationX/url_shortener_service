@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ public class UrlDto {
 
     @Size(max = 6, message = "Hash should not exceed 6 characters")
     private String hash;
+    @URL
     @NotNull(message = "URL cant be null")
     @NotBlank(message = "URL cant be blank")
     private String url;

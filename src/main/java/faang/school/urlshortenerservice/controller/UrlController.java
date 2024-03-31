@@ -24,7 +24,7 @@ import java.util.Objects;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v1/url")
+@RequestMapping("/url")
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -34,18 +34,16 @@ public class UrlController {
     private String serverAddress;
 
     @PostMapping
-    public UrlDto generateRedirect(@RequestBody @Validated UrlDto urlDto) {
+    public String generateRedirect(@RequestBody @Validated UrlDto urlDto) {
         String url = urlDto.getUrl();
         log.info("Received request to make redirect from link: {}", url);
 
-        validateUrlOnFormat(url);
         UrlDto dto = urlService.associateHashWithUrl(urlDto);
 
         String shortUrl = serverAddress + dto.getHash();
-        dto.setUrl(shortUrl);
         log.info("Short URL are generated: {}", shortUrl);
 
-        return dto;
+        return shortUrl;
     }
 
     @GetMapping("/{hash}")
@@ -54,15 +52,6 @@ public class UrlController {
         Url originalUrl = urlService.getOriginalUrl(hash);
         log.info("Received request to original URL: {}", originalUrl);
         return new RedirectView(Objects.requireNonNullElse(originalUrl, "/").toString());
-    }
-
-    private void validateUrlOnFormat(String url) {
-        try {
-            new URL(url);
-            log.info("URL passed format validation");
-        } catch (MalformedURLException e) {
-            throw new InvalidUrlException("Invalid URL format");
-        }
     }
 
 }

@@ -15,23 +15,17 @@ public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final String GET_UNIQUE_NUMBERS_SQL = """
-            SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
-            """;
-
-    private final String SAVE_HASHES_SQL = """
-            INSERT INTO hash(hash) VALUES(?)
-            """;
-
-    private final String GET_HASHES_SQL = """
-            DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *
-            """;
-
     public List<Long> getUniqueNumbers(long uniqueNumbers) {
+        String GET_UNIQUE_NUMBERS_SQL = """
+                SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
+                """;
         return jdbcTemplate.queryForList(GET_UNIQUE_NUMBERS_SQL, Long.class, uniqueNumbers);
     }
 
     public void save(List<String> hashes) {
+        String SAVE_HASHES_SQL = """
+                INSERT INTO hash(hash) VALUES(?)
+                """;
         jdbcTemplate.batchUpdate(SAVE_HASHES_SQL, new BatchPreparedStatementSetter() {
 
             @Override
@@ -47,6 +41,9 @@ public class HashRepository {
     }
 
     public List<String> getHashBatch(long uniqueNumber) {
+        String GET_HASHES_SQL = """
+                DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *
+                """;
         return jdbcTemplate.queryForList(GET_HASHES_SQL, String.class, uniqueNumber);
     }
 
