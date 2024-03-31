@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,5 +12,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             DELETE FROM url WHERE created_at <= current_date - INTERVAL '1 year'
             RETURNING hash
             """)
-    List<String> deleteOldHashes();
+    List<Hash> deleteOldHashes();
 }

@@ -30,10 +30,12 @@ logging:
     root: info
 
 url-shortener-service:
-  hashSize: 150
+  queueSize: 150
   base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   batch-size: 100
   domain: https://shrturl.com/
+  fillPercent: 20
+  maxRange: 100
 
 async:
   hash:

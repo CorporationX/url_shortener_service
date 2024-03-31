@@ -26,9 +26,9 @@ public class UrlService {
 
     @Transactional
     public String saveUrl(UrlDto urlDto) {
-        Hash hash = hashCache.getHash();
-        urlDto.setHash(hash.getHash());
+        String hash = hashCache.getHash();
         Url url = urlMapper.toEntity(urlDto);
+        url.setHash(hash);
         urlRepository.save(url);
         urlCacheRepository.save(url);
         return url.getHash();
@@ -44,7 +44,7 @@ public class UrlService {
     }
 
     public void removeOldHashes() {
-        List<String> hashes = urlRepository.deleteOldHashes();
+        List<Hash> hashes = urlRepository.deleteOldHashes();
         if (hashes.size() > 0) {
             hashCache.saveHashes(hashes);
         }
