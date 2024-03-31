@@ -1,11 +1,10 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 @Data
 public class RequestUrl {
-    @Pattern(regexp = "^https?://.*", message = "Invalid URL")
+    @URL
     private String url;
-
 }

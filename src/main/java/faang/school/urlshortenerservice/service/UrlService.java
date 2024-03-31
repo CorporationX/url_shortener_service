@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cach.LocalCache;
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.AssociationHashUrl;
 import faang.school.urlshortenerservice.entity.UrlCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
-    private final LocalCache localCache;
+    private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCashRepository urlCashRepository;
     private final HashRepository hashRepository;
@@ -35,11 +35,8 @@ public class UrlService {
         if (urlCacheFromRedis != null) {
             return staticUrl + urlCacheFromRedis.getHash();
         }
-        String hash = localCache.getHash();
-        AssociationHashUrl associationHashUrl = AssociationHashUrl.builder()
-                .hash(hash)
-                .url(url)
-                .createdAt(LocalDateTime.now()).build();
+        String hash = hashCache.getHash();
+        AssociationHashUrl associationHashUrl = new AssociationHashUrl(hash, url, LocalDateTime.now());
         UrlCache urlCache = new UrlCache(hash, url);
         urlRepository.save(associationHashUrl);
         urlCashRepository.save(urlCache);

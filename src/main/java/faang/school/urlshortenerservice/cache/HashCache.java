@@ -1,18 +1,14 @@
-package faang.school.urlshortenerservice.cach;
+package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.threadpool.ThreadPoolConfig;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -22,54 +18,53 @@ import java.util.concurrent.locks.ReentrantLock;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class LocalCache {
+public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final ThreadPoolConfig threadPoolConfig;
+    private final ThreadPoolTaskExecutor taskExecutor;
     private final Lock lock = new ReentrantLock();
     @Value("${cache.size}")
     private int cacheSize;
     @Value("${cache.fill-threshold}")
     private double fillThreshold;
-    private ArrayBlockingQueue<String> hashCash;
+    private ArrayBlockingQueue<String> hashCache;
 
     @PostConstruct
     public void init() {
         int countOfHashes = hashRepository.count();
-        hashCash = new ArrayBlockingQueue<>(cacheSize);
+        hashCache = new ArrayBlockingQueue<>(cacheSize);
         List<String> hashes = hashRepository.getHashBatch(cacheSize);
         if (hashes.isEmpty()) {
             hashGenerator.generateBatch(cacheSize - countOfHashes);
             hashes = hashRepository.getHashBatch(cacheSize);
         }
-        hashCash.addAll(hashes);
+        hashCache.addAll(hashes);
         log.info("Hash cache initialized with number of elements {}", hashes.size());
     }
 
     public String getHash() {
-        String hash = null;
+        String hash;
         try {
-            if (hashCash.size() > fillThreshold * cacheSize) {
-                hash = hashCash.take();
+            if (hashCache.size() > fillThreshold * cacheSize) {
+                hash = hashCache.take();
             } else {
-                hash = hashCash.take();
-                fillCache(cacheSize - hashCash.size());
+                hash = hashCache.take();
+                fillCache(cacheSize - hashCache.size());
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             log.error("Error while getting hash", e);
             throw new RuntimeException("Error while getting hash", e);
         }
         return hash;
     }
 
-    private void fillCache(int numberOfValue) {
+    private void fillCache(int count) {
         if (lock.tryLock()) {
             CompletableFuture.runAsync(() -> {
-                        hashCash.addAll(hashRepository.getHashBatch(numberOfValue));
+                        hashCache.addAll(hashRepository.getHashBatch(count));
                         log.info("Hash cache filled");
-                        hashGenerator.generateBatch(numberOfValue);
-                    }, threadPoolConfig.threadPool())
+                        hashGenerator.generateBatch(count);
+                    }, taskExecutor)
                     .thenRun(lock::unlock);
         }
     }

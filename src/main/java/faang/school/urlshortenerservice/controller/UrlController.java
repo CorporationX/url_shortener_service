@@ -13,7 +13,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/shortener")
+@RequestMapping("/url")
 @Tag(
         name = "Url Shortener",
         description = "Url Shortener API"
@@ -21,13 +21,13 @@ import java.net.URI;
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/short")
+    @PostMapping("/shorten")
     @Operation(summary = "Get short url")
     public String getHash(@RequestBody RequestUrl url) {
         return urlService.getHash(url.getUrl());
     }
 
-    @GetMapping("/long")
+    @GetMapping("/redirect")
     @Operation(summary = "Get long url")
     public ResponseEntity<String> getUrl(@RequestBody RequestUrl shortUrl) {
         String url = urlService.getLongUrl(shortUrl.getUrl());

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cach.LocalCache;
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.AssociationHashUrl;
 import faang.school.urlshortenerservice.entity.UrlCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
     @Mock
-    private LocalCache localCache;
+    private HashCache hashCache;
     @Mock
     private UrlRepository urlRepository;
     @Mock
@@ -58,7 +58,7 @@ class UrlServiceTest {
         ArgumentCaptor<UrlCache> urlCaptor = ArgumentCaptor.forClass(UrlCache.class);
         ArgumentCaptor<AssociationHashUrl> associationCaptor = ArgumentCaptor.forClass(AssociationHashUrl.class);
 
-        when(localCache.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(hash);
         String result = urlService.getHash(url);
 
         verify(urlRepository,times(1)).save(associationCaptor.capture());

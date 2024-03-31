@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cach;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.threadpool.ThreadPoolConfig;
 import faang.school.urlshortenerservice.generator.HashGenerator;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LocalCacheTest {
+class HashCacheTest {
     @Mock
     private HashRepository hashRepository;
     @Mock
@@ -29,13 +29,13 @@ class LocalCacheTest {
     @Mock
     private ThreadPoolConfig threadPoolConfig;
     @InjectMocks
-    private LocalCache localCache;
+    private HashCache hashCache;
 
 
     @Test
     void testInit() {
         int countOfHashes = 0;
-        ReflectionTestUtils.setField(localCache, "cacheSize", 10);
+        ReflectionTestUtils.setField(hashCache, "cacheSize", 10);
         List<String> hashes = Arrays.asList("sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf");
         ArrayBlockingQueue<String> hashCash = new ArrayBlockingQueue<>(10);
         hashCash.addAll(hashes);
@@ -43,7 +43,7 @@ class LocalCacheTest {
         when(hashRepository.count()).thenReturn(countOfHashes);
         when(hashRepository.getHashBatch(10)).thenReturn(hashes);
 
-        localCache.init();
+        hashCache.init();
 
         verify(hashRepository).count();
         verifyNoInteractions(hashGenerator);
@@ -53,10 +53,10 @@ class LocalCacheTest {
 
     @Test
     void testInitCallsHashGeneratorMethod() {
-        ReflectionTestUtils.setField(localCache, "cacheSize", 10);
+        ReflectionTestUtils.setField(hashCache, "cacheSize", 10);
         List<String> hashes = List.of();
         when(hashRepository.getHashBatch(10)).thenReturn(hashes);
-        localCache.init();
+        hashCache.init();
         verify(hashGenerator).generateBatch(10);
     }
 
@@ -64,13 +64,13 @@ class LocalCacheTest {
     void testGetHash() throws NoSuchFieldException, IllegalAccessException {
         List<String> hashes = Arrays.asList("sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf");
         List<String> expectedHashCash = Arrays.asList("sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf");
-        Field field = LocalCache.class.getDeclaredField("hashCash");
+        Field field = HashCache.class.getDeclaredField("hashCash");
         field.setAccessible(true);
         ArrayBlockingQueue<String> actualHashCash = new ArrayBlockingQueue<>(10);
-        field.set(localCache, actualHashCash);
+        field.set(hashCache, actualHashCash);
         actualHashCash.addAll(hashes);
 
-        localCache.getHash();
+        hashCache.getHash();
 
         assertEquals(expectedHashCash, new ArrayList<>(actualHashCash));
     }
@@ -79,12 +79,12 @@ class LocalCacheTest {
     void testGetHashWithException() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
         ArrayBlockingQueue<String> mockQueue = mock(ArrayBlockingQueue.class);
 
-        Field field = LocalCache.class.getDeclaredField("hashCash");
+        Field field = HashCache.class.getDeclaredField("hashCash");
         field.setAccessible(true);
-        field.set(localCache, mockQueue);
+        field.set(hashCache, mockQueue);
 
         when(mockQueue.take()).thenThrow(InterruptedException.class);
 
-        assertThrows(RuntimeException.class, () -> localCache.getHash());
+        assertThrows(RuntimeException.class, () -> hashCache.getHash());
     }
 }
