@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-    @Value("${hashcache.capacity}")
-    private int capacity;
-    @Value("${hashcache.min-size}")
+    @Value("${hash.cache.capacity}")
+    private int capacity = 100;
+    @Value("${hash.cache.min-size}")
     private double minSize;
     private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
     private final AtomicBoolean isCacheLoading = new AtomicBoolean(false);

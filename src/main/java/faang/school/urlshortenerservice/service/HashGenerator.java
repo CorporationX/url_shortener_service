@@ -15,7 +15,7 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
-    @Value("${hash.batchSize:1000}")
+    @Value("${hash.batchSize}")
     private int batchSize;
 
     @Transactional
