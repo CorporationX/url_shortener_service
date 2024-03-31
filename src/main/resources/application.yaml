@@ -22,7 +22,11 @@ logging:
     root: info
 
 hash:
-  range: 10000
+  range: 100000
+  cash:
+    capacity: 10000
+    fill:
+      percent: 20
 
 executor:
   settings:

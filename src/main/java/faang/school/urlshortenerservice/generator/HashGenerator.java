@@ -11,34 +11,47 @@ import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Alexander Bulgakov
  */
-
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
 
     private final UniqueSequenceIdRepository uniqueSequenceIdRepository;
     private final HashRepository hashRepository;
-    @Value(value = "${hash.range:1000}")
+    @Value("${hash.range:1000}")
     private int maxRange;
 
     @Transactional
+    public List<String> getHash(long amount) {
+        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        if (hashes.size() < amount) {
+            hashes.addAll(generateBatch());
+        }
+        return hashes.stream().map(Hash::getHash).toList();
+    }
+
     @Async("threadPoolTaskExecutor")
-    public List<Hash> generateBatch(final int maxRange) {
+    public CompletableFuture<List<String>> getHashAsync(long amount) {
+        return CompletableFuture.completedFuture(getHash(amount));
+    }
+
+    @Transactional
+    public List<Hash> generateBatch() {
         List<Long> range = uniqueSequenceIdRepository.getNextRange(maxRange);
         List<Hash> hashes = range.stream()
-                .map(this::encoded)
+                .map(this::applyBase64Encoding)
                 .map(Hash::new)
                 .toList();
 
         return hashRepository.saveAllAndFlush(hashes);
     }
 
-    public String encoded(Long number) {
-        return Base64.getUrlEncoder()
+    public String applyBase64Encoding(Long number) {
+        return Base64.getEncoder()
                 .encodeToString(String.valueOf(number).getBytes());
     }
 }
