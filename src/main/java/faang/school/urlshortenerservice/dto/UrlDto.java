@@ -14,7 +14,6 @@ import org.hibernate.validator.constraints.URL;
 public class UrlDto {
 
     @URL(message = "Не валидный URL")
-    @NotBlank(message = "Url не может быть пустым")
     private String url;
 
 }
