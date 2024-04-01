@@ -27,6 +27,12 @@ hash:
     capacity: 10000
     fill:
       percent: 20
+  cron:
+    expression: 0 0 0 * * *
+
+url:
+  to-be-deleted:
+    interval: '1 year'
 
 executor:
   settings:
