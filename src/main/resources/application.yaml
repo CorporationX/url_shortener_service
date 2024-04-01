@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
+    url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
 
@@ -14,8 +14,29 @@ spring:
       hibernate:
         format_sql: true
 
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 50
+    thread-name-prefix: UrlShortenerThread-
+
+redis:
+  host: localhost
+  port: 6379
+  channel_fo_cache:
+      name: cache_channel
+
+liquibase:
+  change-log: classpath:db/changelog/changeset/db.changelog-master.yaml
+
 server:
   port: 8080
+  version: /api/v1
+  shorter: https://sh.c/
+
+scheduled:
+  cron: "0 0 0 * * ?"
+
 
 logging:
   level:
