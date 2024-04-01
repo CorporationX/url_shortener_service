@@ -1,0 +1,69 @@
+{
+  "properties": [
+    {
+      "name": "url-shortener-service.base62",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.base62."
+    },
+    {
+      "name": "url-shortener-service.batch-size",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.batch-size."
+    },
+    {
+      "name": "async.hash.maxPoolSize",
+      "type": "java.lang.String",
+      "description": "Description for async.hash.maxPoolSize."
+    },
+    {
+      "name": "async.hash.corePoolSize",
+      "type": "java.lang.String",
+      "description": "Description for async.hash.corePoolSize."
+    },
+    {
+      "name": "async.hash.queueCapacity",
+      "type": "java.lang.String",
+      "description": "Description for async.hash.queueCapacity."
+    },
+    {
+      "name": "async.cache.maxPoolSize",
+      "type": "java.lang.String",
+      "description": "Description for async.cache.maxPoolSize."
+    },
+    {
+      "name": "async.cache.corePoolSize",
+      "type": "java.lang.String",
+      "description": "Description for async.cache.corePoolSize."
+    },
+    {
+      "name": "async.cache.queueCapacity",
+      "type": "java.lang.String",
+      "description": "Description for async.cache.queueCapacity."
+    },
+    {
+      "name": "url-shortener-service.domain",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.domain."
+    },
+    {
+      "name": "url-shortener-service.cron",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.cron."
+    },
+    {
+      "name": "url-shortener-service.fillPercent",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.fillPercent."
+    },
+    {
+      "name": "url-shortener-service.maxRange",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.maxRange."
+    },
+    {
+      "name": "url-shortener-service.queueSize",
+      "type": "java.lang.String",
+      "description": "Description for url-shortener-service.queueSize."
+    }
+  ]
+}
