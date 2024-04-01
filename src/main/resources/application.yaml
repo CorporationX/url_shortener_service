@@ -41,3 +41,6 @@ hash:
 schedule:
   cron:
     clear-urls: "0 0 3 * * ?" # Запуск каждый день в 3 утра
+
+static-url:
+  url-prefix: https://short.com/

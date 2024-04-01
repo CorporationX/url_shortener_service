@@ -17,4 +17,5 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             """)
     List<String> deleteOlderThanYear();
 
+    Optional <Url> findByUrl(String url);
 }
