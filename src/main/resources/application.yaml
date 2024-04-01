@@ -14,9 +14,31 @@ spring:
       hibernate:
         format_sql: true
 
+hash:
+  clean:
+    interval:
+      value: year
+      count: 1
+  scheduler:
+    cron: 0 0 0 * * ?
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+async:
+  generator_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
+  cache_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
+  scheduler_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
