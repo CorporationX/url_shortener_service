@@ -14,6 +14,10 @@ spring:
       hibernate:
         format_sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   port: 8080
 
@@ -31,8 +35,9 @@ hash:
     expression: 0 0 0 * * *
 
 url:
+  address: https://sh.com/
   to-be-deleted:
-    interval: '1 year'
+    interval: 1 year
 
 executor:
   settings:
