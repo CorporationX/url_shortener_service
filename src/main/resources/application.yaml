@@ -13,6 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+        order_inserts: true
+        order_updates: true
+
+  redis:
+    host: localhost
+    port: 6379
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
@@ -22,7 +33,18 @@ logging:
     root: info
 
 hash:
-  range: 10000
+  range: 100000
+  cash:
+    capacity: 10000
+    fill:
+      percent: 20
+  cron:
+    expression: 0 0 0 * * *
+
+url:
+  address: https://sh.com/
+  to-be-deleted:
+    interval: 1 year
 
 executor:
   settings:
