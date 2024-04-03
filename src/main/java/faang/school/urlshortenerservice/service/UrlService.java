@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.repository.UrlCashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class UrlService {
     private final HashCash hashCash;
     private final UrlValidator urlValidator;
 
+    @Transactional
     public String createShortUrl(String requestUrl) {
         urlValidator.validateUrl(requestUrl);
 
