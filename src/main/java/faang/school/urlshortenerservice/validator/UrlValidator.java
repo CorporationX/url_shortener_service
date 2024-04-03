@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.validator;
 
+import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 
 public class UrlValidator {
 
@@ -11,6 +13,12 @@ public class UrlValidator {
                 verifiableUrl.isEmpty() ||
                 !urlRegexp.matches(verifiableUrl)) {
             throw new DataValidationException("This url not validation");
+        }
+    }
+
+    public void validateSearchUrl(UrlEntity searchUrlEntity, String hash) {
+        if (searchUrlEntity == null) {
+            throw new UrlNotFoundException("URL not found for hash: " + hash);
         }
     }
 }

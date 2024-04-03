@@ -27,4 +27,17 @@ public class UrlService {
 
         return hash;
     }
+
+    public String getUrlByHash(String hash) {
+        String url = urlCashRepository.getUrl(hash);
+        if (url != null) {
+            return url;
+        }
+
+        UrlEntity urlEntity = urlRepository.findByHash(hash);
+        urlValidator.validateSearchUrl(urlEntity, hash);
+        urlCashRepository.save(hash, urlEntity.getUrl());
+
+        return urlEntity.getUrl();
+    }
 }
