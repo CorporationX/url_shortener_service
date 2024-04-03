@@ -26,6 +26,20 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash:
+  clean:
+    interval:
+      value: year
+      count: 1
+  scheduler:
+    cron: 0 0 0 * * ?
+  generator:
+    base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  cache:
+    min-size: 0.2
+    capacity: 1000
+    batchSize: 1000
+
 server:
   port: 8080
 
@@ -33,17 +47,16 @@ logging:
   level:
     root: info
 
-
-hash:
-  generator:
-    base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-  cache:
-    min-size: 0.2
-    capacity: 1000
-  batchSize: 1000
-
 async:
-  generator-thread-pool:
-    core-pool-size: 10
-    max-pool-size: 20
-    queue-capacity: 50
+  generator_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
+  cache_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
+  scheduler_thread_pool:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 50
