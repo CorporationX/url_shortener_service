@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 
 public class UrlValidator {
 
-    String urlRegexp = "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$";
+    private final String urlRegexp = "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$";
 
     public void validateUrl(String verifiableUrl) {
         if (verifiableUrl == null ||
@@ -17,7 +17,7 @@ public class UrlValidator {
     }
 
     public void validateSearchUrl(UrlEntity searchUrlEntity, String hash) {
-        if (searchUrlEntity == null) {
+        if (searchUrlEntity == null || searchUrlEntity.getUrl() == null) {
             throw new UrlNotFoundException("URL not found for hash: " + hash);
         }
     }

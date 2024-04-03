@@ -29,6 +29,6 @@ public class CleanerScheduler {
                 .map(Hash::new)
                 .toList();
 
-        hashRepository.saveAllAndFlush(hashes);
+        hashRepository.saveAll(hashes);
     }
 }

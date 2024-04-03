@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.HashCash;
+import faang.school.urlshortenerservice.repository.HashCash;
 import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.repository.UrlCashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -33,7 +33,6 @@ public class UrlService {
         if (url != null) {
             return url;
         }
-
         UrlEntity urlEntity = urlRepository.findByHash(hash);
         urlValidator.validateSearchUrl(urlEntity, hash);
         urlCashRepository.save(hash, urlEntity.getUrl());
