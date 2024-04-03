@@ -45,6 +45,6 @@ public class HashGenerator {
                 .map(Hash::new)
                 .toList();
 
-        return hashRepository.saveAllAndFlush(hashes);
+        return hashRepository.saveAll(hashes);
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
+    UrlEntity findByHash(String hash);
 
     @Query(nativeQuery = true, value =
             """
