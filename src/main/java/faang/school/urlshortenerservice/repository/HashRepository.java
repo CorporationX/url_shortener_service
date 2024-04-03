@@ -16,15 +16,15 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Query(nativeQuery = true, value =
             """
-                DELETE FROM hashes
+                DELETE FROM hash
                 USING (
                     SELECT id
-                    FROM hashes
+                    FROM hash
                     ORDER BY id ASC
                     LIMIT :amount
                 ) AS sub_query
-                WHERE hashes.id = sub_query.id
-                RETURNING hashes.*;
+                WHERE hash.id = sub_query.id
+                RETURNING hash.*;
             """)
     List<Hash> findAndDelete(long amount);
 }
