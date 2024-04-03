@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @AllArgsConstructor
 @NoArgsConstructor
 @RedisHash(value = "urlCash", timeToLive = 86400L)
-public class UrlCash {
+public class UrlCache {
     @Id
     private String hash;
     @Indexed

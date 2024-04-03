@@ -11,7 +11,7 @@ public class CleanerScheduler {
     private final UrlService urlService;
 
     @Scheduled(cron = "${scheduler.cleaner.cron}")
-    public void cleanCash() {
+    public void cleanCache() {
         urlService.cleanHash();
     }
 }

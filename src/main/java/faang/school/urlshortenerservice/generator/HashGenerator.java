@@ -28,8 +28,8 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<Hash> getHashes(int amount) {
-        List<Hash> hashes = hashRepository.getAndDeleteHashBatch(amount);
+    public List<String> getHashes(int amount) {
+        List<String> hashes = hashRepository.getAndDeleteHashBatch(amount);
         if (hashes.size() < amount) {
             generateHashes();
             hashes.addAll(hashRepository.getAndDeleteHashBatch(amount - hashes.size()));
@@ -39,7 +39,7 @@ public class HashGenerator {
 
     @Async("executorService")
     @Transactional
-    public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
+    public CompletableFuture<List<String>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }
 }

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +21,13 @@ import java.net.URI;
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping()
+    @PostMapping("/shorten")
     public UrlDto createShortUrl(@RequestBody @Valid UrlDto url) {
         return urlService.createShortUrl(url);
     }
 
 
-    @GetMapping("{hash}")
+    @GetMapping("/{hash}")
     public ResponseEntity<Void> getUrl(@PathVariable("hash") String hash) {
         String url = urlService.getUrlByHash(hash);
         return ResponseEntity.status(HttpStatus.FOUND)

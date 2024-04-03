@@ -4,9 +4,9 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.model.UrlCash;
+import faang.school.urlshortenerservice.model.UrlCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlCashRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ class UrlServiceTest {
     @Mock
     private HashRepository hashRepository;
     @Mock
-    private UrlCashRepository urlCashRepository;
+    private UrlCacheRepository urlCacheRepository;
     @Mock
     private HashCache hashCache;
     @Spy
@@ -54,23 +55,24 @@ class UrlServiceTest {
         url = Url.builder().hash(hash).url(urlInput).build();
         urlDto = new UrlDto(urlInput);
         shortUrl = new UrlDto("https://corpX.com/" + hash);
+        ReflectionTestUtils.setField(urlService,"urlPattern", "https://corpX.com/");
     }
 
     @Test
     void testCreateShortUrl_whenHashExistInCash_thenReturnShortUrl() {
         //Arrange
-        when(urlCashRepository.findByUrl(urlInput)).thenReturn(new UrlCash(hash, urlInput));
+        when(urlCacheRepository.findByUrl(urlInput)).thenReturn(new UrlCache(hash, urlInput));
 
         //Act
         UrlDto result = urlService.createShortUrl(urlDto);
 
         //Assert
         assertAll(
-                () -> verify(urlCashRepository, times(1)).findByUrl(urlInput),
+                () -> verify(urlCacheRepository, times(1)).findByUrl(urlInput),
                 () -> verify(urlRepository, times(0)).findUrlByUrl(urlInput),
                 () -> verify(hashCache, times(0)).getHash(),
                 () -> verify(urlRepository, times(0)).save(any()),
-                () -> verify(urlCashRepository, times(0)).save(any()),
+                () -> verify(urlCacheRepository, times(0)).save(any()),
                 () -> assertEquals(result, shortUrl)
         );
     }
@@ -78,7 +80,7 @@ class UrlServiceTest {
     @Test
     void testCreateShortUrl_whenHashNotExistInCashExistInBd_thenReturnShortUrl() {
         //Arrange
-        when(urlCashRepository.findByUrl(urlInput)).thenReturn(null);
+        when(urlCacheRepository.findByUrl(urlInput)).thenReturn(null);
         when(urlRepository.findUrlByUrl(urlInput)).thenReturn(url);
 
         //Act
@@ -86,11 +88,11 @@ class UrlServiceTest {
 
         //Assert
         assertAll(
-                () -> verify(urlCashRepository, times(1)).findByUrl(urlInput),
+                () -> verify(urlCacheRepository, times(1)).findByUrl(urlInput),
                 () -> verify(urlRepository, times(1)).findUrlByUrl(urlInput),
                 () -> verify(hashCache, times(0)).getHash(),
                 () -> verify(urlRepository, times(0)).save(any()),
-                () -> verify(urlCashRepository, times(1)).save(any()),
+                () -> verify(urlCacheRepository, times(1)).save(any()),
                 () -> assertEquals(result, shortUrl)
         );
     }
@@ -98,7 +100,7 @@ class UrlServiceTest {
     @Test
     void testCreateShortUrl_whenHashNotExist_thenCreateShortUrl() {
         //Arrange
-        when(urlCashRepository.findByUrl(urlInput)).thenReturn(null);
+        when(urlCacheRepository.findByUrl(urlInput)).thenReturn(null);
         when(urlRepository.findUrlByUrl(urlInput)).thenReturn(null);
         when(hashCache.getHash()).thenReturn(hash);
 
@@ -107,11 +109,11 @@ class UrlServiceTest {
 
         //Assert
         assertAll(
-                () -> verify(urlCashRepository, times(1)).findByUrl(urlInput),
+                () -> verify(urlCacheRepository, times(1)).findByUrl(urlInput),
                 () -> verify(urlRepository, times(1)).findUrlByUrl(urlInput),
                 () -> verify(hashCache, times(1)).getHash(),
                 () -> verify(urlRepository, times(1)).save(any()),
-                () -> verify(urlCashRepository, times(1)).save(any()),
+                () -> verify(urlCacheRepository, times(1)).save(any()),
                 () -> assertEquals(result, shortUrl)
         );
     }
@@ -119,30 +121,30 @@ class UrlServiceTest {
     @Test
     void testGetUrlByHash_whenUrlExistInCash_thenReturnFromCash() {
         //Arrange
-        when(urlCashRepository.findById(hash)).thenReturn(Optional.of(new UrlCash()));
+        when(urlCacheRepository.findById(hash)).thenReturn(Optional.of(new UrlCache()));
 
         //Act
         urlService.getUrlByHash(hash);
 
         //Assert
-        verify(urlCashRepository, times(1)).findById(hash);
+        verify(urlCacheRepository, times(1)).findById(hash);
         verify(urlRepository, times(0)).findById(hash);
-        verify(urlCashRepository, times(0)).save(any());
+        verify(urlCacheRepository, times(0)).save(any());
     }
 
     @Test
     void testGetUrlByHash_whenUrlNotExistInCash_thenReturnFromBd() {
         //Arrange
-        when(urlCashRepository.findById(hash)).thenReturn(Optional.empty());
+        when(urlCacheRepository.findById(hash)).thenReturn(Optional.empty());
         when(urlRepository.findById(hash)).thenReturn(Optional.of(url));
 
         //Act
         urlService.getUrlByHash(hash);
 
         //Assert
-        verify(urlCashRepository, times(1)).findById(hash);
+        verify(urlCacheRepository, times(1)).findById(hash);
         verify(urlRepository, times(1)).findById(hash);
-        verify(urlCashRepository, times(1)).save(any());
+        verify(urlCacheRepository, times(1)).save(any());
     }
 
     @Test
@@ -156,6 +158,6 @@ class UrlServiceTest {
 
         //Assert
         verify(urlRepository, times(1)).deleteOldUrl();
-        verify(hashRepository, times(freeHashes.size())).save(any());
+        verify(hashRepository, times(1)).saveAll(any());
     }
 }

@@ -61,7 +61,7 @@ class HashRepositoryTest {
         int count = 1;
 
         //Act
-        List<Hash> result = hashRepository.getAndDeleteHashBatch(count);
+        List<String> result = hashRepository.getAndDeleteHashBatch(count);
 
         //Assert
         assertEquals(result.size(),count);

@@ -6,12 +6,13 @@ import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.model.UrlCash;
+import faang.school.urlshortenerservice.model.UrlCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlCashRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,40 +23,40 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
-    private final UrlCashRepository urlCashRepository;
+    private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final UrlMapper urlMapper;
-
-    private static final String URL_PATTERN = "https://corpX.com/"; // in property?
+    @Value("${url.name-pattern}")
+    private String urlPattern;
 
     @Transactional
     public UrlDto createShortUrl(UrlDto urlDto) {
         String hashExist = getHashIfExistUrl(urlDto.getUrl());
         if (hashExist != null) {
-            return new UrlDto(URL_PATTERN + hashExist);
+            return new UrlDto(urlPattern + hashExist);
         }
 
         String hash = hashCache.getHash();
-        String shortUrl = URL_PATTERN + hash;
+        String shortUrl = urlPattern + hash;
         Url url = new Url();
         url.setUrl(urlDto.getUrl());
         url.setHash(hash);
         urlRepository.save(url);
-        urlCashRepository.save(urlMapper.toUrlCash(url));
+        urlCacheRepository.save(urlMapper.toUrlCash(url));
 
         return new UrlDto(shortUrl);
     }
 
     private String getHashIfExistUrl(String urlInput) {
-        UrlCash urlCash = urlCashRepository.findByUrl(urlInput);
-        if (urlCash != null) {
-            return urlCash.getHash();
+        UrlCache urlCache = urlCacheRepository.findByUrl(urlInput);
+        if (urlCache != null) {
+            return urlCache.getHash();
         }
         Url url = urlRepository.findUrlByUrl(urlInput);
         if (url != null) {
-            urlCashRepository.save(urlMapper.toUrlCash(url));
+            urlCacheRepository.save(urlMapper.toUrlCash(url));
             return url.getHash();
         }
         return null;
@@ -64,14 +65,14 @@ public class UrlService {
     @Transactional(readOnly = true)
     public String getUrlByHash(String hash) {
 
-        Optional<UrlCash> urlCash = urlCashRepository.findById(hash);
+        Optional<UrlCache> urlCash = urlCacheRepository.findById(hash);
         if (urlCash.isPresent()) {
             return urlCash.get().getUrl();
         }
         String url = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Error or outdated parameter"))
                 .getUrl();
-        urlCashRepository.save(new UrlCash(hash, url));
+        urlCacheRepository.save(new UrlCache(hash, url));
         return url;
     }
 
@@ -79,7 +80,10 @@ public class UrlService {
     public void cleanHash() {
         log.info("Started clearing URL records");
         List<String> freeHashes = urlRepository.deleteOldUrl();
-        freeHashes.forEach(hash -> hashRepository.save(new Hash(hash)));
+        List<Hash> hashes = freeHashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashRepository.saveAll(hashes);
         log.info("Count cleared old URL records - {}", freeHashes.size());
     }
 }

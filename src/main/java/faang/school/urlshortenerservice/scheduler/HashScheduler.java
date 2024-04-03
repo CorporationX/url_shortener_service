@@ -12,6 +12,6 @@ private  final HashCache hashCache;
 
     @Scheduled(cron = "${scheduler.get-hash.cron}")
     public void getHash() {
-        hashCache.generateHashCash();
+        hashCache.generateHashCache();
     }
 }

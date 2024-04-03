@@ -1,13 +1,13 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.model.UrlCash;
+import faang.school.urlshortenerservice.model.UrlCache;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @EnableRedisRepositories
-public interface UrlCashRepository extends CrudRepository<UrlCash, String> {
+public interface UrlCacheRepository extends CrudRepository<UrlCache, String> {
 
-    UrlCash findByUrl(String url);
+    UrlCache findByUrl(String url);
 }

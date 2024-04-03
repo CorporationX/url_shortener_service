@@ -1,13 +1,10 @@
 package faang.school.urlshortenerservice.mapper;
 
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.model.UrlCash;
+import faang.school.urlshortenerservice.model.UrlCache;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 class UrlMapperTest {
 
@@ -21,7 +18,7 @@ class UrlMapperTest {
         Url url = Url.builder().hash(hash).url(urlOrigin).build();
 
         //Act
-        UrlCash result = urlMapper.toUrlCash(url);
+        UrlCache result = urlMapper.toUrlCash(url);
 
         //Assert
         assertEquals(result.getHash(),hash);

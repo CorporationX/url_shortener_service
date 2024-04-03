@@ -35,6 +35,9 @@ hash:
   capacity: 50
   check-percent: 20
 
+url:
+  name-pattern: https://corpX.com/
+
 scheduler:
   cleaner:
     cron: 0 0 0 * * * # every day
