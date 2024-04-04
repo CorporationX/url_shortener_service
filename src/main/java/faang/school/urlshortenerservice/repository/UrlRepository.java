@@ -13,5 +13,5 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM url u WHERE u.created_at < :cutoffDate RETURNING u.hash")
-    List<String> deleteAndReturnByInterval(LocalDateTime cutoffDate);
+    List<String> deleteAndReturnBefore(LocalDateTime cutoffDate);
 }

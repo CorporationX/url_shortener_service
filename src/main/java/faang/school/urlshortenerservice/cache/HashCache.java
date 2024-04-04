@@ -16,15 +16,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
     @Value("${hash.cache.capacity}")
-    private int capacity = 100;
+    private int capacity;
     @Value("${hash.cache.min-size}")
     private double minSize;
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private Queue<String> hashes;
     private final AtomicBoolean isCacheLoading = new AtomicBoolean(false);
     private final HashGenerator hashGenerator;
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         loadHashesToCache();
     }
 
@@ -45,7 +46,7 @@ public class HashCache {
 
     private void loadHashesToCache() {
         hashes.addAll(
-                hashGenerator.getHashes(capacity - this.hashes.size()).stream()
+                hashGenerator.getHashes(capacity - hashes.size()).stream()
                         .map(Hash::getHash)
                         .toList()
         );

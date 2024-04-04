@@ -1,25 +1,26 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.hash;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-@Repository
 @RequiredArgsConstructor
-public class HashRepository {
+public class CustomHashRepositoryImpl implements CustomHashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public void saveAll(List<String> hashes) {
+    @Override
+    public void saveAllInBatch(List<Hash> hashes) {
         jdbcTemplate.batchUpdate("INSERT INTO hash(hash) VALUES(?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setString(1, hashes.get(i));
+                        Hash hash = hashes.get(i);
+                        ps.setString(1, hash.getHash());
                     }
 
                     @Override
@@ -27,17 +28,5 @@ public class HashRepository {
                         return hashes.size();
                     }
                 });
-    }
-
-    public List<Long> getUniqueNumbers(long uniqueNumbers) {
-        return jdbcTemplate.queryForList("DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *",
-                Long.class,
-                uniqueNumbers);
-    }
-
-    public List<String> getHashBatch(long uniqueNumber) {
-        return jdbcTemplate.queryForList("SELECT nextval('unique_number_seq') FROM generate_series(1, ?)",
-                String.class,
-                uniqueNumber);
     }
 }

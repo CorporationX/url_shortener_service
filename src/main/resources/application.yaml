@@ -9,14 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        jdbc:
-          batch_size: 5
-        order_inserts: true
-        generate_statistics: true
-        format_sql: true
+    show-sql: false
 
   data:
     redis:
@@ -37,8 +30,8 @@ hash:
     base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   cache:
     min-size: 0.2
-    capacity: 1000
-    batchSize: 1000
+    capacity: 10
+    range: 100
 
 server:
   port: 8080

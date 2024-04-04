@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +7,6 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-
     @Value("${hash.generator.base62}")
     private String base62;
 

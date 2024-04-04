@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -15,8 +15,8 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
-    @Value("${hash.batchSize}")
-    private int batchSize;
+    @Value("${hash.cache.range}")
+    private int range;
 
     @Transactional
     @Async("generateBatchThreadPool")
@@ -25,7 +25,7 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<Hash> getHashes (int amount) {
+    public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         while (hashes.size() < amount) {
             generateBatch();
@@ -35,12 +35,12 @@ public class HashGenerator {
     }
 
     private void generateBatch() {
-        List<Hash> hashes = hashRepository.getNextBatch(batchSize)
+        List<Hash> hashes = hashRepository.getNextRange(range)
                 .stream()
                 .map(encoder::encode)
                 .map(Hash::new)
                 .toList();
 
-        hashRepository.saveAll(hashes);
+        hashRepository.saveAllInBatch(hashes);
     }
 }
