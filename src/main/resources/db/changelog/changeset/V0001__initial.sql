@@ -1,16 +1,13 @@
-CREATE TABLE hash
+CREATE TABLE hashes
 (
-    hash VARCHAR(6) NOT NULL
-)
+    hash VARCHAR(6) NOT NULL PRIMARY KEY
+);
 
 CREATE TABLE url
 (
-    hash       VARCHAR(6) NOT NULL,
+    hash       VARCHAR(6) NOT NULL PRIMARY KEY ,
     url        VARCHAR    NOT NULL,
-    created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_hash
-        FOREIGN KEY (hash)
-            REFERENCES hash (hash)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE SEQUENCE unique_number_sequence

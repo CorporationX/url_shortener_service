@@ -5,6 +5,10 @@ spring:
     username: user
     password: password
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,6 +17,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        jdbc:
+          batch_size: 100
+        generate_statistics: true
 
 server:
   port: 8080
@@ -20,3 +28,7 @@ server:
 logging:
   level:
     root: info
+
+hashes:
+  repository:
+    hashes-batch: 1000
