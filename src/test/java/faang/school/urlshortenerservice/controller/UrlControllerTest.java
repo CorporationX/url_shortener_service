@@ -29,13 +29,13 @@ public class UrlControllerTest {
     }
 
     @Test
-    public void testGetUrlWhenValidRequest() {
+    public void testGetShortUrlWhenValidRequest() {
         UrlDtoRequest request = new UrlDtoRequest(inUrl);
         String hash = "abc123";
         String fullUrlWithHash = outUrl + "/" + hash;
         when(urlService.createShortUrl(request.url())).thenReturn(hash);
 
-        urlController.getUrl(request);
+        urlController.getShortUrl(request);
         verify(urlService, times(1)).createShortUrl(request.url());
     }
 

@@ -24,7 +24,7 @@ public class UrlController {
     private String outUrl;
 
     @PostMapping
-    public ResponseEntity<String> getUrl(@RequestBody UrlDtoRequest request) {
+    public ResponseEntity<String> getShortUrl(@RequestBody UrlDtoRequest request) {
         String hash = urlService.createShortUrl(request.url());
         String fullUrlWithHash = outUrl + "/" + hash;
         URI location = URI.create(fullUrlWithHash);

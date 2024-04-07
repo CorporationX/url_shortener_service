@@ -13,7 +13,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Data
-
 @NoArgsConstructor
 @Entity
 @Table(name = "url")

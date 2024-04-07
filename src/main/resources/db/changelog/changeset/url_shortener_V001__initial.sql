@@ -3,12 +3,10 @@ CREATE SEQUENCE unique_hash_number_sequence
     START WITH 1;
 
 CREATE TABLE hashes (
-    hash VARCHAR(6) NOT NULL,
-    PRIMARY KEY (hash)
+    hash VARCHAR(6) NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE url (
-    hash VARCHAR(6) NOT NULL,
-    created_at TIMESTAMP,
-    PRIMARY KEY (hash)
+    hash VARCHAR(6) NOT NULL PRIMARY KEY,
+    created_at NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

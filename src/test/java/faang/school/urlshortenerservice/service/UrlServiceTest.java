@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashCash;
 import faang.school.urlshortenerservice.entity.UrlEntity;
-import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.repository.HashCache;
 import faang.school.urlshortenerservice.repository.UrlCashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
@@ -14,10 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,9 +27,10 @@ public class UrlServiceTest {
     private UrlCashRepository urlCashRepository;
 
     @Mock
-    private HashCash hashCash;
+    private HashCache hashCache;
     @Mock
     private UrlValidator urlValidator;
+
     @InjectMocks
     private UrlService urlService;
 
@@ -51,25 +47,13 @@ public class UrlServiceTest {
 
     @Test
     public void testCreateShortUrlWhenValidUrl() {
-        when(hashCash.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(hash);
 
         String result = urlService.createShortUrl(validUrl);
 
-        verify(urlValidator, times(1)).validateUrl(validUrl);
         verify(urlRepository, times(1)).save(new UrlEntity(validUrl, hash));
         verify(urlCashRepository, times(1)).save(hash, validUrl);
         assertEquals(hash, result);
-    }
-
-    @Test
-    public void testCreateShortUrlWhenInvalidUrl() {
-        doThrow(DataValidationException.class).when(urlValidator).validateUrl(invalidUrl);
-
-        assertThrows(DataValidationException.class, () -> urlService.createShortUrl(invalidUrl));
-
-        verify(urlValidator, times(1)).validateUrl(invalidUrl);
-        verify(urlRepository, times(0)).save(any(UrlEntity.class));
-        verify(urlCashRepository, times(0)).save(anyString(), anyString());
     }
 
     @Test

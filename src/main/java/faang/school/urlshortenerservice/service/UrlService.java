@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashCash;
+import faang.school.urlshortenerservice.repository.HashCache;
 import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.repository.UrlCashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -14,17 +14,14 @@ import org.springframework.stereotype.Service;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCashRepository urlCashRepository;
-    private final HashCash hashCash;
+    private final HashCache hashCache;
     private final UrlValidator urlValidator;
 
     @Transactional
     public String createShortUrl(String requestUrl) {
-        urlValidator.validateUrl(requestUrl);
-
-        String hash = hashCash.getHash();
+        String hash = hashCache.getHash();
 
         urlRepository.save(new UrlEntity(requestUrl, hash));
-
         urlCashRepository.save(hash, requestUrl);
 
         return hash;

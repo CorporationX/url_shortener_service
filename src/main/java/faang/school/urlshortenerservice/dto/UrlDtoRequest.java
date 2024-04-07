@@ -1,4 +1,8 @@
 package faang.school.urlshortenerservice.dto;
 
-public record UrlDtoRequest(String url) {
+import org.hibernate.validator.constraints.URL;
+
+public record UrlDtoRequest(
+        @URL(regexp = "\"^(https?:\\\\/\\\\/)?([\\\\da-z\\\\.-]+)\\\\.([a-z\\\\.]{2,6})([\\\\/\\\\w \\\\.-]*)*\\\\/?$\"")
+        String url) {
 }

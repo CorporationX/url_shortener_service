@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @RequiredArgsConstructor
-public class HashCash {
+public class HashCache {
     private final HashGenerator hashGenerator;
     @Value("${hash.cash.capacity:10000}")
     private int capacity;
@@ -32,8 +32,7 @@ public class HashCash {
     }
 
     public String getHash() {
-        double fillPercentage = getFillPercentage();
-        if (fillPercentage < fillPercent) {
+        if (getFillPercentage() < fillPercent) {
             if (isFilling.compareAndSet(false, true)) {
                 hashGenerator.getHashAsync(capacity - hashes.size())
                         .thenAccept(hashes::addAll)
