@@ -29,6 +29,9 @@ logging:
   level:
     root: info
 
-hashes:
+configs:
   repository:
-    hashes-batch: 1000
+    hashes:
+      incoming-batch: 1000
+  encoder:
+    hash-length: 6

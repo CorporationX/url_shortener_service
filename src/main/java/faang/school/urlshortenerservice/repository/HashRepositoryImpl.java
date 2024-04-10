@@ -18,7 +18,7 @@ public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private int batchSize;
-    @Value("${hashes.repository.hashes-batch}")
+    @Value("${configs.repository.hashes.incoming-batch}")
     private int hashesBatch;
 
     @Override
@@ -58,4 +58,5 @@ public class HashRepositoryImpl implements HashRepository {
         List<String> hashes = jdbcTemplate.queryForList(sql, String.class, hashesBatch);
         return new ConcurrentLinkedQueue<>(hashes);
     }
+
 }
