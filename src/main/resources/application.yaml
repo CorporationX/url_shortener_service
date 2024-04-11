@@ -31,13 +31,18 @@ logging:
 
 repository:
   hashes:
-    incoming-batch: 1000
+    incoming-batch: 5000
 
 generator:
-  uniqueNumbersAmount: 10000
+  uniqueNumbersAmount: 5000
 
 encoder:
   hash-length: 6
+
+local-cache:
+  minimalAmountInPercentage: 20
+  maxSize: 5000
+  maxWaitTimeMillis: 5000
 
 async:
   core-pool-size: 4
