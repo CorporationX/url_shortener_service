@@ -18,7 +18,7 @@ public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private int batchSize;
-    @Value("${configs.repository.hashes.incoming-batch}")
+    @Value("${repository.hashes.incoming-batch}")
     private int hashesBatch;
 
     @Override

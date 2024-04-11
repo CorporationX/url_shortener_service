@@ -29,9 +29,18 @@ logging:
   level:
     root: info
 
-configs:
-  repository:
-    hashes:
-      incoming-batch: 1000
-  encoder:
-    hash-length: 6
+repository:
+  hashes:
+    incoming-batch: 1000
+
+generator:
+  uniqueNumbersAmount: 10000
+
+encoder:
+  hash-length: 6
+
+async:
+  core-pool-size: 4
+  max-pool-size: 8
+  queue-capacity: 500
+  thread-name-prefix: "AsyncThread-"

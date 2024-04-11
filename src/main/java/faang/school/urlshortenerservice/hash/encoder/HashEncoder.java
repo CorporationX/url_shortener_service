@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.hash.encoder;
 
 import java.util.List;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.hash.encoder;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class Base64FixLengthEncoder implements HashEncoder {
     private final int codeLength = base64Chars.length();
     private final int hashLength;
 
-    public Base64FixLengthEncoder(@Value("${configs.encoder.hash-length}") int hashLength) {
+    public Base64FixLengthEncoder(@Value("${encoder.hash-length}") int hashLength) {
         this.hashLength = hashLength;
     }
 
