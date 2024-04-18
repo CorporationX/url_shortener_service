@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.hash;
 
 import java.util.List;
 import java.util.Set;
@@ -12,4 +12,5 @@ public interface HashRepository {
 
     ConcurrentLinkedQueue<String> getHashBatch();
 
+    Long count();
 }

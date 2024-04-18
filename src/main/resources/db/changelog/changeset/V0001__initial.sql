@@ -3,7 +3,7 @@ CREATE TABLE hashes
     hash VARCHAR(6) NOT NULL PRIMARY KEY
 );
 
-CREATE TABLE url
+CREATE TABLE urls
 (
     hash       VARCHAR(6) NOT NULL PRIMARY KEY ,
     url        VARCHAR    NOT NULL,

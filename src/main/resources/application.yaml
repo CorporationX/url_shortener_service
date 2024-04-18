@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=url_shortener
     username: user
     password: password
+  
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -20,7 +24,6 @@ spring:
         order_inserts: true
         jdbc:
           batch_size: 100
-        generate_statistics: true
 
 server:
   port: 8080
@@ -31,21 +34,30 @@ logging:
 
 repository:
   hashes:
-    incoming-batch: 5000
+    incoming-batch: 5
 
 generator:
-  uniqueNumbersAmount: 5000
+  uniqueNumbersRange: 50
 
 encoder:
+  base64Chars: "_abcdefghijklmnopqrstuvwxyz0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   hash-length: 6
 
 local-cache:
   minimalAmountInPercentage: 20
-  maxSize: 5000
+  maxSize: 5
   maxWaitTimeMillis: 5000
+
+validator:
+  hashPattern: "^[\\w-]{6}$"
+  urlPattern: "\\b(https?|ftp|file):\\/\\/[-a-zA-Z0-9+&@#\\/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\/%=~_|]"
 
 async:
   core-pool-size: 4
   max-pool-size: 8
   queue-capacity: 500
   thread-name-prefix: "AsyncThread-"
+
+redis:
+  hostname: localhost
+  port: 6379

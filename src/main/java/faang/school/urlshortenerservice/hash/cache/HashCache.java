@@ -1,7 +1,8 @@
 package faang.school.urlshortenerservice.hash.cache;
 
 import faang.school.urlshortenerservice.hash.generator.HashGenerator;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -27,11 +28,14 @@ public class HashCache {
     private final ThreadPoolTaskExecutor taskExecutor;
     private final AtomicBoolean generateHashesRunning = new AtomicBoolean(false);
 
-    public String getNextUniqueCache() {
+    @PostConstruct
+    public void initCache() {
+        addAndGenerateHashesIfNecessary();
+    }
+
+    public String getNextUniqueHash() {
+        addAndGenerateHashesIfNecessary();
         String nextHash = cache.poll();
-        if (generateHashesRunning.compareAndSet(false, true)) {
-            taskExecutor.submit(this::addAndGenerateHashesIfNecessary);
-        }
         if (nextHash == null) {
             try {
                 synchronized (cache) {
@@ -51,13 +55,17 @@ public class HashCache {
     }
 
     private void addAndGenerateHashesIfNecessary() {
-        if (cache.isEmpty() || cache.size() <= minimalAmount) {
-            cache.addAll(hashRepository.getHashBatch());
-            hashGenerator.generateHash();
-            generateHashesRunning.set(false);
-            synchronized (cache) {
-                cache.notifyAll();
-            }
+        if (generateHashesRunning.compareAndSet(false, true)) {
+            taskExecutor.submit(() -> {
+                if (cache.isEmpty() || cache.size() <= minimalAmount) {
+                    cache.addAll(hashRepository.getHashBatch());
+                    synchronized (cache) {
+                        cache.notifyAll();
+                    }
+                    hashGenerator.generateHash();
+                    generateHashesRunning.set(false);
+                }
+            });
         }
     }
 

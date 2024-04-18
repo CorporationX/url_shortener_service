@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.hash;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,13 +23,8 @@ public class HashRepositoryImpl implements HashRepository {
     @Override
     @Transactional
     public List<Long> getUniqueNumbers(int amount) {
-        List<Long> uniqueNumbers = new ArrayList<>();
-        String sql = "SELECT nextval('unique_number_sequence');";
-        for (int i = 0; i < amount; i++) {
-            Long nextNumber = jdbcTemplate.queryForObject(sql, Long.class);
-            uniqueNumbers.add(nextNumber);
-        }
-        return uniqueNumbers;
+        String sql = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?);";
+        return jdbcTemplate.queryForList(sql, Long.class, amount);
     }
 
     @Override
@@ -57,6 +51,12 @@ public class HashRepositoryImpl implements HashRepository {
                 SELECT hash FROM deleted;""";
         List<String> hashes = jdbcTemplate.queryForList(sql, String.class, hashesBatch);
         return new ConcurrentLinkedQueue<>(hashes);
+    }
+
+    @Override
+    public Long count() {
+        String sql = "SELECT count(*) FROM hashes;";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
 }

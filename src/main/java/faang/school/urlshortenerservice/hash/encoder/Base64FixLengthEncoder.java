@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.hash.encoder;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,12 +11,15 @@ import java.util.stream.Collectors;
 @Component
 public class Base64FixLengthEncoder implements HashEncoder {
 
-    private final String base64Chars = "_abcdefghijklmnopqrstuvwxyz0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private final int codeLength = base64Chars.length();
-    private final int hashLength;
+    @Value("${encoder.base64Chars}")
+    private String base64Chars;
+    private int codeLength;
+    @Value("${encoder.hash-length}")
+    private int hashLength;
 
-    public Base64FixLengthEncoder(@Value("${encoder.hash-length}") int hashLength) {
-        this.hashLength = hashLength;
+    @PostConstruct
+    private void init() {
+        codeLength = base64Chars.length();
     }
 
     @Override
@@ -25,7 +29,7 @@ public class Base64FixLengthEncoder implements HashEncoder {
                 .collect(Collectors.toSet());
     }
 
-    String encodeToFixLength(Long uniqueNumber) {
+    private String encodeToFixLength(Long uniqueNumber) {
         StringBuilder encoded = new StringBuilder();
         while (uniqueNumber > 0) {
             int index = (int) (uniqueNumber % codeLength);
