@@ -9,17 +9,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class Base64FixLengthEncoder implements HashEncoder {
+public class Base62FixLengthEncoder implements HashEncoder {
 
-    @Value("${encoder.base64Chars}")
-    private String base64Chars;
+    @Value("${encoder.base62Chars}")
+    private String base62Chars;
     private int codeLength;
     @Value("${encoder.hash-length}")
     private int hashLength;
 
     @PostConstruct
     private void init() {
-        codeLength = base64Chars.length();
+        codeLength = base62Chars.length();
     }
 
     @Override
@@ -33,11 +33,11 @@ public class Base64FixLengthEncoder implements HashEncoder {
         StringBuilder encoded = new StringBuilder();
         while (uniqueNumber > 0) {
             int index = (int) (uniqueNumber % codeLength);
-            encoded.append(base64Chars.charAt(index));
+            encoded.append(base62Chars.charAt(index));
             uniqueNumber /= codeLength;
         }
         while (encoded.length() < hashLength) {
-            encoded.append(base64Chars.charAt(0));
+            encoded.append(base62Chars.charAt(0));
         }
         return encoded.toString();
     }

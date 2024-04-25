@@ -28,8 +28,10 @@ public class UrlServiceImpl implements UrlService {
     public String getUrl(String hash) throws JsonProcessingException {
         validator.validateHash(hash);
         Url url;
-        url = objectMapper.readValue(redisTemplate.opsForValue().get(hash), Url.class);
-        if (url == null) {
+        String longUrl = redisTemplate.opsForValue().get(hash);
+        if (longUrl != null) {
+            url = objectMapper.readValue(longUrl, Url.class);
+        } else {
             url = urlRepository.findByHash(hash).orElseThrow(() -> new UrlNotExistException("Url doesn't exist"));
         }
         return url.getUrl();

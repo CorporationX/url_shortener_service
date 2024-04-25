@@ -40,7 +40,7 @@ generator:
   uniqueNumbersRange: 50
 
 encoder:
-  base64Chars: "_abcdefghijklmnopqrstuvwxyz0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  base62Chars: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   hash-length: 6
 
 local-cache:
@@ -49,7 +49,7 @@ local-cache:
   maxWaitTimeMillis: 5000
 
 validator:
-  hashPattern: "^[\\w-]{6}$"
+  hashPattern: "^[a-zA-Z0-9]{6}$"
   urlPattern: "\\b(https?|ftp|file):\\/\\/[-a-zA-Z0-9+&@#\\/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\/%=~_|]"
 
 async:
@@ -61,3 +61,8 @@ async:
 redis:
   hostname: localhost
   port: 6379
+
+scheduler:
+  expired-time-years: 1
+  cron:
+    cleaner: "0 0 0 * * ?"
