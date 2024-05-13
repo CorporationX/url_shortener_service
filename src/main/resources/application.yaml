@@ -17,6 +17,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+
 server:
   port: 8085
 
@@ -26,3 +27,7 @@ logging:
 
 hash:
   batch: 100_000
+
+executor:
+  service:
+    batch_size: 5
