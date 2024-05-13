@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.context.AsyncExecutor;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @Component
 @RequiredArgsConstructor
-public class HashGenerator extends AsyncExecutor {
+public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
@@ -34,8 +34,8 @@ public class HashGenerator extends AsyncExecutor {
 
 
     @Async("executor")
-    public List<Hash> generateBatchAsync(){
-        return generateBatch();
+    public CompletableFuture <List<Hash>> generateBatchAsync(){
+        return CompletableFuture.completedFuture(generateBatch());
     }
 
 }
