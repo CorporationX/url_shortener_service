@@ -31,3 +31,6 @@ hash:
 executor:
   service:
     batch_size: 5
+
+scheduler:
+  cleaner: '@daily'

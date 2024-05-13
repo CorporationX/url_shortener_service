@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.config.context;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -15,6 +16,8 @@ public class ExecutorConfig implements AsyncConfigurer {
 
     @Value("${executor.service.batch_size}")
     private int threadBatch;
+
+    @Bean
     public Executor executor() {
         ExecutorService service = Executors.newFixedThreadPool(threadBatch);
         return service;
