@@ -18,6 +18,18 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+      time-to-live: 3600
+
+
 server:
   port: 8085
 
