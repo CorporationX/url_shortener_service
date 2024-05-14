@@ -15,4 +15,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Query(nativeQuery = true, value = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING *")
     List<Hash> getHashBatch(int batchSize);
+
+    @Query(nativeQuery = true, value = "DELETE FROM hash LIMIT 1 RETURNING *;")
+    Hash findFirst();
 }

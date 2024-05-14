@@ -26,7 +26,7 @@ logging:
     root: info
 
 hash:
-  batch: 100_000
+  batch: 10
 
 executor:
   service:
@@ -34,3 +34,8 @@ executor:
 
 scheduler:
   cleaner: '@daily'
+
+cache:
+  capacity:
+    value: 5
+    min_percent: 0.2

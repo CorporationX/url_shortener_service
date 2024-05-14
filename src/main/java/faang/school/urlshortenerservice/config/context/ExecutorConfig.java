@@ -18,7 +18,7 @@ public class ExecutorConfig implements AsyncConfigurer {
     private int threadBatch;
 
     @Bean
-    public Executor executor() {
+    public ExecutorService executor() {
         ExecutorService service = Executors.newFixedThreadPool(threadBatch);
         return service;
     }

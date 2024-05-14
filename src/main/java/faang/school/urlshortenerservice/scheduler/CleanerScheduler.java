@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.service.UrlShortenerService;
+import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 public class CleanerScheduler {
 
 
-    private final UrlShortenerService urlShortenerService;
+    private final HashService hashService;
 
-    //    @Scheduled(cron = "${scheduler.cleaner}")
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "${scheduler.cleaner}")
+//    @Scheduled(fixedDelay = 10000)
     @Async("executor")
     public void scheduledClean() {
         log.info("Scheduled url cleaner started");
-        urlShortenerService.cleanAsync();
+        hashService.cleanAsync();
         log.info("Scheduled url cleaner finished");
 
     }

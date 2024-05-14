@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +22,11 @@ public class HashGenerator {
 
     @Value("${hash.batch}")
     private int batchSize;
+
+    @PostConstruct
+    public void init(){
+        generateBatchAsync();
+    }
 
     @Transactional
     public List<Hash> generateBatch() {
