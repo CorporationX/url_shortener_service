@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+url:
+  endpoint:
+    context-path: "/api/v1/url"
