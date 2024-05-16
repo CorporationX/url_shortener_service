@@ -27,3 +27,11 @@ logging:
 url:
   endpoint:
     context-path: "/api/v1/url"
+
+scheduler:
+  cleaner: "0 0 0 * * ?"
+  period: 365 #TODO: удаляет из таблицы url все записи старше 1 года, пока так, дальше посмотрим
+
+executorConfig:
+  core: 10
+  max: 20

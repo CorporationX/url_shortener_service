@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Name table") //TODO: не забудь указать
+@Table(name = "hash")
 public class Hash {
+
+    @Id
+    @Column(name = "hash", length = 6, nullable = false)
+    private String hash;
 
 }
