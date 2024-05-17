@@ -23,3 +23,15 @@ server:
 logging:
   level:
     root: info
+
+thread-pool:
+  pool-size: 20
+  queue-size: 100
+
+hash:
+  generation-batch: 1000
+  cache-size: 1000
+  cache-min-fill-percent: 20
+
+scheduler:
+  clean-hashes-cron: "@daily"
