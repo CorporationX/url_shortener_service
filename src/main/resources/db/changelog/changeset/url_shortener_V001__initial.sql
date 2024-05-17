@@ -4,7 +4,7 @@ CREATE sequence unique_number_sequence
 
 CREATE TABLE url(
     hash       VARCHAR(6)  PRIMARY KEY,
-    url        VARCHAR     NOT NULL,
+    url        VARCHAR(2048)     NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
