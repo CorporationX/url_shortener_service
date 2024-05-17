@@ -15,14 +15,14 @@ import java.util.List;
 @Component
 public class HashGenerator {
 
-    @Value("${application.hash_generator.batchSize}")
+    @Value("${app.hash-batch-size}}")
     private int batchSize;
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
     public void generateBatch() {
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
+        List<Long> uniqueNumbers = hashRepository.getFollowingRangeUniqueNumbers(batchSize);
         List<Hash> hashes = base62Encoder(uniqueNumbers)
     }
 }

@@ -20,7 +20,7 @@ public class HashService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${application.scheduler.period}")
+    @Value("${app.scheduler.period}")
     private int period;
     private final LocalDateTime dateTime = LocalDateTime.now().minusDays(period);
 

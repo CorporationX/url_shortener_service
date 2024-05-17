@@ -24,7 +24,7 @@ logging:
   level:
     root: info
 
-application:
+app:
   url:
     endpoint:
       context-path: "/api/v1/url"
@@ -33,9 +33,9 @@ application:
     cleaner: "0 0 0 * * ?"
     period: 365 #Days - after what period to delete
 
-  executorConfig:
-    core: 10
-    max: 20
-
-  hash_generator:
-    batchSize: 100
+  hash-batch-size: 100
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 25
+    thread_name_prefix: HashGenerator-
