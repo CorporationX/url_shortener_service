@@ -21,6 +21,6 @@ public class Hash {
 
     @Id
     @Column(name = "hash", length = 6, nullable = false)
-    private String hash;
+    private String uniqueHash;
 
 }

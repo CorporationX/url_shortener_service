@@ -13,7 +13,7 @@ public class CleanerScheduler {
     private final HashService hashService;
 
     @Async("executor")
-    @Scheduled(cron = "${scheduler.cleaner}")
+    @Scheduled(cron = "${app.scheduler.cleaner}")
     public void cleanAndMoveHashes() {
         hashService.clean();
     }
