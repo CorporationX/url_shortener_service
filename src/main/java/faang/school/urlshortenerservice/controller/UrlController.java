@@ -14,7 +14,6 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public void generate(@RequestBody URL){
-        urlService.generateUrl();
+    public void generate(){
     }
 }
