@@ -10,9 +10,9 @@ import java.util.concurrent.Executors;
 @Configuration
 public class ExecutorConfig {
 
-    @Value("${executorConfig.core}")
+    @Value("${application.executorConfig.core}")
     private int corePoolSize;
-    @Value("${executorConfig.max}")
+    @Value("${application.executorConfig.max}")
     private int maxPoolSize;
 
     @Bean

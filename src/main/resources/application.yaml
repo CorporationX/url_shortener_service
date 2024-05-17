@@ -24,14 +24,18 @@ logging:
   level:
     root: info
 
-url:
-  endpoint:
-    context-path: "/api/v1/url"
+application:
+  url:
+    endpoint:
+      context-path: "/api/v1/url"
 
-scheduler:
-  cleaner: "0 0 0 * * ?"
-  period: 365 #Days - after what period to delete
+  scheduler:
+    cleaner: "0 0 0 * * ?"
+    period: 365 #Days - after what period to delete
 
-executorConfig:
-  core: 10
-  max: 20
+  executorConfig:
+    core: 10
+    max: 20
+
+  hash_generator:
+    batchSize: 100

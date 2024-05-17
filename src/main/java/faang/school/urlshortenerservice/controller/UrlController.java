@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("${url.endpoint.context-path}")
+@RequestMapping("${application.url.endpoint.context-path}")
 public class UrlController {
 
     private final UrlService urlService;
