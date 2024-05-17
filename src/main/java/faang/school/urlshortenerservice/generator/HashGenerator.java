@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.encoder.Base62Encoder;
+import faang.school.urlshortenerservice.encoder.BaseConversion;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,12 @@ public class HashGenerator {
     private int batchSize;
 
     private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
+    private final BaseConversion baseConversion;
 
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getFollowingRangeUniqueNumbers(batchSize);
-        List<Hash> hashes = base62Encoder(uniqueNumbers)
+        List<Hash> hashes = baseConversion.encode(uniqueNumbers).stream()
+                .map(Hash::new)
+                .toList();
     }
 }

@@ -39,3 +39,7 @@ app:
     max-pool-size: 10
     queue-capacity: 25
     thread_name_prefix: HashGenerator-
+
+  hash-generator:
+    base: 62
+    characters: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
