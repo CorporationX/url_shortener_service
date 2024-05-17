@@ -1,13 +1,10 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,11 +31,11 @@ public class LocalCache {
     }
 
     public String getHash() {
-        if(hashes.size() / (capacity / 100.0) < percent){
-            if (filling.compareAndSet(false,true)){
+        if (hashes.size() / (capacity / 100.0) < percent) {
+            if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashAsync(capacity)
                         .thenAccept(hashes::addAll)
-                        .thenRun(()->filling.set(false));
+                        .thenRun(() -> filling.set(false));
             }
         }
         return hashes.poll();
