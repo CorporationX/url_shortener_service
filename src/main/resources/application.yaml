@@ -43,3 +43,10 @@ app:
   hash-generator:
     base: 62
     characters: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+#    Additional formation options:
+#    base: 58
+#    characters: "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+#    base: 16
+#    characters: "0123456789ABCDEF"
+#    base: 2
+#    characters: "01"

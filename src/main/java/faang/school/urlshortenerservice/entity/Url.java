@@ -29,7 +29,7 @@ public class Url {
     private String hash;
 
     @Column(name = "url", nullable = false)
-    private String url;
+    private String baseUrl;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
