@@ -5,13 +5,11 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -19,15 +17,8 @@ public class UrlController {
 
     @PostMapping("/url")
     public ResponseEntity<String> shortenUrl(@Valid @RequestBody UrlDto urlDto) {
-        if (!isValidUrl(urlDto.getLongUrl())) {
-            return ResponseEntity.badRequest().body("Invalid URL");
-        }
-        String shortUrl = urlService.shortenUrl(urlDto.getLongUrl());
+        String shortUrl = urlService.createShortenUrl(urlDto.getLongUrl());
         return ResponseEntity.ok(shortUrl);
     }
 
-    private boolean isValidUrl(String url) {
-        // Реализация валидации URL
-        return true; // Пример простого проверки
-    }
 }

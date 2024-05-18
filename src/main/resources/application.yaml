@@ -35,3 +35,5 @@ expression:
 length:
   batchSize: 100
   range: 3
+
+url: http://localhost:8080/api/
