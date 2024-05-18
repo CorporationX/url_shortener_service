@@ -21,4 +21,6 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             ) RETURNING *
             """)
     List<Hash> findAndDelete(long amount);
+
+    void saveHashes(List<String> hashes);
 }
