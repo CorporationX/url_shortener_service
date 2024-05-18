@@ -35,7 +35,7 @@ public class HashGenerator {
     @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
     public void generateUniqueHash() {
         for (int i = 0; i < 100; i += batchSize) {
-            List<Hash> hashes = IntStream.range(0, batchSize)
+            Set<Hash> hashes = IntStream.range(0, batchSize)
                     .parallel()
                     .mapToObj(j -> {
                         String base64Hash = generateRandomString();
@@ -43,23 +43,23 @@ public class HashGenerator {
                                 .base64Hash(Base64.getEncoder().encodeToString(base64Hash.getBytes()))
                                 .build();
                     })
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
             hashRepository.saveAll(hashes);
         }
     }
 
     @Transactional
-    public List<String> getHashes(long amount) {
-        Set<Hash> hashes = hashRepository.findAndDelete(amount);
+    public Set<String> getHashes(long amount) {
+        Set<Hash> hashes = hashRepository.findAndDelete(amount); //PessimisticLock при запросе из базы
         if (hashes.size() < amount) {
             generateUniqueHash();
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
-        return hashes.stream().map(Hash::getBase64Hash).toList();
+        return hashes.stream().map(Hash::getBase64Hash).collect(Collectors.toSet());
     }
 
     @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<String>> getHashAsync(long amount) {
+    public CompletableFuture<Set<String>> getHashAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }
 

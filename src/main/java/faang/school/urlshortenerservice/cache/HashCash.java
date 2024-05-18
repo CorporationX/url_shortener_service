@@ -4,12 +4,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-
-public class HashCache {
+public class HashCash {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public HashCache(RedisTemplate<String, String> redisTemplate) {
+    public HashCash(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
