@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,7 +50,7 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        Set<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
             generateUniqueHash();
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
