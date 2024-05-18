@@ -39,4 +39,5 @@ public class UrlShortenerController {
     public UrlDto getOriginalLink(@Size(max = 6) @PathVariable String hash) {
         return urlShortenerService.getOriginalLink(hash);
     }
+    //Or is it better to use here RedirectView ?
 }
