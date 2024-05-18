@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service.scheduler;
 
-import faang.school.urlshortenerservice.Cache.HashCache;
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;

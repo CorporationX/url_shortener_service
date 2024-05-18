@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.Cache;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
