@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CleanerScheduler {
 
-
     private final HashService hashService;
 
     @Scheduled(cron = "${scheduler.cleaner}")

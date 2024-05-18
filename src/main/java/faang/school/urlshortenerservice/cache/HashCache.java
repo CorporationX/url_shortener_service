@@ -33,7 +33,6 @@ public class HashCache {
 
     private ArrayBlockingQueue<Hash> hashQueue;
 
-
     @PostConstruct
     public void init() {
         hashQueue = new ArrayBlockingQueue(cacheCapacity);
@@ -42,14 +41,11 @@ public class HashCache {
         populateCacheAsync();
     }
 
-
     @Transactional
     public Hash getHash() {
         manageCache();
         return hashQueue.remove();
-
     }
-
 
     public void manageCache() {
         if (hashQueue.size() < (double) cacheCapacity * minCapacityPercent) {
