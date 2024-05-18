@@ -1,11 +1,12 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface HashRepository extends CrudRepository<Hash, Long> {
@@ -15,12 +16,16 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             """)
     boolean existsByBase64Hash(String base64Hash);
 
-    @Query(nativeQuery = true,value = """
+    @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE id IN(
             SELECT id FROM hash ORDER BY id ASC LIMIT :amount
             ) RETURNING *
             """)
-    List<Hash> findAndDelete(long amount);
+    Set<Hash> findAndDelete(long amount);
 
-    void saveHashes(List<String> hashes);
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            INSERT INTO hash (base64_hash) VALUES (:hash)
+            """)
+    void saveHashes(Set<String> hashes);
 }
