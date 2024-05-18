@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
@@ -8,10 +9,9 @@ import org.hibernate.validator.constraints.URL;
 
 @Data
 @Builder
-@RequiredArgsConstructor
 public class UrlDto {
 
-    @URL
-    @NotEmpty
+    @URL(message = "Invalid URL")
+    @NotBlank(message = "URL cannot be blank")
     private String longUrl;
 }

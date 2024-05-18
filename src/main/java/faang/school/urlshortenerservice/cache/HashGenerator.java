@@ -23,7 +23,7 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
 
-    @Value("${length.range:3}")
+    @Value("${length.range:6}")
     private int length;
 
     @Value("${length.batchSize:100}")
