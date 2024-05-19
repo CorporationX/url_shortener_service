@@ -11,7 +11,7 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, Long> {
     @Query(nativeQuery = true,
             value = """
-                    SELECT nextval(unique_number_sequence) FROM generate_series(1, :batchSize)
+                    SELECT nextval('unique_number_seq') FROM generate_series(1, :batchSize)
                     """
     )
     List<Long> getFollowingRangeUniqueNumbers(int batchSize);
