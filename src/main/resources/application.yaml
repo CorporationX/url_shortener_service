@@ -40,6 +40,10 @@ app:
     queue-capacity: 25
     thread_name_prefix: HashGenerator-
 
+  hash_cache:
+    size: 10
+    threshold-percentage: 20
+
   hash-generator:
     base: 62
     characters: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
