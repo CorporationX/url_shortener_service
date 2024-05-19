@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.annotation.Transactional; TODO: убрать если ну надо будет
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -18,15 +18,14 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class HashGenerator {
 
-    @Value("${app.hash-batch-size}}")
-    private int batchSize;
-
     private final HashRepository hashRepository;
     private final BaseConversion baseConversion;
 
-    //TODO: try-catch возможно нужно будет сюда добавить
+    @Value("${app.hash-batch-size}}")
+    private int batchSize;
+
     @Async("asyncExecutor")
-    @Transactional
+//    @Transactional TODO: я так и не разобрался, можно ли тут использовать эту аннотацию или нет
     public CompletableFuture<Void> generateBatch() {
         log.info("Starting batch generation with batch size: {}", batchSize);
         List<Long> uniqueNumbers = hashRepository.getFollowingRangeUniqueNumbers(batchSize);

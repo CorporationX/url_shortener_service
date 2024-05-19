@@ -17,13 +17,13 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
 
-    public String convertToShortUrl(UrlDto urlDto) {
+    public String convertToShortUrl(UrlDto urlDto) { //TODO: доделать
         return null;
     }
 
     public String redirectOriginalUrl(String hash) {
         return urlCacheRepository.getByHash(hash).orElseGet(
-                () -> urlRepository.getByHash(hash).map(Url::getUrl).orElseThrow(
+                () -> urlRepository.getByHash(hash).map(Url::getBaseUrl).orElseThrow(
                         () -> new EntityNotFoundException("URL not found for hash: " + hash)));
     }
 }

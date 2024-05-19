@@ -19,6 +19,6 @@ public class UrlDto {
 
     @NotNull(message = "URL cannot be null")
     @URL(message = "Invalid URL format")
-    private String url;
+    private String baseUrl;
 
 }
