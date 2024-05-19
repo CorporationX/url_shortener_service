@@ -26,5 +26,8 @@ logging:
 
 hash:
   alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  batch-size: 50
+  batch-size: 10
   base: 62
+  cache:
+    capacity: 10
+    fill-percent: 20
