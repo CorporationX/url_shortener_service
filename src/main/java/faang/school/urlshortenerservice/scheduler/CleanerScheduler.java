@@ -18,11 +18,8 @@ public class CleanerScheduler {
 
     @Transactional
     @Scheduled(cron = "${expression.cron:0 0 0 * * *}")
-    public void cleanOldUrls(){
-        Set<String> hashes = urlRepository.findOldUrls();
-        if(!hashes.isEmpty()){
-            urlRepository.deleteOldUrls(hashes);
-            hashRepository.saveHashes(hashes);
-        }
+    public void cleanOldUrls() {
+        Set<String> hashes = urlRepository.deleteOldUrlsAndReturnHashes();
+        hashRepository.saveHashes(hashes);
     }
 }

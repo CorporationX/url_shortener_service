@@ -25,7 +25,7 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-            INSERT INTO hash (base64_hash) VALUES (:hash)
+            INSERT INTO hash (base64_hash) VALUES (:hashes)
             """)
     void saveHashes(Set<String> hashes);
 }
