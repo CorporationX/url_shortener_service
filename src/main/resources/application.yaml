@@ -28,3 +28,10 @@ server:
 logging:
   level:
     root: info
+
+expression:
+  cron: 0 0 0 * * ?
+
+length:
+  batchSize: 100
+  range: 3
