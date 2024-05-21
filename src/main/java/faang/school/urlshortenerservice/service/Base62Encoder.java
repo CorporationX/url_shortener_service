@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.config.Base62EncoderConfig;
 import org.springframework.stereotype.Component;
 
 
@@ -8,6 +9,6 @@ import org.springframework.stereotype.Component;
 public class Base62Encoder extends BaseEncoder {
 
     public Base62Encoder(){
-        super(62, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        super(Base62EncoderConfig.ENCODING_FACTOR, Base62EncoderConfig.BASE_62_ALPHABET);
     }
 }

@@ -17,7 +17,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-
   data:
     redis:
       port: 6379
@@ -28,6 +27,14 @@ spring:
     redis:
       cache-null-values: false
       time-to-live: 3600
+
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
+        thread-name-prefix: my-task-executor-
 
 
 server:
@@ -51,3 +58,13 @@ cache:
   capacity:
     value: 5
     min_percent: 0.2
+
+controller:
+  mapping:
+    url_shortener: api/v1/url-shortener
+
+
+task:
+  execution:
+    pool:
+      name: taskExecutor

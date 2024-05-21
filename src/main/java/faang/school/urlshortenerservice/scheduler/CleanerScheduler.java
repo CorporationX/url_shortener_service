@@ -16,7 +16,7 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${scheduler.cleaner}")
 //    @Scheduled(fixedDelay = 10000)
-    @Async("executor")
+    @Async("taskExecutor")
     public void scheduledClean() {
         log.info("Scheduled url cleaner started");
         hashService.cleanAsync();

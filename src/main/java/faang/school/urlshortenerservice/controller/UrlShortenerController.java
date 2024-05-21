@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/url-shortener")
+@RequestMapping("${controller.mapping.url_shortener}")
 @Validated
 public class UrlShortenerController {
 
