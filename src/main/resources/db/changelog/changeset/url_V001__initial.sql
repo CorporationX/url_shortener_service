@@ -1,7 +1,7 @@
 CREATE TABLE url (
     hash VARCHAR(6) PRIMARY KEY,
     url VARCHAR(4096) NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT current_timestamp
+    created_at timestamptz DEFAULT current_timestamp
 );
 
 CREATE TABLE hash (
