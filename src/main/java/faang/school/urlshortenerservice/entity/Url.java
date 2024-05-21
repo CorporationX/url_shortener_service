@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class Url {
     @Column(name = "hash", nullable = false, length = 6)
     private String hash;
 
+    @NotNull
     @Column(name = "url", nullable = false)
     private String url;
 

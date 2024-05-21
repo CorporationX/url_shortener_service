@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context;
+package faang.school.urlshortenerservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
