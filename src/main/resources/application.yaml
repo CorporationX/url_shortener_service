@@ -32,3 +32,9 @@ logging:
 length:
   batchSize: 200
   start: 5
+  n: 10
+
+async:
+  core: 10
+  max: 20
+  queue_capacity: 50

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 @Component
 @RequiredArgsConstructor
@@ -25,14 +24,18 @@ public class HashGenerator {
     @Value("${length.batchSize:250}")
     private int batchSize;
 
+    @Value("${length.n}")
+    private int n;
+
     private static final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    @Async("hashGeneratorExecutor")
     @Transactional
     @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
-    public void generateUniqueHash() {
-        Set<Long> uniqueNumbers = LongStream.range(0, batchSize).boxed().collect(Collectors.toSet());
+    public void generateBatch() {
+        Set<Long> uniqueNumbers = hashRepository.getUniqueNumbers(n);
         Set<String> hashes = base62Encoder.encode(uniqueNumbers);
-        Set<Hash> hashEntities = hashes.stream()
+        Set<Hash> hashEntities = hashes.parallelStream()
                 .map(hash -> Hash.builder().base64Hash(hash).build())
                 .collect(Collectors.toSet());
         hashRepository.saveAll(hashEntities);
@@ -42,7 +45,7 @@ public class HashGenerator {
     public Set<String> getHashes(long amount) {
         Set<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
-            generateUniqueHash();
+            generateBatch();
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
         return hashes.stream().map(Hash::getBase64Hash).collect(Collectors.toSet());
