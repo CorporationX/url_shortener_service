@@ -33,7 +33,6 @@ public class HashGenerator {
         List<Hash> hashes = base62Encoder.encode(uniqueNumbers).stream()
                 .map(Hash::new)
                 .toList();
-
         return CompletableFuture.completedFuture(hashRepository.saveAll(hashes));
     }
 
