@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface HashRepository extends CrudRepository<Hash, Long> {
@@ -15,10 +15,10 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             """)
     boolean existsByBase64Hash(String base64Hash);
 
-    @Query(nativeQuery = true,value = """
+    @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE id IN(
             SELECT id FROM hash ORDER BY id ASC LIMIT :amount
             ) RETURNING *
             """)
-    List<Hash> findAndDelete(long amount);
+    Set<Hash> findAndDelete(long amount);
 }
