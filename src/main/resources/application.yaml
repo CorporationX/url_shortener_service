@@ -36,5 +36,11 @@ length:
   batchSize: 100
   range: 3
   start: 5
+  n: 10
 
 url: http://localhost:8080/api/
+
+async:
+  core: 10
+  max: 20
+  queue_capacity: 50
