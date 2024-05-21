@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -23,10 +22,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${length.range:3}")
-    private int length;
-
-    @Value("${length.batchSize:100}")
+    @Value("${length.batchSize:250}")
     private int batchSize;
 
     private static final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -34,8 +30,8 @@ public class HashGenerator {
     @Transactional
     @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
     public void generateUniqueHash() {
-        List<Long> uniqueNumbers = LongStream.range(0, batchSize).boxed().collect(Collectors.toList());
-        Set<String> hashes = base62Encoder.encode((Set<Long>) uniqueNumbers);
+        Set<Long> uniqueNumbers = LongStream.range(0, batchSize).boxed().collect(Collectors.toSet());
+        Set<String> hashes = base62Encoder.encode(uniqueNumbers);
         Set<Hash> hashEntities = hashes.stream()
                 .map(hash -> Hash.builder().base64Hash(hash).build())
                 .collect(Collectors.toSet());

@@ -5,5 +5,5 @@ CREATE SEQUENCE unique_hash_number_seq
 
 CREATE TABLE hash (
     id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
-    base64_hash VARCHAR(255) NOT NULL
+    base64_hash VARCHAR(128) NOT NULL
 )
