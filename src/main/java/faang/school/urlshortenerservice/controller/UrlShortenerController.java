@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.UrlShortenerService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
+    private final HashRepository repository;
 
     @PostMapping("/url")
     @CacheEvict(value = "url", key = "#url")

@@ -1,5 +1,8 @@
 package faang.school.urlshortenerservice.repository;
 
-public class UrlCacheRepository {
+import org.springframework.stereotype.Repository;
 
+@Repository
+public interface UrlCacheRepository {
+    // I dont see the point to keep it
 }

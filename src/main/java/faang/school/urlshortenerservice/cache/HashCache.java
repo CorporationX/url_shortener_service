@@ -11,6 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,7 +37,7 @@ public class HashCache {
 
     private AtomicBoolean isFilling;
 
-    private ArrayBlockingQueue<Hash> hashQueue;
+    private Queue<Hash> hashQueue;
 
     @PostConstruct
     public void init() {

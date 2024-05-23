@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
@@ -20,17 +21,17 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @Table(name = "url")
-public class Url {
+public class Url implements Serializable {
 
     @Id
     private String hash;
 
-    @Column(name = "url")
+    @Column(name = "url", nullable = false)
     private String url;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private Instant created_at;
 
 }

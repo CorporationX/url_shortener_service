@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context;
+package faang.school.urlshortenerservice.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
