@@ -28,3 +28,5 @@ server:
 logging:
   level:
     root: info
+
+url: http://localhost:8080/api/
