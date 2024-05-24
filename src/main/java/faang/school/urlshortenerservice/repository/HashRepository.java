@@ -19,7 +19,7 @@ public class HashRepository {
 
     @Transactional(readOnly = true)
     public List<Long> getUniqueNumbers(long maxRange) {
-        String sql = "SELECT nextval('unique_numbers_seq') FROM generate_series(1, ?)";
+        String sql = "SELECT nextval('unique_hash_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, maxRange);
     }
 
@@ -43,5 +43,11 @@ public class HashRepository {
     public List<Hash> getHashBatch(long amount) {
         String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash ORDER BY hash LIMIT ?) RETURNING *";
         return jdbcTemplate.queryForList(sql, Hash.class, amount);
+    }
+
+    @Transactional
+    public List<Hash> cleanAndGetHashes() {
+        String sql = "DELETE FROM url WHERE url IN (SELECT url FROM url WHERE created_at < NOW() - INTERVAL '1 YEAR') RETURNING *";
+        return jdbcTemplate.queryForList(sql, Hash.class);
     }
 }
