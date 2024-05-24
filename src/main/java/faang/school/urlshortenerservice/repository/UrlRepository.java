@@ -16,4 +16,7 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
         DELETE FROM url WHERE created_at < NOW() - INTERVAL '1 year' RETURNING hash
         """)
     Set<String> deleteOldUrlsAndReturnHashes();
+
+
+    Url findByHash(String hash);
 }

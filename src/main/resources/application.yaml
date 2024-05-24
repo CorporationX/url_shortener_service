@@ -44,3 +44,9 @@ async:
   core: 10
   max: 20
   queue_capacity: 50
+
+hash:
+  cache:
+    capacity: 20
+    fill:
+      percent: 20

@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.cache.LocalCache;
+import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private final HashCache hashCache;
+    private final LocalCache localCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     @Value("${url}")
@@ -24,7 +24,7 @@ public class UrlService {
         if (hash != null) {
             return baseUrl + hash;
         }
-        hash = hashCache.getHash();
+        hash = localCache.getHash();
         Url url = Url.builder()
                 .url(longUrl)
                 .hash(hash)
@@ -44,7 +44,6 @@ public class UrlService {
         if (url != null) {
             return url.getUrl();
         }
-
         throw new EntityNotFoundException("URL not found for hash: " + hash);
     }
 }
