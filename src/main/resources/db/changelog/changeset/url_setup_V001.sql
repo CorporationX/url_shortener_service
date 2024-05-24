@@ -9,5 +9,5 @@ CREATE TABLE hash (
 
 CREATE TABLE url (
     hash VARCHAR(6) PRIMARY KEY,
-    url TEXT NOT NULL
+    url VARCHAR(256) NOT NULL
 );
