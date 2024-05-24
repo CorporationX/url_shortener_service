@@ -30,3 +30,9 @@ logging:
     root: info
 
 url: http://localhost:8080/api/
+
+hash:
+  cache:
+    fill:
+      percent: 20
+    capacity: 1000
