@@ -15,7 +15,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
     List<Hash> getHashBatch(@Param("batch") int batch);
 
     @Modifying
-    @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :batchsize)")
+    @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :batchSize)")
     List<Long> getUniqueNumbers(@Param("batchSize") int batchSize);
 
 }

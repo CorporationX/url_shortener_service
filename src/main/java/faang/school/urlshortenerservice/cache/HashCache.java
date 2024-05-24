@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +29,13 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private AtomicBoolean isFilling;
     private ArrayBlockingQueue<Hash> hashQueue;
-    private final ThreadPoolTaskExecutor hashExecutor;
 
     @PostConstruct
     public void init() {
         log.info("Initializing HashCache in thread {}", Thread.currentThread());
         hashQueue = new ArrayBlockingQueue<>(capacityValue);
         isFilling = new AtomicBoolean(false);
-        hashExecutor.execute(this::populateCacheAsync);
+        populateCacheAsync();
         hashGenerator.generateBatchAsync(capacityValue);
     }
     @Transactional
@@ -49,7 +47,7 @@ public class HashCache {
     public void checkCache() {
         if ((double) hashQueue.size() / capacityValue * 100 < minCapacityPercent) {
             if (isFilling.compareAndSet(false, true)) {
-                hashExecutor.execute(() -> populateCacheAsync());
+                populateCacheAsync();
                 log.info("Returned to thread {}", Thread.currentThread());
             }
         }

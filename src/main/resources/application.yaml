@@ -24,9 +24,18 @@ logging:
   level:
     root: info
 
+app:
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 500
+    thread_name_prefix: HashGenerator-
+  scheduler:
+    cleaner: "0 0 0 * * ?"
+
 hash:
   batch-size: 100
   cache:
     capacity:
       value: 100
-      minCapacityPercent: 20
+      min_percent: 20

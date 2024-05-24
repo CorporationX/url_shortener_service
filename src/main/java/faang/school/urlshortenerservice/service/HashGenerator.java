@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    @Value("${hash.batch-size")
+    @Value("${hash.batch-size}")
     private int batchSize;
     private final Base62Encoder base62Encoder;
 
