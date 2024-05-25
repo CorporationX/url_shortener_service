@@ -17,6 +17,15 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  mvc:
+    servlet:
+      path: /api/v1
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
@@ -25,24 +34,23 @@ logging:
     root: info
 
 app:
-  url:
-    endpoint:
-      context-path: "/api/v1/url"
+  url-prefix: https://clck.com/
 
   scheduler:
     cleaner: "0 0 0 * * ?"
     period: 365 #Days - after what period to delete
 
-  hash-batch-size: 100
   async:
     core-pool-size: 5
     max-pool-size: 10
     queue-capacity: 25
     thread_name_prefix: HashGenerator-
 
-  hash_cache:
-    size: 10
-    threshold-percentage: 20
+  hash:
+    batch-size: 100
+    cache:
+      size: 10
+      fill-percent: 20
 
   hash-generator:
     base: 62

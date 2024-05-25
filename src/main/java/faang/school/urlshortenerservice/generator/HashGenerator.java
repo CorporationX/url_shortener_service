@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-//import org.springframework.transaction.annotation.Transactional; TODO: убрать если ну надо будет
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,20 +21,36 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final BaseConversion baseConversion;
 
-    @Value("${app.hash-batch-size}}")
+    @Value("${app.hash.batch-size}")
     private int batchSize;
 
-    @Async("asyncExecutor")
-//    @Transactional TODO: я так и не разобрался, можно ли тут использовать эту аннотацию или нет
-    public CompletableFuture<Void> generateBatch() {
-        log.info("Starting batch generation with batch size: {}", batchSize);
+    @Transactional
+    public void generateHashes() {
+        log.info("Starting Hash generation with size batch: {}", batchSize);
         List<Long> uniqueNumbers = hashRepository.getFollowingRangeUniqueNumbers(batchSize);
         List<Hash> hashes = baseConversion.encode(uniqueNumbers).stream()
                 .map(Hash::new)
                 .toList();
 
         hashRepository.saveAll(hashes);
-        return CompletableFuture.completedFuture(null);
+        log.info("Hashes was successfully generated {}", hashes);
+    }
+
+    @Transactional
+    public List<Hash> getHashes(int amount) {
+        List<Hash> hashes = hashRepository.getHashBatch(amount);
+        log.info("Hashes in the amount of {} pieces were successfully obtained from the database", amount);
+        if (hashes.size() < amount) {
+            generateHashes();
+            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+        }
+        log.info("Received hashes from the database in the number {}", amount);
+        return hashes;
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 
 }

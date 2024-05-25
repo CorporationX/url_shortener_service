@@ -1,8 +1,9 @@
 package faang.school.urlshortenerservice.controller;
 
-//import io.swagger.v3.oas.annotations.Operation; // TODO: swagger ПРЕКРУТИТЬ)
+//import io.swagger.v3.oas.annotations.Operation; // TODO: swagger ПРЕКРУТИТЬ
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,22 +17,23 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("${app.url.endpoint.context-path}")
+@RequestMapping
 public class UrlController {
 
     private final UrlService urlService;
 
-//    @Operation(summary = "Converts long url to short url") // TODO: swagger ПРЕКРУТИТЬ)
+//    @Operation(summary = "Converts long url to short url") // TODO: swagger ПРЕКРУТИТЬ, смотри как сделал в задаче с постами)
     @PostMapping("/url")
-    public String convertToShortUrl(@RequestBody UrlDto urlDto) {
+    public String convertToShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.convertToShortUrl(urlDto);
     }
 
     @GetMapping("/{hash}")
-//    @Operation(summary = "Finds original url from short url and redirects") // TODO: swagger ПРЕКРУТИТЬ)
+//    @Operation(summary = "Finds original url from short url and redirects") // TODO: swagger
     public RedirectView redirectOriginalUrl(@PathVariable String hash) {
         String url = urlService.redirectOriginalUrl(hash);
         return new RedirectView(url); // если я все правильно понял, то RedirectView автоматом возвращает
                                       // ответ со статусом 302 - HttpStatus.FOUND
     }
+
 }
