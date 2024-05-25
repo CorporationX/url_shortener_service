@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,16 @@ public class UrlExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(Exception exception) {
         log.error("Internal server error: {}", exception.getMessage());
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        LocalDateTime timestamp = LocalDateTime.now();
+        return new ErrorResponse(timestamp, HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
     @ExceptionHandler(DataValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDataValidationException(DataValidationException exception) {
         log.error("Data validation error: {}", exception.getMessage());
-        return new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        LocalDateTime timestamp = LocalDateTime.now();
+        return new ErrorResponse(timestamp, HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

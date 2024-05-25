@@ -13,11 +13,12 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
 
-    Optional<Url> getByHash(String hash);
+    Optional<Url> getUrlByHash(String hash);
 
     @Modifying
     @Query(nativeQuery = true,
             value = "DELETE FROM Url u WHERE u.created_at < :period RETURNING *")
     List<Url> deleteOldUrl(LocalDateTime period);
 
+    Optional <Url> findByUrl(String url);
 }
