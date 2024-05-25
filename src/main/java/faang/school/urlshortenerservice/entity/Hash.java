@@ -20,7 +20,7 @@ import lombok.Setter;
 public class Hash {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String uniqueHash;
 
 }

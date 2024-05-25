@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -14,10 +15,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UrlService {
 
+    private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
 
-    public String convertToShortUrl(UrlDto urlDto) { //TODO: доделать
+    public UrlDto convertToShortUrl(UrlDto urlDto) { //TODO: доделать
         return null;
     }
 

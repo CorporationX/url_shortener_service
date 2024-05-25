@@ -16,14 +16,14 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("${app.url.endpoint.context-path}")
+@RequestMapping("${app.url.endpoint.context-path}") //TODO: сделай как в пост сервисе
 public class UrlController {
 
     private final UrlService urlService;
 
-//    @Operation(summary = "Converts long url to short url") // TODO: swagger ПРЕКРУТИТЬ)
+//    @Operation(summary = "Converts long url to short url") // TODO: swagger ПРЕКРУТИТЬ, смотри как сделал в задаче с постами)
     @PostMapping("/url")
-    public String convertToShortUrl(@RequestBody UrlDto urlDto) {
+    public UrlDto convertToShortUrl(@RequestBody UrlDto urlDto) {
         return urlService.convertToShortUrl(urlDto);
     }
 
