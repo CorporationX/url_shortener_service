@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    servlet:
+      path: /api/v1  # Set default path for Spring
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -14,6 +18,14 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: redis
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -24,11 +36,22 @@ logging:
   level:
     root: info
 
+encoder:
+  base62:
+    base: 62
+    characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
 hashgenerator:
-  batch-size: 100
+  batch-size: 1000
+
+executor:
   threadpool-size: 5
   threadpool-queue-capacity: 100
 
-hash:
-  maxRange: 10000
-  batchSize: 1000
+cache:
+  capacity: 500
+  minPercent: 0.2
+
+repository:
+  hash:
+    batchSizeSave: 500
