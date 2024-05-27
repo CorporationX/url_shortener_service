@@ -26,6 +26,14 @@ spring:
       port: 6379
       host: localhost
 
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
+        thread-name-prefix: my-task-executor-
+
 server:
   port: 8080
 
@@ -39,12 +47,6 @@ app:
   scheduler:
     cleaner: "0 0 0 * * ?"
     period: 365 #Days - after what period to delete
-
-  async:
-    core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 25
-    thread_name_prefix: HashGenerator-
 
   hash:
     batch-size: 100
