@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.encoder.BaseConversion;
+import faang.school.urlshortenerservice.encoder.Converter;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
-    private final BaseConversion baseConversion;
+    private final Converter converter;
 
     @Value("${app.hash.batch-size}")
     private int batchSize;
@@ -28,7 +28,7 @@ public class HashGenerator {
     public void generateHashes() {
         log.info("Starting Hash generation with size batch: {}", batchSize);
         List<Long> uniqueNumbers = hashRepository.getFollowingRangeUniqueNumbers(batchSize);
-        List<Hash> hashes = baseConversion.encode(uniqueNumbers).stream()
+        List<Hash> hashes = converter.encode(uniqueNumbers).stream()
                 .map(Hash::new)
                 .toList();
 

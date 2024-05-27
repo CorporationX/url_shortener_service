@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.URL;
 public class UrlDto {
 
     @NotNull(message = "URL cannot be null")
-    @URL(message = "Invalid URL format")
+    @URL(regexp = "^((https?|ftp):\\/\\/)?([0-9a-zA-Z\\-\\.]+)(?::(\\d+))?(\\/[^?#]*)?(?:\\?([^#]*))?(?:#(.*))?$")
     private String baseUrl;
 
 }

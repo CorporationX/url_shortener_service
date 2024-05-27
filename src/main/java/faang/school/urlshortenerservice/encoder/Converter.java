@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class BaseConversion {
+public class Converter {
 
     @Value("${app.hash-generator.base}}")
     private int base;
