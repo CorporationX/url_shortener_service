@@ -10,9 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,14 +30,30 @@ public class HashGeneratorTest {
 
     @Test
     public void testGenerateBatch() {
-    List<Long> numbers = Arrays.asList(1L,2L);
-    Mockito.when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(numbers);
-    Mockito.when(base62Encoder.encode(eq(numbers))).thenReturn(Arrays.asList("a","b"));
-    hashGenerator.generateBatch();
+        List<Long> numbers = Arrays.asList(1L, 2L);
+        Mockito.when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(numbers);
+        Mockito.when(base62Encoder.encode(eq(numbers))).thenReturn(Arrays.asList("a", "b"));
+        hashGenerator.generateBatch();
 
-    Mockito.verify(hashRepository).saveAll(anyList());
+        Mockito.verify(hashRepository).saveAll(anyList());
     }
-    
+
+    @Test
+    public void testGetHashes() {
+        List<String> correctHashes = Arrays.asList("a", "b");
+        Mockito.when(hashRepository.getHashBatch(2)).thenReturn(correctHashes);
+
+        assertEquals(correctHashes, hashGenerator.getHashes(2));
+    }
+
+    @Test
+    public void testGetHashAsync() {
+        List<String> correctHashes = Arrays.asList("a", "b");
+        Mockito.when(hashRepository.getHashBatch(2)).thenReturn(correctHashes);
+
+        CompletableFuture<List<String>> returningHashes = hashGenerator.getHashesAsync(2);
+        returningHashes.thenAccept(hash -> assertEquals(correctHashes, hash));
+    }
 
 
 }

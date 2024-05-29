@@ -18,7 +18,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final BaseEncoder base62Encoder;
     @Value("${batch.size:1000}")
-    private Long number;
+    private int number;
 
     @Transactional
     @Scheduled(cron = "${cache.generator.cron}")
@@ -31,10 +31,10 @@ public class HashGenerator {
     }
     @Transactional
     public List<String> getHashes(int amount) {
-        List<String> hashes = hashRepository.getHashBach(amount);
+        List<String> hashes = hashRepository.getHashBatch(amount);
         if(hashes.size() < amount) {
             generateBatch();
-            hashes.addAll(hashRepository.getHashBach(amount-hashes.size()));
+            hashes.addAll(hashRepository.getHashBatch(amount-hashes.size()));
         }
         return hashes;
     }

@@ -42,3 +42,4 @@ cache:
   percentSize: 20
 scheduler:
   cron: 0 0 * * * *
+url: http://shortener/

@@ -13,7 +13,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public UrlDto shortenUrl(@RequestBody UrlDto url) {
+    public String shortenUrl(@RequestBody UrlDto url) {
         return urlService.createShortLink(url);
     }
 

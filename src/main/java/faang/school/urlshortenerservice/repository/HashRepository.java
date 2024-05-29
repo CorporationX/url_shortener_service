@@ -13,12 +13,12 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = """
             SELECT NEXTVAL('unique_number_seq') FROM generate_series(1,?)
             """)
-    List<Long> getUniqueNumbers(long number);
+    List<Long> getUniqueNumbers(int number);
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash where hash IN (SELECT hash from hash ORDER BY RANDOM() LIMIT ?)
             RETURNING *
             """)
     @Modifying
-    List<String> getHashBach(long batchSize);
+    List<String> getHashBatch(long batchSize);
 }
