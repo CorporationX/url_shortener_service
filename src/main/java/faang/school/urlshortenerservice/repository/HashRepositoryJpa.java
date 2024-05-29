@@ -13,15 +13,26 @@ import java.util.List;
 public interface HashRepositoryJpa extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_numbers_seq') AS number FROM generate_series(1, :amount)
+            SELECT NEXTVAL('unique_numbers_seq') AS number FROM generate_series(1, :amount)
             """)
     List<Long> getUniqueNumbers(int amount);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hashes WHERE hash in (SELECT hash from hashes ORDER BY LIMIT :batchSize)
-            RETURING hash
+            DELETE FROM hashes WHERE hash in (SELECT hash from hashes ORDER BY RANDOM() LIMIT :batchSize)
+            RETURNING hash
             """)
     @Modifying
     @Transactional
-    List<Hash> getHashBatch(int batchSize);
+    List<String> getHashBatch(int batchSize);
+//    List<Hash> getHashBatch(int batchSize);
+
+//    @Transactional
+//    @Modifying
+//    List<Hash> saveAllByMyFieldIn(List<String> hashes);
+
+//    @Modifying
+//    @Transactional
+//    @Query(value = "INSERT INTO hashes (hash) VALUES (:hash)", nativeQuery = true)
+//    void saveAllByMyFieldIn(List<String> hashes);
+
 }
