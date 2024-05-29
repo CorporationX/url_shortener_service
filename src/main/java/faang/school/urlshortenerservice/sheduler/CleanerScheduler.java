@@ -18,7 +18,7 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${scheduler.cron}")
     @Transactional
-    public void cleanUrl(){
+    public void cleanUrl() {
         List<Hash> hashes = urlRepository.deleteOldUrl();
         hashRepository.saveAll(hashes);
     }

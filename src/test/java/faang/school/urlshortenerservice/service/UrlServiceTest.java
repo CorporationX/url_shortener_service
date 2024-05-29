@@ -2,8 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Assertions;
@@ -13,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.Instant;
 
 import static org.mockito.Mockito.verify;
 
@@ -26,8 +22,6 @@ public class UrlServiceTest {
     private UrlRepository urlRepository;
     @Mock
     private HashCache hashCache;
-    @Mock
-    private UrlMapper urlMapper;
 
     @InjectMocks
     private UrlService urlService;

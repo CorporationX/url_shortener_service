@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 public class ExecutorPool {
     @Value("${executor_pool.size:10}")
     private int poolSize;
+
     @Bean
     public ExecutorService executorService() {
         return Executors.newFixedThreadPool(poolSize);

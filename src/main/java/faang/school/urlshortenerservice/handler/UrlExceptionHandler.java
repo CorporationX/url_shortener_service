@@ -31,6 +31,7 @@ public class UrlExceptionHandler {
         log.error("Data validation exception", e);
         return e.getMessage();
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

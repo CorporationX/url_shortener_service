@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -42,8 +41,8 @@ public class HashCache {
     @Async("executorService")
     public void updateCache() {
         int actualSizeCache = hashes.size() / (size / 100);
-        if (actualSizeCache < percentSize && workUpdate.compareAndSet(false,true)) {
-            hashGenerator.getHashesAsync(size) .thenAccept(hashes::addAll).thenRun(()->workUpdate.set(false));
+        if (actualSizeCache < percentSize && workUpdate.compareAndSet(false, true)) {
+            hashGenerator.getHashesAsync(size).thenAccept(hashes::addAll).thenRun(() -> workUpdate.set(false));
         }
     }
 

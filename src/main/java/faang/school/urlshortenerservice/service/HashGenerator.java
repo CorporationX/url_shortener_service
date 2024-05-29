@@ -29,15 +29,18 @@ public class HashGenerator {
                 .toList();
         hashRepository.saveAll(hashes);
     }
+
     @Transactional
     public List<String> getHashes(int amount) {
         List<String> hashes = hashRepository.getHashBatch(amount);
-        if(hashes.size() < amount) {
+        if (hashes.size() < amount) {
             generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(amount-hashes.size()));
+            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
         }
         return hashes;
     }
+
+    @Transactional
     @Async("executorService")
     public CompletableFuture<List<String>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));

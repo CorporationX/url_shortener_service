@@ -10,8 +10,9 @@ import java.util.List;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
     Url findByHash(String hash);
+
     @Modifying
-    @Query(nativeQuery = true,value = "DELETE FROM url" +
+    @Query(nativeQuery = true, value = "DELETE FROM url" +
             " WHERE create_at< DATE_SUB(CURRENT_DATE,INTERVAL 1 YEAR) RETURNING hash")
     List<Hash> deleteOldUrl();
 }
