@@ -17,7 +17,7 @@ public class UrlController {
         return urlService.createShortLink(url);
     }
 
-    @GetMapping("/hash")
+    @GetMapping("/{hash}")
     public RedirectView getUrls(@RequestParam String hash) {
         return new RedirectView(urlService.getUrl(hash));
     }
