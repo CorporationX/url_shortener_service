@@ -43,9 +43,8 @@ public class UrlService {
     @Transactional(readOnly = true)
     public UrlDto getUrl(String hash) {
         UrlDto urlDto = (UrlDto) redisTemplate.opsForValue().get(hash);
-        Url url;
         if (urlDto == null) {
-            url = urlRepository.findByHash(hash);
+            Url url = urlRepository.findByHash(hash);
             if (url == null) {
                 throw new EntityNotFoundException("Url with hash: %s not found");
             }

@@ -55,3 +55,6 @@ cache:
 repository:
   hash:
     batchSizeSave: 500
+
+scheduler:
+  cleanOldUrls: 0 0 0 * * ?
