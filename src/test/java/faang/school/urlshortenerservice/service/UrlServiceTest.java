@@ -56,13 +56,6 @@ public class UrlServiceTest {
 
     @Test
     public void getRedirectViewTest() {
-        UrlDto urlDto = new UrlDto();
-        urlDto.setUrl("https://www.youtube.com/");
-
-        Url urlObject = new Url();
-        urlObject.setHash("adewf");
-        urlObject.setUrl("https://www.youtube.com/");
-
         String hash = "adewf";
         String url = "https://www.youtube.com/";
 
