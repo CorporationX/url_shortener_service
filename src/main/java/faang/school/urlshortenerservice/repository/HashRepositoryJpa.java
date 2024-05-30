@@ -24,15 +24,4 @@ public interface HashRepositoryJpa extends JpaRepository<Hash, String> {
     @Modifying
     @Transactional
     List<String> getHashBatch(int batchSize);
-//    List<Hash> getHashBatch(int batchSize);
-
-//    @Transactional
-//    @Modifying
-//    List<Hash> saveAllByMyFieldIn(List<String> hashes);
-
-//    @Modifying
-//    @Transactional
-//    @Query(value = "INSERT INTO hashes (hash) VALUES (:hash)", nativeQuery = true)
-//    void saveAllByMyFieldIn(List<String> hashes);
-
 }

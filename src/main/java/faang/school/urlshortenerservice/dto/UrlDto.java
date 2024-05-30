@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UrlDto {
-   // private String hash;
     @URL(message = "Invalid URL")
     private String url;
-    //private LocalDateTime created_at;
 }

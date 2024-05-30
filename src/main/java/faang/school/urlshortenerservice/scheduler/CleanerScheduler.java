@@ -20,7 +20,8 @@ public class CleanerScheduler {
     @Scheduled(cron = "${scheduled.cron.removeUrls}")
     @Transactional
     public void deleteOlderUrls() {
-        List<Hash> hashes = urlRepository.deleteUrlsAndSaveHashes();
-        hashRepositoryJpa.saveAll(hashes);
+        List<String> hashes = urlRepository.deleteUrlsAndSaveHashes();
+        List<Hash> listHashes = hashes.stream().map(Hash::new).toList();
+        hashRepositoryJpa.saveAll(listHashes);
     }
 }

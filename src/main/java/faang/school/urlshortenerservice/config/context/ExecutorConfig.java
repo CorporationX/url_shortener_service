@@ -16,17 +16,13 @@ public class ExecutorConfig {
     @Value("${executorService.capacity}")
     private int capacity;
 
-//    @Bean
-//    public Executor executorService() {
-//        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-//        threadPoolTaskExecutor.setCorePoolSize(1);
-//        threadPoolTaskExecutor.setMaxPoolSize(threadSize);
-//        threadPoolTaskExecutor.setQueueCapacity(capacity);
-//        threadPoolTaskExecutor.initialize();
-//        return threadPoolTaskExecutor;
-//    }
     @Bean
-    public ExecutorService executorService() {
-        return Executors.newFixedThreadPool(threadSize);
+    public Executor executorService() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(1);
+        threadPoolTaskExecutor.setMaxPoolSize(threadSize);
+        threadPoolTaskExecutor.setQueueCapacity(capacity);
+        threadPoolTaskExecutor.initialize();
+        return threadPoolTaskExecutor;
     }
 }

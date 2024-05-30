@@ -23,8 +23,8 @@ public class Base62Encoder implements Encoder {
             StringBuilder sb = new StringBuilder();
             while (number > 0) {
                 int remainder = (int) number % base;
-               // sb.append(BASE62.charAt(remainder));
-                remainder /= base;
+                sb.append(BASE62.charAt(remainder));
+                number /= base;
             }
             if (sb.toString().length() < 6) {
                 while (sb.toString().length() < 6) {
