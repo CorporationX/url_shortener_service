@@ -20,7 +20,7 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public RedirectView getFullUrl(@PathVariable String hash){
+    public RedirectView getFullUrl(@PathVariable String hash) {
         return new RedirectView(urlService.getFullUrl(hash).getUrl());
     }
 }
