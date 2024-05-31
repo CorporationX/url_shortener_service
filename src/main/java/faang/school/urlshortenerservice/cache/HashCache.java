@@ -1,29 +1,29 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Value("${hash.cache-size}")
+    private final HashGenerator hashGenerator;
+
+    @Value("${hash.cache.capacity}")
     private int capacity;
 
-    @Value("${hash.cache-min-fill-percent}")
-    private int minFillPercent;
+    @Value("${hash.cache.fill.percent}")
+    private int percent;
 
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
-
-    private final HashGenerator hashGenerator;
+    private final AtomicBoolean filling = new AtomicBoolean(false);
 
     private Queue<String> hashes;
 
@@ -34,21 +34,12 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (isCacheRunningOut()) {
-            if (isFilling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
-                        .thenRun(() -> isFilling.set(false));
+        if (hashes.size() / (capacity / 100.0) < percent) {
+            if (filling.compareAndSet(false, true)) {
+                hashGenerator.getHashAsync(capacity)
+                        .thenAccept(hashes::addAll);
             }
         }
         return hashes.poll();
-    }
-
-    public void addHashes(List<String> newHashes) {
-        hashes.addAll(newHashes);
-    }
-
-    private boolean isCacheRunningOut() {
-        return ((hashes.size() / (double) capacity) * 100.0) < minFillPercent;
     }
 }

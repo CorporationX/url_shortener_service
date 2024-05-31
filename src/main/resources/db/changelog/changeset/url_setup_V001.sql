@@ -1,10 +1,9 @@
-
 CREATE SEQUENCE unique_hash_number_seq
     START WITH 1
     INCREMENT BY 1;
 
 CREATE TABLE hash (
-    base64_hash VARCHAR(128) PRIMARY KEY
+    hash VARCHAR(128) PRIMARY KEY
 );
 
 CREATE TABLE url (
