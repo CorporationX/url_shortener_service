@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +22,10 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${length.batchSize}")
+    @Value("${length.range:3}")
+    private int length;
+
+    @Value("${length.batchSize:100}")
     private int batchSize;
 
     @Value("${length.n}")
