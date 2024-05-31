@@ -22,6 +22,11 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
     boolean existsByBase64Hash(String base64Hash);
 
     @Query(nativeQuery = true, value = """
+            SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
+            """)
+    Set<Long> getUniqueNumbers(int max);
+
+    @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE id IN(
             SELECT id FROM hash ORDER BY id ASC LIMIT :amount
             ) RETURNING *
