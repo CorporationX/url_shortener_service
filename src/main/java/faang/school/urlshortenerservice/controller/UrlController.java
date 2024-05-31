@@ -17,17 +17,18 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping
 @RequiredArgsConstructor
 public class UrlController {
+
     private final UrlService urlService;
 
-    @PostMapping("url")
+    @PostMapping("/url")
     public UrlDto create(@RequestBody @Valid UrlDto urlDto) {
         return urlService.create(urlDto);
     }
 
-    @GetMapping("{hash}")
+    @GetMapping("/{hash}")
     public RedirectView get(@PathVariable String hash, RedirectAttributes attributes) {
         attributes.addFlashAttribute("flashAttribute", "redirectWithRedirectView");
         attributes.addAttribute("attribute", "redirectWithRedirectView");
-        return new RedirectView(urlService.get(hash).getUrl());
+        return new RedirectView(urlService.get(hash));
     }
 }
