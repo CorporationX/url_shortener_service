@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -21,12 +20,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-
-    @Value("${length.range:3}")
-    private int length;
-
-    @Value("${length.batchSize:100}")
-    private int batchSize;
 
     @Value("${length.n}")
     private int n;
@@ -45,10 +38,10 @@ public class HashGenerator {
 
     @Transactional
     public Set<String> getHashes(long amount) {
-        Set<Hash> hashes = hashRepository.findAndDelete(amount);
+        Set<Hash> hashes = hashRepository.getHashBatch(amount);
         if (hashes.size() < amount) {
             generateBatch();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).collect(Collectors.toSet());
     }
