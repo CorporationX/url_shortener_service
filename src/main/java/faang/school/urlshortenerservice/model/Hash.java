@@ -8,13 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Builder
 @Entity
 @Data
 @Table(name = "hash")
-@NoArgsConstructor
-@AllArgsConstructor
 public class Hash {
 
     @Id

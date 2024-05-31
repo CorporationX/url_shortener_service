@@ -37,7 +37,7 @@ public class HashCache {
         if (hashes.size() / (capacity / 100.0) < percent) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashAsync(capacity)
-                        .thenAccept(hashes::addAll)
+                        .thenAccept(hashes::addAll);
             }
         }
         return hashes.poll();

@@ -21,22 +21,20 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${length.batchSize:250}")
+    @Value("${length.batchSize}")
     private int batchSize;
 
     @Value("${length.n}")
     private int n;
 
-    private static final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
     @Async("hashGeneratorExecutor")
     @Transactional
-    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
+    @Scheduled(cron = "${expression.cron}")
     public void generateBatch() {
         Set<Long> uniqueNumbers = hashRepository.getUniqueNumbers(n);
         Set<String> hashes = base62Encoder.encode(uniqueNumbers);
         Set<Hash> hashEntities = hashes.parallelStream()
-                .map(hash -> Hash.builder().base64Hash(hash).build())
+                .map(hash -> Hash.builder().hash(hash).build())
                 .collect(Collectors.toSet());
         hashRepository.saveAll(hashEntities);
     }
@@ -48,7 +46,7 @@ public class HashGenerator {
             generateBatch();
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
-        return hashes.stream().map(Hash::getBase64Hash).collect(Collectors.toSet());
+        return hashes.stream().map(Hash::getHash).collect(Collectors.toSet());
     }
 
     @Async("hashGeneratorExecutor")
