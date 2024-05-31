@@ -28,12 +28,6 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             """)
     Set<Long> getUniqueNumbers(int max);
 
-    @Query(nativeQuery = true, value = """
-            DELETE FROM hash WHERE id IN(
-            SELECT id FROM hash ORDER BY id ASC LIMIT :amount
-            ) RETURNING *
-            """)
-    Set<Hash> findAndDelete(long amount);
 
     @Modifying
     @Query(nativeQuery = true, value = """
