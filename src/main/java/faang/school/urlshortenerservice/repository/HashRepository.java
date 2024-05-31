@@ -12,13 +12,13 @@ import java.util.Set;
 public interface HashRepository extends CrudRepository<Hash, Long> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
+            SELECT nextval('unique_hash_number_seq') FROM generate_series(1, ?)
             """)
     Set<Long> getUniqueNumbers(int max);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash WHERE id IN(
-            SELECT id FROM hash ORDER BY id ASC LIMIT :amount
+            DELETE FROM hash WHERE hash IN(
+            SELECT hash FROM hash ORDER BY hash ASC LIMIT :amount
             ) RETURNING *
             """)
     Set<Hash> getHashBatch(long amount);
