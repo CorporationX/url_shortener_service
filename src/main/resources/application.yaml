@@ -36,3 +36,6 @@ hash:
   cache:
     capacity: 10
     fill-percent: 20
+
+scheduler:
+  cleaner: "@midnight"

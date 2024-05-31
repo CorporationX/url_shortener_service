@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +12,7 @@ import org.hibernate.validator.constraints.URL;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UrlDto {
-    @Size(max = 6)
-    private String hash;
-
     @URL
+    @NotBlank
     private String url;
 }
