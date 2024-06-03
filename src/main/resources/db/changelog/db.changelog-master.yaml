@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/url_setup_V001.sql
+      file: db/changelog/changeset/hash_V001_initial.sql
+  - include:
+      file: db/changelog/changeset/url_V002__initial.sql

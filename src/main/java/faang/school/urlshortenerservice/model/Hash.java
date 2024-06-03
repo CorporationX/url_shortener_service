@@ -9,15 +9,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Entity
 @Data
-@Table(name = "hash")
+@Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "hash")
 public class Hash {
 
     @Id
-    @Column(name = "hash", nullable = false)
+    @Column(name = "hash")
     private String hash;
 }
