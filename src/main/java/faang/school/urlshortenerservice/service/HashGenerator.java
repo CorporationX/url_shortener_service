@@ -22,7 +22,7 @@ public class HashGenerator {
 
     @Transactional
     @Scheduled(cron = "${cache.generator.cron}")
-    @Async("executorService")
+    @Async("urlShortenerService")
     public void generateBatch() {
         List<String> saveHash = base62Encoder.encode(hashRepository.getUniqueNumbers(number));
         List<Hash> hashes = saveHash.stream().map(Hash::new)
@@ -41,7 +41,7 @@ public class HashGenerator {
     }
 
     @Transactional
-    @Async("executorService")
+    @Async("urlShortenerService")
     public CompletableFuture<List<String>> getHashesAsync(int amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }

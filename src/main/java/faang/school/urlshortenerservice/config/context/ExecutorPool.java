@@ -13,7 +13,7 @@ public class ExecutorPool {
     private int poolSize;
 
     @Bean
-    public ExecutorService executorService() {
+    public ExecutorService urlShortenerService() {
         return Executors.newFixedThreadPool(poolSize);
     }
 }

@@ -28,25 +28,25 @@ public class UrlService {
     @Transactional
     public String createShortLink(UrlDto urlDto) {
         String hash = hashCache.getHash();
-        String shortLink = startUrl + hash;
         Url newUrl = new Url();
         newUrl.setUrl(urlDto.getUrl());
-        newUrl.setHash(shortLink);
-        newUrl.setCreated_at(Instant.now());
+        newUrl.setHash(hash);
+        newUrl.setCreatedAt(Instant.now());
         urlRepository.save(newUrl);
-        urlCacheRepository.save(shortLink, urlDto.getUrl());
+        urlCacheRepository.save(hash, urlDto.getUrl());
         log.info("New url added: {}", newUrl);
-        return shortLink;
+        return startUrl + hash;
     }
 
     @Transactional(readOnly = true)
     public String getUrl(String hash) {
-        String cacheUrl = urlCacheRepository.get(hash);
+        String newHash = hash.replace(startUrl,"");
+        String cacheUrl = urlCacheRepository.get(newHash);
         if (cacheUrl != null) {
             log.info("Cache url found: {}", cacheUrl);
             return cacheUrl;
         }
-        Url url = urlRepository.findByHash(hash);
+        Url url = urlRepository.findByHash(newHash);
         if (url != null) {
             log.info("Url found: {}", url);
             return url.getUrl();
