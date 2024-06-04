@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -24,14 +24,14 @@ public class HashCache {
     private int fillPercent;
 
     private AtomicBoolean isRefilling;
-    private LinkedBlockingQueue<Hash> hashes;
+    private ArrayBlockingQueue<Hash> hashes;
 
     @PostConstruct
     public void init() {
         isRefilling = new AtomicBoolean(false);
 
         log.info("Starting init HashCache");
-        hashes = new LinkedBlockingQueue<>(cacheSize);
+        hashes = new ArrayBlockingQueue<>(cacheSize);
         hashGenerator.getHashesAsync(cacheSize).thenAccept(hashes::addAll);
         log.info("Finished starting init HashCache, cache size: {}", cacheSize);
     }
