@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.controller;
 
-//import io.swagger.v3.oas.annotations.Operation; // TODO: swagger ПРЕКРУТИТЬ
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -22,18 +24,25 @@ public class UrlController {
 
     private final UrlService urlService;
 
-//    @Operation(summary = "Converts long url to short url") // TODO: swagger ПРЕКРУТИТЬ, смотри как сделал в задаче с постами)
+    @Operation(summary = "Converts long url to short url")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The short URL was successfully created"),
+            @ApiResponse(responseCode = "500", description = "Internal error occurred on the server when creating a short URL")
+    })
     @PostMapping("/url")
     public String convertToShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.convertToShortUrl(urlDto);
     }
 
     @GetMapping("/{hash}")
-//    @Operation(summary = "Finds original url from short url and redirects") // TODO: swagger
+    @Operation(summary = "Redirects to the original URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The original URL was found successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal error occurred on the server when redirecting to the original URL")
+    })
     public RedirectView redirectOriginalUrl(@PathVariable String hash) {
         String url = urlService.redirectOriginalUrl(hash);
-        return new RedirectView(url); // если я все правильно понял, то RedirectView автоматом возвращает
-                                      // ответ со статусом 302 - HttpStatus.FOUND
+        return new RedirectView(url);
     }
 
 }
