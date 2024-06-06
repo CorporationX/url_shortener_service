@@ -5,13 +5,11 @@
 
 Для оптимизации работы микросервиса используется локальный кэш прямо в памяти в потокобезопасной структуре данных, что значительно повышает эффективность работы сервиса.
 
-Данная реализация основана на алгоритме **BASE62**. Внутри используется асинхронизм для оптимизации работы при высоких нагрузках.
-
 [Кэш](https://github.com/CorporationX/url_shortener_service/blob/dragon-master-bc3-BJS2-6686/src/main/java/faang/school/urlshortenerservice/cache/HashCache.java) используется для хранения заранее сгенерированных хэшей для ссылок. Есть коофицент заполнения по истечению которого начинает генерацию хэшей в отдельном потоке;
 
 [Контроллер](https://github.com/CorporationX/url_shortener_service/blob/dragon-master-bc3-BJS2-6686/src/main/java/faang/school/urlshortenerservice/controller/UrlController.java) как точка входа в приложение. Используется для выдачи ссылок и редиректа по основной ссылке;
 
-[Converter](https://github.com/CorporationX/url_shortener_service/blob/dragon-master-bc3-BJS2-6686/src/main/java/faang/school/urlshortenerservice/encoder/Converter.java) принимает на вход коллекцию чисел и возвращает коллекцию сгенерированных хэшей. По умолчанию используется алгоритм **Base62**, в `application.yaml` можно настроить параметры кодировки;
+[Converter](https://github.com/CorporationX/url_shortener_service/blob/dragon-master-bc3-BJS2-6686/src/main/java/faang/school/urlshortenerservice/encoder/Converter.java) принимает на вход коллекцию чисел и возвращает коллекцию сгенерированных хэшей. По умолчанию используется алгоритм **Base62**, в `application.yaml` можно настроить параметры кодировки. Внутри используется асинхронизм для оптимизации работы при высоких нагрузках;
 
 [Клинер](https://github.com/CorporationX/url_shortener_service/blob/dragon-master-bc3-BJS2-6686/src/main/java/faang/school/urlshortenerservice/service/HashService.java) очищает устаревшие хэши и возвращает их в базу. Используется конфигурирование параметров;
 
