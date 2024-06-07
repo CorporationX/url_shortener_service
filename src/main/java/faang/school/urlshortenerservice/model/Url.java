@@ -28,6 +28,6 @@ public class Url {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
-    private Instant created_at;
+    @Column(name = "createdAt")
+    private Instant createdAt;
 }

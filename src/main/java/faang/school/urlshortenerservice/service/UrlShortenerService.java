@@ -19,7 +19,7 @@ public class UrlShortenerService {
     public UrlDto convertToShortUrl(UrlDto originalUrl) {
         Url url = urlMapper.toEntity(originalUrl);
         url.setHash(hashCache.getHash().getHash());
-        return urlMapper.toDto(url);
+        return urlMapper.toDto(urlRepository.save(url));
     }
 
     public UrlDto getOriginalUrl(String hash) {
