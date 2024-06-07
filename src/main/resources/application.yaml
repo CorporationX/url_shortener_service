@@ -34,7 +34,9 @@ logging:
 batch:
   size: 100
 executor_pool:
+  core: 2
   size: 15
+  queue_capacity: 50
 cache:
   generator:
     cron: 0 0 * * * *

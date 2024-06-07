@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS hash (
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 6
+    START WITH 1
     INCREMENT BY 1;

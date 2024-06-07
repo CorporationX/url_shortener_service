@@ -38,7 +38,7 @@ public class HashCache {
         hashes.addAll(hashGenerator.getHashes(size));
     }
 
-    @Async("urlShortenerService")
+    @Async("urlShortenerPool")
     public void updateCache() {
         int actualSizeCache = hashes.size() / (size / 100);
         if (actualSizeCache < percentSize && workUpdate.compareAndSet(false, true)) {

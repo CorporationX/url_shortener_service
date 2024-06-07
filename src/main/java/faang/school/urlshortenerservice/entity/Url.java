@@ -17,7 +17,7 @@ import java.time.Instant;
 @Table(name = "url")
 public class Url {
     @Id
-    @Column(name = "hash",nullable = false)
+    @Column(name = "hash",nullable = false,length = 6)
     private String hash;
 
     @Column(name = "url", nullable = false)
