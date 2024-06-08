@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "hashes")
+@Table(name = "hash")
 public class Hash {
     @Id
     @Column(name = "hash", nullable = false, unique = true, length = 6)

@@ -13,12 +13,12 @@ import java.util.List;
 public interface HashRepositoryJpa extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
-            SELECT NEXTVAL('unique_numbers_seq') AS number FROM generate_series(1, :amount)
+            SELECT NEXTVAL('unique_number_seq') AS number FROM generate_series(1, :amount)
             """)
     List<Long> getUniqueNumbers(int amount);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hashes WHERE hash in (SELECT hash from hashes ORDER BY RANDOM() LIMIT :batchSize)
+            DELETE FROM hash WHERE hash in (SELECT hash from hash ORDER BY RANDOM() LIMIT :batchSize)
             RETURNING hash
             """)
     @Modifying

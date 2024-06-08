@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(nativeQuery = true, value = """
-            DELETE FROM urls WHERE created_at < DATE_SUB(CURRENT_DATE,INTERVAL 1 YEAR)
+            DELETE FROM url WHERE created_at < DATE_SUB(CURRENT_DATE,INTERVAL 1 YEAR)
             RETURNING hash
             """)
     @Modifying

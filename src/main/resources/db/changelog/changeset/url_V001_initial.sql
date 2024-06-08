@@ -1,13 +1,13 @@
-CREATE TABLE urls (
+CREATE TABLE url (
     hash VARCHAR(6) PRIMARY KEY,
     url VARCHAR (256) NOT NULL,
     created_at TIMESTAMPTZ DEFAULT current_timestamp
 );
 
-CREATE TABLE hashes (
+CREATE TABLE hash (
     hash VARCHAR(6) PRIMARY KEY
 );
 
-CREATE SEQUENCE unique_numbers_seq
+CREATE SEQUENCE unique_number_seq
     START WITH 1
     INCREMENT BY 1;

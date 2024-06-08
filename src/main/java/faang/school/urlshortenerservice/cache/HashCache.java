@@ -23,7 +23,7 @@ public class HashCache {
     private  Queue<String> cache;
 
     private final HashGenerator hashGenerator;
-    private final AtomicBoolean generateCacheHashes = new AtomicBoolean(false);
+    private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
@@ -40,14 +40,14 @@ public class HashCache {
         log.info("Хэш получен {}", hash);
         return hash;
     }
-    @Async("executorService")
+    @Async("shortenerService")
     public void updateCache() {
         double percent = (double) cache.size() / 100;
-        if (percent < fullness && generateCacheHashes.compareAndSet(false, true)) {
+        if (percent < fullness && isFilling.compareAndSet(false, true)) {
             log.info("Запуск наполнения кэша данными");
             hashGenerator.generatedBatchAsync(sizeQueue)
                     .thenAccept(hashes -> cache.addAll(hashes))
-                    .thenRun(() -> generateCacheHashes.set(false));
+                    .thenRun(() -> isFilling.set(false));
             log.info("Наполнение кэша прошло успешно");
         }
     }

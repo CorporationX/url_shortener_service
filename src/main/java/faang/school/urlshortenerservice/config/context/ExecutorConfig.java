@@ -17,7 +17,7 @@ public class ExecutorConfig {
     private int capacity;
 
     @Bean
-    public Executor executorService() {
+    public Executor shortenerService() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(1);
         threadPoolTaskExecutor.setMaxPoolSize(threadSize);

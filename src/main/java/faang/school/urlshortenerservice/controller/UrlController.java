@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,12 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UrlController {
     private final UrlService urlService;
     @PostMapping
-    public UrlDto getShortUrl(@RequestBody UrlDto urlDto){
+    public String getShortUrl(@RequestBody UrlDto urlDto){
         return urlService.createShortUrl(urlDto);
     }
 
-    @GetMapping("/{hash}")
-    public RedirectView getRedirectView(@PathVariable("hash") String hash) {
-        return urlService.getRedirectView(hash);
+    @GetMapping("/{shortLink}")
+    public RedirectView getRedirectView(@PathVariable("shortLink") String shortLink) {
+        return new RedirectView(urlService.getRedirectView(shortLink));
     }
 }
