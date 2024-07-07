@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+repository:
+  save-batch-size: 10
+  get-batch-size: 8
