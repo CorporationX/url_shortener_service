@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.config.HashProperties;
 import faang.school.urlshortenerservice.model.Hash;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,10 +14,7 @@ import java.util.stream.IntStream;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    @Value("${hash.save-batch.size}")
-    private int saveBatch;
-    @Value("${hash.get-batch.size}")
-    private int getBatch;
+    private final HashProperties hashProperties;
     private final HashJpaRepository hashJpaRepository;
 
 
@@ -26,12 +23,12 @@ public class HashRepository {
     }
 
     public void saveHashesList(List<Hash> hashes) {
-        IntStream.iterate(0, i -> i < hashes.size(), i -> i + saveBatch)
-                .mapToObj(i -> hashes.subList(i, Math.min(i + saveBatch, hashes.size())))
+        IntStream.iterate(0, i -> i < hashes.size(), i -> i + hashProperties.getSaveBatch())
+                .mapToObj(i -> hashes.subList(i, Math.min(i + hashProperties.getSaveBatch(), hashes.size())))
                 .forEach(hashJpaRepository::saveAll);
     }
 
     public List<Hash> getHashBatch() {
-        return hashJpaRepository.getHashBatch(getBatch);
+        return hashJpaRepository.getHashBatch(hashProperties.getGetBatch());
     }
 }
