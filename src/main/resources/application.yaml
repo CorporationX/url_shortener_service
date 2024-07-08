@@ -4,6 +4,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -23,3 +26,6 @@ server:
 logging:
   level:
     root: info
+
+url:
+  hash-batch-size: 5
