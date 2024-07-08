@@ -35,7 +35,6 @@ public class HashCache {
         refillCache();
     }
 
-    //TODO: использовать в будущих задачах
     public Hash getHash() {
         if (cache.size() < lowCacheSize && !isFilling.get()) {
             log.warn(

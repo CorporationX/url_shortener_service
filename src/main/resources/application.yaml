@@ -18,6 +18,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: localhost
   port: 9090
 
 logging:
