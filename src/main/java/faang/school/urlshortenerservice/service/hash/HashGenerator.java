@@ -19,7 +19,6 @@ public class HashGenerator {
     private final Base62Encoder encoder;
 
 
-    //TODO: использовать в дальнейших задачах
     @Async(value = "taskExecutor")
     @Transactional
     public void generateBatch() {

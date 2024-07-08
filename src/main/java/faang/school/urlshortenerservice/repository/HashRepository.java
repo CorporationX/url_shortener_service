@@ -21,19 +21,16 @@ public class HashRepository {
     private final HashJpaRepository hashJpaRepository;
 
 
-    //TODO: использовать в сервисе
     public List<Long> getNUniqueNumbers(long numbersCount) {
         return hashJpaRepository.getNUniqueNumbers(numbersCount);
     }
 
-    //TODO: использовать в сервисе
     public void saveHashesList(List<Hash> hashes) {
         IntStream.iterate(0, i -> i < hashes.size(), i -> i + saveBatch)
                 .mapToObj(i -> hashes.subList(i, Math.min(i + saveBatch, hashes.size())))
                 .forEach(hashJpaRepository::saveAll);
     }
 
-    //TODO: использовать в сервисе
     public List<Hash> getHashBatch() {
         return hashJpaRepository.getHashBatch(getBatch);
     }

@@ -26,12 +26,15 @@ logging:
 
 
 hash:
+  cache:
+    capacity: 100
+    low-size-percentage: 20
   generation-batch:
-    size: 20
+    size: 40
   save-batch:
     size: 10
   get-batch:
-    size: 8
+    size: 30
 
 task-executor:
   pool-size: 10
