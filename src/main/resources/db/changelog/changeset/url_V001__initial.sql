@@ -8,4 +8,4 @@ CREATE TABLE hash (
     hash VARCHAR(6) PRIMARY KEY
 );
 
-CREATE SEQUENCE serial START 1;
+CREATE SEQUENCE unique_number_seq AS BIGINT START 1;
