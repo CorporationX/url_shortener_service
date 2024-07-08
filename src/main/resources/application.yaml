@@ -5,6 +5,11 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
