@@ -1,0 +1,11 @@
+CREATE TABLE url (
+    hash VARCHAR(6) PRIMARY KEY,
+    url VARCHAR(1024) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp
+);
+
+CREATE TABLE hash (
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE SEQUENCE serial START 1;
