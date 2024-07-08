@@ -21,7 +21,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "hash")
+@Table(name = "hashes")
 public class Hash {
 
     @Id

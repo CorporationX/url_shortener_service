@@ -1,0 +1,2 @@
+ALTER TABLE hash
+RENAME TO hashes;
