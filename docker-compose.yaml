@@ -1,0 +1,14 @@
+version: '3'
+services:
+  master_postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - '4532:5432'
+  master_redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
