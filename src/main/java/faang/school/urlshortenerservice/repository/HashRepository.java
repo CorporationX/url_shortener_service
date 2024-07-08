@@ -14,9 +14,9 @@ import java.util.stream.IntStream;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    @Value("${repository.save-batch-size}")
+    @Value("${hash.save-batch.size}")
     private int saveBatch;
-    @Value("${repository.get-batch-size}")
+    @Value("${hash.get-batch.size}")
     private int getBatch;
     private final HashJpaRepository hashJpaRepository;
 

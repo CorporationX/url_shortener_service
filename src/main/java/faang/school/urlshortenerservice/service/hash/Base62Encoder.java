@@ -14,8 +14,6 @@ public class Base62Encoder {
     public static final long HIGH_BOUND = 56_800_235_583L;
 
 
-    //TODO: использовать в генераторе хешей
-
     /**
      * Возвращает список уникальных хешей длиной 6 симоволов
      *

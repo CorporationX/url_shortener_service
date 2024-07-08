@@ -24,6 +24,15 @@ logging:
   level:
     root: info
 
-repository:
-  save-batch-size: 10
-  get-batch-size: 8
+
+hash:
+  generation-batch:
+    size: 20
+  save-batch:
+    size: 10
+  get-batch:
+    size: 8
+
+task-executor:
+  pool-size: 10
+  queue-capacity: 20
