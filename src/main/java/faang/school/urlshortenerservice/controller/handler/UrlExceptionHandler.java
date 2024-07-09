@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class UrlExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -33,7 +33,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e, HttpServletRequest request) {
         log.error("Not found: {}", e.getMessage());
-        return buildErrorResponse(e, request,  HttpStatus.NOT_FOUND);
+        return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleAllUncaughtException(Exception e, HttpServletRequest request) {
+        log.error("Internal server error: {}", e.getMessage());
+        return buildErrorResponse(e, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ErrorResponse buildErrorResponse(Exception e, HttpServletRequest request, HttpStatus status) {
