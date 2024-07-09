@@ -28,3 +28,6 @@ server:
 logging:
   level:
     root: info
+
+batch-size:
+  hash: 100
