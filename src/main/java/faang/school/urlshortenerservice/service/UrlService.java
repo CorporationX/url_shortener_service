@@ -4,10 +4,14 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.redis.UrlCache;
 import faang.school.urlshortenerservice.repository.UrlJpaRepository;
 import faang.school.urlshortenerservice.service.hash.HashCache;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.function.Supplier;
 
 import static java.time.LocalDateTime.now;
 
@@ -21,9 +25,10 @@ public class UrlService {
     private int port;
     private final HashCache hashCache;
     private final UrlJpaRepository urlRepository;
-    private final UrlCache urlCache;
+    private final UrlCache urlCacheRepository;
 
 
+    @Transactional
     public String shortenUrl(String url) {
         Url shortUrl = urlRepository.findByUrl(url)
                 .orElseGet(() -> Url.builder()
@@ -34,8 +39,21 @@ public class UrlService {
         shortUrl.setLastReceivedAt(now());
 
         shortUrl = urlRepository.save(shortUrl);
-        urlCache.saveInCache(shortUrl);
+        urlCacheRepository.saveInCache(shortUrl);
 
         return String.format("%s:%s/%s", host, port, shortUrl.getHash());
+    }
+
+    @Transactional
+    public String getUrl(String hash) {
+        Supplier<Url> urlFromDbSupplier = () -> urlRepository.findByHash(hash)
+                .orElseThrow(() -> new EntityNotFoundException("Not found original url by passed short url "));
+
+        Url url = urlCacheRepository.findByHash(hash)
+                .orElseGet(urlFromDbSupplier);
+
+        url.setLastReceivedAt(now());
+
+        return url.getUrl();
     }
 }
