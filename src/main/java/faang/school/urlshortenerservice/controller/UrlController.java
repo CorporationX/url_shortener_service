@@ -17,9 +17,7 @@ public class UrlController {
 
     @PostMapping("/url")
     public String shortenUrl(@RequestBody @NotBlank String url) {
-        if (!validator.isValid(url)) {
-            throw new DataValidationException("Passed url isn't valid. Please check your url.");
-        }
+        validator.validateUrl(url);
 
         return service.shortenUrl(url);
     }
