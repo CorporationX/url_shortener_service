@@ -47,7 +47,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Transactional
     default List<String> getFixedHashBatch() {
-        long batchSize = PropertiesProvider.getProperty("hash.batch-size.get-and-remove", Long.class);
+        long batchSize = PropertiesProvider.getProperty("services.hash.batch.size", Long.class);
         return getHashBatch(batchSize);
     }
 }

@@ -24,6 +24,8 @@ logging:
   level:
     root: info
 
-hash:
- batch-size:
-   get-and-remove: 100
+services:
+  hash:
+    batch:
+      size: 100
+    base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
