@@ -12,8 +12,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> findUniqueSequence(Long max);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash h WHERE hash IN (
-                SELECT hash FROM h
+            DELETE FROM hash WHERE hash IN (
+                SELECT hash FROM hash
                 LIMIT ?
             )
             RETURNING *
