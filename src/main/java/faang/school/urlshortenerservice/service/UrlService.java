@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public class UrlService {
         return String.format("%s:%s/%s", host, port, shortUrl.getHash());
     }
 
+    @Cacheable(value = "urlCache")
     @Transactional
     public String getUrl(String hash) {
         Supplier<Url> urlFromDbSupplier = () -> urlRepository.findByHash(hash)
