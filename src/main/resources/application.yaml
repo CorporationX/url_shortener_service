@@ -24,5 +24,10 @@ logging:
   level:
     root: info
 
-hash-repository:
+hash-service:
   count-get-hash: 6
+  count-unique-numbers: 6
+  thread-pool:
+    pool-size: 5
+    queue-size: 10
+

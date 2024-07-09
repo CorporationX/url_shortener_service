@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    @Value("${hash-repository.count-get-hash}")
+    @Value("${hash-service.count-get-hash}")
     public int countHash;
     private final JpaHashRepository jpaHashRepository;
 
@@ -19,11 +18,8 @@ public class HashRepository {
         return jpaHashRepository.getUniqueNumbers(countSequence);
     }
 
-    public void save(List<String> hashes) {
-        List<Hash> entities = hashes.stream()
-                .map(Hash::new)
-                .collect(Collectors.toList());
-        jpaHashRepository.saveAll(entities);
+    public void save(List<Hash> hashes) {
+        jpaHashRepository.saveAll(hashes);
     }
 
     public List<Hash> getBatches() {
