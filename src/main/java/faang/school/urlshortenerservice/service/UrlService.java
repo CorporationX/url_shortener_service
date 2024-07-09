@@ -6,4 +6,6 @@ import faang.school.urlshortenerservice.dto.UrlCreatedResponse;
 public interface UrlService {
 
     UrlCreatedResponse createUrl(UrlCreatedRequest urlCreatedRequest);
+
+    String getUrl(String hash);
 }
