@@ -31,3 +31,10 @@ logging:
 
 batch-size:
   hash: 100
+
+base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+async:
+  core: 10
+  max: 20
+  queue_capacity: 50

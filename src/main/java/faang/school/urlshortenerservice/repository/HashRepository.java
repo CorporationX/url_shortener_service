@@ -11,8 +11,8 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(value = "SELECT nextval('unique_numbers_seq') FROM generate_series(1, :count)", nativeQuery = true)
-    List<Long> getUniqueNumbers(int count);
+    List<Long> findUniqueNumbers(Long count);
 
     @Query(value = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT :count) RETURNING hash", nativeQuery = true)
-    List<String> getHashBatch(int count);
+    List<String> getHashBatch(Long count);
 }
