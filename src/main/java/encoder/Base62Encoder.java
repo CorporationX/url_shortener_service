@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 @Component
 public class Base62Encoder {
 
-    private static final int BASE = 62;
+    private static final int BASE62 = 62;
 
-    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -19,11 +19,11 @@ public class Base62Encoder {
     }
 
     private String toBase62(Long number) {
-        StringBuilder result = new StringBuilder();
-        while (number > 0) {
-            result.insert(0, BASE62.charAt((int) (number % BASE)));
-            number /= BASE;
-        }
-        return result.toString();
+        StringBuilder stringBuilder = new StringBuilder(1);
+        do {
+            stringBuilder.insert(0, CHARACTERS.charAt((int) (number % BASE62)));
+            number /= BASE62;
+        } while (number > 0);
+        return stringBuilder.toString();
     }
 }
