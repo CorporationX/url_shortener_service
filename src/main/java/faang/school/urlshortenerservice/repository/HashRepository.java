@@ -10,4 +10,13 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)")
     List<Long> findUniqueSequence(Long max);
+
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash h WHERE hash IN (
+                SELECT hash FROM h
+                LIMIT ?
+            )
+            RETURNING *
+            """)
+    List<String> getHashBatch(Long batchSize);
 }
