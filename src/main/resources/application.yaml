@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+hash-repository:
+  count-get-hash: 6
