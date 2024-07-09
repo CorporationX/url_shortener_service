@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +29,23 @@ public class HashServiceImpl implements HashService {
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashes);
+    }
+
+    @Override
+    @Transactional
+    public List<String> getHashes(Long amount) {
+        List<String> hashes = hashRepository.getHashBatch(amount);
+        while (hashes.size() < amount) {
+            generateBatch();
+            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+        }
+        return hashes;
+    }
+
+    @Override
+    @Transactional
+    @Async("generateBatchExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(Long amount) {
+        return CompletableFuture.supplyAsync(() -> getHashes(amount));
     }
 }
