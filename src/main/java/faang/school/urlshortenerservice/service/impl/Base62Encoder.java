@@ -16,7 +16,7 @@ public class Base62Encoder {
     }
 
     private String encode(Long number) {
-        StringBuilder stringBuilder = new StringBuilder(1);
+        StringBuilder stringBuilder = new StringBuilder();
         do {
             stringBuilder.insert(0, BASE62.charAt((int) (number % 62)));
             number /= 62;
