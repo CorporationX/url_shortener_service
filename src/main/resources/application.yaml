@@ -24,6 +24,11 @@ logging:
   level:
     root: info
 
+async:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
+
 services:
   hash:
     batch:

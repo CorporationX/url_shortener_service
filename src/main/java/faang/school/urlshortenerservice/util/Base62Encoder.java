@@ -1,12 +1,12 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class Base62Encoder {
 
