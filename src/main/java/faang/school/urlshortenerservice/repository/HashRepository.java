@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
 
-    @Query(value = "SELECT nextval('unique_numbers_seq') FROM generate_series(1, :count)", nativeQuery = true)
-    List<Long> findUniqueNumbers(Long count);
+    @Query(value = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?1)", nativeQuery = true)
+    List<Long> findUniqueNumbers(int count);
 
     @Query(value = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT :count) RETURNING hash", nativeQuery = true)
-    List<String> getHashBatch(Long count);
+    List<String> getHashBatch(int count);
 }
