@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class UrlShortenerServiceApplicationTests {
+    //TODO: написать тесты
     @Test
     void contextLoads() {
         Assertions.assertThat(40 + 2).isEqualTo(42);
