@@ -11,7 +11,7 @@ public class Base62Encoder {
     @Value("${base62}")
     private String BASE62;
 
-    public List<String> encodeHashes(List<Long> hashes) {
+    public List<String> encodeSymbolsToHash(List<Long> hashes) {
         return hashes.stream().map(this::encode).toList();
     }
 
