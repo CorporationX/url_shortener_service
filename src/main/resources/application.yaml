@@ -36,3 +36,9 @@ thread-pool-executor:
   core-pool-size: 5
   max-pool-size: 10
   queue-capacity: 150
+
+schedulers:
+  cleaner:
+    old-url-period:
+      days: 365
+    cron: "0 0 * * * *" # every day at 00:00
