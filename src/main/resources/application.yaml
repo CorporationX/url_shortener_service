@@ -23,3 +23,14 @@ server:
 logging:
   level:
     root: info
+
+hash-service:
+  count-get-hash: 6
+  count-unique-numbers: 6
+  thread-pool:
+    pool-size: 5
+    queue-size: 10
+  cache:
+    cache-size: 50
+    percentage-filling: 20
+
