@@ -33,7 +33,7 @@ public class Url {
     @Column(name = "hash", length = 6, nullable = false)
     private String hash;
 
-    @Column(name = "url", length = 64, nullable = false)
+    @Column(name = "url", length = 256, nullable = false)
     private URL url;
 
     @CreationTimestamp

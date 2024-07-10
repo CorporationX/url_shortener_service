@@ -4,5 +4,7 @@ import java.net.URL;
 
 public interface UrlService {
 
-    void createShorUrl(URL url);
+    void createUrlHash(URL url);
+
+    String getUrlFromHash(String hash);
 }
