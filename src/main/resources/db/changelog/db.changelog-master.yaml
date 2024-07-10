@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changeset/V001_url-shortener-service_init.sql
   - include:
       file: db/changelog/changeset/V002_url-shortener-service_rename-hash-table.sql
+  - include:
+      file: db/changelog/changeset/V003_url-shortener-service_change-url-length.sql

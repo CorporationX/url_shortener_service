@@ -1,0 +1,2 @@
+ALTER TABLE url
+ALTER COLUMN url TYPE varchar(256)
