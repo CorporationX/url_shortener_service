@@ -36,3 +36,7 @@ services:
     cache:
       capacity: 200
       min-capacity-percents: 20.0
+  url:
+    cleaner:
+      from-date: "2023-01-23T00:00:00"
+      cron: "* * * * * ?" # "0 0 * * * ?" # every day at 00:00

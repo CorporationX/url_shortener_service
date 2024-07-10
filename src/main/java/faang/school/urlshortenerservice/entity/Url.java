@@ -26,11 +26,10 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "url")
-public class URL {
+public class Url {
 
     @Id
     @Column(name = "hash", length = 6, nullable = false)
-
     private String hash;
 
     @Column(name = "url", length = 64, nullable = false)
@@ -48,7 +47,7 @@ public class URL {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        URL url = (URL) o;
+        Url url = (Url) o;
         return getHash() != null && Objects.equals(getHash(), url.getHash());
     }
 
