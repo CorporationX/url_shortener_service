@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -26,6 +28,7 @@ public class UrlService {
         Url shortUrl = Url.builder()
                 .hash(hashCache.getHash().getHash())
                 .url(url.getUrl())
+                .lastReceivedAt(LocalDateTime.now())
                 .build();
 
         Url entity = urlRepository.save(shortUrl);

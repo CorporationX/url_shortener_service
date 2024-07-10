@@ -15,4 +15,5 @@ public class UrlDto {
     @NotEmpty
     @URL(message = "Invalid URL format")
     private String url;
+
 }
