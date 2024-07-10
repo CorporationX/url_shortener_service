@@ -11,16 +11,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepository {
 
-    @Value("${repository.save-batch.size}")
-    private long saveBatch;
-
     @Value("${repository.get-batch.size}")
     private long getBatch;
 
+    private long uniqueNumbers;
+
     private final HashJpaRepository hashJpaRepository;
 
-    public List<Long> getUniqueNumbers(long saveBatch) {
-        return hashJpaRepository.getUniqueNumbers(saveBatch);
+    public List<Long> getUniqueNumbers(long uniqueNumbers) {
+        return hashJpaRepository.getUniqueNumbers(uniqueNumbers);
     }
 
     public void save(List<Hash> hashes) {
