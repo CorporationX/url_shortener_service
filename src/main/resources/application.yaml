@@ -28,3 +28,11 @@ encoder:
   base:
     characters: "abcdefghijklmnopqrsttuvwxyz0123456789ABCDEFDHIJKLMNOPQRSTUVWXYZ"
     divider: 62
+
+hashGenerator:
+  batch-size: 50
+
+thread-pool-executor:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 150
