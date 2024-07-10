@@ -31,6 +31,8 @@ logging:
   level:
     root: info
 
+url:
+  days-to-live: 90
 
 hash:
   cache:

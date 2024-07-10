@@ -2,8 +2,7 @@ package faang.school.urlshortenerservice.config;
 
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -16,20 +15,15 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
 
-@Setter
+
 @Configuration
-@ConfigurationProperties(prefix = "spring.data.redis")
+@RequiredArgsConstructor
 public class RedisConfig {
-    private String host;
-    private int port;
-    /**
-     * In days.
-     */
-    private int urlTtl;
+    private final RedisProperties redisProperties;
 
     @Bean
     public RedisConnectionFactory jedisConnectionFactory() {
-        var jedisClientConfig = new RedisStandaloneConfiguration(host, port);
+        var jedisClientConfig = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
         return new JedisConnectionFactory(jedisClientConfig);
     }
 
@@ -46,7 +40,7 @@ public class RedisConfig {
                 RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
 
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(urlTtl))
+                .entryTtl(Duration.ofDays(redisProperties.getUrlTtl()))
                 .disableCachingNullValues()
                 .serializeValuesWith(valueSerializationPair);
     }
