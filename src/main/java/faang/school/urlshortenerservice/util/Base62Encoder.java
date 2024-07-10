@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,9 +9,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Base62Encoder {
 
-    @Value("services.hash.base62")
-    public String BASE62;
-    private static final int BASE = 62;
+    public static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -23,8 +20,8 @@ public class Base62Encoder {
     private String encodeNumber(long number) {
         StringBuilder stringBuilder = new StringBuilder(1);
         do {
-            stringBuilder.insert(0, BASE62.charAt((int) (number % 62)));
-            number /= BASE;
+            stringBuilder.insert(0, BASE62.charAt((int) (number % BASE62.length())));
+            number /= BASE62.length();
         } while (number > 0);
         return stringBuilder.toString();
     }

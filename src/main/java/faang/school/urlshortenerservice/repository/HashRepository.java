@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.util.PropertiesProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,11 +42,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Transactional
     default void saveAll(List<String> hashes) {
         hashes.forEach(this::save);
-    }
-
-    @Transactional
-    default List<String> getFixedHashBatch() {
-        long batchSize = PropertiesProvider.getProperty("services.hash.batch.size", Long.class);
-        return getHashBatch(batchSize);
     }
 }
