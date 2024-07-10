@@ -9,13 +9,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Entity
 @Builder
 @Table(name = "url")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Url {
+public class Url implements Serializable {
 
     @Id
     private String hash;

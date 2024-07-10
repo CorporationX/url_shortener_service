@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -32,5 +33,12 @@ public class UrlService {
         urlCacheRepository.save(entity);
 
         return String.format("%s:%s/%s", host, port, shortUrl.getHash());
+    }
+
+    public String getOriginalUrl(String hash) {
+        Url url = urlCacheRepository.findById(hash)
+                .orElseGet(() -> urlRepository.findById(hash)
+                        .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash)));
+        return url.getUrl();
     }
 }
