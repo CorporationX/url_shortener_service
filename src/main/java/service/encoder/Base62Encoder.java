@@ -1,4 +1,4 @@
-package encoder;
+package service.encoder;
 
 import org.springframework.stereotype.Component;
 
