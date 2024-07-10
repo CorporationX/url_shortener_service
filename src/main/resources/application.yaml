@@ -40,3 +40,6 @@ hash-service:
     cache-size: 50
     percentage-filling: 20
 
+  scheduler:
+    cron: "0 0 * * * ?"
+
