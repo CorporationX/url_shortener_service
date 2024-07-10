@@ -23,3 +23,10 @@ server:
 logging:
   level:
     root: info
+
+thread-pool:
+  size: 5
+queue:
+  size: 5
+unique-numbers:
+  size: 10
