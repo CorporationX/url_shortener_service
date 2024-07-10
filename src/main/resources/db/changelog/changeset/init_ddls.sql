@@ -1,14 +1,13 @@
 create table url (
-    varchar(6) hash primary key,
-    varchar(2048) url not null, unique,
+    hash varchar(6) primary key,
+    url varchar(2048) not null unique,
     created_at timestamp default current_timestamp not null
-)
+);
 
-create sequence unique_number_seq (
+create sequence unique_number_seq
     start 1
-    increment 1
-)
+    increment 1;
 
 create table hashes (
-    varchar(6) hash primary key,
+    hash varchar(6) primary key
 )

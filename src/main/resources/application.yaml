@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+encoder:
+  base:
+    characters: "abcdefghijklmnopqrsttuvwxyz0123456789ABCDEFDHIJKLMNOPQRSTUVWXYZ"
+    divider: 62
