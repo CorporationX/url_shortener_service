@@ -30,4 +30,7 @@ hash-service:
   thread-pool:
     pool-size: 5
     queue-size: 10
+  cache:
+    cache-size: 50
+    percentage-filling: 20
 
