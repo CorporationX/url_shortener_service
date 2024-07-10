@@ -30,6 +30,7 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashQueue = new ArrayBlockingQueue<>(cacheSize);
+        refillCache();
     }
 
     public Hash getHash() {
