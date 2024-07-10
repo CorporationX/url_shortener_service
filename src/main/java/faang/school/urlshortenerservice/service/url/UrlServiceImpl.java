@@ -38,14 +38,6 @@ public class UrlServiceImpl implements UrlService{
     @Transactional
     public Response createShortUrl(Request dto) {
         String hash = hashCache.getHash();
-        if (hash == null || hash.isEmpty()) {
-            hashService.generateHashes();
-        }
-        hash = hashCache.getHash();
-
-        if (hash == null || hash.isEmpty()) {
-            throw new RuntimeException("Failed to generate a hash");
-        }
 
         if (hash == null || hash.isEmpty()) {
             throw new RuntimeException("Failed to generate a hash");
