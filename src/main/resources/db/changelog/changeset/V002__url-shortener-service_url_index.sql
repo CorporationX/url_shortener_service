@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX IF NOT EXISTS url_index ON url (url);
