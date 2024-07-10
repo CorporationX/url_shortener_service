@@ -11,7 +11,6 @@ import org.springframework.web.servlet.view.RedirectView;
 @Valid
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/urls")
 public class UrlController {
 
     private final UrlService urlService;
@@ -21,7 +20,7 @@ public class UrlController {
         return urlService.getRedirectView(hash);
     }
 
-    @PostMapping
+    @PostMapping("/url")
     public Response createShortUrl(@RequestBody Request dto) {
         return urlService.createShortUrl(dto);
     }

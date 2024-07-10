@@ -23,18 +23,29 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
     root: info
 
-batch-size:
-  hash: 100
-
-base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+services:
+  hash:
+    batch: 3
+    min_free_hashes_percent: 20
+    cache:
+      size: 1000
+  encoder:
+    base62:
+      symbols: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 async:
   core: 10
   max: 20
   queue_capacity: 50
+
+scheduler:
+  clear:
+    cron: "0 0 0 * * ?"  # Launching every day at midnight
+  generate:
+    cron: "0 0 0/8 * * ?" # Every 8 hours

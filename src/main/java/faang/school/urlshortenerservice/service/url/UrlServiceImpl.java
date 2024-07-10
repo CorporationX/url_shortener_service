@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.exception.NotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class UrlServiceImpl implements UrlService{
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
     private final HashCache hashCache;
+    private final HashService hashService;
 
     @Transactional(readOnly = true)
     public RedirectView getRedirectView(String hash) {
@@ -36,6 +38,14 @@ public class UrlServiceImpl implements UrlService{
     @Transactional
     public Response createShortUrl(Request dto) {
         String hash = hashCache.getHash();
+        if (hash == null || hash.isEmpty()) {
+            hashService.generateHashes();
+        }
+        hash = hashCache.getHash();
+
+        if (hash == null || hash.isEmpty()) {
+            throw new RuntimeException("Failed to generate a hash");
+        }
 
         Url url = urlRepository.save(new Url(hash, dto.getUrl(), LocalDateTime.now()));
         log.info("Saved url: {}", dto.getUrl());

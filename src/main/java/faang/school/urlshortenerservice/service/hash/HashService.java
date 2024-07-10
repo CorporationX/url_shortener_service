@@ -5,9 +5,9 @@ import java.util.concurrent.CompletableFuture;
 
 public interface HashService {
 
-    CompletableFuture<Void> generateHashesBatch();
+    CompletableFuture<Void> generateHashes();
 
-    List<String> getHashes(Long aLong);
+    List<String> getHashes(int amount);
 
-    CompletableFuture<List<String>> getHashesAsync(Long amount);
+    CompletableFuture<List<String>> getHashesAsync(int amount);
 }

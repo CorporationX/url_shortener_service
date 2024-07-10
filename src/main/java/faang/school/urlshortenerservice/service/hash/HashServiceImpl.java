@@ -18,18 +18,19 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class HashServiceImpl implements HashService {
 
-    @Value("${batch-size.hash}")
-    private Long batchSize;
+    @Value("${services.hash.batch}")
+    private int batchSize;
     private final Base62Encoder encoder;
     private final HashRepository hashRepository;
 
     @Override
     @Transactional
-    @Async("generateHashesBatchExecutor")
-    public CompletableFuture<Void> generateHashesBatch() {
+    @Async("generateHashesExecutor")
+    public CompletableFuture<Void> generateHashes() {
         List<Hash> hashes = encoder.encodeSymbolsToHash(hashRepository.findUniqueNumbers(batchSize)).stream()
                 .map(Hash::new)
                 .toList();
+        System.out.println("Hashes generated: " + hashes);
         hashRepository.saveAll(hashes);
 
         log.info("Generated new hashes batch");
@@ -37,20 +38,27 @@ public class HashServiceImpl implements HashService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<String> getHashes(Long amount) {
-        List<String> hashes = hashRepository.getHashBatch(amount);
-        while (hashes.size() < amount) {
-            generateHashesBatch().join();
-            hashes.addAll(hashRepository.getHashBatch((amount - hashes.size())));
+    @Transactional
+    public List<String> getHashes(int amount) throws RuntimeException {
+        try {
+            return hashRepository.getHashBatch(amount);
+        } catch (Exception e) {
+            log.error("Error getting hashes", e);
+            throw new RuntimeException("Error getting hashes", e);
         }
-        return hashes;
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Async("generateHashesBatchExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(Long amount) {
-        return CompletableFuture.supplyAsync(() -> getHashes(amount));
+    @Async("generateBatchExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(int amount) throws RuntimeException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getHashes(amount);
+            } catch (Exception e) {
+                log.error("Error getting hashes asynchronously", e);
+                throw new RuntimeException("Error getting hashes asynchronously", e);
+            }
+        });
     }
 }
