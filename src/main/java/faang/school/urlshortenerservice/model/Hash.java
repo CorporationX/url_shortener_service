@@ -13,4 +13,9 @@ import lombok.NoArgsConstructor;
 public class Hash {
     @Id
     private String hash;
+
+    @Override
+    public String toString() {
+        return hash;
+    }
 }
