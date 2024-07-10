@@ -17,7 +17,7 @@ public class ThreadPoolConfig {
     @Value("${async.queue_capacity}")
     public int queueCapacity;
 
-    @Bean(name = "generateBatchExecutor")
+    @Bean(name = "generateHashesBatchExecutor")
     public ThreadPoolTaskExecutor threadPoolForGenerateBatch() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
