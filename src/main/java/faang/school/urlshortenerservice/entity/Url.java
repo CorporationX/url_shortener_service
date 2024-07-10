@@ -15,6 +15,7 @@ import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -33,7 +34,7 @@ public class Url {
     private String hash;
 
     @Column(name = "url", length = 64, nullable = false)
-    private String url;
+    private URL url;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
