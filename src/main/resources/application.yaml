@@ -36,3 +36,6 @@ services:
     cache:
       capacity: 200
       min-capacity-percents: 20.0
+  url:
+    cleaner:
+      cron: "0 0 * * * ?" # every day at 00:00
