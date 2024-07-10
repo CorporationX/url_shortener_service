@@ -10,9 +10,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableCaching
 @EnableScheduling
 @SpringBootApplication
-@EnableCaching
 @EnableAsync(proxyTargetClass = true)
 @EnableConfigurationProperties(ThreadPoolConfig.class)
 @EnableFeignClients("faang.school.urlshortenerservice.client")
