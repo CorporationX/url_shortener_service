@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.cache.hash.HashCache;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.NotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +23,22 @@ public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
+    private final UrlMapper urlMapper;
 
     @Override
     @Transactional
-    public void createUrlHash(URL url) {
+    public UrlDto createUrlHash(URL url) {
 
         String hash = hashCache.pop();
 
-        Url entity = Url.builder()
-                .hash(hash)
-                .url(url)
-                .build();
+        Url entity = urlMapper.toEntity(url, hash);
 
-        entity = urlRepository.save(entity);
+        entity = urlRepository.saveAndFlush(entity);
         urlCacheRepository.saveUrlByHash(hash, url.toString());
 
         log.info("Saved new URL mapping: {}", entity);
+
+        return urlMapper.toDto(entity);
     }
 
     @Override

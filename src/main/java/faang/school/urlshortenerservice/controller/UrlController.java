@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.UrlCreateDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,10 +30,10 @@ public class UrlController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new URL hash")
-    public void createUrlHash(@RequestBody UrlDto urlDto) {
+    public UrlDto createUrlHash(@RequestBody UrlCreateDto urlCreateDto) {
 
-        URL url = parseUrl(urlDto);
-        urlService.createUrlHash(url);
+        URL url = parseUrl(urlCreateDto);
+        return urlService.createUrlHash(url);
     }
 
     @GetMapping("/{hash}")
@@ -44,11 +45,11 @@ public class UrlController {
         return new RedirectView(url);
     }
 
-    private URL parseUrl(UrlDto urlDto) {
+    private URL parseUrl(UrlCreateDto urlCreateDto) {
 
         URL url;
         try {
-            url = new URL(urlDto.getUrl());
+            url = new URL(urlCreateDto.getUrl());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

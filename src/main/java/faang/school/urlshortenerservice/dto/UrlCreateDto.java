@@ -5,14 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UrlDto {
-    private String hash;
+public class UrlCreateDto {
     private String url;
-    private LocalDateTime createdAt;
 }
