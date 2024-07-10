@@ -19,7 +19,7 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Scheduled(fixedDelay = 3000)
+    @Scheduled(cron = "${cleaner-scheduler.cron}")
     @Transactional
     public void cleanOldUrls() {
         List<Url> oldUrls = urlRepository.findOldUrls();

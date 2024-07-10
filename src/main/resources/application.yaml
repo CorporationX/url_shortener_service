@@ -45,3 +45,6 @@ hash:
 task-executor:
   pool-size: 10
   queue-capacity: 20
+
+cleaner-scheduler:
+  cron: "0 0 * * * *" # every day at 00:00
