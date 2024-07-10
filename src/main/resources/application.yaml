@@ -17,6 +17,12 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      url-ttl: 30 # In days
+
 server:
   host: localhost
   port: 9090
@@ -25,6 +31,8 @@ logging:
   level:
     root: info
 
+url:
+  days-to-live: 90
 
 hash:
   cache:
@@ -37,3 +45,6 @@ hash:
 task-executor:
   pool-size: 10
   queue-capacity: 20
+
+cleaner-scheduler:
+  cron: "0 0 * * * *" # every day at 00:00
