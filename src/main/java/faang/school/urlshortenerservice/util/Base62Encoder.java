@@ -18,7 +18,13 @@ public class Base62Encoder {
     }
 
     private String encodeNumber(long number) {
+
+        if (number < 0) {
+            throw new IllegalArgumentException("Number must be greater than or equal to 0");
+        }
+
         StringBuilder stringBuilder = new StringBuilder(1);
+
         do {
             stringBuilder.insert(0, BASE62.charAt((int) (number % BASE62.length())));
             number /= BASE62.length();

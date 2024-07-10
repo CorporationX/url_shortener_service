@@ -54,6 +54,6 @@ public class UrlServiceImpl implements UrlService {
         Url entityUrl = urlRepository.findById(hash)
                 .orElseThrow(() -> new NotFoundException("Url with hash=" + hash + " not found"));
 
-         return entityUrl.getHash();
+         return entityUrl.getUrl().toString();
     }
 }
