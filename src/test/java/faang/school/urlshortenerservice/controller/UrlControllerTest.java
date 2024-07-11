@@ -36,11 +36,11 @@ public class UrlControllerTest {
     @Test
     public void testGetRedirectView() throws Exception {
         String hash = "somehash";
-        String originalUrl = "http://example.com";
+        String originalUrl = "https://example.com";
 
         when(urlService.getRedirectView(anyString())).thenReturn(new RedirectView(originalUrl));
 
-        MockHttpServletResponse response = mockMvc.perform(get("/urls/" + hash))
+        MockHttpServletResponse response = mockMvc.perform(get("/" + hash))
                 .andExpect(status().isFound())
                 .andReturn()
                 .getResponse();

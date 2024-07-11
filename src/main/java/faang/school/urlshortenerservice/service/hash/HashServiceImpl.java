@@ -30,10 +30,6 @@ public class HashServiceImpl implements HashService {
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashes);
-
-        List<Hash> hashess = hashRepository.findAll();
-        log.info("Saved hashes in db: {}", hashess);
-
         log.info("Generated new hashes batch");
         return CompletableFuture.completedFuture(null);
     }

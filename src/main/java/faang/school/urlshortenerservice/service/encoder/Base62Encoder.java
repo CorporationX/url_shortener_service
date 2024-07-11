@@ -11,10 +11,8 @@ public class Base62Encoder {
     @Value("${services.encoder.base62.symbols}")
     private String symbols;
 
-    public List<String> encodeSymbolsToHash(List<Long> hashes) {
-        List<String> h = hashes.stream().map(this::encode).toList();
-        System.out.println("Hashes:" + h);
-        return h;
+    public List<String> encodeSymbolsToHash(List<Long> uniqueNumbers) {
+        return uniqueNumbers.stream().map(this::encode).toList();
     }
 
     private String encode(Long number) {

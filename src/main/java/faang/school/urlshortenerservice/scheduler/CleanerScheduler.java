@@ -23,8 +23,6 @@ public class CleanerScheduler {
         if (!urls.isEmpty()) {
             urlRepository.deleteAll(urls);
             log.info("Deleted {} old URLs", urls.size());
-        } else {
-            log.info("No old URLs found for deletion.");
         }
     }
 }

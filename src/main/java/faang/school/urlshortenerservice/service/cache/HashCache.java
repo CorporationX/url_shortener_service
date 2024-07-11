@@ -1,13 +1,9 @@
 package faang.school.urlshortenerservice.service.cache;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.service.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,25 +12,23 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HashCache {
 
-    private static final Logger log = LoggerFactory.getLogger(HashCache.class);
     @Value("${services.hash.cache.size}")
     private int cacheSize;
 
-    @Value("${services.hash.min_free_hashes_percent}")
-    private int minFreeHashesPercent;
+    @Value("${services.hash.fillingPercent}")
+    private int fillingPercent;
 
-    private final AtomicBoolean isCacheFilled = new AtomicBoolean(false);
     private Queue<String> hashes;
     private final HashService hashService;
-    private final Base62Encoder encoder;
-    private final HashRepository hashRepository;
+    private final AtomicBoolean isCacheFilled = new AtomicBoolean(false);
 
     @PostConstruct
-    public void init() throws IllegalStateException {
+    public void init() {
         hashes = new ArrayBlockingQueue<>(cacheSize);
         try {
             fillCacheSynchronously();
@@ -58,12 +52,12 @@ public class HashCache {
     }
 
     private boolean isCacheBelowMinFreeHashesPercent() {
-        return hashes.size() * 100.0 / cacheSize < minFreeHashesPercent;
+        return hashes.size() * 100.0 / cacheSize < fillingPercent;
     }
 
-    private void fillCacheSynchronously() throws RuntimeException {
+    private void fillCacheSynchronously() {
         try {
-            hashService.generateHashes();
+            hashService.generateHashes().join();
             hashes.addAll(hashService.getHashes(cacheSize));
         } catch (Exception e) {
             throw new RuntimeException("Failed to fill cache synchronously", e);
