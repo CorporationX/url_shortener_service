@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  range: 10000
+
+async:
+  corePoolSize: 4
+  maximumPoolSize: 8
+  queueCapacity: 80
+  keepAliveTime: 1000
