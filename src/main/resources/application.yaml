@@ -24,6 +24,10 @@ server:
 
 hash:
   batch-size: 3
+  quantity-numbers: 5
+
+thread-pool:
+  size: 5
 
 logging:
   level:
