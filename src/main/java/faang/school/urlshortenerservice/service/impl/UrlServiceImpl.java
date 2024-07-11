@@ -10,6 +10,9 @@ import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
@@ -31,5 +34,15 @@ public class UrlServiceImpl implements UrlService {
         return urlCacheRepository.getUrlByHash(hash).orElse(
                 urlRepository.findHashByHash(hash).orElseThrow(() -> new NotFoundException("url not found"))
         );
+    }
+
+    @Override
+    public List<Url> findUrlsCreatedBefore(LocalDateTime dateTime) {
+        return urlRepository.findUrlsByCreatedAtBefore(dateTime);
+    }
+
+    @Override
+    public void deleteAll(List<Url> urls) {
+        urlRepository.deleteAll(urls);
     }
 }
