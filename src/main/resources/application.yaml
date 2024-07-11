@@ -28,4 +28,9 @@ logging:
     root: info
 
 url:
-  hash-batch-size: 5
+  hash:
+    batch-size: 100000
+    size: 6
+    pool:
+      size: 10
+      queue: 100
