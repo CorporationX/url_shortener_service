@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.encoder;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,10 +18,9 @@ public class Base62Encoder {
         return builder.toString();
     }
 
-    public List<Hash> applyBase62Encoding(List<Long> numbers){
+    public List<String> applyBase62Encoding(List<Long> numbers){
         return numbers.stream()
                 .map(this::applyBase62Encoding)
-                .map(Hash::new)
                 .toList();
     }
 }

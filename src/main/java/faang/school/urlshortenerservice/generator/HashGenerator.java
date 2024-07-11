@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +23,7 @@ public class HashGenerator {
     @Async("hashGeneratorExecutorService")
     public void generateBatch(){
         List<Long> interval = hashRepository.getUniqueNumbers(range);
-        List<Hash> hashes = base62Encoder.applyBase62Encoding(interval);
+        List<String> hashes = base62Encoder.applyBase62Encoding(interval);
         hashRepository.saveAll(hashes);
     }
 }
