@@ -1,13 +1,11 @@
 package faang.school.urlshortenerservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class Response {
 
-    private String url;
+    private String hash;
 }

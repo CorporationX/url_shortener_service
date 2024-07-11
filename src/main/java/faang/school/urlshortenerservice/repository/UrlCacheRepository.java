@@ -15,7 +15,6 @@ public class UrlCacheRepository {
     public Optional<String> getUrlByHash(String hash) {
         return Optional.ofNullable(redisTemplate.opsForValue()
                 .get(hash));
-
     }
 
     public void saveUrlByHash(String url, String hash) {

@@ -15,10 +15,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
 @Slf4j
 @Service
-public class UrlServiceImpl implements UrlService{
+@RequiredArgsConstructor
+public class UrlServiceImpl implements UrlService {
 
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
@@ -26,10 +26,10 @@ public class UrlServiceImpl implements UrlService{
 
     @Transactional(readOnly = true)
     public RedirectView getRedirectView(String hash) {
-        String url = urlCacheRepository.getUrlByHash(hash).orElseGet(
-                () -> urlRepository.getUrlByHash(hash).map(Url::getUrl).orElseThrow(
-                        () -> new NotFoundException("URL not found for hash: " + hash)));
-        return new RedirectView(url);
+        return new RedirectView(
+                urlCacheRepository.getUrlByHash(hash)
+                .orElseGet(() -> urlRepository.getUrlByHash(hash).map(Url::getUrl)
+                .orElseThrow(() -> new NotFoundException("URL not found for hash: " + hash))));
     }
 
     @Override
@@ -37,11 +37,15 @@ public class UrlServiceImpl implements UrlService{
     public Response createShortUrl(Request dto) {
         String hash = hashCache.getHash();
 
-        Url url = urlRepository.save(new Url(hash, dto.getUrl(), LocalDateTime.now()));
+        if (hash == null || hash.isEmpty()) {
+            throw new RuntimeException("Failed to generate a hash");
+        }
+
+        urlRepository.save(new Url(hash, dto.getUrl(), LocalDateTime.now()));
         log.info("Saved url: {}", dto.getUrl());
 
         urlCacheRepository.saveUrlByHash(dto.getUrl(), hash);
         log.info("Saved url: {} by hash: {} in cache", dto.getUrl(), hash);
-        return new Response(url.getUrl());
+        return new Response(hash);
     }
 }

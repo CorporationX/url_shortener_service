@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.URL;
 
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Request {

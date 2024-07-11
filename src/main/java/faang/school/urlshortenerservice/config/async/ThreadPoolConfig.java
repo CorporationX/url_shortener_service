@@ -17,13 +17,12 @@ public class ThreadPoolConfig {
     @Value("${async.queue_capacity}")
     public int queueCapacity;
 
-    @Bean(name = "generateHashesBatchExecutor")
+    @Bean(name = "generateHashesExecutor")
     public ThreadPoolTaskExecutor threadPoolForGenerateBatch() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("generateBatchExecutor-");
         executor.initialize();
         return executor;
     }
