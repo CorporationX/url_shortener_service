@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+value:
+  quantityBath: 500
+  setBatchSize: 250
+  getBatchSize: 400
+
+threadPool:
+  hashGenerator: 1
