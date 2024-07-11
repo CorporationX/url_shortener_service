@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,5 +38,9 @@ public class HashCache {
             }
         }
         return hashes.poll();
+    }
+
+    public void addHashes(List<String> newHashes) {
+        hashes.addAll(newHashes);
     }
 }
