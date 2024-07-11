@@ -42,3 +42,8 @@ schedulers:
     old-url-period:
       days: 365
     cron: "0 0 * * * *" # every day at 00:00
+
+cache:
+  hash-cache:
+    size: 100
+    lowest-load-barrier: 20
