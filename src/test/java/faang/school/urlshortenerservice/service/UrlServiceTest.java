@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.UrlHash;
 import faang.school.urlshortenerservice.model.UrlHashRedis;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,14 +39,13 @@ class UrlServiceTest {
             .hash(HASH)
             .url(URL)
             .build();
+    UrlHashRedis urlHashRedis = UrlHashRedis.builder()
+            .id(HASH)
+            .url(URL)
+            .build();
 
     @Test
     public void createShortLinkTest() {
-        UrlHashRedis urlHashRedis = UrlHashRedis.builder()
-                .id(HASH)
-                .url(URL)
-                .build();
-
         when(hashCache.getHash()).thenReturn(HASH);
 
         String actualResult = urlService.createShortLink(URL);
@@ -64,6 +64,36 @@ class UrlServiceTest {
         verify(urlRepository, never()).save(any(UrlHash.class));
         verify(urlCacheRepository, never()).save(any(UrlHashRedis.class));
         assertEquals(HASH, actualResult);
+    }
+
+    @Test
+    public void getOriginalUrlWhenInRedis() {
+        when(urlCacheRepository.findById(HASH)).thenReturn(Optional.of(urlHashRedis));
+
+        String actualResult = urlService.getOriginalUrlByHash(HASH);
+
+        assertEquals(URL, actualResult);
+        verify(urlRepository, never()).findById(HASH);
+    }
+
+    @Test
+    public void getOriginalUrlWhenInDb() {
+        when(urlRepository.findById(HASH)).thenReturn(Optional.of(urlHash));
+
+        String actualResult = urlService.getOriginalUrlByHash(HASH);
+
+        assertEquals(URL, actualResult);
+        verify(urlCacheRepository).findById(HASH);
+        verify(urlRepository).findById(HASH);
+    }
+
+    @Test
+    public void getOriginalUrlWhenNotFound() {
+        String errMessage = String.format("Original URL not found by hash: %s in DB", HASH);
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrlByHash(HASH));
+
+        assertEquals(errMessage, exception.getMessage());
     }
 
 }
