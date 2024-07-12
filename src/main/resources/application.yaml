@@ -29,8 +29,11 @@ logging:
 
 url:
   hash:
-    batch-size: 100000
+    save-batch-size: 10
+    get-batch-size: 5
     size: 6
+    cache-size-percent: 20
+    cache-size: 5
     pool:
       size: 10
       queue: 100
