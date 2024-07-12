@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.UrlHash;
 import faang.school.urlshortenerservice.model.UrlHashRedis;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,19 @@ public class UrlService {
                 .url(url)
                 .build());
         return hash;
+    }
+
+    public String getOriginalUrlByHash(String hash) {
+        Optional<UrlHashRedis> urlHashRedis = urlCacheRepository.findById(hash);
+        if (urlHashRedis.isPresent()) {
+            log.info("Url: {} found in Redis by hash: {}", urlHashRedis.get().getUrl(), urlHashRedis.get().getId());
+            return urlHashRedis.get().getUrl();
+        } else {
+            return urlRepository.findById(hash).orElseThrow(() -> {
+                String errMessage = String.format("Original URL not found by hash: %s in DB", hash);
+                log.info(errMessage);
+                return new EntityNotFoundException(errMessage);
+            }).getUrl();
+        }
     }
 }
