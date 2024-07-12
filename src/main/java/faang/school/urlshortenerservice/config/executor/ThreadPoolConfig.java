@@ -23,7 +23,7 @@ public class ThreadPoolConfig {
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("generateBatchExecutor-");
+        executor.setThreadNamePrefix("generateBatchExecutor");
         executor.initialize();
         return executor;
     }

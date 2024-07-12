@@ -10,4 +10,6 @@ public interface HashService {
     List<String> getHashes(Long amount);
 
     CompletableFuture<List<String>> getHashesAsync(Long amount);
+
+    void saveAllHashes(List<String> hashes);
 }

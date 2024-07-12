@@ -39,8 +39,4 @@ public class HashCache {
         }
         return hashes.poll();
     }
-
-    public void addHashes(List<String> newHashes) {
-        hashes.addAll(newHashes);
-    }
 }
