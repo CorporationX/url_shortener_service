@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class UrlController {
     private String httpStaticAddress;
 
     @PostMapping
-    public String createShortLink(@RequestBody UrlDto urlDto) {
+    public String createShortLink(@RequestBody @Valid UrlDto urlDto) {
         return httpStaticAddress + urlService.createShortLink(urlDto.getUrl());
     }
 }
