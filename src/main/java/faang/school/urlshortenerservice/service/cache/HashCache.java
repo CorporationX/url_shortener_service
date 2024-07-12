@@ -1,5 +1,8 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.service.cache;
 
+import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.repositoy.HashRepository;
+import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -17,7 +20,7 @@ public class HashCache {
 
     private final HashRepository hashRepository;
 
-    private final Queue<Hash> hashes = new ArrayBlockingQueue<>(10000);
+    private final Queue<Hash> cache = new ArrayBlockingQueue<>(10000);
 
     @Value("${}")
     private long maxCapacity;
@@ -32,17 +35,16 @@ public class HashCache {
 
     @PostConstruct
     public void unit() {
-        hashQueue.addAll(hashRepository.getHashBatch(maxCapacity));
+        cache.addAll(hashGenerator.getHashes(maxCapacity));
     }
 
     public Hash getHash() {
-        if (hashes.size() / (maxCapacity / 100) < fillPercent) {
+        if (cache.size() / (maxCapacity / 100) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                hashRepository.getHashBatch(capacity).thenAccept(hashes::addAll)
+                hashGenerator.getHashes(capacity).thenAccept(cache::addAll)
                         .thenRun(filling.set(false));
-                hashGenerator.generateBatch();
             }
         }
-        return hashQueue.poll();
+        return cache.poll();
     }
 }
