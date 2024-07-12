@@ -43,3 +43,5 @@ url:
     pool:
       size: 10
       queue: 100
+  cleaner:
+    cron: "0 0 7 1 1 *"
