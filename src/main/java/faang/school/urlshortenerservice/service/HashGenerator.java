@@ -18,13 +18,13 @@ public class HashGenerator {
     private final HashRepositoryJdbc hashRepositoryJdbc;
     private final Base62Encoder base62Encoder;
 
-    @Value("${url.hash.batch-size}")
-    private int hashBatchSize;
+    @Value("${url.hash.save-batch-size}")
+    private int saveHashBatchSize;
 
     @Async("hashGenPool")
     @Transactional
     public void generateBatch() {
-        List<Long> numbers = hashRepositoryJdbc.getUniqueNumbers(hashBatchSize);
+        List<Long> numbers = hashRepositoryJdbc.getUniqueNumbers(saveHashBatchSize);
         List<String> hashes = base62Encoder.encode(numbers);
         hashRepositoryJdbc.save(hashes);
     }
