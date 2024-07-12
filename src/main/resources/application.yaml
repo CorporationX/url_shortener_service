@@ -32,3 +32,9 @@ async:
   maximumPoolSize: 8
   queueCapacity: 80
   keepAliveTime: 1000
+
+services:
+    cache:
+      capacity: 100
+      minPercentageToFill: 20
+
