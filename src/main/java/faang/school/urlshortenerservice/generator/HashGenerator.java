@@ -45,6 +45,6 @@ public class HashGenerator {
 
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
-        return CompletableFuture.supplyAsync(() -> getHashes(amount));
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }
