@@ -1,6 +1,6 @@
 CREATE TABLE url (
     hash VARCHAR(6) PRIMARY KEY,
-    url VARCHAR(1024) NOT NULL,
+    url VARCHAR(1024) NOT NULL UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp
 );
 
