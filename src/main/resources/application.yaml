@@ -27,3 +27,13 @@ server:
 logging:
   level:
     root: info
+
+hash-generator:
+  unique-numbers:
+    size: 10
+
+config:
+  thread-pool:
+    size: 5
+  queue:
+    size: 5
