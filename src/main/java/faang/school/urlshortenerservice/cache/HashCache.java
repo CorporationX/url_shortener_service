@@ -23,7 +23,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final AtomicBoolean isFillingCache = new AtomicBoolean(false);
     private Queue<String> cacheQueue;
-    ;
+
 
     @Value("${cache.queue-size}")
     private int capacity;
@@ -42,7 +42,7 @@ public class HashCache {
     @PostConstruct
     public void init() {
         cacheQueue = new LinkedBlockingQueue<>(capacity);
-        hashThreadPool.submitCompletable(hashGenerator::generateBatch);
+        hashGenerator.generateBatch();
         cacheQueue.addAll(hashRepository.getHashBatch());
         log.info("init method, queue size {}", cacheQueue.size());
     }
