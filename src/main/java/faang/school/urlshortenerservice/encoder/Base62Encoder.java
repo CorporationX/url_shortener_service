@@ -8,11 +8,14 @@ import java.util.List;
 
 @Component
 public class Base62Encoder implements Encoder<Long> {
-    @Value("${encoder.base.characters}")
-    private String characters;
+    private final String characters;
+    private final int divider;
 
-    @Value("#{new Integer('${encoder.base.divider}')}")
-    private int divider;
+    public Base62Encoder(@Value("${encoder.base.characters}") String characters,
+                         @Value("#{new Integer('${encoder.base.divider}')}") int divider) {
+        this.characters = characters;
+        this.divider = divider;
+    }
 
     @Override
     public List<Hash> encode(List<Long> keys) {

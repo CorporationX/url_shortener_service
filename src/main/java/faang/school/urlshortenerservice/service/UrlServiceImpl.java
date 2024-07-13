@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,24 +15,28 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
-
-    @Value("${app.url-prefix}")
     private String prefix;
+
+    public UrlServiceImpl(UrlRepository urlRepository, UrlCacheRepository urlCacheRepository, HashCache hashCache,  @Value("${app.url-prefix}") String prefix) {
+        this.urlRepository = urlRepository;
+        this.urlCacheRepository = urlCacheRepository;
+        this.hashCache = hashCache;
+        this.prefix = prefix;
+    }
 
     @Transactional
     @Override
     public String getHashFromUrl(UrlDto urlDto) {
-        return prefix + findHashByBaseUrl(urlDto.getBaseUrl());
+        return prefix + findHashInDataBaseByBaseUrl(urlDto.getBaseUrl());
     }
 
-    private String findHashByBaseUrl(String baseUrl) {
-        return urlCacheRepository.getHashByUrl(baseUrl)
-                .orElseGet(() -> findHashInDataBaseByBaseUrl(baseUrl));
+    @Override
+    public String getUrlFromHash(String hash) {
+        return findUrlByHash(hash);
     }
 
     private String findHashInDataBaseByBaseUrl(String baseUrl) {
@@ -45,5 +50,16 @@ public class UrlServiceImpl implements UrlService {
         urlRepository.save(new Url(hash.getHash(), baseUrl, LocalDateTime.now()));
         urlCacheRepository.save(hash.getHash(), baseUrl);
         return hash.getHash();
+    }
+
+    private String findUrlByHash(String hash) {
+        return urlCacheRepository.getUrlByHash(hash)
+                .orElseGet(() -> findUrlInDataBaseByHash(hash));
+    }
+
+    private String findUrlInDataBaseByHash(String hash) {
+        return urlRepository.findByHash(hash)
+                .map(Url::getBaseUrl)
+                .orElseThrow(() -> new EntityNotFoundException("No url for hash: " + hash));
     }
 }
