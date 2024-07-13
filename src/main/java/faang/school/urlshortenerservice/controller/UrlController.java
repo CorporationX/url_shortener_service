@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -10,6 +12,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 
 @RestController
+@Validated
 @RequestMapping("/shortcuts")
 @AllArgsConstructor
 public class UrlController {
@@ -20,7 +23,7 @@ public class UrlController {
             @ApiResponse(responseCode = "200", description = "Hash found successfully"),
             @ApiResponse(responseCode = "500", description = "Hash not exist")
     })
-    public String convertToShortUrl(@RequestBody UrlDto urlDto) {
+    public String convertToShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.getHashFromUrl(urlDto);
     }
 
