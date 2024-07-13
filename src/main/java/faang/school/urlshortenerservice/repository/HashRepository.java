@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +19,6 @@ public class HashRepository {
      @Value("${hash.batch-size.size}")
      private long batchSize;
 
-//Получение n уникальных значений из unique_number_seq в БД типа long;
      public List<Long> getUniqueNumbers(long n) {
           String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
 

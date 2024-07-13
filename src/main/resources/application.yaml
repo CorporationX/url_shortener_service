@@ -25,5 +25,9 @@ logging:
     root: info
 
 hash:
+  quantity-numbers:
+    quantity: 10
   batch-size:
     size: 10
+  thread-pool:
+    pool: 5
