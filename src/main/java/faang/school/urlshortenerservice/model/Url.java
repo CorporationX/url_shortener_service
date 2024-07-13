@@ -18,7 +18,7 @@ public class Url {
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
 
-    @Column(name = "base_url", nullable = false, unique = true)
+    @Column(name = "url", nullable = false, unique = true)
     private String baseUrl;
 
     @CreationTimestamp
