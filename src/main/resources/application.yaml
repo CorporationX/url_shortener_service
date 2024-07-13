@@ -43,3 +43,6 @@ services:
       capacity: 100
       minPercentageToFill: 20
 
+shortener:
+  url: http://localhost:8080/
+

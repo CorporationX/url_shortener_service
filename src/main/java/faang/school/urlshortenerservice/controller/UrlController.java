@@ -3,6 +3,9 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.validator.UrlValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/url")
+@Tag(name = "URL")
 public class UrlController {
 
     private final UrlService urlService;
@@ -21,8 +25,9 @@ public class UrlController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlDto getShortUrl(@RequestBody UrlDto urlDto){
+    @Operation(summary = "Create new short URL")
+    public UrlDto getShortUrl(@RequestBody @Valid UrlDto urlDto){
         urlValidator.validateUrl(urlDto.getUrl());
-        return null;
+        return urlService.getShortUrl(urlDto);
     }
 }
