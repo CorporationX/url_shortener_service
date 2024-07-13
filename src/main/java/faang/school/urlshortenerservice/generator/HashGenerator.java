@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.encoder.Encoder;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -14,15 +13,17 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Encoder<Long> encoder;
-
-    @Value("${hashGenerator.batch-size}")
     private int hashBatchSize;
 
+    public HashGenerator(HashRepository hashRepository, Encoder<Long> encoder, @Value("${hashGenerator.batch-size}") int hashBatchSize) {
+        this.hashRepository = hashRepository;
+        this.encoder = encoder;
+        this.hashBatchSize = hashBatchSize;
+    }
 
     @Transactional
     public void generateHashBatch() {

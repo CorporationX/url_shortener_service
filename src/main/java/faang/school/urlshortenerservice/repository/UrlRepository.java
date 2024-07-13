@@ -13,4 +13,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     List<Url> deleteOldUrl(LocalDateTime period);
 
     Optional<Url> findByBaseUrl(String baseUrl);
+
+    Optional<Url> findByHash(String hash);
 }
