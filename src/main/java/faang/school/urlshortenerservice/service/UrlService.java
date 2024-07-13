@@ -6,8 +6,10 @@ import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repositoy.UrlCacheRepository;
 import faang.school.urlshortenerservice.repositoy.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +34,13 @@ public class UrlService {
         urlRepository.save(url);
         urlCacheRepository.putUrl(link, hash);
         return urlMapper.toDto(url);
+    }
+
+    public RedirectView getRedirectView(String hash) {
+        String url = urlCacheRepository.getUrl(hash)
+                .orElseGet(() -> urlRepository.findById(hash)
+                        .orElseThrow(() -> new EntityNotFoundException(String.format("Post with id %s not found", hash)))
+                        .getUrl());
+        return new RedirectView(url);
     }
 }
