@@ -14,8 +14,17 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+repository:
+  get-batch:
+    size: 10
 
 server:
   port: 8080
@@ -23,3 +32,13 @@ server:
 logging:
   level:
     root: info
+
+hash-generator:
+  unique-numbers:
+    size: 10
+
+config:
+  thread-pool:
+    size: 5
+  queue:
+    size: 5
