@@ -43,7 +43,7 @@ public class HashRepository {
      }
 
      public List<String> getHashBatch() {
-          String sql = "DELETE FROM hash WHERE id IN (SELECT id FROM hash LIMIT ?) RETURNING hash";
+          String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING hash";
           return jdbcTemplate.queryForList(sql, String.class, batchSize);
      }
 

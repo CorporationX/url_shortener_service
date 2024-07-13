@@ -32,7 +32,9 @@ public class HashGenerator {
         log.info("Generate unique numbers {}", numbers);
 
         List<String> hashes = encode(numbers);
+
         hashRepository.save(hashes);
+        log.info("generate batch complete");
     }
 
     private List<String> encode(List<Long> numbers) {
