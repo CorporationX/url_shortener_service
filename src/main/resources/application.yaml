@@ -14,6 +14,13 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      cache:
+        ttl-in-hours: 2
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -28,3 +35,25 @@ encoder:
   base:
     characters: "abcdefghijklmnopqrsttuvwxyz0123456789ABCDEFDHIJKLMNOPQRSTUVWXYZ"
     divider: 62
+
+hashGenerator:
+  batch-size: 10
+
+thread-pool-executor:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 150
+
+schedulers:
+  cleaner:
+    old-url-period:
+      days: 365
+    cron: "0 0 * * * *" # every day at 00:00
+
+cache:
+  hash-cache:
+    size: 15
+    lowest-load-barrier: 20
+
+app:
+  url-prefix: https://
