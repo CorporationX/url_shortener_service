@@ -23,11 +23,15 @@ server:
     context-path: /api/v1
 
 hash:
-  batch-size: 3
-  quantity-numbers: 5
+  quantity-generated-numbers: 5
+cache:
+  cache-capacity: 10
+  fill-percent: 20
 
-thread-pool:
-  size: 5
+executor:
+  core-pool-size: 7
+  max-pool-size: 42
+  queue-capacity: 11
 
 logging:
   level:

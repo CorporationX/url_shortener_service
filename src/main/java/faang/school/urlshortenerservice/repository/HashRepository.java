@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,9 +14,6 @@ import java.util.List;
 public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Value("${hash.batch-size}")
-    private int batchSize;
 
     public void save(List<String> hashes) {
         jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", new BatchPreparedStatementSetter() {
@@ -40,10 +36,14 @@ public class HashRepository {
                 (rs, rowNum) -> rs.getLong(1));
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(long batchSize) {
         return jdbcTemplate.queryForList(
                 "DELETE FROM hash WHERE id IN (SELECT id FROM hash LIMIT ?) RETURNING hash",
                 String.class,
                 batchSize);
+    }
+
+    public long getHashesSize() {
+        return jdbcTemplate.queryForObject("select count(*) from hash", Integer.class);
     }
 }
