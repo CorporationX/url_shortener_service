@@ -46,4 +46,9 @@ public class HashRepository {
           String sql = "DELETE FROM hash WHERE id IN (SELECT id FROM hash LIMIT ?) RETURNING hash";
           return jdbcTemplate.queryForList(sql, String.class, batchSize);
      }
+
+     public Integer getHashesCount() {
+          String sql = "SELECT COUNT(*) from hash";
+          return jdbcTemplate.queryForObject(sql, Integer.class);
+     }
 }

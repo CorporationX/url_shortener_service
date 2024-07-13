@@ -26,8 +26,15 @@ logging:
 
 hash:
   quantity-numbers:
-    quantity: 10
+    quantity: 150
   batch-size:
-    size: 10
-  thread-pool:
-    pool: 5
+    size: 150
+
+thread-pool:
+  pool-size:
+    max: 10
+    core: 5
+
+cache:
+  queue-size: 200
+  fill-percent: 20

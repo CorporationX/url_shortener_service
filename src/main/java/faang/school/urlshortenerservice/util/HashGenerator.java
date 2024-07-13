@@ -26,14 +26,13 @@ public class HashGenerator {
     }
 
     @Transactional
-    @Async("hashThreadPool")
+    @Async("HashGeneratorThreadPool")
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(quantity);
         log.info("Generate unique numbers {}", numbers);
 
         List<String> hashes = encode(numbers);
         hashRepository.save(hashes);
-
     }
 
     private List<String> encode(List<Long> numbers) {
