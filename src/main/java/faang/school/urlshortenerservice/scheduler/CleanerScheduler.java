@@ -17,14 +17,16 @@ public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
-    @Value("${scheduler.clearOldHashes.period}")
-    private String period;
+    @Value("${scheduler.clearOldHashes.daysAgo}")
+    private int daysAgo;
 
     @Transactional
-    @Async()
+    @Async("schedulerExecutorService")
     @Scheduled(cron = "${scheduler.clearOldHashes.cronExpression}")
     public void clearOldHashes() {
-        List<String> oldHashes = urlRepository.clearOldHashes(period);
-        hashRepository.saveAll(oldHashes);
+        List<String> oldHashes = urlRepository.clearOldHashes(daysAgo);
+        if(!oldHashes.isEmpty()){
+            hashRepository.saveAll(oldHashes);
+        }
     }
 }

@@ -12,20 +12,20 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class AsyncSchedulerConfig {
 
-    @Value("${async.corePoolSize}")
+    @Value("${async.scheduler.corePoolSize}")
     private int corePoolSize;
 
-    @Value("${async.maximumPoolSize}")
+    @Value("${async.scheduler.maximumPoolSize}")
     private int maximumPoolSize;
 
-    @Value("${async.queueCapacity}")
+    @Value("${async.scheduler.queueCapacity}")
     private int queueCapacity;
 
-    @Value("${async.keepAliveTime}")
+    @Value("${async.scheduler.keepAliveTime}")
     private int keepAliveTime;
 
     @Bean
-    public ExecutorService hashGeneratorExecutorService() {
+    public ExecutorService schedulerExecutorService() {
         return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueCapacity));
     }
 }
