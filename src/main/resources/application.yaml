@@ -31,3 +31,11 @@ custom:
     core-pool-size: 10
     max-pool-size: 20
     queue-capacity: 100
+  executor-service:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 100
+  hash-cache:
+    size: 1000
+    refill-threshold: 0.2
+    batch-size: 100
