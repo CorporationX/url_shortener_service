@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -28,6 +29,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/createShortUrl")
+    @ResponseStatus(HttpStatus.CREATED)
     public String createShortUrl(@RequestBody String url) {
         urlValidator.validateUrl(url);
         String hash = urlService.createShortUrl(url);
@@ -35,6 +37,7 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> redirectToOriginal(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
 
