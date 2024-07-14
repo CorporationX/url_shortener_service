@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.config.HashProperties;
 import faang.school.urlshortenerservice.model.Hash;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +23,7 @@ public class HashRepository {
         return hashJpaRepository.getNUniqueNumbers(numbersCount);
     }
 
-    public void saveHashesList(List<Hash> hashes) {
+    public void saveHashesList(List<@Valid Hash> hashes) {
         IntStream.iterate(0, i -> i < hashes.size(), i -> i + hashProperties.getSaveBatch())
                 .mapToObj(i -> hashes.subList(i, Math.min(i + hashProperties.getSaveBatch(), hashes.size())))
                 .forEach(hashJpaRepository::saveAll);

@@ -9,9 +9,20 @@ import java.util.Random;
 @Component
 public class Base62Encoder {
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     private static final int BASE = 62;
-    public static final long LOW_BOUND = 916_132_832L;
-    public static final long HIGH_BOUND = 56_800_235_583L;
+
+    /**
+     * Нижняя граница генерации случайного числа для хеша - 62^5,
+     * что является минимальным числом, дающим после кодирования 6-ти значный хеш.
+     */
+    private static final long LOW_BOUND = 916_132_832L;
+
+    /**
+     * Верхняя граница генерации случайного числа для хеша - 62^6-1,
+     * что является максимальным числом, дающим после кодирования 6-ти значный хеш.
+     */
+    private static final long HIGH_BOUND = 56_800_235_583L;
 
 
     /**
