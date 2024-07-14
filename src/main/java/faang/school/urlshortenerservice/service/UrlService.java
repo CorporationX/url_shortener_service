@@ -3,8 +3,8 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,11 +25,11 @@ public class UrlService {
         String hash = hashCache.getHash();
         Url url = Url.builder().
                 url(urlDto.getUrl())
-                .hash(shortenerUrl + hash)
+                .hash(hash)
                 .build();
 
         urlRepository.save(url);
-        urlCacheRepository.save(shortenerUrl + hash, urlDto.getUrl());
+        urlCacheRepository.save(hash, urlDto.getUrl());
         return new UrlDto(shortenerUrl + hash);
     }
 

@@ -33,10 +33,16 @@ hash:
   range: 10000
 
 async:
-  corePoolSize: 4
-  maximumPoolSize: 8
-  queueCapacity: 80
-  keepAliveTime: 1000
+  generator:
+    corePoolSize: 2
+    maximumPoolSize: 8
+    queueCapacity: 80
+    keepAliveTime: 1000
+  scheduler:
+    corePoolSize: 2
+    maximumPoolSize: 8
+    queueCapacity: 80
+    keepAliveTime: 1000
 
 services:
     cache:
@@ -45,4 +51,10 @@ services:
 
 shortener:
   url: http://localhost:8080/
+
+scheduler:
+  clearOldHashes:
+    cronExpression: "0 0 0 * * *"
+    daysAgo: 365
+
 
