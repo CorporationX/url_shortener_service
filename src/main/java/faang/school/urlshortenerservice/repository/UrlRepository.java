@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
@@ -18,4 +19,10 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING hash;
             """)
     List<String> clearOldHashes(int daysAgo);
+
+    @Query(value = """
+            SELECT u.url FROM Url u
+            WHERE u.hash = :hash
+            """)
+    Optional<String> getByHash(String hash);
 }

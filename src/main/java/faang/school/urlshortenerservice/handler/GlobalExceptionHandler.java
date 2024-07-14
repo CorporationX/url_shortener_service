@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.exception.ErrorResponse;
+import faang.school.urlshortenerservice.exception.NotFoundException;
 import faang.school.urlshortenerservice.exception.UrlException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDataValidationException(UrlException e, HttpServletRequest request) {
         log.error("Url validation exception", e);
+        return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotFoundException(NotFoundException e, HttpServletRequest request) {
+        log.error("Not found exception", e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
     }
 

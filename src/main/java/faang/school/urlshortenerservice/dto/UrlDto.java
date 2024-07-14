@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlDto {
-    @NotBlank
+    @NotBlank(message = "url can't be blank")
     private String url;
 }
