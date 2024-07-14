@@ -46,3 +46,8 @@ services:
 shortener:
   url: http://localhost:8080/
 
+scheduler:
+  clearOldHashes:
+    cronExpression: "0 0 0 * * *" # Каждый день в полночь
+    period: 1 year
+

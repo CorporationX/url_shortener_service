@@ -25,11 +25,11 @@ public class UrlService {
         String hash = hashCache.getHash();
         Url url = Url.builder().
                 url(urlDto.getUrl())
-                .hash(shortenerUrl + hash)
+                .hash(hash)
                 .build();
 
         urlRepository.save(url);
-        urlCacheRepository.save(shortenerUrl + hash, urlDto.getUrl());
+        urlCacheRepository.save(hash, urlDto.getUrl());
         return new UrlDto(shortenerUrl + hash);
     }
 

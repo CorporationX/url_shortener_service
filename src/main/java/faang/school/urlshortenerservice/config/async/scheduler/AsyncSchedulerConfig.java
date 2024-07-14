@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.async;
+package faang.school.urlshortenerservice.config.async.scheduler;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class AsyncConfig {
+public class AsyncSchedulerConfig {
 
     @Value("${async.corePoolSize}")
     private int corePoolSize;
