@@ -16,7 +16,7 @@ public class UrlCacheRepository {
         redisTemplate.opsForValue().set(hash, url);
     }
 
-    public Optional<String> findById(String hash) {
+    public Optional<String> findByHash(String hash) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
     }
 }
