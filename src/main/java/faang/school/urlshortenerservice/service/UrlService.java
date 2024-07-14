@@ -36,6 +36,7 @@ public class UrlService {
         return new UrlDto(shortenerUrl + hash);
     }
 
+    @Transactional(readOnly = true)
     public String getLongUrl(String hash){
         Optional<String> optionalUrl = urlCacheRepository.findByHash(hash);
 
