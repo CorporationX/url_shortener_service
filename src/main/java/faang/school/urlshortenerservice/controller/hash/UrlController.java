@@ -19,18 +19,25 @@ public class UrlController {
     private final UrlValidator urlValidator;
 
     @PostMapping("/url")
+    @ResponseStatus(HttpStatus.CREATED)
     public String transformUrlToHash(@RequestBody UrlDto urlDto) {
+        log.info("Received URL for transformation: {}", urlDto.getUrl());
         urlValidator.validateUrl(urlDto.getUrl());
-        return urlService.transformUrlToHash(urlDto.getUrl());
+        log.info("URL validated successfully: {}", urlDto.getUrl());
+        String hash = urlService.transformUrlToHash(urlDto.getUrl());
+        log.info("Transformed URL to hash: {}", hash);
+        return hash;
     }
 
     @GetMapping("/{hash}")
+    @ResponseStatus(HttpStatus.OK)
     public RedirectView redirect(@PathVariable HashDto hash) {
+        log.info("Received request to redirect for hash: {}", hash.getHash());
         String url = urlService.getUrlFromHash(hash.getHash());
 
         RedirectView redirectView = new RedirectView(url);
         redirectView.setStatusCode(HttpStatus.FOUND);
+        log.info("Redirecting to URL: {}", url);
         return redirectView;
     }
-
 }

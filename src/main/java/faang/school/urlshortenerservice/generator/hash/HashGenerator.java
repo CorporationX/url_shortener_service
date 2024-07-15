@@ -1,8 +1,9 @@
 package faang.school.urlshortenerservice.generator.hash;
 
+import faang.school.urlshortenerservice.entity.hash.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashFreeRepository;
+import faang.school.urlshortenerservice.service.batchsaving.BatchSaveService;
 import faang.school.urlshortenerservice.service.hash.HashFreeService;
-import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.uniquenumber.UniqueNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    private final HashService hashService;
+    private final BatchSaveService batchSaveService;
     private final Base62Encoder base62Encoder;
     private final UniqueNumber uniqueNumber;
     private final HashFreeService hashFreeService;
@@ -39,7 +40,7 @@ public class HashGenerator {
             log.debug("Received list of numbers from DB {}", numbers);
             List<String> hashList = base62Encoder.encode(numbers);
             log.debug("Received list of hash {}", hashList);
-            hashService.saveHashes(hashList);
+            batchSaveService.saveEntities(hashList, Hash.class);
             log.info("The caches were successfully saved to the database");
         }
 

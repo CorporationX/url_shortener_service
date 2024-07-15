@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.entity.hash;
 
-import faang.school.urlshortenerservice.entity.url.Url;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

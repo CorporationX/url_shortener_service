@@ -32,9 +32,13 @@ logging:
 value:
   quantityBath: 500
   setBatchSize: 250
-  getBatchSize: 1600
+  getBatchSize: 500
   minValueRedis: 0.2
   hashPattern: hash:_
 
 threadPool:
   hashGenerator: 10
+  scheduler: 10
+
+cron:
+  scheduler: "0 0 0 * * ?" # every day

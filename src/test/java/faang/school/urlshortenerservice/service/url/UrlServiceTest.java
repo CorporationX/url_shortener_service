@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.entity.url.Url;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.search.SearchesService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,11 +95,10 @@ public class UrlServiceTest {
         when(searchesService1.findUrl(hash)).thenReturn(Optional.empty());
         when(searchesService2.findUrl(hash)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             urlService.getUrlFromHash(hash);
         });
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("URL not found for hash: " + hash, exception.getReason());
+        assertEquals("URL not found for hash: " + hash, exception.getMessage());
     }
 }

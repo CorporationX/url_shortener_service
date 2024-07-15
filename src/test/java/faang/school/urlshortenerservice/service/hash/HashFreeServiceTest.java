@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.repository.hash.HashFreeRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,18 +20,22 @@ public class HashFreeServiceTest {
     @Mock
     public HashFreeRepository hashFreeRepository;
 
-    private int bathSize;
+    @Mock
+    private EntityManager entityManager;
+
+    private int getBatchSize;
 
     @BeforeEach
     public void setUp() {
-        bathSize = 3;
-        hashFreeService.setBathSize(3);
+        getBatchSize = 3;
+
+        hashFreeService.setGetBatchSize(3);
     }
 
     @Test
     public void getHashBatchTest() {
         hashFreeService.getHashBatch();
 
-        verify(hashFreeRepository, times(1)).getRandomHashFree(bathSize);
+        verify(hashFreeRepository, times(1)).getRandomHashFree(getBatchSize);
     }
 }

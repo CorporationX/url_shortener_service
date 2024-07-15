@@ -1,13 +1,11 @@
 package faang.school.urlshortenerservice.entity.url;
 
-import faang.school.urlshortenerservice.entity.hash.Hash;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
