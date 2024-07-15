@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlCreateDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.exception.ValidationException;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,12 +47,10 @@ public class UrlController {
 
     private URL parseUrl(UrlCreateDto urlCreateDto) {
 
-        URL url;
+        URL url = null;
         try {
             url = new URL(urlCreateDto.getUrl());
-        } catch (MalformedURLException e) {
-            throw new ValidationException(e);
-        }
+        } catch (MalformedURLException ignored) {}
 
         return url;
     }
