@@ -30,31 +30,36 @@ public class HashCache {
     @Value("${value.hashPattern}")
     private String hashPattern;
 
-
     private int twentyPercent;
 
     @PostConstruct
     private void init() {
         twentyPercent = (int) Math.floor((double) getBatchSize * minValueRedis);
+        log.info("Initializing HashCache with twentyPercent: {}", twentyPercent);
         List<String> newHashes = hashGenerator.generateBatch();
         saveToCache(hashPattern, newHashes);
+        log.info("Saved initial batch of hashes to cache.");
     }
 
     public void saveToCache(String pattern, List<String> values) {
+        log.info("Saving batch of {} values to cache with pattern: {}", values.size(), pattern);
         values.forEach(value -> {
             String key = pattern + value;
             redisTemplate.opsForValue().set(key, value);
+            log.debug("Saved key: {} with value: {}", key, value);
         });
     }
 
     public void saveToCache(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
+        log.debug("Saved key: {} with value: {}", key, value);
     }
 
     public synchronized String getRandomHashFromCache() {
         Set<String> keys = redisTemplate.keys(hashPattern + "*");
 
         if (keys == null || keys.isEmpty()) {
+            log.warn("No keys found in cache for pattern: {}", hashPattern);
             return null;
         }
 
@@ -62,12 +67,15 @@ public class HashCache {
         String randomKey = keys.toArray(new String[0])[randomIndex];
         String value = (String) redisTemplate.opsForValue().get(randomKey);
         redisTemplate.delete(randomKey);
+        log.info("Retrieved and deleted key: {} with value: {}", randomKey, value);
 
         if (keys.size() <= twentyPercent && loadingTask.isDone()) {
+            log.info("Keys size is below twenty percent, generating new batch.");
             loadingTask = CompletableFuture.runAsync(() -> {
                 try {
                     List<String> newHashes = hashGenerator.generateBatch();
                     saveToCache(hashPattern, newHashes);
+                    log.info("Successfully generated and saved new batch of hashes to cache.");
                 } catch (Exception e) {
                     log.error("Error generating batch and saving to cache", e);
                 }

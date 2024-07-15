@@ -18,4 +18,7 @@ public interface HashFreeRepository extends CrudRepository<HashFree, Long> {
 
     @Query("SELECT CASE WHEN COUNT(e) >= :getBatchSize THEN true ELSE false END FROM HashFree e")
     boolean ifCountMinElements(int getBatchSize);
+
+    @Query(nativeQuery = true, value = "DELETE FROM url WHERE created_at < now() - interval '1 year' RETURNING hash")
+    List<String> deleteAndGetOldHash();
 }

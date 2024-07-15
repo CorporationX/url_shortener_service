@@ -1,10 +1,10 @@
 package faang.school.urlshortenerservice.generator.hash;
 
+import faang.school.urlshortenerservice.entity.hash.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashFreeRepository;
+import faang.school.urlshortenerservice.service.batchsaving.BatchSaveService;
 import faang.school.urlshortenerservice.service.hash.HashFreeService;
-import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.uniquenumber.UniqueNumber;
-import io.seruco.encoding.base62.Base62;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ public class HashGeneratorTest {
     private HashGenerator hashGenerator;
 
     @Mock
-    private HashService hashService;
+    private BatchSaveService batchSaveService;
 
     @Mock
     private Base62Encoder base62Encoder;
@@ -63,7 +63,7 @@ public class HashGeneratorTest {
 
         List<String> result = hashGenerator.generateBatch();
 
-        verify(hashService, times(1)).saveHashes(hash);
+        verify(batchSaveService, times(1)).saveEntities(hash, Hash.class);
         assertEquals(hash, result);
     }
 }
