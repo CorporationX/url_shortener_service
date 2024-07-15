@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -27,7 +32,9 @@ logging:
 value:
   quantityBath: 500
   setBatchSize: 250
-  getBatchSize: 400
+  getBatchSize: 1600
+  minValueRedis: 0.2
+  hashPattern: hash:_
 
 threadPool:
-  hashGenerator: 1
+  hashGenerator: 10

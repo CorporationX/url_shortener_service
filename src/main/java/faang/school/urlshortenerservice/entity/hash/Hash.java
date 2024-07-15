@@ -21,7 +21,4 @@ public class Hash {
 
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
-
-    @OneToOne(mappedBy = "hash")
-    private Url url;
 }
