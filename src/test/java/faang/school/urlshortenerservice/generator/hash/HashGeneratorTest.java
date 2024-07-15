@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.generator.hash;
 
+import faang.school.urlshortenerservice.repository.hash.HashFreeRepository;
+import faang.school.urlshortenerservice.service.hash.HashFreeService;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.uniquenumber.UniqueNumber;
 import io.seruco.encoding.base62.Base62;
@@ -13,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,20 +24,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class HashGeneratorTest {
     @InjectMocks
-    public HashGenerator hashGenerator;
+    private HashGenerator hashGenerator;
 
     @Mock
-    public HashService hashService;
+    private HashService hashService;
 
     @Mock
-    public Base62Encoder base62Encoder;
+    private Base62Encoder base62Encoder;
 
     @Mock
-    public UniqueNumber uniqueNumber;
+    private UniqueNumber uniqueNumber;
+
+    @Mock
+    private HashFreeService hashFreeService;
+
+    @Mock
+    private HashFreeRepository hashFreeRepository;
 
     private int quantity;
     private List<Long> numbers;
     private List<String> hash;
+
 
     @BeforeEach
     public void setUp() {
@@ -43,14 +54,17 @@ public class HashGeneratorTest {
         hash = new ArrayList<>(List.of("n", "o", "p"));
     }
 
-    @Test()
+    @Test
     public void generateBatchTest() {
+        when(hashFreeRepository.ifCountMinElements(anyInt())).thenReturn(false);
         when(uniqueNumber.getUniqueNumbers(quantity)).thenReturn(numbers);
         when(base62Encoder.encode(numbers)).thenReturn(hash);
+        when(hashFreeService.getHashBatch()).thenReturn(hash);
 
-        hashGenerator.generateBatch();
+        List<String> result = hashGenerator.generateBatch();
 
         verify(hashService, times(1)).saveHashes(hash);
+        assertEquals(hash, result);
     }
 }
 

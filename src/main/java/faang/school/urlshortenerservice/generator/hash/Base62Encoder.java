@@ -11,7 +11,7 @@ import java.util.List;
 public class Base62Encoder {
     Base62 base62 = Base62.createInstance();
 
-    public synchronized List<String> encode(List<Long> numbers) {
+    public List<String> encode(List<Long> numbers) {
         return numbers.stream().map(String::valueOf).map(i -> new String(base62.encode(i.getBytes()))).toList();
     }
 }

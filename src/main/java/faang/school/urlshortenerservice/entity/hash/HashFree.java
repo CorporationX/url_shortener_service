@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "hash_free")
+@Table(name = "free_hash")
 public class HashFree {
 
     @Id

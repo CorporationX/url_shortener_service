@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.generator.hash;
 
 import io.seruco.encoding.base62.Base62;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
