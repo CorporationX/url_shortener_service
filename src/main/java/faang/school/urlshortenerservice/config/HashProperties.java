@@ -22,10 +22,6 @@ public class HashProperties {
     @Data
     public static class Cache {
         private Integer capacity;
-
-        /**
-         * Percentage of cache when refill is needed
-         */
         private Integer lowSizePercentage;
     }
 }

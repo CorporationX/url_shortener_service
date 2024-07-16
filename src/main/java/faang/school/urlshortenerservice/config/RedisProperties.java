@@ -10,8 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class RedisProperties {
     private String host;
     private int port;
-    /**
-     * In days.
-     */
     private int urlTtl;
 }

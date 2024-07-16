@@ -13,13 +13,11 @@ public class TaskExecutorConfig {
     private int poolSize;
     private int queueCapacity;
 
-
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         var taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(poolSize);
         taskExecutor.setQueueCapacity(queueCapacity);
-
         return taskExecutor;
     }
 }

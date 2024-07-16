@@ -14,16 +14,37 @@ spring:
       hibernate:
         format_sql: true
 
-  redis:
-    host: localhost
-    port: 6379
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-  server:
-   port: 8080
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      url-ttl: 30 # In days
 
-  logging:
-   level:
+server:
+  host: localhost
+  port: 8080
+
+logging:
+  level:
     root: info
+
+url:
+  days-to-live: 90
+
+hash:
+  cache:
+    capacity: 100
+    low-size-percentage: 20 # Percentage of cache when refill is needed
+  generation-batch: 40
+  save-batch: 10
+  get-batch: 30
+
+task-executor:
+  pool-size: 10
+  queue-capacity: 20
+
+cleaner-scheduler:
+  cron: "0 0 * * * *" # every day at 00:00

@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * Репозиторий для сохранения и получения хешей, а также уникальных сидов для генерации хешей
- */
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {

@@ -22,22 +22,27 @@ public class RedisConfig {
     private final RedisProperties redisProperties;
 
     @Bean
-    public RedisConnectionFactory jedisConnectionFactory() {
-        var jedisClientConfig = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
-        return new JedisConnectionFactory(jedisClientConfig);
+    public RedisConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(
+                redisProperties.getHost(),
+                redisProperties.getPort()
+        );
+        return new JedisConnectionFactory(redisConfig);
     }
 
     @Bean
-    public RedisTemplate<Hash, Url> redisTemplate() {
-        var redisTemplate = new RedisTemplate<Hash, Url>();
-        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+    public RedisTemplate<Hash, Url> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<Hash, Url> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
         return redisTemplate;
     }
 
     @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
+    public RedisCacheConfiguration redisCacheConfiguration() {
         RedisSerializationContext.SerializationPair<Object> valueSerializationPair =
-                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                        new GenericJackson2JsonRedisSerializer()
+                );
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(redisProperties.getUrlTtl()))

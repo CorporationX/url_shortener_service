@@ -15,21 +15,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({DataValidationException.class})
+    @ExceptionHandler({DataValidationException.class, EntityNotFoundException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDataValidationException(DataValidationException exception) {
-        return exception.getMessage();
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDataValidationException(EntityNotFoundException exception) {
-        return exception.getMessage();
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDataValidationException(IllegalArgumentException exception) {
+    public String handleDataValidationException(Exception exception) {
         return exception.getMessage();
     }
 
