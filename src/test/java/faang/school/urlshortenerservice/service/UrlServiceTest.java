@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.hashservice.HashCache;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,5 +80,32 @@ public class UrlServiceTest {
         verify(urlMapper, times(1)).toEntity(urlDto);
         verify(urlCacheRepository, times(1)).save(url);
         verify(urlRepository, times(1)).save(url);
+    }
+
+    @Test
+    public void testGetLongLinkIfExistInCache() {
+        when(urlCacheRepository.get(hash)).thenReturn(link);
+
+        urlService.getLongLink(hash);
+
+        verify(urlRepository, times(0)).getUrl(hash);
+    }
+
+    @Test
+    public void testGetLongLinkIfNotExistInCache() {
+        when(urlCacheRepository.get(hash)).thenReturn(null);
+        when(urlRepository.getUrl(hash)).thenReturn(link);
+
+        urlService.getLongLink(hash);
+
+        verify(urlRepository, times(1)).getUrl(hash);
+    }
+
+    @Test
+    public void testGetLongLinkIfNotExistInCacheAndBd() {
+        when(urlCacheRepository.get(hash)).thenReturn(null);
+        when(urlRepository.getUrl(hash)).thenReturn(null);
+
+        assertThrows(UrlNotFoundException.class, () -> urlService.getLongLink(hash));
     }
 }

@@ -12,4 +12,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             SELECT hash FROM url u WHERE u.url = :url
             """)
     String getHash(String url);
+
+    @Query(nativeQuery = true, value = """
+            SELECT url FROM url u WHERE u.hash = :hash
+            """)
+    String getUrl(String hash);
 }
