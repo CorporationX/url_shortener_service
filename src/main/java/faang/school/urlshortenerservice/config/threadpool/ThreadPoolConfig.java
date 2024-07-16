@@ -10,18 +10,30 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class ThreadPoolConfig {
 
-    @Value("${thread-pool.pool-size.max}")
-    private int maxPoolSize;
+    @Value("${thread-pool.pool-size.hash-generator.max}")
+    private int hashGeneratorMaxPoolSize;
 
-    @Value("${thread-pool.pool-size.core}")
-    private int corePoolSize;
+    @Value("${thread-pool.pool-size.hash-generator.core}")
+    private int hashGeneratorCorePoolSize;
+
+    @Value("${thread-pool.pool-size.scheduler.core}")
+    private int schedulerPoolSize;
 
     @Bean(name = "HashGeneratorThreadPool")
     public ThreadPoolTaskExecutor getHashGeneratorThreadPool() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
+        executor.setCorePoolSize(hashGeneratorCorePoolSize);
+        executor.setMaxPoolSize(hashGeneratorMaxPoolSize);
         executor.setThreadNamePrefix("HashThreadPool - ");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "SchedulerThreadPool")
+    public ThreadPoolTaskExecutor getSchedulerThreadPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(schedulerPoolSize);
+        executor.setThreadNamePrefix("Scheduler - ");
         executor.initialize();
         return executor;
     }
