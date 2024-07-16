@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.model.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,17 +10,12 @@ import org.springframework.stereotype.Repository;
 public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String CACHE_KEY = "url_";
 
-    public String getHash(UrlDto urlDto) {
-        return redisTemplate.opsForValue().get(createCacheKey(urlDto));
+    public void save(Url url) {
+        redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
     }
 
-    public void saveHash(UrlDto urlDto, String hash) {
-        redisTemplate.opsForValue().set(createCacheKey(urlDto), hash);
-    }
-
-    private String createCacheKey(UrlDto urlDto) {
-        return CACHE_KEY + urlDto.getUrl();
+    public String get(String hash) {
+        return redisTemplate.opsForValue().get(hash);
     }
 }

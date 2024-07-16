@@ -36,35 +36,20 @@ public class UrlServiceTest {
     private UrlDto urlDto;
     private String hash;
     private Url url;
+    private String link;
 
     @BeforeEach
     public void setUp() {
-        urlDto = UrlDto.builder()
-                .url("https://faang-school.atlassian.net/jira/software/c/projects/BJS2/boards/32?selectedIssue=BJS2-17250")
-                .build();
+        link = "https://faang-school.atlassian.net/jira/software/c" +
+                "/projects/BJS2/boards/32?selectedIssue=BJS2-17250";
         hash = "ewfn12";
-        url = Url.builder()
-                .url("https://faang-school.atlassian.net/jira/software/c/projects/BJS2/boards/32?selectedIssue=BJS2-17250")
+
+        urlDto = UrlDto.builder()
+                .url(link)
                 .build();
-    }
-
-    @Test
-    public void testCreateShortLinkIfExistInCache() {
-        when(urlCacheRepository.getHash(urlDto)).thenReturn(hash);
-
-        urlService.createShortLink(urlDto);
-
-        verify(urlRepository, times(0)).getHash(urlDto.getUrl());
-    }
-
-    @Test
-    public void testCreateShortLinkIfNotExistInCache() {
-        when(urlCacheRepository.getHash(urlDto)).thenReturn(null);
-        when(urlRepository.getHash(urlDto.getUrl())).thenReturn(hash);
-
-        urlService.createShortLink(urlDto);
-
-        verify(urlRepository, times(1)).getHash(urlDto.getUrl());
+        url = Url.builder()
+                .url(link)
+                .build();
     }
 
     @Test
@@ -73,20 +58,25 @@ public class UrlServiceTest {
 
         urlService.createShortLink(urlDto);
 
+        verify(hashCache, times(0)).getHash();
         verify(urlMapper, times(0)).toEntity(urlDto);
+        verify(urlCacheRepository, times(0)).save(url);
+        verify(urlRepository, times(0)).save(url);
     }
 
     @Test
     public void testCreateShortLinkIfNotExistInBd() {
         when(urlRepository.getHash(urlDto.getUrl())).thenReturn(null);
-        when(urlMapper.toEntity(urlDto)).thenReturn(url);
         when(hashCache.getHash()).thenReturn(hash);
+        when(urlMapper.toEntity(urlDto)).thenReturn(url);
         when(urlRepository.save(url)).thenReturn(url);
 
         urlService.createShortLink(urlDto);
 
-        verify(urlMapper, times(1)).toEntity(urlDto);
+        verify(urlRepository, times(1)).getHash(urlDto.getUrl());
         verify(hashCache, times(1)).getHash();
+        verify(urlMapper, times(1)).toEntity(urlDto);
+        verify(urlCacheRepository, times(1)).save(url);
         verify(urlRepository, times(1)).save(url);
     }
 }

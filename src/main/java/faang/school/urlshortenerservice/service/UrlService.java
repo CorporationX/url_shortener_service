@@ -20,19 +20,17 @@ public class UrlService {
 
     @Transactional
     public String createShortLink(UrlDto urlDto) {
-
-        String hash = urlCacheRepository.getHash(urlDto);
-        if (hash == null) {
-            hash = urlRepository.getHash(urlDto.getUrl());
-            if (hash != null) {
-                return hash;
-            }
-            Url url = urlMapper.toEntity(urlDto);
-            hash = hashCache.getHash();
-            url.setHash(hash);
-            urlCacheRepository.saveHash(urlDto, hash);
-            urlRepository.save(url);
+        String shortLink = urlRepository.getHash(urlDto.getUrl());
+        if (shortLink != null) {
+            return shortLink;
         }
-        return hash;
+        shortLink = hashCache.getHash();
+        Url url = urlMapper.toEntity(urlDto);
+        url.setHash(shortLink);
+
+        urlCacheRepository.save(url);
+        urlRepository.save(url);
+
+        return shortLink;
     }
 }
