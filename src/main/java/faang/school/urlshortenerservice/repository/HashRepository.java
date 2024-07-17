@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Hash;
+import feign.Param;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,11 +17,20 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "INSERT INTO hashes (hash) VALUES (?1)")
-    void saveBatch(List<String> hashes);
+    @Query(nativeQuery = true, value = "INSERT INTO hashes (hash) VALUES (:hash)")
+    void saveSingleHash(@Param("hash") String hash);
+
+    default void saveBatch(List<String> hashes) {
+        for (String hash : hashes) {
+            saveSingleHash(hash);
+        }
+    }
+
+    @Query(nativeQuery = true, value = "SELECT hash FROM hashes ORDER BY random() LIMIT :n")
+    List<String> selectRandomHashes(@Param("n") int n);
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "DELETE FROM hashes WHERE hash IN (SELECT hash FROM hashes ORDER BY random() LIMIT ?1) RETURNING hash")
-    List<String> getHashBatch(int n);
+    @Query(nativeQuery = true, value = "DELETE FROM hashes WHERE hash IN :hashes")
+    void deleteHashes(@Param("hashes") List<String> hashes);
 }

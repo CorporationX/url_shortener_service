@@ -56,7 +56,8 @@ public class HashCache {
     private void refillCache() {
         try {
             int requiredHashes = cacheSize - hashQueue.size();
-            List<String> newHashes = hashRepository.getHashBatch(requiredHashes);
+            List<String> newHashes = hashRepository.selectRandomHashes(requiredHashes);
+            hashRepository.deleteHashes(newHashes);
             hashQueue.addAll(newHashes);
             hashGenerator.generateBatch();
         } finally {

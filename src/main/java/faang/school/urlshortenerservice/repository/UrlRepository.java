@@ -15,7 +15,10 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<Url> findByHash(String hash);
     boolean existsByUrl(String url);
 
+    @Query("SELECT u.hash FROM Url u WHERE u.createdAt < :oneYearAgo")
+    List<String> findExpiredHashes(LocalDateTime oneYearAgo);
+
     @Modifying
-    @Query("DELETE FROM Url u WHERE u.createdAt < :oneYearAgo RETURNING u.hash")
-    List<String> deleteExpiredUrlsAndReturnHashes(LocalDateTime oneYearAgo);
+    @Query("DELETE FROM Url u WHERE u.createdAt < :oneYearAgo")
+    void deleteExpiredUrls(LocalDateTime oneYearAgo);
 }

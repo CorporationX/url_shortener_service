@@ -5,9 +5,7 @@ CREATE TABLE urls(
 );
 
 CREATE TABLE hashes(
-    hash VARCHAR(255) PRIMARY KEY,
-    CONSTRAINT unique_number_seq_seq
-            UNIQUE (nextval('unique_number_seq'))
+    hash VARCHAR(255) PRIMARY KEY
 );
 
 CREATE SEQUENCE unique_number_seq

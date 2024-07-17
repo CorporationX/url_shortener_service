@@ -22,7 +22,8 @@ public class CleanerScheduler {
     @Transactional
     public void cleanOldUrls(){
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
-        List<String> expiredHashes = urlRepository.deleteExpiredUrlsAndReturnHashes(oneYearAgo);
+        List<String> expiredHashes = urlRepository.findExpiredHashes(oneYearAgo);
+        urlRepository.deleteExpiredUrls(oneYearAgo);
         List<Hash> hashesToSave = expiredHashes.stream()
                 .map(Hash::new)
                 .collect(Collectors.toList());
