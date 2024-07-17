@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS hash
     hash varchar(6) PRIMARY KEY
 );
 
-CREATE SEQUENCE IF NOT EXISTS unique_number_seq start 1 increment 1;
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq start 916132832 increment 1;

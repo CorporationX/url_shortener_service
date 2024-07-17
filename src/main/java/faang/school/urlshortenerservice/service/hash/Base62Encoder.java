@@ -12,18 +12,6 @@ public class Base62Encoder {
 
     private static final int BASE = 62;
 
-    /**
-     * Нижняя граница генерации случайного числа для хеша - 62^5,
-     * что является минимальным числом, дающим после кодирования 6-ти значный хеш.
-     */
-    private static final long LOW_BOUND = 916_132_832L;
-
-    /**
-     * Верхняя граница генерации случайного числа для хеша - 62^6-1,
-     * что является максимальным числом, дающим после кодирования 6-ти значный хеш.
-     */
-    private static final long HIGH_BOUND = 56_800_235_583L;
-
 
     /**
      * Возвращает список уникальных хешей длиной 6 симоволов
@@ -33,7 +21,6 @@ public class Base62Encoder {
      */
     public List<Hash> encodeList(List<Long> numbers) {
         return numbers.stream()
-                .map(number -> new Random(number).nextLong(LOW_BOUND, HIGH_BOUND))
                 .map(this::encode)
                 .map(Hash::new)
                 .toList();
