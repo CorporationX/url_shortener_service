@@ -47,3 +47,5 @@ custom:
     size: 1000
     refill-threshold: 0.2
     batch-size: 100
+  cleaner:
+    cron: "0 0 0 * * ?"
