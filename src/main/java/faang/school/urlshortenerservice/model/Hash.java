@@ -20,5 +20,4 @@ public class Hash {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hash", nullable = false, length = 6)
     private String hash;
-
 }
