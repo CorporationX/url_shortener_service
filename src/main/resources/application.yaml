@@ -27,3 +27,7 @@ server:
 logging:
   level:
     root: info
+
+numbers:
+  uniq:
+    number: 50000
