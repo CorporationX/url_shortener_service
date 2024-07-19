@@ -9,10 +9,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class Base62Encoder {
-
     private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = BASE_62_CHARACTERS.length();
-
 
     public List<Hash> encode(List<Long> numbers) {
         return numbers.stream()
@@ -22,7 +20,7 @@ public class Base62Encoder {
     }
 
     private String encodeBase62(Long number) {
-
+        Random random = new Random();
         StringBuilder hash = new StringBuilder();
 
         while (number > 0) {
@@ -31,7 +29,7 @@ public class Base62Encoder {
             number /= BASE;
         }
         while (hash.length() < 6) {
-            hash.append(BASE_62_CHARACTERS.charAt(new Random().nextInt(BASE)));
+            hash.append(BASE_62_CHARACTERS.charAt(random.nextInt(BASE)));
         }
 
         return hash.toString();

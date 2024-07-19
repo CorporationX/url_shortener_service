@@ -21,7 +21,7 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = base62Encoder.encode(uniqueNumbers);
-        hashRepository.save(hashes);
+        hashRepository.saveAll(hashes);
     }
 
 }

@@ -7,9 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
-
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -33,4 +32,5 @@ public class Url implements Serializable {
     @Column(name = "last_received_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastReceivedAt;
+
 }

@@ -25,6 +25,8 @@ public class HashCache {
     @Value("${hash-service.cache.percentage-filling}")
     private int refillThreshold;
 
+    @Value("${hash-service.count-get-hash}")
+    public int countHash;
     private ArrayBlockingQueue<Hash> hashQueue;
 
     @PostConstruct
@@ -44,7 +46,7 @@ public class HashCache {
         hashGenerator.generateBatch();
         if (isRefilling.compareAndSet(false, true)) {
             poolTaskExecutor.execute(() -> {
-                hashQueue.addAll(hashRepository.getBatches());
+                hashQueue.addAll(hashRepository.getHashBatches(countHash));
                 isRefilling.set(false);
             });
         }

@@ -14,7 +14,6 @@ public class ThreadPoolConfig {
     private int poolSize;
     private int queueSize;
 
-
     @Bean
     public ThreadPoolTaskExecutor poolTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();

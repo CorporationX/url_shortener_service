@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class UrlController {
     private final UrlService urlService;
 
-
     @PostMapping("/url")
     public String createShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.createShortUrl(urlDto);
