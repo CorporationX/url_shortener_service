@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.Lock;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,9 +24,10 @@ class HashCacheImplTest {
 
     @Mock
     private HashGenerator hashGenerator;
-
     @Mock
     private AsyncHashGenerator asyncHashGenerator;
+    @Mock
+    private Lock lock;
 
     private HashCacheImpl hashCache;
 
@@ -57,7 +59,7 @@ class HashCacheImplTest {
 
         String result = hashCache.pop();
 
-        InOrder inOrder = inOrder(asyncHashGenerator, hashGenerator);
+        InOrder inOrder = inOrder(asyncHashGenerator, hashGenerator, lock);
         inOrder.verify(asyncHashGenerator, times(1)).getBatchAsync();
         assertNotNull(result);
     }
