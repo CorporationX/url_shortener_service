@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class UrlController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new URL hash")
-    public UrlDto createUrlHash(@RequestBody UrlCreateDto urlCreateDto) {
+    public UrlDto createUrlHash(@RequestBody @Valid UrlCreateDto urlCreateDto) {
 
         URL url = parseUrl(urlCreateDto);
         return urlService.createUrlHash(url);
