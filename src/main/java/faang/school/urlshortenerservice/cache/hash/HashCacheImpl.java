@@ -46,9 +46,13 @@ public class HashCacheImpl implements HashCache {
 
         if (queue.size() * 100.0 / capacity < minCapacityPercents) {
             if (fillQueueLock.tryLock()) {
-                asyncHashGenerator.getBatchAsync()
-                        .thenAccept(queue::addAll)
-                        .thenRun(fillQueueLock::unlock);
+                try {
+                    asyncHashGenerator.getBatchAsync()
+                            .thenAccept(queue::addAll)
+                            .thenRun(fillQueueLock::unlock);
+                } finally {
+                    fillQueueLock.unlock();
+                }
             }
         }
 
