@@ -1,11 +1,11 @@
 package faang.school.urlshortenerservice.service.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repositoy.HashRepository;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
@@ -16,35 +16,40 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
+    @Value("${hash-cache.capacity}")
+    private int capacity;
+
+    @Value("${hash-cache.fill-percent}")
+    private double fillPercent;
+
+    @Value("${hash-cache.cache-size}")
+    private int cacheSize;
+
     private final HashGenerator hashGenerator;
 
-    private final HashRepository hashRepository;
-
-    private final Queue<Hash> cache = new ArrayBlockingQueue<>(10000);
-
-    @Value("${}")
-    private long maxCapacity;
-
-    @Value("${}")
-    private long fillPercent;
-
-    @Value("${}")
-    private long capacity;
+    private Queue<Hash> cache;
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
     @PostConstruct
     public void unit() {
-        cache.addAll(hashGenerator.getHashes(maxCapacity));
+        cache = new ArrayBlockingQueue<>(cacheSize);
+        cache.addAll(hashGenerator.getHashes(capacity));
     }
 
     public Hash getHash() {
-        if (cache.size() / (maxCapacity / 100) < fillPercent) {
-            if (filling.compareAndSet(false, true)) {
-                hashGenerator.getHashes(capacity).thenAccept(cache::addAll)
-                        .thenRun(filling.set(false));
-            }
+        double percent = (double) cache.size() / 100;
+        if (percent < fillPercent) {
+            fulfillCache();
         }
         return cache.poll();
+    }
+
+    @Async("getThreadPool")
+    public void fulfillCache() {
+        if (filling.compareAndSet(false, true)) {
+            cache.addAll(hashGenerator.getHashes(capacity));
+            filling.set(false);
+        }
     }
 }

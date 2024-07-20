@@ -22,16 +22,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-repository:
-  get-batch:
-    size: 10
-
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+repository:
+  get-batch:
+    size: 10
 
 hash-generator:
   unique-numbers:
@@ -42,3 +42,11 @@ config:
     size: 5
   queue:
     size: 5
+
+hash-cache:
+  capacity: 5
+  fill-percent: 0.2
+  cache-size: 10
+
+scheduler:
+  cron: 0 0 13 * * *
