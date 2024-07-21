@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -23,3 +28,19 @@ server:
 logging:
   level:
     root: info
+
+async:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
+
+services:
+  hash:
+    batch:
+      size: 100
+    cache:
+      capacity: 200
+      min-capacity-percents: 20.0
+  url:
+    cleaner:
+      cron: "0 0 * * * ?" # every day at 00:00
