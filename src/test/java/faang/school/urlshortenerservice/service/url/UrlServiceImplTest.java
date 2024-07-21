@@ -3,23 +3,30 @@ package faang.school.urlshortenerservice.service.url;
 import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.NotFoundException;
+import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
+import faang.school.urlshortenerservice.repository.jpa.HashRepository;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,6 +43,9 @@ class UrlServiceImplTest {
 
     @Mock
     private UrlRepository urlRepository;
+
+    @Mock
+    private HashRepository hashRepository;
 
     @Mock
     private UrlMapper urlMapper;
@@ -86,7 +96,7 @@ class UrlServiceImplTest {
         when(urlCacheRepository.getUrlByHash(hash)).thenReturn(Optional.empty());
         when(urlRepository.findById(hash)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> urlService.getUrlFromHash(hash));
+        assertThrows(EntityNotFoundException.class, () -> urlService.getUrlFromHash(hash));
     }
 
     @Test
@@ -97,5 +107,27 @@ class UrlServiceImplTest {
 
         verify(urlRepository, never()).findById(hash);
         assertEquals(expectedUrl, result);
+    }
+
+    @Test
+    void cleanOldUrls_removesOldUrlsAndSavesHashes() {
+        when(urlRepository.removeOldAndGetHashes(any(LocalDateTime.class))).thenReturn(Arrays.asList("hash1", "hash2"));
+
+        urlService.deleteOldUrls();
+
+        InOrder inOrder = inOrder(urlRepository, hashRepository);
+        inOrder.verify(urlRepository, times(1)).removeOldAndGetHashes(any(LocalDateTime.class));
+        inOrder.verify(hashRepository, times(1)).saveAll(Arrays.asList("hash1", "hash2"));
+    }
+
+    @Test
+    void cleanOldUrls_doesNothingWhenNoOldUrlsFound() {
+        when(urlRepository.removeOldAndGetHashes(any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+
+        urlService.deleteOldUrls();
+
+        InOrder inOrder = inOrder(urlRepository, hashRepository);
+        inOrder.verify(urlRepository, times(1)).removeOldAndGetHashes(any(LocalDateTime.class));
+        inOrder.verifyNoMoreInteractions();
     }
 }

@@ -35,10 +35,10 @@ public class HashGeneratorImpl implements HashGenerator {
     @Transactional
     public List<String> getBatch() {
 
-        List<String> hashes = hashRepository.getHashBatch(batchSize);
+        List<String> hashes = hashRepository.getAndDeleteHashBatch(batchSize);
         if (hashes.size() < batchSize) {
             generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(batchSize - hashes.size()));
+            hashes.addAll(hashRepository.getAndDeleteHashBatch(batchSize - hashes.size()));
         }
         return hashes;
     }

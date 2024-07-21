@@ -1,28 +1,14 @@
-/*
- Hash
-*/
-
-CREATE TABLE IF NOT EXISTS hash
+CREATE TABLE IF NOT EXISTS hashes
 (
-    hash VARCHAR(6) NOT NULL,
-    CONSTRAINT pk_hash PRIMARY KEY (hash)
+    hash VARCHAR(6) PRIMARY KEY NOT NULL
 );
-
-/*
- URL
-*/
 
 CREATE TABLE IF NOT EXISTS url
 (
-    hash       VARCHAR(6)                NOT NULL,
-    url        VARCHAR(64)                 NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    CONSTRAINT pk_url PRIMARY KEY (hash)
+    hash       VARCHAR(6) PRIMARY KEY      NOT NULL,
+    url        VARCHAR(256)                NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
-
-/*
- Unique Numbers
-*/
 
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq
     INCREMENT 1

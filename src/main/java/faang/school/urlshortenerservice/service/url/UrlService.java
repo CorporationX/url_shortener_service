@@ -9,4 +9,6 @@ public interface UrlService {
     UrlDto createUrlHash(URL url);
 
     String getUrlFromHash(String hash);
+
+    void deleteOldUrls();
 }

@@ -32,12 +32,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (
                 SELECT hash
                 FROM hashes
-                ORDER BY RANDOM()
                 LIMIT :batchSize
             )
             RETURNING hash
             """)
-    List<String> getHashBatch(long batchSize);
+    List<String> getAndDeleteHashBatch(long batchSize);
 
     @Transactional
     default void saveAll(List<String> hashes) {

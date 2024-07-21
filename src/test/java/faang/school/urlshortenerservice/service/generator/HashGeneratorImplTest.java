@@ -61,14 +61,14 @@ class HashGeneratorImplTest {
     void getBatch_generatesAndReturnsNewHashesWhenNotEnoughExist() {
         batchSize(2L);
 
-        when(hashRepository.getHashBatch(anyLong())).thenReturn(new ArrayList<>(List.of("a"))).thenReturn(List.of("b"));
+        when(hashRepository.getAndDeleteHashBatch(anyLong())).thenReturn(new ArrayList<>(List.of("a"))).thenReturn(List.of("b"));
         when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(Collections.singletonList(1L));
         when(base62Encoder.encode(anyList())).thenReturn(List.of("b"));
 
         List<String> result = hashGenerator.getBatch();
 
         InOrder inOrder = inOrder(hashRepository, base62Encoder);
-        inOrder.verify(hashRepository, times(1)).getHashBatch(anyLong());
+        inOrder.verify(hashRepository, times(1)).getAndDeleteHashBatch(anyLong());
         inOrder.verify(hashRepository, times(1)).getUniqueNumbers(anyLong());
         inOrder.verify(base62Encoder, times(1)).encode(List.of(1L));
         inOrder.verify(hashRepository, times(1)).saveAll(List.of("b"));
@@ -80,12 +80,12 @@ class HashGeneratorImplTest {
     void getBatch_enoughHashes() {
         batchSize(1L);
 
-        when(hashRepository.getHashBatch(anyLong())).thenReturn(Collections.singletonList("a"));
+        when(hashRepository.getAndDeleteHashBatch(anyLong())).thenReturn(Collections.singletonList("a"));
 
         List<String> result = hashGenerator.getBatch();
 
         InOrder inOrder = inOrder(hashRepository, base62Encoder);
-        inOrder.verify(hashRepository, times(1)).getHashBatch(anyLong());
+        inOrder.verify(hashRepository, times(1)).getAndDeleteHashBatch(anyLong());
         inOrder.verifyNoMoreInteractions();
 
         assertIterableEquals(List.of("a"), result);

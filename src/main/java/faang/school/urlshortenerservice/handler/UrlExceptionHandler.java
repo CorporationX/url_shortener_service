@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.handler;
 
-import faang.school.urlshortenerservice.exception.NotFoundException;
+import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.exception.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +30,9 @@ public class UrlExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(NotFoundException e, HttpServletRequest request) {
+    public ErrorResponse handleNotFoundException(EntityNotFoundException e, HttpServletRequest request) {
         log.error("Not found: {}", e.getMessage());
         return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
     }
