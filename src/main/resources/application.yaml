@@ -27,6 +27,11 @@ server:
   servlet:
     context-path: /api/v1
 
+scheduler:
+  cleaner:
+    cron: "0 0 0 * * *"
+    interval: "1 year"
+
 hash:
   quantity-generated-numbers: 5
 cache:
