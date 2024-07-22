@@ -25,11 +25,11 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${schedulers.cleaner.cron}")
     public void scheduledCleaning() {
-        cleanOldHashes();
+        freedHashes();
     }
 
     @Transactional
-    public void cleanOldHashes() {
+    public void freedHashes() {
         List<Hash> oldHashes = urlRepository.deleteOldUrl(removingDateTime).stream()
                 .map(url -> new Hash(url.getHash()))
                 .toList();

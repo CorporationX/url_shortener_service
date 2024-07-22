@@ -20,7 +20,9 @@ public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private String prefix;
 
-    public UrlServiceImpl(UrlRepository urlRepository, UrlCacheRepository urlCacheRepository, HashCache hashCache,  @Value("${app.url-prefix}") String prefix) {
+    public UrlServiceImpl(UrlRepository urlRepository, UrlCacheRepository urlCacheRepository,
+                          HashCache hashCache,
+                          @Value("${app.url-prefix}") String prefix) {
         this.urlRepository = urlRepository;
         this.urlCacheRepository = urlCacheRepository;
         this.hashCache = hashCache;
@@ -46,7 +48,9 @@ public class UrlServiceImpl implements UrlService {
 
     private String generateNewHash(String baseUrl) {
         Hash hash = hashCache.getHash();
-        urlRepository.save(new Url(hash.getHash(), baseUrl, LocalDateTime.now()));
+        urlRepository.save(Url.builder()
+                        .hash(hash.getHash())
+                        .baseUrl(baseUrl).build());
         urlCacheRepository.save(hash.getHash(), baseUrl);
         return hash.getHash();
     }
