@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Url;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,7 @@ public class UrlRepository {
         return repository.findUrlsOlderThan(now().minusDays(daysToLive));
     }
 
-    public Url save(Url url) {
+    public Url save(@Valid Url url) {
         return repository.save(url);
     }
 }

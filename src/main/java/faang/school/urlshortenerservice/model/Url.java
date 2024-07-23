@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +22,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Url {
     @Id
+    @NotNull
     private String hash;
 
     @Column(name = "url", nullable = false)
+    @NotNull
+    @Size(max = 2048)
     private String url;
 
     @Column(name = "created_at")

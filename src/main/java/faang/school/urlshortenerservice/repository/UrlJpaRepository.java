@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -14,14 +15,11 @@ public interface UrlJpaRepository extends JpaRepository<Url, String> {
 
     Optional<Url> findByHash(String hash);
 
+    @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM url
-            WHERE hash IN
-            (
-                SELECT u.hash FROM url u
-                WHERE u.last_received_at < :timestamp
-            )
-            RETURNING *
+            WHERE last_received_at < :timestamp
+            RETURNING url, hash, created_at, last_received_at
             """)
     List<Url> findUrlsOlderThan(LocalDateTime timestamp);
 }

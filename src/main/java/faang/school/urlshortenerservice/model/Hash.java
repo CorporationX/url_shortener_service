@@ -2,6 +2,8 @@ package faang.school.urlshortenerservice.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Hash {
     @Id
+    @NotNull
+    @Size(min = 1, max = 255)
     private String hash;
 
     @Override

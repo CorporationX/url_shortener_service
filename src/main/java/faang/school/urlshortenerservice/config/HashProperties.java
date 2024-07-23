@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.config;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +12,6 @@ public class HashProperties {
     private Integer generationBatch;
     private Integer saveBatch;
     private Integer getBatch;
-
-    @PostConstruct
-    void setUp() {
-        System.out.println();
-    }
 
     @Data
     public static class Cache {
