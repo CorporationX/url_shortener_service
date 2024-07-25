@@ -27,7 +27,7 @@ public class Url {
 
     @Column(name = "url", nullable = false)
     @NotNull
-    @Size(max = 2048)
+    @Size(max = 512)
     private String url;
 
     @Column(name = "created_at")
