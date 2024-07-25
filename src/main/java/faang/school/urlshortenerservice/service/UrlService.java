@@ -20,6 +20,7 @@ public class UrlService {
         if (urlFromCash.isEmpty()) {
             Optional<Url> urlFromDb = urlRepository.findById(hash);
             if(urlFromDb.isPresent()) {
+                redisRepository.save(urlFromDb.get());
                 return urlFromDb.get();
             } else {
                 throw new UrlNotFoundException("Url for hash: " + hash + " not found");
