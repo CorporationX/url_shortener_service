@@ -2,8 +2,6 @@ package faang.school.urlshortenerservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -24,7 +22,6 @@ import java.time.LocalDateTime;
 @Builder
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String hash;
 
     @Column(name = "url", nullable = false, length = 256)

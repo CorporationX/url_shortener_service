@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.UrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -15,11 +17,25 @@ public class UrlService {
 
     private final UrlCacheRepository redisRepository;
     private final UrlRepository urlRepository;
-    public Url getRealUrl(String hash) {
+    private final UrlMapper urlMapper;
+    private final HashCash hashCash;
+
+    public UrlDto getShortUrl(UrlDto urlDto) {
+        String hash = hashCash.getHash();
+        Url newUrl = Url.builder()
+                .url(urlDto.getUrl())
+                .hash(hash)
+                .build();
+        Url savedUrl = urlRepository.save(newUrl);
+        redisRepository.save(savedUrl);
+        return urlMapper.toDto(savedUrl);
+    }
+
+    public Url getOriginUrl(String hash) {
         Optional<Url> urlFromCash = redisRepository.findById(hash);
         if (urlFromCash.isEmpty()) {
             Optional<Url> urlFromDb = urlRepository.findById(hash);
-            if(urlFromDb.isPresent()) {
+            if (urlFromDb.isPresent()) {
                 redisRepository.save(urlFromDb.get());
                 return urlFromDb.get();
             } else {
