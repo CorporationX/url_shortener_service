@@ -31,3 +31,5 @@ logging:
 numbers:
   uniq:
     number: 50000
+
+clean-url-cron: 0 8 * * * *
