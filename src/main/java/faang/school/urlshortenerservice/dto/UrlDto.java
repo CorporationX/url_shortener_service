@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.dto;
 
 
 import jakarta.validation.constraints.NotBlank;

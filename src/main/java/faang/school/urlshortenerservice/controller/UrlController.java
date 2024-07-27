@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.validator.UrlValidator;
