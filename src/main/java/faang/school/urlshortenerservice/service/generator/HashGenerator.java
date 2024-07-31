@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.repositoy.HashJpaRepository;
 import faang.school.urlshortenerservice.service.encoder.Base62Encoder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +31,6 @@ public class HashGenerator {
     }
 
     private void generateBatch(int uniqueNumbers) {
-        hashJpaRepository.saveAll(base62Encoder.encode(hashJpaRepository.getUniqueNumbers(uniqueNumbers)));
+        hashJpaRepository.saveAll(base62Encoder.encodeAll(hashJpaRepository.getUniqueNumbers(uniqueNumbers)));
     }
 }

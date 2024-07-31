@@ -29,10 +29,6 @@ logging:
   level:
     root: info
 
-repository:
-  get-batch:
-    size: 10
-
 config:
   thread-pool:
     size: 5
@@ -44,6 +40,9 @@ hash-cache:
   initial-capacity: 10
   fill-percent: 0.02
   cache-size: 10
+
+hash-repository:
+  batch-size: 5
 
 scheduler:
   cron: 0 0 13 * * *
