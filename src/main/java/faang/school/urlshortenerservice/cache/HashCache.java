@@ -27,33 +27,33 @@ public class HashCache {
     private int cacheSize;
     @Value("${cache.fill-threshold}")
     private double fillThreshold;
-    private ArrayBlockingQueue<String> hashCache;
+    private ArrayBlockingQueue<String> hashCacheQueue;
 
     @PostConstruct
     public void init() {
         int countOfHashes = hashRepository.count();
-        hashCache = new ArrayBlockingQueue<>(cacheSize);
+        hashCacheQueue = new ArrayBlockingQueue<>(cacheSize);
         List<String> hashes = hashRepository.getHashBatch(cacheSize);
         if (hashes.isEmpty()) {
             hashGenerator.generateBatch(cacheSize - countOfHashes);
             hashes = hashRepository.getHashBatch(cacheSize);
         }
-        hashCache.addAll(hashes);
+        hashCacheQueue.addAll(hashes);
         log.info("Hash cache initialized with number of elements {}", hashes.size());
     }
 
     public String getHash() {
-        String hash;
+        String hash = "";
         try {
-            if (hashCache.size() > fillThreshold * cacheSize) {
-                hash = hashCache.take();
+            if (hashCacheQueue.size() > fillThreshold * cacheSize) {
+                hash = hashCacheQueue.take();
             } else {
-                hash = hashCache.take();
-                fillCache(cacheSize - hashCache.size());
+                hash = hashCacheQueue.take();
+                fillCache(cacheSize - hashCacheQueue.size());
             }
         } catch (InterruptedException e) {
             log.error("Error while getting hash", e);
-            throw new RuntimeException("Error while getting hash", e);
+            Thread.currentThread().interrupt();
         }
         return hash;
     }
@@ -61,7 +61,7 @@ public class HashCache {
     private void fillCache(int count) {
         if (lock.tryLock()) {
             CompletableFuture.runAsync(() -> {
-                        hashCache.addAll(hashRepository.getHashBatch(count));
+                        hashCacheQueue.addAll(hashRepository.getHashBatch(count));
                         log.info("Hash cache filled");
                         hashGenerator.generateBatch(count);
                     }, taskExecutor)
