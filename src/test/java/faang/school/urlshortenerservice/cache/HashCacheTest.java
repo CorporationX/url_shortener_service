@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.threadpool.ThreadPoolConfig;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.Test;
@@ -17,8 +16,11 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashCacheTest {
@@ -27,7 +29,7 @@ class HashCacheTest {
     @Mock
     private HashGenerator hashGenerator;
     @Mock
-    private ThreadPoolConfig threadPoolConfig;
+    private ArrayBlockingQueue<String> hashCacheQueue;
     @InjectMocks
     private HashCache hashCache;
 
@@ -62,29 +64,31 @@ class HashCacheTest {
 
     @Test
     void testGetHash() throws NoSuchFieldException, IllegalAccessException {
-        List<String> hashes = Arrays.asList("sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf");
-        List<String> expectedHashCash = Arrays.asList("sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf", "sdf");
-        Field field = HashCache.class.getDeclaredField("hashCash");
+        //Arrange
+        List<String> hashes = Arrays.asList("sdf", "sdf");
+        Field field = HashCache.class.getDeclaredField("hashCacheQueue");
         field.setAccessible(true);
         ArrayBlockingQueue<String> actualHashCash = new ArrayBlockingQueue<>(10);
         field.set(hashCache, actualHashCash);
         actualHashCash.addAll(hashes);
-
-        hashCache.getHash();
-
-        assertEquals(expectedHashCash, new ArrayList<>(actualHashCash));
+        //Act
+        String hash = hashCache.getHash();
+        //Assert
+        assertEquals("sdf",hash);
     }
 
     @Test
     void testGetHashWithException() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-        ArrayBlockingQueue<String> mockQueue = mock(ArrayBlockingQueue.class);
-
-        Field field = HashCache.class.getDeclaredField("hashCash");
+        // Arrange
+        Field field = HashCache.class.getDeclaredField("hashCacheQueue");
         field.setAccessible(true);
-        field.set(hashCache, mockQueue);
-
-        when(mockQueue.take()).thenThrow(InterruptedException.class);
-
-        assertThrows(RuntimeException.class, () -> hashCache.getHash());
+        field.set(hashCache, hashCacheQueue);
+        when(hashCacheQueue.take()).thenThrow(new InterruptedException());
+        // Act
+        String result = hashCache.getHash();
+        // Assert
+        assertEquals("", result);
+        verify(hashCacheQueue, times(1)).take();
+        assertTrue(Thread.currentThread().isInterrupted());
     }
 }

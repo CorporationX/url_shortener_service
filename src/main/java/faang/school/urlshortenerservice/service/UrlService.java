@@ -32,9 +32,7 @@ public class UrlService {
     @Transactional
     public String getHash(String url) {
         UrlCache urlCacheFromRedis = urlCashRepository.findByUrl(url);
-        if (urlCacheFromRedis != null) {
-            return staticUrl + urlCacheFromRedis.getHash();
-        }
+        if (urlCacheFromRedis != null) return staticUrl + urlCacheFromRedis.getHash();
         String hash = hashCache.getHash();
         AssociationHashUrl associationHashUrl = new AssociationHashUrl(hash, url, LocalDateTime.now());
         UrlCache urlCache = new UrlCache(hash, url);

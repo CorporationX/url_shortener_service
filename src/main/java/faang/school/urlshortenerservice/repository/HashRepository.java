@@ -22,7 +22,7 @@ public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Value("${batch.sublists}")
-    private int HashBatchSize;
+    private int hashBatchSize;
 
     @Transactional
     @Retryable(retryFor = DataAccessException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
@@ -32,7 +32,7 @@ public class HashRepository {
 
     @Transactional
     public void save(@NotNull List<String> hashes) {
-        List<List<String>> hashBathes = ListUtils.partition(hashes, HashBatchSize);
+        List<List<String>> hashBathes = ListUtils.partition(hashes, hashBatchSize);
         for (List<String> hashBatch : hashBathes) {
             String sql = "INSERT INTO hash (hash) VALUES (?)";
             jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -40,6 +40,7 @@ public class HashRepository {
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setString(1, hashBatch.get(i));
                 }
+
                 @Override
                 public int getBatchSize() {
                     return hashBatch.size();
@@ -55,7 +56,9 @@ public class HashRepository {
         return jdbcTemplate.queryForList(sql, String.class, numberOfValue);
     }
 
-    public int count(){
-        return  jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);
+    public int count() {
+        Integer countOfHash = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);
+        if (countOfHash == null) return 0;
+        return countOfHash;
     }
 }
