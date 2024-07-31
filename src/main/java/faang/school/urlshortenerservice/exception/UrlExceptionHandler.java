@@ -22,13 +22,13 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDataValidationException(EntityNotFoundException exception) {
+    public String handleEntityNotFoundException(EntityNotFoundException exception) {
         return exception.getMessage();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDataValidationException(IllegalArgumentException exception) {
+    public String handleIllegalArgumentException(IllegalArgumentException exception) {
         return exception.getMessage();
     }
 

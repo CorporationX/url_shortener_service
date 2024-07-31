@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionMessage {
 
-    WRONG_LINK_FORMAT("Your input is not similar with link");
+    WRONG_LINK_FORMAT("Your input is not appropriate"),
+
+    NO_URL_IN_DB("No such url in database");
 
     private final String message;
 }
