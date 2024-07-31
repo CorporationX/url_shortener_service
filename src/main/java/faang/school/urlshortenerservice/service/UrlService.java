@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -25,11 +27,12 @@ public class UrlService {
 
     public UrlDto createShortUrl(UrlDto urlDto) {
         Url url = new Url();
-        String link = urlDto.getUrl();
+        String link = urlDto.getLink();
         String hash = hashCache.getHash().getHash();
 
         url.setUrl(link);
         url.setHash(hash);
+        url.setCreated_at(LocalDateTime.now());
 
         urlRepository.save(url);
         urlCacheRepository.putUrl(link, hash);

@@ -25,6 +25,9 @@ public class HashCache {
     @Value("${hash-cache.cache-size}")
     private int cacheSize;
 
+    @Value("${hash-cache.initial-capacity}")
+    private int initialCapacity;
+
     private final HashGenerator hashGenerator;
 
     private Queue<Hash> cache;
@@ -34,7 +37,7 @@ public class HashCache {
     @PostConstruct
     public void unit() {
         cache = new ArrayBlockingQueue<>(cacheSize);
-        cache.addAll(hashGenerator.getHashes(capacity));
+        cache.addAll(hashGenerator.getHashes(initialCapacity));
     }
 
     public Hash getHash() {

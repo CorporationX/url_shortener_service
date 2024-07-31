@@ -17,9 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    @Value("${hash-generator.unique-numbers.size}")
-    private long uniqueNumbers;
-
     private final Base62Encoder base62Encoder;
 
     private final HashJpaRepository hashJpaRepository;
@@ -28,13 +25,13 @@ public class HashGenerator {
     public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashJpaRepository.getHashBatch(amount);
         if (hashes.size() < amount) {
-            generateBatch();
+            generateBatch(amount);
             hashes.addAll(hashJpaRepository.getHashBatch(amount - hashes.size()));
         }
         return hashes;
     }
 
-    private void generateBatch() {
+    private void generateBatch(int uniqueNumbers) {
         hashJpaRepository.saveAll(base62Encoder.encode(hashJpaRepository.getUniqueNumbers(uniqueNumbers)));
     }
 }

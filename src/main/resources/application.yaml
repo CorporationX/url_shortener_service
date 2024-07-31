@@ -33,10 +33,6 @@ repository:
   get-batch:
     size: 10
 
-hash-generator:
-  unique-numbers:
-    size: 10
-
 config:
   thread-pool:
     size: 5
@@ -45,7 +41,8 @@ config:
 
 hash-cache:
   capacity: 5
-  fill-percent: 0.2
+  initial-capacity: 10
+  fill-percent: 0.02
   cache-size: 10
 
 scheduler:
