@@ -15,8 +15,14 @@ public interface HashJpaRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(long n);
 
     @Modifying
-    @Query(value = "DELETE FROM hash " +
-            "WHERE hash IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT :n) " +
-            "RETURNING hash", nativeQuery = true)
+    @Query(value = """
+            DELETE FROM hash
+            WHERE hash IN (
+                SELECT hash FROM hash
+                ORDER BY hash
+                LIMIT :n
+            )
+            RETURNING hash
+            """, nativeQuery = true)
     List<Hash> getHashBatch(long n);
 }
