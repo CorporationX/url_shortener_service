@@ -18,9 +18,8 @@ public interface HashJpaRepository extends JpaRepository<Hash, String> {
     @Query(value = """
             DELETE FROM hash
             WHERE hash IN (
-                SELECT hash FROM hash
-                ORDER BY hash
-                LIMIT :n
+            SELECT hash FROM hash
+            LIMIT :n
             )
             RETURNING hash
             """, nativeQuery = true)
