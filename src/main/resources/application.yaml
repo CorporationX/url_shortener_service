@@ -33,3 +33,7 @@ numbers:
     number: 50000
 
 clean-url-cron: 0 8 * * * *
+
+cash:
+  size: 10000
+  threshold: 0.2

@@ -14,7 +14,7 @@ public class Base62EncoderImpl implements Base62Encoder{
     private final HashMapper hashMapper;
 
     @Override
-    public List<Hash> encode(List<Integer> numbers) {
+    public List<Hash> encode(List<Long> numbers) {
         return hashMapper.toEntities(numbers.stream().map(Base62::base62).toList());
     }
 

@@ -26,9 +26,13 @@ public class UrlService {
                 .url(urlDto.getUrl())
                 .hash(hash)
                 .build();
-        Url savedUrl = urlRepository.save(newUrl);
-        redisRepository.save(savedUrl);
-        return urlMapper.toDto(savedUrl);
+        try {
+            Url savedUrl = urlRepository.save(newUrl);
+            redisRepository.save(savedUrl);
+            return urlMapper.toDto(savedUrl);
+        } catch (Exception e) {
+            return findByUrl(urlDto.getUrl());
+        }
     }
 
     public Url getOriginUrl(String hash) {
@@ -43,5 +47,17 @@ public class UrlService {
             }
         }
         return urlFromCash.get();
+    }
+
+    private UrlDto findByUrl(String url) {
+        Optional<Url> urlFromCash = redisRepository.findByUrl(url);
+        if (urlFromCash.isEmpty()) {
+            Optional<Url> urlFromRepo = urlRepository.findByUrl(url);
+            if (urlFromRepo.isPresent()) {
+                redisRepository.save(urlFromRepo.get());
+                return urlMapper.toDto(urlFromRepo.get());
+            }
+        }
+        return urlMapper.toDto(urlFromCash.get());
     }
 }

@@ -1,8 +1,12 @@
 package faang.school.urlshortenerservice.generator;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-@Component
 public interface HashGenerator {
-    void generateBatch(int n);
+    void generateBatch();
+
+    List<String> getHashes(int cashSize);
+
+    CompletableFuture<List<String>> getHashesAsync(int cashSize);
 }
