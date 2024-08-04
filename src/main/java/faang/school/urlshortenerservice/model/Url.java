@@ -22,9 +22,10 @@ import java.time.LocalDateTime;
 @Builder
 public class Url {
     @Id
+    @Column(name = "hash", nullable = false, length = 6)
     private String hash;
 
-    @Column(name = "url", nullable = false, length = 256)
+    @Column(name = "url", nullable = false, length = 1024)
     private String url;
 
     @CreationTimestamp

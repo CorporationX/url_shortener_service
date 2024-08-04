@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Base62Test {
     @Test
     public void testEncodeIntToBase62() {
-        assertEquals("b", Base62.base62(1));
-        assertEquals("dnh", Base62.base62(12345));
+        assertEquals("b", Base62.base62(1L));
+        assertEquals("dnh", Base62.base62(12345L));
     }
 }
