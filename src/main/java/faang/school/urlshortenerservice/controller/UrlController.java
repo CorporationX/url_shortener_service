@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.validator.UrlValidator;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,10 +23,11 @@ public class UrlController {
 
     @GetMapping("{hash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getOriginUrl(@PathVariable String hash, HttpServletResponse response) {
+    public RedirectView getOriginUrl(@PathVariable String hash) {
         Url realUrl = urlService.getOriginUrl(hash);
-        response.setHeader("Location", realUrl.getUrl());
-        response.setStatus(302);
+        RedirectView redirectView = new RedirectView(realUrl.getUrl());
+        redirectView.setStatusCode(HttpStatus.FOUND);
+        return redirectView;
     }
 
     @PostMapping("url")
