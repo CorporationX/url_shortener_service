@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.ShortLinkNotFoundException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
@@ -43,7 +44,7 @@ public class UrlService {
                 redisRepository.save(urlFromDb.get());
                 return urlFromDb.get();
             } else {
-                throw new UrlNotFoundException("Url for hash: " + hash + " not found");
+                throw new ShortLinkNotFoundException("Short link '" + hash + "' not found");
             }
         }
         return urlFromCash.get();
