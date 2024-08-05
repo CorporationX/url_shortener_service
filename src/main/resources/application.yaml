@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 5
+        generate_statistics: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +27,13 @@ server:
 logging:
   level:
     root: info
+
+numbers:
+  uniq:
+    number: 50000
+
+clean-url-cron: 0 0 * * * *
+
+cash:
+  size: 10000
+  threshold: 0.2
