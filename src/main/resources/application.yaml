@@ -32,7 +32,7 @@ numbers:
   uniq:
     number: 50000
 
-clean-url-cron: 0 8 * * * *
+clean-url-cron: 0 0 * * * *
 
 cash:
   size: 10000
