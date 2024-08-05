@@ -22,7 +22,6 @@ public class UrlController {
     private final UrlValidator urlValidator;
 
     @GetMapping("{hash}")
-    @ResponseStatus(HttpStatus.OK)
     public RedirectView getOriginUrl(@PathVariable String hash) {
         Url realUrl = urlService.getOriginUrl(hash);
         RedirectView redirectView = new RedirectView(realUrl.getUrl());
