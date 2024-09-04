@@ -14,6 +14,14 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      channels:
+        url_channel:
+          name: url_events
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -23,3 +31,19 @@ server:
 logging:
   level:
     root: info
+
+custom:
+  batch-size: 100
+  base62-characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+  thread-pool:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
+  executor-service:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 100
+  hash-cache:
+    size: 1000
+    refill-threshold: 0.2
+    batch-size: 100
