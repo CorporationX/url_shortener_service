@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+custom:
+  batch-size: 100
+  base62-characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+  thread-pool:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
