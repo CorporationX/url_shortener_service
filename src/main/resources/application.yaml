@@ -1,4 +1,12 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: redis
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres

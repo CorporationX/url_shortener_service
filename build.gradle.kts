@@ -25,6 +25,11 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
+     * redis
+     */
+    implementation("redis.clients:jedis")
+
+    /**
      * Database
      */
     implementation("org.liquibase:liquibase-core")
