@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+hashes:
+  amount: 1000
