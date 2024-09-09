@@ -25,7 +25,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                 ORDER BY random()
                 LIMIT ?1
                 )
-            RETURNING hash
+            RETURNING *
             """)
-    List<String> getHashBatch(int batchSize);
+    List<Hash> getHashBatch(int batchSize);
 }
