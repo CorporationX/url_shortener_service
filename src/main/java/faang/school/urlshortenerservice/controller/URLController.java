@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.URLDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
@@ -15,7 +16,7 @@ public class URLController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ResponseEntity<String> createShortLink(@Valid @RequestBody URLDto urlDto){
+    public ResponseEntity<HashDto> createShortLink(@Valid @RequestBody URLDto urlDto){
         return ResponseEntity.status(HttpStatus.OK).body(urlService.createShortLink(urlDto));
     }
 }
