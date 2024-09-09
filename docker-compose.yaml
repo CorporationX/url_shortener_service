@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  master_postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  master_redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redis_data:/data
