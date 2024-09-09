@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class HashGenerator {
     private long countUniqueNumbers;
 
     @Async("asyncExecutor")
+    @Transactional
     public void generateBatch(){
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(countUniqueNumbers);
         List<Hash> hashes = base62Encoder.encode(uniqueNumbers).stream().map(Hash::new).toList();
