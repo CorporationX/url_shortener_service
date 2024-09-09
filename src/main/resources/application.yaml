@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    username: postgres
+    password: v@krjD5
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,9 +17,35 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  task:
+    execution:
+      pool:
+        max-size: 10
+        core-size: 6
+        queue-capacity: 20
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  repository:
+    batchSize: 20
+    scheduler:
+      clear-cron: "0 0 3 * * ?"
+      expirationRangeMonth: 12
+  cache:
+    capacity: 10
+    minimumRequiredPercent: 20
+    ttlMinutes: 10
+
+service:
+  base-prefix: "http://localhost:${server.port}/"
