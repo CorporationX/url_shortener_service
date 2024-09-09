@@ -20,6 +20,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  threads: 5
+
+  generator:
+    count_number: 40
+
+  hash:
+    base: 62
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    length: 6
+
 server:
   port: 9081
 
