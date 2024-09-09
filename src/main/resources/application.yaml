@@ -42,6 +42,10 @@ generator:
     count: 1000
   scheduled:
     cron: "0 0 0 * * *"
+  delete:
+    url:
+      scheduled:
+        cron: "0 0 0 * * *"
 
 async:
   core-pool-size: 5
