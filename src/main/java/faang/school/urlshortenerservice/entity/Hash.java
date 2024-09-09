@@ -6,7 +6,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "hash")
@@ -19,4 +18,8 @@ public class Hash {
 
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }
