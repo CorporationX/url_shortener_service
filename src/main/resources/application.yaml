@@ -34,10 +34,19 @@ logging:
     root: info
 
 generator:
+  queue:
+    capacity: 100
+    min:
+      percentage: 0.2
   hash:
-    count: 100
+    count: 1000
+  scheduled:
+    cron: "0 0 0 * * *"
 
 async:
   core-pool-size: 5
   max-pool-size: 50
   queue-capacity: 100
+
+url:
+  host: https://sh.c/

@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,17 +20,20 @@ public class UrlService {
     private final URLCacheRepository urlCacheRepository;
     private final HashCache hashCache;
     private final HashMapper hashMapper;
+
+    @Value("${url.host.}")
+    private String host;
     public HashDto createShortLink(URLDto urlDto){
-        Hash hash = hashCache.getCache();
+        String hash = hashCache.getHash();
 
         URL url = URL.builder()
                 .url(urlDto.getUrl())
-                .hash(hash.getHash())
+                .hash(hash)
                 .build();
 
         urlRepository.save(url);
         urlCacheRepository.save(url);
 
-        return hashMapper.toDto(hash);
+        return hashMapper.toDto(new Hash(host + hash));
     }
 }
