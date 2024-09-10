@@ -18,6 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+    private final HashGenerator hashGenerator;
+    private final HashRepository hashRepository;
+
     @Value("${spring.hash_cache.queue_size}")
     private int queueSize;
     @Value("${spring.hash_cache.percentage_to_replenish_queue}")
@@ -25,10 +29,6 @@ public class HashCache {
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private int hashBatch;
     private BlockingQueue<Hash> queueHashes;
-
-    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
-    private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
 
     @PostConstruct
     public void initializationQueue() {
