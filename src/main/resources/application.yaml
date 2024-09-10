@@ -56,4 +56,4 @@ async:
   queue-capacity: 100
 
 url:
-  host: https://sh.c/
+  host: http://localhost:8080/shortener/

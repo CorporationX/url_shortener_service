@@ -48,13 +48,15 @@ public class UrlService {
         return hashMapper.toDto(new Hash(host + hash));
     }
 
-    public String getUrlByHash(String hash){
-        URL url = urlCacheRepository.find(hash);
-            if (url != null){
-                return url.getUrl();
-            }
-        return urlRepository.findUrlByHash(hash)
-                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + hash));
+    public String getUrlByHash(String hash) {
+        int lastIndex = hash.lastIndexOf('/');
+        String resultHash = hash.substring(lastIndex + 1);
+        URL url = urlCacheRepository.find(resultHash);
+        if (url != null) {
+            return url.getUrl();
+        }
+        return urlRepository.findUrlByHash(resultHash)
+                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + resultHash));
     }
 
     @Transactional
