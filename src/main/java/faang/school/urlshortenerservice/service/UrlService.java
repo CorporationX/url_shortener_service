@@ -30,7 +30,7 @@ public class UrlService {
     private final HashCache hashCache;
     private final HashMapper hashMapper;
 
-    @Value("${url.host.}")
+    @Value("${url.host}")
     private String host;
 
     @Transactional
