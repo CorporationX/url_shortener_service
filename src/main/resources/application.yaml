@@ -22,8 +22,12 @@ spring:
 
   threads: 5
 
+  hash_cache:
+    queue_size: 100
+    percentage_to_replenish_queue: 20
+
   generator:
-    count_number: 40
+    count_number: 50
 
   hash:
     base: 62
