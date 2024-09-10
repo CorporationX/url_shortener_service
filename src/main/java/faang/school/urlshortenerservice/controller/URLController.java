@@ -19,14 +19,14 @@ public class URLController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ResponseEntity<HashDto> createShortLink(@Valid @RequestBody URLDto urlDto){
+    public ResponseEntity<HashDto> createShortLink(@Valid @RequestBody URLDto urlDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.createShortLink(urlDto));
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> getUrlByHash(@PathVariable String hash){
+    public ResponseEntity<Void> getUrlByHash(@PathVariable String hash) {
         String url = urlService.getUrlByHash(hash);
-        if (url == null){
+        if (url == null) {
             return ResponseEntity.notFound().build();
         }
 
