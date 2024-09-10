@@ -11,7 +11,7 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_number_seq') FROM generate_series(1, 100)
+            SELECT nextval('unique_number_seq') FROM generate_series(1, :maxRange)
             """)
-    List<Long> getNextRange();
+    List<Long> getNextRange(int maxRange);
 }
