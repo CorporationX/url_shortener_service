@@ -24,5 +24,22 @@ logging:
   level:
     root: info
 
+threads: 6
+
+cache:
+  redis:
+    host: localhost
+    port: 6379
+    ttl_days: 2
+  capacity: 10000
+  low_fill_percentage: 20
+
 hashes:
   amount: 1000
+
+schedulers:
+  hash_generator:
+    cron: 0 0 0 * * *
+
+URL:
+  static_address: https://sh.c/

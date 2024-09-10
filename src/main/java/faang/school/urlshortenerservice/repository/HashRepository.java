@@ -18,13 +18,13 @@ public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public List<Long> getUniqueNumbers(@Param("amount") @Value("${hashes.amount}") int amount) {
+    public List<Long> getUniqueNumbers(@Param("amount") int amount) {
         return jdbcTemplate.query("select nextval('unique_number_seq') as genNum from generate_series(1,:amount)"
                 , (rs, rowNum) -> rs.getLong("genNum"));
     }
 
     public int[] saveHashes(List<String> hashes) {
-        return jdbcTemplate.batchUpdate("insert into hash values (?) on conflict do nothing", new BatchPreparedStatementSetter() {
+        return jdbcTemplate.batchUpdate("insert into hash(hash) values (?) on conflict do nothing", new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, hashes.get(i));
             }
