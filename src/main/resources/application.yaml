@@ -22,12 +22,21 @@ spring:
 
   threads: 5
 
+  data:
+    redis:
+      port: 6380
+      host: localhost
+
   hash_cache:
     queue_size: 100
     percentage_to_replenish_queue: 20
+    ttl_in_seconds: 3600
 
   generator:
     count_number: 50
+
+  url_repository:
+    url_prefix: https://sh.c/
 
   hash:
     base: 62

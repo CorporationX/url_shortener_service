@@ -1,7 +1,7 @@
 CREATE TABLE url (
     hash      VARCHAR(6) PRIMARY KEY,
     url       VARCHAR(2048),
-    createdAt timestamptz DEFAULT current_timestamp,
+    created_at timestamptz DEFAULT current_timestamp,
 
     CONSTRAINT unique_url UNIQUE (url)
 );
