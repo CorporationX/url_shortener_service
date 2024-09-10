@@ -18,8 +18,19 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8091
 
 logging:
   level:
     root: info
+
+hash:
+  batch-size : 20
+  execution-pool-parameters:
+    core-pool-size : 20
+    max-pool-capacity : 40
+    queue-capacity : 200
+
+base-encoder:
+  base: 62
+  characters: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
