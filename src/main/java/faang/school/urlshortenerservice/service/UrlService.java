@@ -5,6 +5,8 @@ import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.URLDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.URL;
+import faang.school.urlshortenerservice.exception.ExceptionMessage;
+import faang.school.urlshortenerservice.exception.url.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.URLCacheRepository;
@@ -44,6 +46,15 @@ public class UrlService {
         urlCacheRepository.save(url);
 
         return hashMapper.toDto(new Hash(host + hash));
+    }
+
+    public String getUrlByHash(String hash){
+        URL url = urlCacheRepository.find(hash);
+            if (url != null){
+                return url.getUrl();
+            }
+        return urlRepository.findUrlByHash(hash)
+                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + hash));
     }
 
     @Transactional

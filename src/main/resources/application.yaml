@@ -3,6 +3,9 @@ spring:
     redis:
       port: 6379
       host: localhost
+    cache:
+      redis:
+        time-to-live: 86400
 
   cache:
     type: redis
