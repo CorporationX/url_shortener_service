@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.exception;
+package faang.school.urlshortenerservice.exception.handler;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
