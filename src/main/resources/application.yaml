@@ -36,7 +36,7 @@ spring:
     count_number: 50
 
   url_repository:
-    url_prefix: https://sh.c/
+    url_prefix: http://localhost:9081/
 
   hash:
     base: 62
