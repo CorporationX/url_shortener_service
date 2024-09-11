@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UrlCacheRepository {
+public class UrlCacheRepositoryImpl {
 
-    UrlRepository urlRepository;
+    private final UrlRepository urlRepository;
 
     @CachePut()
     public String save(String hash, String originalUrl) {
