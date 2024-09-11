@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+app:
+  batch_size: 1000
+  async:
+    corePoolSize: 5
+    maxPoolSize: 10
+    queueCapacity: 500
+    threadNamePrefix: "AsyncExecutor-"
