@@ -1,21 +1,12 @@
 package faang.school.urlshortenerservice.util;
 
+import faang.school.urlshortenerservice.JdbcAwareTest;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.sql.DataSource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,34 +14,16 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@JdbcTest
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class HashGeneratorTest {
+class HashGeneratorTest extends JdbcAwareTest {
 
     private static final int BATCH_SIZE = 5;
     private static final int HASH_LENGTH = 6;
 
-    @Container
-    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withDatabaseName("testuser")
-            .withPassword("testpass");
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgresContainer::getUsername);
-        registry.add("spring.datasource.password", postgresContainer::getPassword);
-    }
-
-    private JdbcTemplate jdbcTemplate;
     private HashGenerator hashGenerator;
 
     @BeforeEach
     void setup() {
-        DataSource dataSource = createDataSource();
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        super.initJdbcTemplate();
         HashRepository hashRepository = new HashRepository(jdbcTemplate, BATCH_SIZE);
         Base62Encoder base62Encoder = new Base62Encoder(HASH_LENGTH);
         hashGenerator = new HashGenerator(hashRepository, base62Encoder, BATCH_SIZE);
@@ -59,15 +32,6 @@ class HashGeneratorTest {
         jdbcTemplate.execute("CREATE SEQUENCE unique_numbers_seq START WITH 1 INCREMENT BY 1 NO CYCLE");
         jdbcTemplate.execute("DROP TABLE IF EXISTS hash");
         jdbcTemplate.execute("CREATE TABLE hash (hash VARCHAR(6) PRIMARY KEY)");
-    }
-
-    private DataSource createDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(postgresContainer.getJdbcUrl());
-        dataSource.setUsername(postgresContainer.getUsername());
-        dataSource.setPassword(postgresContainer.getPassword());
-        return dataSource;
     }
 
     @Test
