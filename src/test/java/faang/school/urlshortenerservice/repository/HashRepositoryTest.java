@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class HashRepositoryTest {
 
+    private static final int BATCH_SIZE = 3;
+
     @Container
     static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:15")
             .withDatabaseName("testdb")
@@ -44,10 +46,11 @@ class HashRepositoryTest {
     void setup() {
         DataSource dataSource = createDataSource();
         jdbcTemplate = new JdbcTemplate(dataSource);
-        hashRepository = new HashRepository(jdbcTemplate, 3);
+        hashRepository = new HashRepository(jdbcTemplate, BATCH_SIZE);
 
         jdbcTemplate.execute("DROP SEQUENCE IF EXISTS unique_numbers_seq");
         jdbcTemplate.execute("CREATE SEQUENCE unique_numbers_seq START WITH 1 INCREMENT BY 1 NO CYCLE");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS hash");
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS hash (hash VARCHAR(6) PRIMARY KEY)");
     }
 
@@ -72,8 +75,8 @@ class HashRepositoryTest {
             assertTrue(number > 0 && number <= 5);
         }
 
-        var moreNumbers = hashRepository.getUniqueNumbers(3);
-        assertEquals(3, moreNumbers.size());
+        var moreNumbers = hashRepository.getUniqueNumbers(BATCH_SIZE);
+        assertEquals(BATCH_SIZE, moreNumbers.size());
         assertTrue(uniqueNumbers.addAll(moreNumbers));
     }
 
@@ -94,7 +97,7 @@ class HashRepositoryTest {
 
         var retrievedHashes = hashRepository.getHashBatch();
 
-        assertEquals(3, retrievedHashes.size());
+        assertEquals(BATCH_SIZE, retrievedHashes.size());
         assertTrue(initialHashes.containsAll(retrievedHashes));
 
         var remainingCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);

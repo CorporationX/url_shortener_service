@@ -1,5 +1,6 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.util;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.sqids.Sqids;
 
@@ -9,15 +10,14 @@ import java.util.List;
 public class Base62Encoder {
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int HASH_LENGTH = 6;
 
     private final Sqids sqids;
 
-    public Base62Encoder() {
-        var builder = Sqids.builder()
-                .minLength(HASH_LENGTH)
-                .alphabet(ALPHABET);
-        this.sqids = builder.build();
+    public Base62Encoder(@Value("${url.hash.length:6}") int hashLength) {
+        this.sqids = Sqids.builder()
+                .minLength(hashLength)
+                .alphabet(ALPHABET)
+                .build();
     }
 
     public List<String> encode(List<Long> numbers) {
@@ -29,6 +29,5 @@ public class Base62Encoder {
     private String encodeNumber(Long num) {
         return sqids.encode(List.of(num));
     }
-
 
 }

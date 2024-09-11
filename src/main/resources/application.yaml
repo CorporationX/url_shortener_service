@@ -26,4 +26,10 @@ logging:
 
 url:
   hash:
+    length: 6
+    generator:
+      thread-pool:
+        size: 50
+        queue: 100
+        max-size: 100
     batch-size: 100
