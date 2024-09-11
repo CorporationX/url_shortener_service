@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+public class UrlExceptionHandler {
 
     @ExceptionHandler(MalformedURLException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
