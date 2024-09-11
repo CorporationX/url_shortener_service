@@ -3,11 +3,13 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.sql.Timestamp;
 
+@Builder
 public class Url {
 
 
@@ -24,6 +26,4 @@ public class Url {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     Timestamp createdAt;
-
-
 }
