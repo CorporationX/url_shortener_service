@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class HashProperties {
     private Integer batchSize;
     private Integer hashSize;
+    private Integer uniqueNumbersSize;
 }

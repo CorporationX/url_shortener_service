@@ -23,6 +23,12 @@ server:
 logging:
   level:
     root: info
+
 hash:
   batch-size: 50
   hash-size: 40
+  unique-numbers-size: 150
+
+task-executor:
+  pool-size: 10
+  queue-capacity: 20
