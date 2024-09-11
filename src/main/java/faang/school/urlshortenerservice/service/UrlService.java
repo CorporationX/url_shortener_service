@@ -14,6 +14,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +42,12 @@ public class UrlService {
                 .url(urlDto.getUrl())
                 .hash(hash)
                 .build();
-
+        try {
         urlRepository.save(url);
         urlCacheRepository.save(url);
+        } catch (DataIntegrityViolationException e) {
+            log.error(ExceptionMessage.EXCEPTION_IN_SAVE + e.getMessage());
+        }
 
         return hashMapper.toDto(new Hash(host + hash));
     }
