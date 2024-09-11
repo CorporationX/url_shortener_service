@@ -4,12 +4,14 @@ CREATE SEQUENCE unique_number_seq
 
 CREATE TABLE IF NOT EXISTS url
 (
+    id         BIGSERIAL,
     hash       VARCHAR(6) PRIMARY KEY,
-    url        TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL
+    url        TEXT      NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS hash
 (
+    id BIGSERIAL,
     hash VARCHAR(6) PRIMARY KEY
 );
