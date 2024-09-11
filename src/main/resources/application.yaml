@@ -43,6 +43,9 @@ spring:
     alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     length: 6
 
+  cleaner:
+    cron: 0 1 1 * * ?
+
 server:
   port: 9081
 
