@@ -23,6 +23,11 @@ server:
 hash:
   generate_batch_size: 100
   hash_batch_and_delete_size: 100
+  base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+
+executor:
+  pool_size: 10
+
 
 logging:
   level:
