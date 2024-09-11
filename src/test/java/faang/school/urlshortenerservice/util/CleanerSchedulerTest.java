@@ -16,14 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CleanerSchedulerTest extends JdbcAwareTest {
 
     private CleanerScheduler cleanerScheduler;
-    private UrlRepository urlRepository;
-    private HashRepository hashRepository;
 
     @BeforeEach
     void setup() {
         super.initJdbcTemplate();
-        urlRepository = new UrlRepository(jdbcTemplate);
-        hashRepository = new HashRepository(jdbcTemplate, 10);
+        UrlRepository urlRepository = new UrlRepository(jdbcTemplate);
+        HashRepository hashRepository = new HashRepository(jdbcTemplate, 10);
         cleanerScheduler = new CleanerScheduler(urlRepository, hashRepository, "P1Y");
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS url");
