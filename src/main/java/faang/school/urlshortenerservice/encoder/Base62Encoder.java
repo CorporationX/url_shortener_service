@@ -11,7 +11,7 @@ public class Base62Encoder {
     private static final String BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int BASE = BASE62_ALPHABET.length();
 
-    List<String> encoder(List<Long> numbers) {
+    public List<String> encoder(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
         for (Long number : numbers) {
             if (number == 0) {

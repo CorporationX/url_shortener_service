@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -35,7 +34,7 @@ public class HashRepositoryTest {
         List<String> hashes = List.of("hash1", "hash2", "hash3");
         List<Hash> hashEntities = hashes.stream()
                 .map(Hash::new)
-                .collect(Collectors.toList());
+                .toList();
 
         hashRepository.saveAll(hashEntities);
 
