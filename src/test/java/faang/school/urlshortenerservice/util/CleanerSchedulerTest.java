@@ -24,7 +24,7 @@ class CleanerSchedulerTest extends JdbcAwareTest {
         super.initJdbcTemplate();
         urlRepository = new UrlRepository(jdbcTemplate);
         hashRepository = new HashRepository(jdbcTemplate, 10);
-        cleanerScheduler = new CleanerScheduler(urlRepository, hashRepository);
+        cleanerScheduler = new CleanerScheduler(urlRepository, hashRepository, "P1Y");
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS url");
         jdbcTemplate.execute("CREATE TABLE url (hash VARCHAR(6) PRIMARY KEY, url TEXT NOT NULL, created_at TIMESTAMP)");
@@ -44,15 +44,18 @@ class CleanerSchedulerTest extends JdbcAwareTest {
 
         cleanerScheduler.cleanUpOutdatedUrls();
 
+        assertCleanupResult(2, List.of("hash2", "hash3"), List.of("hash1"));
+    }
+
+    private void assertCleanupResult(int expectedRemainingUrlCount, List<String> expectedRemainingHashes, List<String> expectedFreedHashes) {
         int remainingUrlCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM url", Integer.class);
-        assertEquals(2, remainingUrlCount);
+        assertEquals(expectedRemainingUrlCount, remainingUrlCount);
 
         List<String> remainingHashes = jdbcTemplate.queryForList("SELECT hash FROM url", String.class);
-        assertTrue(remainingHashes.contains("hash2"));
-        assertTrue(remainingHashes.contains("hash3"));
+        assertTrue(remainingHashes.containsAll(expectedRemainingHashes));
 
         List<String> savedHashes = jdbcTemplate.queryForList("SELECT hash FROM hash", String.class);
-        assertEquals(1, savedHashes.size());
-        assertTrue(savedHashes.contains("hash1"));
+        assertEquals(expectedFreedHashes.size(), savedHashes.size());
+        assertTrue(savedHashes.containsAll(expectedFreedHashes));
     }
 }
