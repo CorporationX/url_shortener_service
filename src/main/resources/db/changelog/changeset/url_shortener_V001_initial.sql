@@ -5,7 +5,10 @@ CREATE TABLE url (
 );
 
 CREATE TABLE hash (
-    hash VARCHAR(6) PRIMARY KEY
+    id BIGSERIAL NOT NULL,
+    hash VARCHAR(6) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (hash)
 );
 
 CREATE SEQUENCE unique_number_seq
