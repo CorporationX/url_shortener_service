@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.exception.ErrorResponse;
 import faang.school.urlshortenerservice.exception.HashCacheException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -32,18 +31,6 @@ public class UrlExceptionHandler {
         String errorMessage = fieldError.getDefaultMessage();
 
         return new ResponseEntity<>(Map.of(fieldName, errorMessage), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        String message = "Duplicate entry: the value you are trying to insert already exists";
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .details(e.getMostSpecificCause().getMessage())
-                .message(message)
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

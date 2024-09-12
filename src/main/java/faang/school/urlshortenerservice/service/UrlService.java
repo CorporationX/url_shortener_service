@@ -31,7 +31,10 @@ public class UrlService {
                 .hash(hash.getHash())
                 .build();
 
-        urlCacheRepository.saveUrl(urlRepository.save(url));
+        if(!urlRepository.existsById(url.getHash())) {
+            urlRepository.save(url);
+            urlCacheRepository.saveUrl(url);
+        }
         return hash.getHash();
     }
 
@@ -45,6 +48,7 @@ public class UrlService {
                 return new EntityNotFoundException(errorMessage);
             }).getUrl();
         }
+
         return url;
     }
 
