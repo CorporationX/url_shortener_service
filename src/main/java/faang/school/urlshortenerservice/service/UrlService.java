@@ -28,8 +28,8 @@ public class UrlService {
                 .hash(hash.getHash())
                 .build();
 
-        urlRepository.save((URL) url);
-        urlCacheRepository.save((URL) url);
+        urlRepository.save(url);
+        urlCacheRepository.save(url);
 
         return hashMapper.toDto(hash);
     }

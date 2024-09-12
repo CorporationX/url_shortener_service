@@ -1,9 +1,9 @@
 package faang.school.urlshortenerservice.repository;
 
-import org.hibernate.validator.constraints.URL;
-import org.springframework.stereotype.Component;
+import faang.school.urlshortenerservice.entity.Url;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public interface UrlCacheRepository {
-    void save(URL url);
+    void save(Url url);
 }
