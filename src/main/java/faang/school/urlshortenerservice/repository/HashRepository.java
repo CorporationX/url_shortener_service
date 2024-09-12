@@ -1,27 +1,39 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+@RequiredArgsConstructor
+public class HashRepository {
+    @Value("${hash.batch.size}")
+    private Integer batchSize;
+    @Value("${hash.sequence.name}")
+    private String uniqueSequenceName;
 
-    @Query(value = "SELECT nextval(:sequenceName) FROM generate_series(1, :n)", nativeQuery = true)
-    List<Long> getUniqueValues(String sequenceName, int n);
+    private final JdbcTemplate jdbcTemplate;
+    private final HashJpaRepository hashJpaRepository;
 
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM hash " +
-            "   WHERE hash IN " +
-            "   (SELECT hash FROM hash LIMIT :batchSize)" +
-            "   RETURNING hash",
-            nativeQuery = true)
-    List<String> getHashBatch(@Param("batchSize") int batchSize);
+    public void batchSave(List<String> hashes) {
+        jdbcTemplate.batchUpdate("INSERT INTO hash (HASH) VALUES (?)",
+                hashes,
+                batchSize,
+                (PreparedStatement preparedStatement, String hash) -> {
+                    preparedStatement.setString(1, hash);
+                }
+        );
+    }
+
+    public List<Long> getUniqueValues() {
+        return hashJpaRepository.getUniqueValues(uniqueSequenceName, batchSize);
+    }
+
+    public List<String> getHashBatch() {
+        return hashJpaRepository.getHashBatch(batchSize);
+    }
 }

@@ -20,6 +20,24 @@ spring:
 server:
   port: 9090
 
+hash:
+  batch:
+    size: 100
+  sequence:
+    name: unique_number_seq
+  thread-pool:
+    size:
+      min: 5
+      max: 10
+    keep-alive:
+      time: 60
+      time-unit: SECONDS
+    queue:
+      size: 10000
+
+base62:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
 logging:
   level:
     root: info
