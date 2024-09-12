@@ -30,4 +30,10 @@ data:
     cash:
       capacity: 10
       fill_percent: 20
+    generator:
+      executor:
+        pool_size: 5
+        max_pool_size: 10
+        queue_capacity: 25
+        prefix: HashGenerator-
 
