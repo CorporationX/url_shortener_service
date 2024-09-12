@@ -32,14 +32,14 @@ public class Url {
     @Column(name = "url", length = 128, nullable = false)
     private String url;
 
-    public Url(String hash, String url) {
-        this.hash = hash;
-        this.url = url;
-    }
-
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public Url(String hash, String url) {
+        this.hash = hash;
+        this.url = url;
+    }
 
 }
