@@ -15,9 +15,6 @@ spring:
         format_sql: true
       jdbc:
         batch_size: 5
-        order_inserts: true
-        order_updates: true
-        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
