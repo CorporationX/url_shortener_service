@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -21,11 +23,29 @@ public class HashGenerationService {
 
     @Async("hashGenerationTaskExecutor")
     public void generateBatch() {
-        List<Long> uniqSequence = hashRepository.getUniqueNumbers(batchSize);
+        generateNewHashes(batchSize);
+    }
+    @Async("hashGenerationTaskExecutor")
+    public void generateNewHashes(long amount) {
+        List<Long> uniqSequence = hashRepository.getUniqueNumbers(amount);
         List<Hash> generatedHashes = uniqSequence.stream()
                 .map(baseEncoder::encode)
                 .map(Hash::new).toList();
         hashRepository.saveBatchHashes(generatedHashes);
     }
 
+    @Transactional
+    public List<String> getHashes(long amount) {
+        long count = hashRepository.countHashes();
+        if (count <= amount) {
+            generateNewHashes(amount - count + 1);
+        }
+        return hashRepository.getHashBatch(amount).stream().map(Hash::getHash).toList();
+    }
+
+    @Transactional
+    @Async("hashCacheTaskExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(int amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
+    }
 }

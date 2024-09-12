@@ -10,21 +10,21 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class ExecutionPoolHashGenerationConfig {
-    @Value("${hash.execution-pool-parameters.core-pool-size}")
+public class ExecutionPoolHashCache {
+    @Value("${cache.execution-pool-parameters.core-pool-size}")
     private int corePoolSize;
-    @Value("${hash.execution-pool-parameters.max-pool-capacity}")
+    @Value("${cache.execution-pool-parameters.max-pool-capacity}")
     private int maxPoolCapacity;
-    @Value("${hash.execution-pool-parameters.queue-capacity}")
+    @Value("${cache.execution-pool-parameters.queue-capacity}")
     private int queueCapacity;
 
-    @Bean("hashGenerationTaskExecutor")
-    public ThreadPoolTaskExecutor hashGenerationTaskExecutor() {
+    @Bean("hashCacheTaskExecutor")
+    public ThreadPoolTaskExecutor hashCacheTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolCapacity);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("HashGenerationThread-");
+        executor.setThreadNamePrefix("HashCacheThread-");
         executor.setRejectedExecutionHandler((r, exec) -> log.warn("Task rejected, thread pool is full and queue is also full"));
         executor.initialize();
         return executor;

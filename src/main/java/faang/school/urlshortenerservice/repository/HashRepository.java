@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,8 +20,8 @@ public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Transactional(readOnly = true)
-    public List<Long> getUniqueNumbers(int maxRange) {
-        String sql = "SELECT nextval('unique_hash_number_seq') FROM generate_series(1, ?)";
+    public List<Long> getUniqueNumbers(long maxRange) {
+        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, maxRange);
     }
 
@@ -46,8 +48,13 @@ public class HashRepository {
     }
 
     @Transactional
-    public List<Hash> cleanAndGetHashes() {
-        String sql = "DELETE FROM url WHERE url IN (SELECT url FROM url WHERE created_at < NOW() - INTERVAL '1 YEAR') RETURNING *";
-        return jdbcTemplate.queryForList(sql, Hash.class);
+    public List<Hash> cleanAndGetHashes(LocalDateTime date) {
+        String sql = "DELETE FROM url WHERE created_at < ? RETURNING *";
+        return jdbcTemplate.queryForList(sql, Hash.class, Timestamp.valueOf(date));
+    }
+    @Transactional(readOnly = true)
+    public long countHashes() {
+        String sql = "SELECT COUNT(*) FROM hash";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
 }

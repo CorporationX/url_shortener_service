@@ -1,11 +1,8 @@
 package faang.school.urlshortenerservice.util;
 
-import faang.school.urlshortenerservice.model.Hash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -14,6 +11,7 @@ public class BaseEncoder {
     private int base;
     @Value("${base-encoder.characters}")
     private String characters;
+
     public String encode(long number) {
         StringBuilder stringBuilder = new StringBuilder(1);
         do {

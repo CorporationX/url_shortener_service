@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Table(name = "hash")
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
