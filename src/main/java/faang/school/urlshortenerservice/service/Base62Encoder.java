@@ -8,7 +8,7 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     List<Hash> encode(List<Long> numbers) {
         List<Hash> hashes = new ArrayList<>();
