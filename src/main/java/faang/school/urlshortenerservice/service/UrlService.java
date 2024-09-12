@@ -36,31 +36,25 @@ public class UrlService {
 
     @Transactional
     public HashDto createShortLink(URLDto urlDto) {
-        String hash = hashCache.getHash();
+        String hash = getHashIfExistsInDBOrHash(urlDto.getUrl());
 
-        URL url = URL.builder()
-                .url(urlDto.getUrl())
-                .hash(hash)
-                .build();
-        try {
-        urlRepository.save(url);
-        urlCacheRepository.save(url);
-        } catch (DataIntegrityViolationException e) {
-            log.error(ExceptionMessage.EXCEPTION_IN_SAVE + e.getMessage());
+        if (hash == null) {
+            hash = generateAndSaveNewUrl(urlDto);
         }
-
         return hashMapper.toDto(new Hash(host + hash));
     }
 
     public String getUrlByHash(String hash) {
         int lastIndex = hash.lastIndexOf('/');
-        String resultHash = hash.substring(lastIndex + 1);
-        URL url = urlCacheRepository.find(resultHash);
-        if (url != null) {
-            return url.getUrl();
-        }
-        return urlRepository.findUrlByHash(resultHash)
-                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + resultHash));
+        String actualHash = hash.substring(lastIndex + 1);
+
+        return urlCacheRepository.findUrlByHash(actualHash)
+                .or(() -> urlRepository.findUrlByHash(actualHash)
+                        .map(urlInBD -> {
+                            urlCacheRepository.save(urlInBD, actualHash);
+                            return urlInBD;
+                        }))
+                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
     }
 
     @Transactional
@@ -74,5 +68,27 @@ public class UrlService {
                 .map(Hash::new)
                 .toList());
         log.info("Deleted old URLs and saved {} hashes.", hashes.size());
+    }
+
+    private String getHashIfExistsInDBOrHash(String url) {
+        return urlCacheRepository.findHashUrlByUrl(url)
+                .or(() -> urlRepository.findHashByUrl(url))
+                .orElse(null);
+    }
+
+    private String generateAndSaveNewUrl(URLDto urlDto) {
+        String newHash = hashCache.getHash();
+
+        URL newUrl = URL.builder()
+                .url(urlDto.getUrl())
+                .hash(newHash)
+                .build();
+        try {
+            urlRepository.save(newUrl);
+            urlCacheRepository.save(urlDto.getUrl(), newHash);
+        } catch (DataIntegrityViolationException e) {
+            log.error(ExceptionMessage.EXCEPTION_IN_SAVE + e.getMessage());
+        }
+        return newHash;
     }
 }

@@ -71,7 +71,7 @@ class UrlServiceTest {
     void testSaveInUrlCacheRepositoryException() {
         when(hashCache.getHash()).thenReturn(hashString);
         when(urlRepository.save(any(URL.class))).thenReturn(new URL());
-        doThrow(new RuntimeException("exception")).when(urlCacheRepository).save(any(URL.class));
+        doThrow(new RuntimeException("exception")).when(urlCacheRepository).save(anyString(), anyString());
 
         Exception exception = assertThrows(RuntimeException.class, () ->
                 urlService.createShortLink(urlDto));
@@ -80,7 +80,7 @@ class UrlServiceTest {
 
         verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(URL.class));
-        verify(urlCacheRepository, times(1)).save(any(URL.class));
+        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
     }
 
     @Test
@@ -88,7 +88,7 @@ class UrlServiceTest {
     void testCreateShortLinkToDtoException() {
         when(hashCache.getHash()).thenReturn(hashString);
         when(urlRepository.save(any(URL.class))).thenReturn(new URL());
-        doNothing().when(urlCacheRepository).save(any(URL.class));
+        doNothing().when(urlCacheRepository).save(anyString(), anyString());
         doThrow(new RuntimeException("exception")).when(hashMapper).toDto(any(Hash.class));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
@@ -98,7 +98,7 @@ class UrlServiceTest {
 
         verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(URL.class));
-        verify(urlCacheRepository, times(1)).save(any(URL.class));
+        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
     }
 
     @Test
@@ -106,21 +106,21 @@ class UrlServiceTest {
     void testCreateShortLinkValid() {
         when(hashCache.getHash()).thenReturn(hashString);
         when(urlRepository.save(any(URL.class))).thenReturn(new URL());
-        doNothing().when(urlCacheRepository).save(any(URL.class));
+        doNothing().when(urlCacheRepository).save(anyString(), anyString());
         when(hashMapper.toDto(any(Hash.class))).thenReturn(new HashDto());
 
         urlService.createShortLink(urlDto);
 
         verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(URL.class));
-        verify(urlCacheRepository, times(1)).save(any(URL.class));
+        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
         verify(hashMapper, times(1)).toDto(any(Hash.class));
     }
 
     @Test
     @DisplayName("getUrlByHashUrlCacheRepositoryException")
     void testUrlCacheRepositoryException() {
-        when(urlCacheRepository.find(anyString())).thenThrow(new RuntimeException("exception"));
+        when(urlCacheRepository.findUrlByHash(anyString())).thenThrow(new RuntimeException("exception"));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
                 urlService.getUrlByHash(hashAndHost));
@@ -129,39 +129,27 @@ class UrlServiceTest {
     }
 
     @Test
-    @DisplayName("getUrlByHashUrlCacheRepositoryNull")
-    void testUrlCacheRepositoryNull() {
-        when(urlCacheRepository.find(anyString())).thenReturn(new URL());
-
-        String result = urlService.getUrlByHash(hashAndHost);
-
-        assertNull(result);
-
-        verify(urlCacheRepository, times(1)).find(anyString());
-    }
-
-    @Test
     @DisplayName("getUrlByHashUrlRepositoryException")
     void testUrlRepositoryException() {
-        when(urlCacheRepository.find(anyString())).thenReturn(null);
+        when(urlCacheRepository.findUrlByHash(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findUrlByHash(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UrlNotFoundException.class, () ->
                 urlService.getUrlByHash(hashAndHost));
 
-        verify(urlCacheRepository, times(1)).find(anyString());
+        verify(urlCacheRepository, times(1)).findUrlByHash(anyString());
         verify(urlRepository, times(1)).findUrlByHash(anyString());
     }
 
     @Test
     @DisplayName("getUrlByHashUrlRepositoryValid")
     void testUrlRepositoryValid() {
-        when(urlCacheRepository.find(anyString())).thenReturn(null);
+        when(urlCacheRepository.findUrlByHash(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findUrlByHash(anyString())).thenReturn(Optional.of(urlString));
 
         urlService.getUrlByHash(hashAndHost);
 
-        verify(urlCacheRepository, times(1)).find(anyString());
+        verify(urlCacheRepository, times(1)).findUrlByHash(anyString());
         verify(urlRepository, times(1)).findUrlByHash(anyString());
     }
 
