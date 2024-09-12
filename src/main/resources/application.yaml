@@ -25,7 +25,10 @@ logging:
     root: info
 
 app:
-  batch_size: 1000
+  hash:
+    batch_size: 1000
+  number_generator:
+    batch_size: 1000
   async:
     corePoolSize: 5
     maxPoolSize: 10
