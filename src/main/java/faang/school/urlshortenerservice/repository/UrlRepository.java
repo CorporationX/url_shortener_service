@@ -26,4 +26,10 @@ public interface UrlRepository extends JpaRepository<URL, Long> {
             WHERE u.hash = ?1
             """)
     Optional<String> findUrlByHash(@Param("hash") String hash);
+
+    @Query(nativeQuery = true, value = """
+            SELECT u.hash FROM url u
+            WHERE u.url = ?1
+            """)
+    Optional<String> findHashByUrl(@Param("hash") String url);
 }
