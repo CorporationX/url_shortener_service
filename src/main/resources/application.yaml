@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+generator:
+  hash:
+    count: 100
+
+async:
+  core-pool-size: 5
+  max-pool-size: 50

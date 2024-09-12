@@ -1,7 +1,7 @@
 CREATE TABLE url (
     id         bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
     hash       varchar(6) UNIQUE NOT NULL,
-    url        text UNIQUE       NOT NULL,
+    url        text NOT NULL,
     created_at timestamptz DEFAULT current_timestamp
 );
 
