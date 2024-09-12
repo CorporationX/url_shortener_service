@@ -14,4 +14,6 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             RETURNING *
             """)
     Url create(String hash, String originalUrl);
+
+    String getUrlByHash(String hash);
 }
