@@ -36,7 +36,7 @@ public class UrlService {
         String url = urlCacheRepository.get(hash)
                 .orElseGet(() -> urlRepository.findById(hash)
                         .orElseThrow(() ->
-                                new EntityNotFoundException("Couldn't find url for hash" + hash))
+                                new EntityNotFoundException("Couldn't find url for hash " + hash))
                         .getUrl());
         return new RedirectView(url);
     }

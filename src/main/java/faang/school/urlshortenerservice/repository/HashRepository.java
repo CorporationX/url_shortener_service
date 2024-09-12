@@ -57,4 +57,17 @@ public class HashRepository {
         String sql = "SELECT COUNT(*) FROM hash";
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
+
+    @Transactional
+    public void deleteAllHashes() {
+        String sql = "DELETE FROM hash";
+        jdbcTemplate.update(sql);
+    }
+
+    @Transactional
+    public void resetSequence() {
+        String sql = "ALTER SEQUENCE unique_number_seq RESTART WITH 1";
+        jdbcTemplate.execute(sql);
+    }
+
 }
