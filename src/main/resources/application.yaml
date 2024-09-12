@@ -26,14 +26,18 @@ logging:
 
 data:
   hash:
-    range: 20
     cash:
       capacity: 10
       fill_percent: 20
     generator:
+      max_range: 20
+      cron: 0 0 0 * * *
       executor:
         pool_size: 5
         max_pool_size: 10
         queue_capacity: 25
         prefix: HashGenerator-
+    cleaner:
+      cron: 0 0 0 * * *
+      expired_after_years: 0
 
