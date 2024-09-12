@@ -28,6 +28,8 @@ hash:
   batch-size: 50
   hash-size: 40
   unique-numbers-size: 150
+  min-filling-percentage: 0.2
+  cache-capacity: 100
 
 task-executor:
   pool-size: 10

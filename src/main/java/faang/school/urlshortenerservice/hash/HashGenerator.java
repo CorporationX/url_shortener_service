@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class HashGenerator {
 
     @Async(value = "taskExecutor")
     @Transactional
+    @Scheduled(cron = "0 0 0 * * ?")
     public void generateBatch(){
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(properties.getUniqueNumbersSize());
         List<Hash> hashes = encoder.encodeList(uniqueNumbers);

@@ -11,4 +11,6 @@ public class HashProperties {
     private Integer batchSize;
     private Integer hashSize;
     private Integer uniqueNumbersSize;
+    private Integer cacheCapacity;
+    private Double minFillingPercentage;
 }
