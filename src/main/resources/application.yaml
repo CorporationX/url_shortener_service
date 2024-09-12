@@ -26,5 +26,8 @@ logging:
 
 data:
   hash:
-    table_name: hash
-    sequence_name: unique_hash_number_seq
+    range: 20
+    cash:
+      capacity: 10
+      fill_percent: 20
+
