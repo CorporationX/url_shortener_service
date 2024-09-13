@@ -30,10 +30,10 @@ public class HashGenerator {
         hashRepository.saveAll(hashes);
     }
 
-    @Transactional
-    public List<Hash> getHashes(long amount) {
-        return hashRepository.findAndDelete(amount);
-    }
+//    @Transactional
+//    public List<Hash> getHashes(long amount) {
+////        return hashRepository.findAndDelete(amount);
+//    }
 
     public String applyBase62Encoding(long number) {
         StringBuilder builder = new StringBuilder();

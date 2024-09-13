@@ -15,17 +15,21 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
 
-    @Cacheable(value = "urls", key = "#hash")
+    @Cacheable(value = "url", key = "#hash")
     public String getUrl(String hash) {
-        Url url = urlRepository.findUrlByShortUrl(hash);
+        Url url = urlRepository.findByHash(hash);
         if (url == null) {
             throw new ResourceNotFoundException("No such url: " + hash);
         }
-        return url.getShortUrl();
+        return url.getUrl();
     }
 
-    public void createHashCache(UrlDto urlDto) {
-        
+    public String createHashCache(UrlDto urlDto) {
+        Url url = new Url();
+        url.setHash("google.com");
+        url.setUrl("https://www.google.ru/?hl=ru");
+        urlRepository.save(url);
+        return url.getHash();
     }
 
 }

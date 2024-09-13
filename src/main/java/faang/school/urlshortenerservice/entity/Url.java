@@ -2,19 +2,25 @@ package faang.school.urlshortenerservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "urls")
+@Table(name = "url")
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "hash")
+    private String hash;
 
-    @Column(name = "short_url")
-    private String shortUrl;
+    @Column(name = "url")
+    private String url;
 
-    @Column(name = "long_url")
-    private String longUrl;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_at")
+    private LocalDateTime create_at;
 }

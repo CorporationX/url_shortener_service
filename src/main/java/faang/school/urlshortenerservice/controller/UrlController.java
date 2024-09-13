@@ -23,13 +23,15 @@ public class UrlController {
         return new ModelAndView("redirect:" + urlService.getUrl(hash));
     }
 
-    @PostMapping
+    @PostMapping("/url")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void postUrl(@RequestBody UrlDto url) throws MalformedURLException, URISyntaxException {
-        if (!isValidURL(url.getLongUrl())) {
+    public String postUrl(@RequestBody UrlDto urlDto) throws MalformedURLException, URISyntaxException {
+        if (!isValidURL(urlDto.getUrl())) {
+            System.out.println("invalid url");
             throw new RuntimeException();
         }
-        urlService.getHashCache(url);
+        System.out.println("valid");
+        return urlService.createHashCache(urlDto);
     }
 
     boolean isValidURL(String url) throws MalformedURLException, URISyntaxException {
