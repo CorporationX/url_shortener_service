@@ -19,7 +19,7 @@ public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Long> getUniqueNumbers(long maxRange) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, maxRange);
@@ -33,7 +33,6 @@ public class HashRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, hashes.get(i).getHash());
             }
-
             @Override
             public int getBatchSize() {
                 return hashes.size();

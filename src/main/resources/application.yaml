@@ -43,8 +43,8 @@ base-encoder:
 
 cache:
   parameters:
-    max-capacity: 20
-    lower-bound-percent: 20
+    max-capacity: 100
+    lower-bound-percent: 25
   execution-pool-parameters:
     core-pool-size: 20
     max-pool-capacity: 40
