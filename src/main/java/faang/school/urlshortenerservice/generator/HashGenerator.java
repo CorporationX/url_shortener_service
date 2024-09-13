@@ -26,10 +26,10 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes(int amount) {
-        List<String> hashes = hashRepository.getAndDeleteHash(amount);
+        List<String> hashes = hashRepository.getAndDeleteHashes(amount);
         if (hashes.size() < amount) {
             generateBatch();
-            hashes = hashRepository.getAndDeleteHash(amount - hashes.size());
+            hashes = hashRepository.getAndDeleteHashes(amount - hashes.size());
         }
         return hashes;
     }

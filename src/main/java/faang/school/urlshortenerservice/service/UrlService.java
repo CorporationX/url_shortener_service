@@ -7,7 +7,10 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +23,20 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
 
-    public String findUrl(String hash) {
+    public UrlDto findUrl(String hash) {
+        UrlDto urlDto = new UrlDto();
+        Optional<Pair<String,String>> originalUrlPair = urlCacheRepository.getAssociation(hash);
 
+        if (originalUrlPair.isPresent()) {
+            urlDto.setUrl(originalUrlPair.get().getSecond());
+        } else {
+            urlDto.setUrl(urlRepository.findByHash(hash));
+        }
+        return urlDto;
     }
 
 
-    public UrlDto convertUrl(UrlDto urlDto) {
+    public UrlDto convertToShortUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
         urlCacheRepository.saveAssociation(urlDto.getUrl(), hash);
         urlRepository.saveAssociation(urlDto.getUrl(), hash);
@@ -33,5 +44,4 @@ public class UrlService {
         shortUrl.setUrl(staticAddress.concat(hash));
         return shortUrl;
     }
-
 }
