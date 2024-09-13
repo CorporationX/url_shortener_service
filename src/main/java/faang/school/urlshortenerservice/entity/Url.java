@@ -15,15 +15,12 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(name = "hash", unique = true, nullable = false)
+    @GeneratedValue
     private String hash;
 
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "created_At", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

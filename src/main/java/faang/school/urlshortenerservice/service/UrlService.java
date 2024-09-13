@@ -9,6 +9,8 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -32,5 +34,12 @@ public class UrlService {
         url.setHash(hash);
 
         return urlRepository.save(url);
+    }
+
+    public String getUrl(String hash) {
+        return Optional.ofNullable(urlCacheRepository.getUrl(hash))
+                .orElseGet(() -> urlRepository.findById(hash)
+                        .map(Url::getUrl)
+                        .orElseThrow(() -> new IllegalArgumentException("No URL with such hash: " + hash)));
     }
 }
