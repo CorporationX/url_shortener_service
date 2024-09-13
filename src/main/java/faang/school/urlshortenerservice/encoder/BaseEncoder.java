@@ -8,16 +8,17 @@ import java.util.List;
 
 @Component
 public class BaseEncoder {
-    @Value("${base62.alphabet}")
+    @Value("${encoder.base.alphabet}")
     private String alphabet;
 
-    public List<String> getHashes(List<Long> uniqueNumbers) {
+    public List<String> encode(List<Long> uniqueNumbers) {
+        int alphabetLength = alphabet.length();
         List<String> hashes = new ArrayList<>();
         for(Long uniqueNumber : uniqueNumbers){
             StringBuilder hash = new StringBuilder();
             while (uniqueNumber != 0) {
-                hash.append(alphabet.charAt((int) (uniqueNumber % 62)));
-                uniqueNumber /= 62;
+                hash.append(alphabet.charAt((int) (uniqueNumber % alphabetLength)));
+                uniqueNumber /= alphabetLength;
             }
             hashes.add(hash.toString());
         }

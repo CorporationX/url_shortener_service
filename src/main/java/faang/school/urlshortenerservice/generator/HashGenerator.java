@@ -19,7 +19,7 @@ public class HashGenerator {
     @Transactional
     public void generateBatch() {
         List<Long> uniqueValues = hashRepository.getUniqueValues();
-        List<String> hashes = baseEncoder.getHashes(uniqueValues);
+        List<String> hashes = baseEncoder.encode(uniqueValues);
         hashRepository.batchSave(hashes);
     }
 }

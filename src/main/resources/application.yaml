@@ -35,8 +35,9 @@ hash:
     queue:
       size: 10000
 
-base62:
-  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+encoder:
+  base:
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 logging:
   level:
