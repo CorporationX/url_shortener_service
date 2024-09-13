@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.сache.HashCache;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +32,11 @@ public class UrlService {
                 .hash(hash.getHash())
                 .build();
 
-        if(!urlRepository.existsById(url.getHash())) {
+        if(!urlRepository.existsByUrl(url.getUrl())) {
             urlRepository.save(url);
             urlCacheRepository.saveUrl(url);
+        } else {
+            throw new EntityExistsException("Url already exists");
         }
         return hash.getHash();
     }
