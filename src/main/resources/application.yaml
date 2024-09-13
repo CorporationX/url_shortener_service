@@ -26,4 +26,4 @@ logging:
 
 hash:
   batch:
-    size: 1000
+    size: 10000

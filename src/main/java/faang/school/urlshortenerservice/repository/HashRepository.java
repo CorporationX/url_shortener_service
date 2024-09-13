@@ -15,7 +15,7 @@ public class HashRepository {
 
     public List<Long> getUniqueNumbers(int n) {
         return jdbcTemplate.queryForList(
-            "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)",
+            "SELECT NEXTVAL('unique_number_seq') FROM GENERATE_SERIES(1, ?)",
             Long.class,
             n
         );
@@ -23,7 +23,7 @@ public class HashRepository {
 
     public void save(List<String> hashes) {
         jdbcTemplate.batchUpdate(
-            "INSERT INTO hash VALUES (?)",
+            "INSERT INTO hash (hash) VALUES (?)",
             hashes,
             hashes.size(),
             (ps, hash) -> ps.setString(1, hash)
@@ -42,7 +42,10 @@ public class HashRepository {
                 .map(hash -> "?")
                 .collect(Collectors.joining(","));
 
-            jdbcTemplate.update("DELETE FROM hash WHERE hash IN (" + placeholders + ")", hashes);
+            jdbcTemplate.update(
+                "DELETE FROM hash WHERE hash IN (" + placeholders + ")",
+                hashes
+            );
         }
         return hashes;
     }
