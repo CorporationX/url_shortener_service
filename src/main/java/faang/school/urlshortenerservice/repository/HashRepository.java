@@ -24,5 +24,5 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                 )
             RETURNING hash
             """)
-    List<String> getHashBatch(int batchSize);
+    List<Hash> getHashBatch(int batchSize);
 }
