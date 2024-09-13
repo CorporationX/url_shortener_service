@@ -42,6 +42,7 @@ class UrlServiceTest {
     private final String urlString = "https://www.google.com/search?q=amsterdam";
     private final String hashString = "C";
     private final String hashAndHost = "http://localhost:8080/shortener/C";
+    private final String removedPeriod = "1 year";
     private URLDto urlDto;
 
     @BeforeEach
@@ -156,26 +157,26 @@ class UrlServiceTest {
     @Test
     @DisplayName("deleteOldURLUrlRepositoryIsEmpty")
     void testDeleteOldURLUrlRepositoryIsEmpty() {
-        when(urlRepository.getHashAndDeleteURL()).thenReturn(Collections.emptyList());
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Collections.emptyList());
 
-        urlService.deleteOldURL();
+        urlService.deleteOldURL(removedPeriod);
 
-        verify(urlRepository, times(1)).getHashAndDeleteURL();
+        verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
     }
 
     @Test
     @DisplayName("deleteOldURLHashRepositoryException")
     void testDeleteOldURLHashRepositoryException() {
         List<String> hashes = List.of("1", "2");
-        when(urlRepository.getHashAndDeleteURL()).thenReturn(hashes);
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(hashes);
         when(hashRepository.saveAll(anyList())).thenThrow(new RuntimeException("exception"));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
-                urlService.deleteOldURL());
+                urlService.deleteOldURL(removedPeriod));
 
         assertEquals("exception", exception.getMessage());
 
-        verify(urlRepository, times(1)).getHashAndDeleteURL();
+        verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
         verify(hashRepository, times(1)).saveAll(anyList());
     }
 
@@ -183,12 +184,12 @@ class UrlServiceTest {
     @DisplayName("deleteOldURLValid")
     void testDeleteOldURLValid() {
         List<String> hashes = List.of("1", "2");
-        when(urlRepository.getHashAndDeleteURL()).thenReturn(hashes);
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(hashes);
         when(hashRepository.saveAll(anyList())).thenReturn(List.of(new Hash()));
 
-        urlService.deleteOldURL();
+        urlService.deleteOldURL(removedPeriod);
 
-        verify(urlRepository, times(1)).getHashAndDeleteURL();
+        verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
         verify(hashRepository, times(1)).saveAll(anyList());
     }
 }

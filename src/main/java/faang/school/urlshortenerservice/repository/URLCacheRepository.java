@@ -27,7 +27,7 @@ public class URLCacheRepository {
         return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
     }
 
-    public Optional<String> findHashUrlByUrl(String url) {
+    public Optional<String> findHashByUrl(String url) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(url));
     }
 }

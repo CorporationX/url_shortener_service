@@ -58,8 +58,8 @@ public class UrlService {
     }
 
     @Transactional
-    public void deleteOldURL() {
-        List<String> hashes = urlRepository.getHashAndDeleteURL();
+    public void deleteOldURL(String removedPeriod) {
+        List<String> hashes = urlRepository.getHashAndDeleteURL(removedPeriod);
         if (hashes.isEmpty()) {
             log.info("No old URL in database");
             return;
@@ -71,7 +71,7 @@ public class UrlService {
     }
 
     private String getHashIfExistsInDBOrHash(String url) {
-        return urlCacheRepository.findHashUrlByUrl(url)
+        return urlCacheRepository.findHashByUrl(url)
                 .or(() -> urlRepository.findHashByUrl(url))
                 .orElse(null);
     }
