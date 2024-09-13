@@ -27,3 +27,10 @@ logging:
 hash:
   batch:
     size: 10000
+  executor:
+    core-size: 10
+    max-size: 20
+    queue-capacity: 100
+    prefix: HashGenerator-
+
+
