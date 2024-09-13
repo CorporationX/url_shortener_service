@@ -7,9 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @NoArgsConstructor
@@ -25,16 +27,21 @@ public class HashGenerator {
     private Base62Encoder encoder;
 
     @Transactional
-    @Async("taskExecutor")
-    public List<String> generateBatch(){
+    @Scheduled(cron = "${app.hash.cron}")
+    public List<String> generateAndSaveHashes(){
         var numbers = hashRepository.getUniqueNumbers(batchNumberSize);
-
         var hashes = encoder.encode(numbers);
 
         return hashRepository.saveAll(hashes);
     }
+
     @Transactional
     public List<String> getHashes(int batchHashSize){
-        return hashRepository.getHashBatch(batchHashSize);
+        return hashRepository.findAndDeleteHashes(batchHashSize);
+    }
+
+    @Async("taskExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(int batchHashSize){
+        return CompletableFuture.completedFuture(getHashes(batchHashSize));
     }
 }

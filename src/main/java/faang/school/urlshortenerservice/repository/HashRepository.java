@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.HashEntity;
+import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<HashEntity, String> {
+public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = "SELECT nextval('unique_number_seq') " +
             "FROM generate_series(1, :n)", nativeQuery = true)
     List<Long> getUniqueNumbers(@Param("n") int batchSize);
@@ -26,5 +26,5 @@ public interface HashRepository extends JpaRepository<HashEntity, String> {
     @Query(value = "DELETE FROM hash " +
             "WHERE hash IN (SELECT hash FROM hash LIMIT = :n) " +
             "RETURNING hash", nativeQuery = true)
-    List<String> getHashBatch(@Param("n")int quantity);
+    List<String> findAndDeleteHashes(@Param("n")int quantity);
 }
