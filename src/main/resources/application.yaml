@@ -23,3 +23,13 @@ server:
 logging:
   level:
     root: info
+
+async:
+  thread:
+    pool:
+      size: 5
+    queue:
+      capacity: 50
+
+hash:
+  range: 100
