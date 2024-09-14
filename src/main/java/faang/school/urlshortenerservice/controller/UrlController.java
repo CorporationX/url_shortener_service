@@ -27,10 +27,8 @@ public class UrlController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public String postUrl(@RequestBody UrlDto urlDto) throws MalformedURLException, URISyntaxException {
         if (!isValidURL(urlDto.getUrl())) {
-            System.out.println("invalid url");
             throw new RuntimeException();
         }
-        System.out.println("valid");
         return urlService.createHashCache(urlDto);
     }
 

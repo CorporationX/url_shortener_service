@@ -31,3 +31,6 @@ logging:
 
 hash:
   range: 10000
+  cache:
+    capacity: 10000
+    fill.percent: 20
