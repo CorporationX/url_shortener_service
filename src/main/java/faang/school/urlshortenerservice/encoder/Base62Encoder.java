@@ -7,7 +7,6 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-
     private static final String BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int BASE = BASE62_ALPHABET.length();
 
