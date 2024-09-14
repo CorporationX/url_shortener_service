@@ -26,8 +26,14 @@ spring:
 hash:
   batch_size: 1000
   cache:
-    size: 1000
+    capacity: 100
     min_percentage_filling: 20
+
+url:
+  expiration:
+    days: 365
+    cleanup:
+      cron: "@daily"
 
 server:
   port: 8080

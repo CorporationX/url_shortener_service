@@ -14,16 +14,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Value("${hash.cache.size}")
+    @Value("${hash.cache.capacity}")
     private int capacity;
     @Value("${hash.cache.min_percentage_filling}")
     private int minPercentageFilling;
-    private final Queue<Hash> hashes = new ArrayBlockingQueue<>(capacity);
-    private final HashGenerator hashGenerator;
+    private Queue<Hash> hashes;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
+    private final HashGenerator hashGenerator;
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
+
         hashes.addAll(hashGenerator.getHashes(capacity));
     }
 
