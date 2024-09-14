@@ -8,12 +8,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class UrlDto {
-
-    @NotNull
-    public String hash;
-
     @NotBlank
-    public String url;
-
-    private LocalDateTime created;
+    private String url;
 }

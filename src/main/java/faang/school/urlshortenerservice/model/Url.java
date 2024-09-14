@@ -18,14 +18,13 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "hash", length = 6)
     private String hash;
 
     @Column(name = "url", nullable = false)
     private String url;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime created;
 }

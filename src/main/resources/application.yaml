@@ -4,7 +4,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 30
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -18,6 +22,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: localhost
   port: 8080
 
 logging:

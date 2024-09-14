@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +33,7 @@ public class HashCache {
         refillCache();
     }
 
-    public Hash getHash() {
+    public String getHash() {
         if (cache.size() < properties.getMinFillingPercentage() * cache.remainingCapacity()) {
             if (isFilling.compareAndSet(false, true)) {
                 try {
@@ -43,7 +44,7 @@ public class HashCache {
                 }
             }
         }
-        return cache.poll();
+        return Objects.requireNonNull(cache.poll()).getHash();
     }
 
     private void refillCache() {

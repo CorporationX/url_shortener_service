@@ -17,9 +17,8 @@ public class UrlController {
 
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlDto getShortUrl(@RequestBody UrlDto url) {
+    public String getShortUrl(@RequestBody UrlDto url) {
         urlValidator.isValid(url);
         return urlService.getShortUrl(url);
-
     }
 }
