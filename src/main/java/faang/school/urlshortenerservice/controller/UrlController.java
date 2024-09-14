@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class UrlController {
-    UrlService urlService;
-    UrlValidator urlValidator;
+    private final UrlService urlService;
+    private final UrlValidator urlValidator;
 
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.OK)

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
-    private HashCache hashCache;
-    private UrlRepository urlRepository;
-    private UrlCacheRepository cacheRepository;
+    private final HashCache hashCache;
+    private final UrlRepository urlRepository;
+    private final UrlCacheRepository cacheRepository;
     @Value("${url-shortener.url}")
     private String hostName;
 

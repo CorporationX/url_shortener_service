@@ -16,15 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableScheduling
 public class CleanerScheduler {
-    private UrlRepository urlRepository;
-    private HashRepository hashRepository;
-    @Value("${cleaner-scheduler.cron:0 0 * * *}")
-    private final String cron1;
+    private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
     @Value("${cleaner-scheduler.interval:1 year}")
     private String interval;
 
     @Transactional
-    @Scheduled(cron = "${cleaner-scheduler.cron:0 0 * * *}")
+    @Scheduled(cron = "${cleaner-scheduler.cron:0 0 0 * * *}")
     public void clean() {
         List<Hash> hashes = urlRepository.getOldHashes(interval);
         if (!hashes.isEmpty()) {

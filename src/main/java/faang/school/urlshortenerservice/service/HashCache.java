@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class HashCache {
     private final HashGenerator hashGenerator;
@@ -20,11 +22,11 @@ public class HashCache {
     private int lowLimitPercent;
     @Value("${hash-cache.capacity:1000}")
     private int capacity;
-    private AtomicBoolean areFilling;
-    private final ArrayBlockingQueue<Hash> queue = new ArrayBlockingQueue<>(capacity);
+    private final AtomicBoolean areFilling = new AtomicBoolean(false);
+    private ArrayBlockingQueue<Hash> queue;
 
     public Hash getHash() {
-        if (queue.size() / capacity * 100 < lowLimitPercent) {
+        if (queue.size() / (double) capacity * 100 < lowLimitPercent) {
             if (areFilling.compareAndSet(false, true)) {
                 fill();
             }
@@ -41,6 +43,7 @@ public class HashCache {
 
     @PostConstruct
     private void firstFilling() {
-        queue.addAll(hashRepository.getHashBatch(capacity - queue.size()));
+        queue = new ArrayBlockingQueue<>(capacity);
+        queue.addAll(hashRepository.getHashBatch(capacity));
     }
 }
