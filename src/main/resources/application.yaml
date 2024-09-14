@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  redis:
+    host: localhost
+    port: 6379
+    ttl: 24 #time-to-live in hours
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -44,3 +48,6 @@ hash-cache:
 cleaner-scheduler:
   cron: 0 0 * * *
   interval: 1 year
+
+url-shortener:
+  url: https://shrtnr.com/

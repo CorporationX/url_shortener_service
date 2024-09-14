@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -36,5 +37,10 @@ public class HashCache {
         queue.addAll(hashRepository.getHashBatch(capacity - queue.size()));
         hashGenerator.generateBatch();
         areFilling.set(false);
+    }
+
+    @PostConstruct
+    private void firstFilling() {
+        queue.addAll(hashRepository.getHashBatch(capacity - queue.size()));
     }
 }
