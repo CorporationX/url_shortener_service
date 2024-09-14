@@ -43,3 +43,7 @@ app:
     maxPoolSize: 10
     queueCapacity: 500
     threadNamePrefix: "AsyncExecutor-"
+  scheduling:
+    removal:
+      cron: 0 */24 * * *
+      months_before_expiration: 12
