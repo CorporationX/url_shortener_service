@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  range: 1000
+
+async:
+  generator:
+    poolSize: 2
+    queueSize: 100

@@ -10,3 +10,5 @@ CREATE TABLE IF NOT EXISTS hash
 (
     hash varchar(6) PRIMARY KEY
 );
+
+CREATE SEQUENCE IF NOT EXISTS unique_hash_number_seq START WITH 1 INCREMENT BY 1;
