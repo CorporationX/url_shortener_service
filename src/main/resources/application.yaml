@@ -34,6 +34,20 @@ hash:
       time-unit: SECONDS
     queue:
       size: 10000
+  cache:
+    size:
+      1000
+    queue:
+      size: 10000
+    thread-pool:
+      size:
+        min: 5
+        max: 5
+      keep-alive:
+        time: 0
+        time-unit: SECONDS
+      queue:
+        size: 10000
 
 encoder:
   base:

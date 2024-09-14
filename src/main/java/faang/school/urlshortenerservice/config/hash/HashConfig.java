@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config;
+package faang.school.urlshortenerservice.config.hash;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class HashThreadPoolConfig {
+public class HashConfig {
     @Value("${hash.thread-pool.size.min}")
     private Integer HASH_THREAD_POOL_MIN_SIZE;
     @Value("${hash.thread-pool.size.max}")
