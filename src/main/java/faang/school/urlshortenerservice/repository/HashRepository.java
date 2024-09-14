@@ -12,7 +12,7 @@ import java.util.List;
 public interface HashRepository extends CrudRepository<Hash,String> {
 
     @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :n)")
-    public List<Long> getUniqueNumbers(int n);
+    public List<Long> getUniqueNumbers(long n);
 
     @Query(nativeQuery = true, value = """
               DELETE FROM hash
@@ -24,6 +24,6 @@ public interface HashRepository extends CrudRepository<Hash,String> {
               RETURNING *
             """)
     @Modifying
-    public List<String> getHashBatchAndDelete(int amount);
+    public List<Hash> getHashBatchAndDelete(long amount);
 
 }
