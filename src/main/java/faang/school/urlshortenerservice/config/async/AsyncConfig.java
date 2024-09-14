@@ -12,11 +12,11 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @Configuration
 public class AsyncConfig implements AsyncConfigurer {
-    @Value("${spring.async.executor.corePoolSize:10}")
+    @Value("${spring.async.executor.corePoolSize}")
     private int corePoolSize;
-    @Value("${spring.async.executor.maxPoolSize:20}")
+    @Value("${spring.async.executor.maxPoolSize}")
     private int maxPoolSize;
-    @Value("${spring.async.executor.queueCapacity:100}")
+    @Value("${spring.async.executor.queueCapacity}")
     private int queueCapacity;
 
     @Override
