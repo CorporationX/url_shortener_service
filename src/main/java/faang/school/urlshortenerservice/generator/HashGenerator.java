@@ -15,7 +15,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final BaseEncoder baseEncoder;
 
-    @Async(value = "hashThreadPoolConfig")
+    @Async(value = "hashThreadPool")
     @Transactional
     public void generateBatch() {
         List<Long> uniqueValues = hashRepository.getUniqueValues();
