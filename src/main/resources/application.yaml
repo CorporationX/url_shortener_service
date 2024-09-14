@@ -12,10 +12,45 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch-size: 3
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  task:
+    scheduling:
+      cron-time: 0 0 0 * * ?
+    execution:
+      hash-executor:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 50
+        thread-name-prefix: hashAsyncThread
+      hash-cache-executor:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 50
+        thread-name-prefix: hashCacheAsyncThread
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      url-key: CACHED_URL_KEY
+
+hash:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  batch:
+    size: 20
+
+hash-cache:
+  capacity: 10
+  minimum-required-size-percent: 20
+
+unique-numbers:
+  amount:
+    50
 
 server:
   port: 8080
@@ -23,3 +58,9 @@ server:
 logging:
   level:
     root: info
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate:
+              debug
