@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.generotor.HashGenerator;
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +17,8 @@ public class AsyncExecutorForHashCash {
 
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final Lock lock = new ReentrantLock();
+
+    Lock lock = new ReentrantLock();
 
     @Async("executor")
     public void exclusiveTransferHashBatch(int batchSize, ConcurrentLinkedQueue<String> queue) {
