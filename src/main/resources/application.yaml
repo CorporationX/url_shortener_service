@@ -40,6 +40,9 @@ hashes:
 schedulers:
   hash_generator:
     cron: 0 0 0 * * *
+  cleaner:
+    cron: 0 0 0 * * *
+    months_period: 12
 
 URL:
   static_address: https://sh.c/

@@ -19,8 +19,8 @@ public class HashRepository {
 
     @Transactional
     public List<Long> getUniqueNumbers(@Param("amount") int amount) {
-        return jdbcTemplate.query("select nextval('unique_number_seq') as genNum from generate_series(1,:amount)"
-                , (rs, rowNum) -> rs.getLong("genNum"));
+        return jdbcTemplate.query("select nextval('unique_number_seq') as genNum from generate_series(1,?)"
+                , (rs, rowNum) -> rs.getLong("genNum"), amount);
     }
 
     public int[] saveHashes(List<String> hashes) {
