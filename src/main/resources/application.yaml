@@ -47,3 +47,6 @@ hash:
   cache:
     size: 10
     threshold: 0.2
+
+url:
+  host: http://localhost:8080/urls
