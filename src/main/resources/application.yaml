@@ -31,6 +31,9 @@ spring:
   hash:
     max_range: 10000
 
+  scheduling:
+    cron: 0 0 * * *
+
 server:
   port: 8080
 
