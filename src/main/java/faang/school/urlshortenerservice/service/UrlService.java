@@ -35,8 +35,7 @@ public class UrlService {
         }
 
         Url url = urlMapper.toEntity(urlDto);
-        String hash = hashCache.getHash();
-        url.setHash(hash);
+        url.setHash(hashCache.getHash());
         urlRepository.save(url);
         return convertToHashDto(url.getHash());
     }
