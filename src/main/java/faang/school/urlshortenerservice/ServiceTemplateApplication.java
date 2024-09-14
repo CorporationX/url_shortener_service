@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-@EnableFeignClients("school.faang.servicetemplate.client")
+@EnableFeignClients("faang.school.urlshortenerservice.client")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)

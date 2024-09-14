@@ -17,7 +17,7 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @PostMapping
+    @PostMapping("/short")
     public HashDto saveUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.createShortLink(urlDto);
     }

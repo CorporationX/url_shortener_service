@@ -12,6 +12,7 @@ import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class UrlService {
     @Value("${url.host}")
     private String host;
 
+    @Transactional
     public HashDto createShortLink(UrlDto urlDto) {
         if(urlValidator.validateUrlByAlreadyExists(urlDto.getUrl())) {
             Url url = urlRepository.findByUrl(urlDto.getUrl());
@@ -33,13 +35,14 @@ public class UrlService {
         }
 
         Url url = urlMapper.toEntity(urlDto);
-        url.setHash(hashCache.getHash());
+        String hash = hashCache.getHash();
+        url.setHash(hash);
         urlRepository.save(url);
         return convertToHashDto(url.getHash());
     }
 
     private HashDto convertToHashDto(String hashValue) {
-        Hash hash = new Hash(hashValue);
+        Hash hash = new Hash(host + hashValue);
         return hashMapper.toDto(hash);
     }
 }

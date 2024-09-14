@@ -49,4 +49,4 @@ hash:
     threshold: 0.2
 
 url:
-  host: http://localhost:8080/urls
+  host: http://localhost:8080/urls/

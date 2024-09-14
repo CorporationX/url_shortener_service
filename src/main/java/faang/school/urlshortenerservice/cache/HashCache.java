@@ -28,12 +28,12 @@ public class HashCache {
     @PostConstruct
     public void initCache() {
         cache = new ArrayBlockingQueue<>(cacheSize);
-        hashGenerator.getHashBatch(cacheSize);
+        cache.addAll(hashGenerator.getHashBatch(cacheSize));
     }
 
     public String getHash() {
-        if(cache.size() < (threshold * cacheSize)) {
-            if(isFillingCache.compareAndSet(false, true)) {
+        if (cache.size() < (threshold * cacheSize)) {
+            if (isFillingCache.compareAndSet(false, true)) {
                 hashGenerator.getHashBatchAsync(cacheSize)
                         .thenAccept(newHashes -> cache.addAll(newHashes))
                         .thenRun(() -> isFillingCache.set(false));
