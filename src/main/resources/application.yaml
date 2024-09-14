@@ -33,3 +33,10 @@ hash-generator:
   thread-pool:
     size: 5
     queue-capacity: 50
+
+hash-cache:
+  capacity: 100
+  low-limit-percent: 20
+  thread-pool:
+    size: 5
+    queue-capacity: 50
