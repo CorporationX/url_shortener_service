@@ -5,11 +5,14 @@ import faang.school.urlshortenerservice.hash.HashCache;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlJpaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,21 @@ public class UrlService {
         return getFullHash(hash);
     }
 
+    public String getFullUrl(String hash) {
+        String url = urlCacheRepository.get(hash);
+        if (url != null) {
+            return url;
+        }
+        Optional<Url> urlByHash = urlRepository.findById(hash);
+        if (urlByHash.isPresent()) {
+            return urlByHash.get().getUrl();
+        } else {
+            log.error("Hash doesn't exist");
+            throw new EntityNotFoundException("Hash doesn't exist");
+        }
+    }
+
     private String getFullHash(String hash) {
-        return String.format("https://%s:%d/api/%s", host, port, hash);
+        return String.format("http://%s:%d/api/%s", host, port, hash);
     }
 }
