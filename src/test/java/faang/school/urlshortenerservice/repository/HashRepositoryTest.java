@@ -29,9 +29,9 @@ class HashRepositoryTest {
     void testGetHashBatch() {
         hashRepository.saveAll(List.of(new Hash("hash1"), new Hash("hash2"), new Hash("hash3")));
 
-        List<String> deletedHashes = hashRepository.getHashBatch(3);
+        List<Hash> deletedHashes = hashRepository.getHashBatch(3);
         assertThat(deletedHashes).hasSize(3);
-        assertThat(deletedHashes).contains("hash1", "hash2", "hash3");
+        assertThat(deletedHashes).contains(new Hash("hash1"), new Hash("hash2"), new Hash("hash3"));
 
         List<Hash> allHashes = hashRepository.findAll();
         assertThat(allHashes).isEmpty();

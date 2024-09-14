@@ -23,5 +23,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
             RETURNING *
             """, nativeQuery = true)
-    List<String> getHashBatch(int n);
+    List<Hash> getHashBatch(int n);
 }
