@@ -22,6 +22,11 @@ public class UrlService {
 
     @Transactional
     public String shortenUrl(UrlDto urlDto) {
+        String existingHash = urlRepository.findHashByUrl(urlDto.getUrl());
+        if (existingHash != null) {
+            return String.format("%s/%s", "http://localhost:8080", existingHash);
+        }
+
         String hash = hashCache.getHash();
 
         Url url = Url.builder()
@@ -33,8 +38,17 @@ public class UrlService {
         urlRepository.save(url);
         urlCacheRepository.save(hash, url.getUrl());
 
-        //String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        //return String.format("%s/%s", baseUrl, hash);
         return String.format("%s/%s", "http://localhost:8080", hash);
+    }
+
+    public String getOriginalUrl(String hash) {
+        String originalUrl = urlCacheRepository.getCacheValue(hash);
+        if (originalUrl != null) {
+            return originalUrl;
+        }
+
+        return urlRepository.findById(hash)
+                .map(Url::getUrl)
+                .orElseThrow(() -> new RuntimeException("URL not found for hash: " + hash));
     }
 }

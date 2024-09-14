@@ -12,4 +12,8 @@ public class UrlCacheRepository {
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url);
     }
+
+    public String getCacheValue(String hash) {
+        return redisTemplate.opsForValue().get(hash);
+    }
 }
