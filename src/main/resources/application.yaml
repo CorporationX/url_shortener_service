@@ -21,6 +21,10 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+scheduler:
+  cron:
+    url_removal: "0 0 * * *"
+
 server:
   port: 8080
 
