@@ -39,6 +39,7 @@ public class UrlRepositoryManager {
         return urlFromCache;
     }
 
+    @Transactional
     public List<String> getExpiredHashesAndDelete(LocalDate expirationDate) {
         List<String> expiredHashes = urlRepository.getExpiredHashesAndDelete(expirationDate);
         if (!expiredHashes.isEmpty()) {
