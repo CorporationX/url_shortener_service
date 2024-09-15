@@ -37,5 +37,7 @@ app:
     executor:
       pool-size: 1
       queue-size: 1
+  hash-cache:
+    cache-capacity: 1000
   redis-cache:
     hours-to-expire: 24

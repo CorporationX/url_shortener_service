@@ -20,7 +20,7 @@ public class UrlService {
     @Value("${server.base-url}")
     private String baseUrl;
 
-    @Value("${redis-cache.hours-to-expire}")
+    @Value("${app.redis-cache.hours-to-expire}")
     private int hoursToExpire;
 
     private final HashCache hashCache;
@@ -29,7 +29,7 @@ public class UrlService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public UrlDto makeShortLink(UrlDto urlDto) {
-        String hash = hashCache.popCache();
+        String hash = hashCache.getHash();
 
         Url url = urlMapper.toEntity(hash, urlDto.getUrl());
         urlRepository.save(url);
