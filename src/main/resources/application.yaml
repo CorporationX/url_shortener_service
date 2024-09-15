@@ -38,12 +38,16 @@ executor:
 
   hash-cache:
     core-size: 10
-    max-size: 15
+    max-size: 20
     queue-capacity: 100
     prefix: HashCache-
 
 hash:
   cache:
+    key: urlMappings
     capacity: 10000
     fill-percentage: 20
-    key: "urlMappings"
+
+cleanup:
+  cron: 0 0 0 * * *
+  expiration-years: 1
