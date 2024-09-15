@@ -15,11 +15,18 @@ spring:
         format_sql: true
 
   data:
+    redis:
+      port: 6379
+      host: localhost
+
     batch_size: 1000
     unique_numbers_number: 1000
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+cache:
+    type: redis
 
 scheduler:
   cron:

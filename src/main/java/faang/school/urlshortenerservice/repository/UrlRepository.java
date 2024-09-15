@@ -18,5 +18,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             """)
     Url create(String hash, String originalUrl);
 
-    List<Url> findAllByCreatedAtBefore (LocalDateTime dateTime);
+    List<Url> findAllByCreatedAtBefore(LocalDateTime dateTime);
+
+    String getUrlByHash(String hash);
 }
