@@ -18,8 +18,11 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 hash:
-  batch_size: 100
+  batch_size: 1000
   base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+
+executor:
+  pool_size: 10
 
 server:
   port: 8080
