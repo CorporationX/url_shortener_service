@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
@@ -40,6 +41,7 @@ public class HashCache {
         log.info("Hash cache initialization complete.");
     }
 
+    @Async("executorService")
     public Hash getHash() {
         if (queueHashes.size() < (queueSize * (percentageToReplenishQueue / 100))) {
             if (isGenerating.compareAndSet(false, true)) {
