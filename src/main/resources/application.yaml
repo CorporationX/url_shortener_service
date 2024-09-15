@@ -29,13 +29,20 @@ logging:
   level:
     root: info
 
-hash:
-  batch:
-    size: 10000
-  executor:
+executor:
+  hash-generator:
     core-size: 10
     max-size: 20
     queue-capacity: 100
     prefix: HashGenerator-
 
+  hash-cache:
+    core-size: 10
+    max-size: 15
+    queue-capacity: 100
+    prefix: HashCache-
 
+hash:
+  cache:
+    capacity: 10000
+    fill-percentage: 20
