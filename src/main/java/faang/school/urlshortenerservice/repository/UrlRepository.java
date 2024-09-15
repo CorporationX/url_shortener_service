@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UrlRepository extends CrudRepository<Url, String>{
+public interface UrlRepository extends CrudRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
               DELETE FROM url
@@ -18,5 +18,9 @@ public interface UrlRepository extends CrudRepository<Url, String>{
               RETURNING *
             """)
     @Modifying
-    public List<Url> clearOlderThanYear();
+    List<Url> clearOlderThanYear();
+
+    boolean existsByUrl(String url);
+
+    Url findByUrl(String url);
 }

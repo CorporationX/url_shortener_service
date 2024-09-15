@@ -32,3 +32,6 @@ hash:
     fill:
       percent: 20
     cron: 0 0 0 * * *
+
+url:
+  host: http://localhost:8080/url/
