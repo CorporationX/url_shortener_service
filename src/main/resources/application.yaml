@@ -25,6 +25,15 @@ scheduler:
   cron:
     url_removal: 0 0 * * * ?
 
+executor:
+  threads_number: 10
+  task_queue_size: 10000
+
+hash:
+  cache:
+    size: 10000
+    min_threshold: 20
+
 server:
   port: 8080
 
