@@ -26,6 +26,8 @@ logging:
 
 hash:
   range: 1000
+  capacity: 5000
+  lowPercentage: 20
 
 async:
   generator:
