@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,6 +19,7 @@ public class HashGenerator {
     private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     private final HashRepository hashRepository;
+    private final Base62Encoder encoder;
 
     @Value("${hash.range}")
     private int maxRange;
@@ -25,10 +27,10 @@ public class HashGenerator {
     @Transactional
     public void generateHash() {
         List<Long> range = hashRepository.getNextRange();
-        List<Hash> hashes = range.stream()
-                .map(this::applyBase62Encoding)
-                .map(Hash::new)
-                .toList();
+        List<Hash> hashes = encoder.encode(range);
+        for (int i = 0; i < 10; i++) {
+            System.out.println(hashes.get(i).getHash());
+        }
         hashRepository.saveAll(hashes);
     }
 
@@ -46,14 +48,5 @@ public class HashGenerator {
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<String>> getHashesAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
-    }
-
-    public String applyBase62Encoding(long number) {
-        StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
-            number /= BASE_62_CHARACTERS.length();
-        }
-        return builder.toString();
     }
 }

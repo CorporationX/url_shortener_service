@@ -34,3 +34,11 @@ hash:
   cache:
     capacity: 10000
     fill.percent: 20
+  thread:
+    pool:
+      core: 5
+      max: 10
+      alive.time: 5
+  cleaner:
+    cron: "0 0 0 * * ?"
+    interval: 1
