@@ -23,9 +23,9 @@ public class HashGenerator {
 
     @Async("executorService")
     @Transactional
-    public void generateHash(){
-        List<Long> range =hashRepository.getUniqueNumbers(batchSize);
-        List<Hash> hashes = base62Encoder.encode(range).stream().map(string ->
+    public void generatedBatch(){
+        List<Long> generatedNumbers =hashRepository.getUniqueNumbers(batchSize);
+        List<Hash> hashes = base62Encoder.encode(generatedNumbers).stream().map(string ->
                 Hash.builder().hash(string).build()).collect(Collectors.toList());
         hashRepository.saveAll(hashes);
     }
