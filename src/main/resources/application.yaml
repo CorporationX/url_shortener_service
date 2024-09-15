@@ -31,5 +31,11 @@ logging:
   level:
     root: info
 
-redis-cache:
-  hours-to-expire: 24
+app:
+  hash-generator:
+    batch-size: 100
+    executor:
+      pool-size: 1
+      queue-size: 1
+  redis-cache:
+    hours-to-expire: 24
