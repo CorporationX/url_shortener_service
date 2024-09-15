@@ -18,12 +18,7 @@ public class UrlCacheRepository {
     public void saveUrl(Url url){
         redisTemplate.opsForValue().set(url.getHash(), url.getUrl(), expirationTime, HOURS);
     }
-
     public String getUrl(String key){
         return redisTemplate.opsForValue().get(key);
-    }
-
-    public void deleteUrl(String key){
-        redisTemplate.delete(key);
     }
 }

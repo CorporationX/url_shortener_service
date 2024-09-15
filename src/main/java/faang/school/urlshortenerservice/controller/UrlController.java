@@ -18,12 +18,12 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public UrlDto saveAndGetShortUrl(@RequestBody @Valid UrlDto urlDto){
+    public String saveAndGetShortUrl(@RequestBody @Valid UrlDto urlDto){
         return urlService.saveAndGetShortUrl(urlDto);
     }
 
-    @GetMapping("/hash/{hash}")
-    public RedirectView get(@PathVariable("hash") String hash){
+    @GetMapping("/{hash}")
+    public RedirectView getUrl(@PathVariable("hash") String hash){
         var url = urlService.getUrl(hash);
         return new RedirectView(url, true);
     }

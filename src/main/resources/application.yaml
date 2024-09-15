@@ -30,20 +30,22 @@ logging:
 
 app:
   local_hash:
-    capacity: 10000
-    min: 100
+    capacity: 9000
+    min_value: 1000
   hash:
-    cron: 0 0 0 * * *
-    batch_size: 1000
+    batch_size: 20000
     expiration: 1
-  number_generator:
-    batch_size: 1000
   async:
-    corePoolSize: 5
-    maxPoolSize: 10
-    queueCapacity: 500
-    threadNamePrefix: "AsyncExecutor-"
+    hash_generator:
+      core_pool_size: 5
+      max_pool_size: 10
+      queue_capacity: 500
+      thread_name_prefix: "AsyncExecutor-"
+    local_hash_refill:
+      pool_size: 10
   scheduling:
+    hash:
+      cron: 0 0 0 * * *
     removal:
       cron: 0 */24 * * *
       months_before_expiration: 12

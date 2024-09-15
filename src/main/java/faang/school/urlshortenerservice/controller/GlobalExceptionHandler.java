@@ -45,4 +45,15 @@ public class GlobalExceptionHandler {
                 .error("Validation Failed")
                 .build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(Exception e){
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .timestamp(now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Invalid url")
+                .build();
+    }
 }

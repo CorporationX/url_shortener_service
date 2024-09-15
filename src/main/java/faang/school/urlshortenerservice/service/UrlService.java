@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static java.util.Optional.*;
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -19,12 +21,12 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlMapper urlMapper;
 
-    public UrlDto saveAndGetShortUrl(UrlDto urlDto){
+    public String saveAndGetShortUrl(UrlDto urlDto){
         var savedUrlWithHash = saveUrlWithHash(urlDto);
 
         urlCacheRepository.saveUrl(savedUrlWithHash);
 
-        return urlMapper.toDto(savedUrlWithHash);
+        return savedUrlWithHash.getHash();
     }
 
     private Url saveUrlWithHash(UrlDto urlDto){
@@ -37,9 +39,9 @@ public class UrlService {
     }
 
     public String getUrl(String hash) {
-        return Optional.ofNullable(urlCacheRepository.getUrl(hash))
+        return ofNullable(urlCacheRepository.getUrl(hash))
                 .orElseGet(() -> urlRepository.findById(hash)
                         .map(Url::getUrl)
-                        .orElseThrow(() -> new IllegalArgumentException("No URL with such hash: " + hash)));
+                        .orElseThrow(() -> new IllegalArgumentException("No URL find")));
     }
 }

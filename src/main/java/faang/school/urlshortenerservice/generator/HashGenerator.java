@@ -17,31 +17,28 @@ import java.util.concurrent.CompletableFuture;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HashGenerator {
-    @Value("${app.number_generator.batch_size}")
-    private int batchNumberSize;
-
-    @Value("${app.hash.batch_size}")
-    private int batchHashSize;
+    @Value("${app.hash.batch_size:20000}")
+    private int batchSize;
 
     private HashRepository hashRepository;
     private Base62Encoder encoder;
 
     @Transactional
-    @Scheduled(cron = "${app.hash.cron}")
-    public List<String> generateAndSaveHashes(){
-        var numbers = hashRepository.getUniqueNumbers(batchNumberSize);
+    @Scheduled(cron = "${app.scheduling.hash.cron}")
+    public void generateAndSaveHashes(){
+        var numbers = hashRepository.getUniqueNumbers(batchSize);
         var hashes = encoder.encode(numbers);
 
-        return hashRepository.saveAll(hashes);
-    }
-
-    @Transactional
-    public List<String> getHashes(int batchHashSize){
-        return hashRepository.findAndDeleteHashes(batchHashSize);
+        hashRepository.saveAll(hashes);
     }
 
     @Async("taskExecutor")
     public CompletableFuture<List<String>> getHashesAsync(int batchHashSize){
-        return CompletableFuture.completedFuture(getHashes(batchHashSize));
+        return CompletableFuture.supplyAsync(() -> getHashes(batchHashSize));
+    }
+
+    public List<String> getHashes(int batchHashSize){
+        generateAndSaveHashes();
+        return hashRepository.getAndDeleteHashes(batchHashSize);
     }
 }

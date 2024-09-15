@@ -9,13 +9,13 @@ import java.util.concurrent.Executor;
 
 @Component
 public class AsyncConfig {
-    @Value("${app.async.corePoolSize}")
+    @Value("${app.async.hash_generator.core_pool_size}")
     private int corePoolSize;
-    @Value("${app.async.maxPoolSize}")
+    @Value("${app.async.hash_generator.max_pool_size}")
     private int maxPoolSize;
-    @Value("${app.async.queueCapacity}")
+    @Value("${app.async.hash_generator.queue_capacity}")
     private int queueCapacity;
-    @Value("${app.async.threadNamePrefix}")
+    @Value("${app.async.hash_generator.thread_name_prefix}")
     private String threadNamePrefix;
 
     @Bean(name = "taskExecutor")
@@ -28,5 +28,4 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
-
 }
