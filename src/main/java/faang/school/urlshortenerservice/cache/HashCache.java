@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
     private final HashGenerator hashGenerator;
-    private final BlockingQueue<String> hashes;
+    private BlockingQueue<String> hashes;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
     @Value("${hash.capacity}")
     private int capacity;
@@ -24,6 +25,7 @@ public class HashCache {
 
     @PostConstruct
     public void fill() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
         log.info("Hashes have been added to cache, its size is {} now", hashes.size());
     }

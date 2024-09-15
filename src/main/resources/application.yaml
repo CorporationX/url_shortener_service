@@ -26,8 +26,8 @@ logging:
     root: info
 
 hash:
-  range: 1000
-  capacity: 5000
+  range: 100
+  capacity: 500
   lowPercentage: 20
 
 async:
@@ -40,3 +40,9 @@ data:
     port: 6379
     host: localhost
     url-ttl: 5
+
+cleaner-scheduler:
+  cron: "0 0 * * * *"
+
+url:
+  days-to-live: 5
