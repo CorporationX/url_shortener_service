@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import faang.school.urlshortenerservice.cache.HashCache;
@@ -50,6 +51,9 @@ class UrlServiceTest {
     @Mock
     private HashRepository hashRepository;
 
+    @Mock
+    private URLCacheRepository urlCacheRepository;
+
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(urlService, "periodConfig", "P1Y");
@@ -74,20 +78,24 @@ class UrlServiceTest {
         verify(urlValidator).validateUrlByAlreadyExists(urlDto.getUrl());
         verify(urlRepository).findByUrl(urlDto.getUrl());
         verify(hashMapper).toDto(any());
+        verifyNoMoreInteractions(urlCacheRepository);
     }
 
     @Test
     public void testCreateShortLink_NewUrl() {
         UrlDto urlDto = new UrlDto();
         urlDto.setUrl("http://new-url.com");
+
         Url url = new Url();
         url.setHash("newHash");
+        url.setUrl("http://new-url.com");
 
         HashDto expectedHashDto = new HashDto("newHash");
 
         when(urlValidator.validateUrlByAlreadyExists(urlDto.getUrl())).thenReturn(false);
         when(urlMapper.toEntity(urlDto)).thenReturn(url);
         when(hashCache.getHash()).thenReturn("newHash");
+        when(urlRepository.save(url)).thenReturn(url);
         when(hashMapper.toDto(any())).thenReturn(expectedHashDto);
 
         HashDto result = urlService.createShortLink(urlDto);
@@ -97,8 +105,10 @@ class UrlServiceTest {
         verify(urlMapper).toEntity(urlDto);
         verify(hashCache).getHash();
         verify(urlRepository).save(url);
+        verify(urlCacheRepository).save("newHash", "http://new-url.com");
         verify(hashMapper).toDto(any());
     }
+
 
     @Test
     public void testRemoveOldUrl() {
@@ -111,10 +121,8 @@ class UrlServiceTest {
         urlService.removeOldUrl();
 
         verify(urlRepository).deleteOldUrlsAndReturnHashes(any(LocalDateTime.class));
-
         verify(hashRepository).saveAll(anyList());
-
-        verifyNoMoreInteractions(urlRepository, hashRepository);
+        verifyNoMoreInteractions(urlCacheRepository);
     }
 
 }

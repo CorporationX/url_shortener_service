@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class UrlService {
     private final HashMapper hashMapper;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final URLCacheRepository urlCacheRepository;
 
     @Value("${url.host}")
     private String host;
@@ -46,7 +48,8 @@ public class UrlService {
 
         Url url = urlMapper.toEntity(urlDto);
         url.setHash(hashCache.getHash());
-        urlRepository.save(url);
+        url = urlRepository.save(url);
+        urlCacheRepository.save(url.getHash(), url.getUrl());
         return convertToHashDto(url.getHash());
     }
 
