@@ -7,12 +7,18 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +29,13 @@ public class UrlService {
     private final UrlMapper urlMapper;
     private final HashMapper hashMapper;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
 
     @Value("${url.host}")
     private String host;
+
+    @Value("${url.cleaner.period}")
+    private String periodConfig;
 
     @Transactional
     public HashDto createShortLink(UrlDto urlDto) {
@@ -38,6 +48,20 @@ public class UrlService {
         url.setHash(hashCache.getHash());
         urlRepository.save(url);
         return convertToHashDto(url.getHash());
+    }
+
+    @Transactional
+    public void removeOldUrl() {
+        Period period = Period.parse(periodConfig);
+        LocalDateTime thresholdDate = LocalDateTime.now().minus(period);
+
+        List<String> freedHashes = urlRepository.deleteOldUrlsAndReturnHashes(thresholdDate);
+
+        List<Hash> hashes = freedHashes.stream()
+                .map(Hash::new)
+                .collect(Collectors.toList());
+
+        hashRepository.saveAll(hashes);
     }
 
     private HashDto convertToHashDto(String hashValue) {

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import faang.school.urlshortenerservice.cache.HashCache;
@@ -15,8 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,6 +46,14 @@ class UrlServiceTest {
 
     @Mock
     private UrlRepository urlRepository;
+
+    @Mock
+    private HashRepository hashRepository;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(urlService, "periodConfig", "P1Y");
+    }
 
     @Test
     public void testCreateShortLink_ExistingUrl() {
@@ -85,4 +99,22 @@ class UrlServiceTest {
         verify(urlRepository).save(url);
         verify(hashMapper).toDto(any());
     }
+
+    @Test
+    public void testRemoveOldUrl() {
+        String oldHash1 = "hash1";
+        String oldHash2 = "hash2";
+        List<String> freedHashes = Arrays.asList(oldHash1, oldHash2);
+
+        when(urlRepository.deleteOldUrlsAndReturnHashes(any(LocalDateTime.class))).thenReturn(freedHashes);
+
+        urlService.removeOldUrl();
+
+        verify(urlRepository).deleteOldUrlsAndReturnHashes(any(LocalDateTime.class));
+
+        verify(hashRepository).saveAll(anyList());
+
+        verifyNoMoreInteractions(urlRepository, hashRepository);
+    }
+
 }
