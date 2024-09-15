@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.hash;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +23,7 @@ public class HashRepository {
         jdbcTemplate.batchUpdate("INSERT INTO hash (HASH) VALUES (?)",
                 hashes,
                 batchSize,
-                (PreparedStatement preparedStatement, String hash) -> {
-                    preparedStatement.setString(1, hash);
-                }
+                (PreparedStatement preparedStatement, String hash) -> preparedStatement.setString(1, hash)
         );
     }
 
