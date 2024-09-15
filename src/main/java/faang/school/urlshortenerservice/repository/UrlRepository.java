@@ -1,0 +1,22 @@
+package faang.school.urlshortenerservice.repository;
+
+import faang.school.urlshortenerservice.entity.Url;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+
+import java.util.List;
+
+@Repository
+public interface UrlRepository extends CrudRepository<Url, String>{
+
+    @Query(nativeQuery = true, value = """
+              DELETE FROM url
+              WHERE created_at < NOW() - INTERVAL '1 year'
+              RETURNING *
+            """)
+    @Modifying
+    public List<Url> clearOlderThanYear();
+}

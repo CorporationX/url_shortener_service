@@ -33,8 +33,7 @@ public class HashCache {
     }
 
     public Hash getHash() {
-        long a = hashes.size() / (capacity / 100);
-        if (a < fillPercent && filling.compareAndSet(false, true)) {
+        if (hashes.size() / (capacity / 100) < fillPercent && filling.compareAndSet(false, true)) {
             hashGenerator.getHashesAsync(capacity)
                     .thenAccept(hashes::addAll)
                     .thenRun(() -> filling.set(false));

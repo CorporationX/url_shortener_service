@@ -31,3 +31,4 @@ hash:
     capacity: 1000
     fill:
       percent: 20
+    cron: 0 0 0 * * *
