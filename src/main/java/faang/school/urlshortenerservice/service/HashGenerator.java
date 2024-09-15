@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class HashGenerator {
     private int maxValue;
 
     @Transactional
+    @Async
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(maxValue);
         List<Hash> hashes = encoder.encode(numbers);
