@@ -13,11 +13,6 @@ public class Base62Encoder {
     public List<String> encoder(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
         for (Long number : numbers) {
-            if (number == 0) {
-                hashes.add("0");
-                continue;
-            }
-
             StringBuilder hash = new StringBuilder();
             while (number > 0) {
                 int remainder = (int) (number % BASE);

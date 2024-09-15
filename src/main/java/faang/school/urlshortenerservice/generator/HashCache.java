@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,12 +21,23 @@ public class HashCache {
     private double lowThresholdPercentage;
 
     private final HashGenerator hashGenerator;
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(1000);
+    private Queue<String> hashes;
     private final AtomicBoolean isRefreshing = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
-        hashes.addAll(hashGenerator.getHashBatch(capacity));
+        hashes = new ArrayBlockingQueue<>(capacity);
+        List<String> generatedHashes = hashGenerator.getHashBatch(capacity);
+        if (generatedHashes.size() > capacity) {
+            generatedHashes = generatedHashes.subList(0, capacity);
+        }
+
+        try {
+            hashes.addAll(generatedHashes);
+        } catch (IllegalStateException e) {
+            log.error("Error initializing HashCache: Queue is full", e);
+        }
+
     }
 
     public String getHash() {

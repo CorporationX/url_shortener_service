@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +24,19 @@ public class HashGenerator {
     private long maxRange;
 
     @Transactional
-    @Scheduled(cron = "${hash.scheduled.cron}")
-    public void generateBatch() {
+    public List<Hash> generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
         log.info("Generating Base62 hashes for range: {}", range);
-        List<Hash> hashes = base62Encoder.encoder(range).stream()
+        return base62Encoder.encoder(range).stream()
                 .map(Hash::new)
                 .toList();
+    }
+
+    @Transactional
+    public void generateAndSaveBatch() {
+        List<Hash> hashes = generateBatch();
         hashRepository.saveAll(hashes);
+        log.info("Saved {} hashes to the database.", hashes.size());
     }
 
     @Transactional
@@ -41,8 +45,9 @@ public class HashGenerator {
         log.info("Retrieved {} hashes from the repository: {}", hashes.size(), hashes);
         if (hashes.size() < amount) {
             log.info("Not enough hashes, generating more.");
-            generateBatch();
-            hashes.addAll(getHashBatch(amount - hashes.size()));
+            List<Hash> generatedHashes = generateBatch();
+            hashRepository.saveAll(generatedHashes);
+            hashes.addAll(generatedHashes.stream().map(Hash::getHash).toList());
         }
         log.info("Final hash batch size: {}", hashes.size());
         return hashes;

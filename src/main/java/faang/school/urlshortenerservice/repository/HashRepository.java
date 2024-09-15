@@ -12,15 +12,15 @@ import java.util.List;
 public interface HashRepository extends CrudRepository<Hash, Long> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_number_seq') FROM generate_series(1, :n)
+            SELECT nextval('unique_number_seq') FROM generate_series(1, :amount)
             """)
-    List<Long> getUniqueNumbers(long n);
+    List<Long> getUniqueNumbers(long amount);
 
     @Transactional
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE id IN (
-                SELECT id FROM hash ORDER BY id ASC LIMIT :n
+                SELECT id FROM hash ORDER BY id ASC LIMIT :amount
             ) RETURNING hash
             """)
-    List<String> getHashBatch(long n);
+    List<String> getHashBatch(long amount);
 }

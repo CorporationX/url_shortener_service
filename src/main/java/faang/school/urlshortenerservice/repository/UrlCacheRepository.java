@@ -9,11 +9,15 @@ import org.springframework.stereotype.Repository;
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String hash, String url) {
-        redisTemplate.opsForValue().set(hash, url);
+    public void save(String hash, String url, long ttlInSeconds) {
+        redisTemplate.opsForValue().set(hash, url, ttlInSeconds);
     }
 
     public String getCacheValue(String hash) {
         return redisTemplate.opsForValue().get(hash);
+    }
+
+    public String getCacheValueByUrl(String url) {
+        return redisTemplate.opsForValue().get(url);
     }
 }

@@ -48,3 +48,11 @@ hash:
   scheduled:
     cron : "0 0 0 * * *"
 
+app:
+  base-url : http://localhost:8080
+
+redis:
+  cache-ttl: 86400
+
+cleanup:
+  period: 1Y
