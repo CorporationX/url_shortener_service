@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class UrlService {
 
     @Transactional
     public HashDto createShortLink(UrlDto urlDto) {
-        if(urlValidator.validateUrlAlreadyExists(urlDto.getUrl())) {
+        if (urlValidator.validateUrlAlreadyExists(urlDto.getUrl())) {
             Url url = urlRepository.findByUrl(urlDto.getUrl());
             return convertToHashDto(url.getHash());
         }
@@ -38,6 +41,15 @@ public class UrlService {
         urlRepository.save(url);
         return convertToHashDto(url.getHash());
     }
+
+    public String getOriginalUrlByHash(String hash) {
+        Optional<Url> url = urlRepository.findById(hash);
+        if(url.isPresent()){
+            return url.get().getUrl();
+        }
+        throw new UrlNotFoundException("URL not found for hash: " + hash);
+    }
+
 
     private HashDto convertToHashDto(String hashValue) {
         Hash hash = new Hash(host + hashValue);

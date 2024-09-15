@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends CrudRepository<Url, String> {
@@ -23,4 +24,6 @@ public interface UrlRepository extends CrudRepository<Url, String> {
     boolean existsByUrl(String url);
 
     Url findByUrl(String url);
+
+    Optional<Url> findById(String hash);
 }
