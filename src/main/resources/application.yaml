@@ -23,3 +23,9 @@ server:
 logging:
   level:
     root: info
+
+hash-generator:
+  generate-amount: 100
+  thread-pool:
+    size: 5
+    queue-capacity: 50
