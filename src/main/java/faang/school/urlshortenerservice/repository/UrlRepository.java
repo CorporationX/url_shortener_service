@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url, Long> {
+public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
             INSERT INTO urls (hash, url)
@@ -18,5 +18,5 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             """)
     Url create(String hash, String originalUrl);
 
-    List<Url> getAllBefore (LocalDateTime dateTime);
+    List<Url> findAllByCreatedAtBefore (LocalDateTime dateTime);
 }
