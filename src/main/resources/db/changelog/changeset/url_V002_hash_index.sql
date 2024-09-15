@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS url_hash_index ON url (hash);

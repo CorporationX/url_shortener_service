@@ -20,7 +20,7 @@ public class BaseEncoder {
                 hash.append(alphabet.charAt((int) (uniqueNumber % alphabetLength)));
                 uniqueNumber /= alphabetLength;
             }
-            hashes.add(hash.toString());
+            hashes.add(hash.reverse().toString());
         }
         return hashes;
     }

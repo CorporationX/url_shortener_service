@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class HashCache {
     @Value("${hash.cache.size}")
     private Double CACHE_SIZE;
+    @Value("${hash.cache.min-percentage}")
+    private Double CACHE_MIN_PERCENTAGE;
 
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
@@ -31,7 +33,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashCacheQueue.size() / CACHE_SIZE <= 0.20) {
+        if (hashCacheQueue.size() / CACHE_SIZE <= CACHE_MIN_PERCENTAGE) {
             cache();
         }
         return hashCacheQueue.poll();
