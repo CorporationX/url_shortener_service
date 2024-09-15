@@ -1,12 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.URLDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.URL;
-import faang.school.urlshortenerservice.exception.url.UrlNotFoundException;
-import faang.school.urlshortenerservice.mapper.HashMapper;
+import faang.school.urlshortenerservice.exception.handler.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -18,11 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,8 +33,6 @@ class UrlServiceTest {
     private UrlRepository urlRepository;
     @Mock
     private HashCache hashCache;
-    @Mock
-    private HashMapper hashMapper;
     @InjectMocks
     private UrlService urlService;
     private final String urlString = "https://www.google.com/search?q=amsterdam";
@@ -85,37 +81,17 @@ class UrlServiceTest {
     }
 
     @Test
-    @DisplayName("createShortLinkToDtoException")
-    void testCreateShortLinkToDtoException() {
-        when(hashCache.getHash()).thenReturn(hashString);
-        when(urlRepository.save(any(URL.class))).thenReturn(new URL());
-        doNothing().when(urlCacheRepository).save(anyString(), anyString());
-        doThrow(new RuntimeException("exception")).when(hashMapper).toDto(any(Hash.class));
-
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                urlService.createShortLink(urlDto));
-
-        assertEquals("exception", exception.getMessage());
-
-        verify(hashCache, times(1)).getHash();
-        verify(urlRepository, times(1)).save(any(URL.class));
-        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
-    }
-
-    @Test
     @DisplayName("createShortLinkValid")
     void testCreateShortLinkValid() {
         when(hashCache.getHash()).thenReturn(hashString);
         when(urlRepository.save(any(URL.class))).thenReturn(new URL());
         doNothing().when(urlCacheRepository).save(anyString(), anyString());
-        when(hashMapper.toDto(any(Hash.class))).thenReturn(new HashDto());
 
         urlService.createShortLink(urlDto);
 
         verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(URL.class));
         verify(urlCacheRepository, times(1)).save(anyString(), anyString());
-        verify(hashMapper, times(1)).toDto(any(Hash.class));
     }
 
     @Test
@@ -157,9 +133,9 @@ class UrlServiceTest {
     @Test
     @DisplayName("deleteOldURLUrlRepositoryIsEmpty")
     void testDeleteOldURLUrlRepositoryIsEmpty() {
-        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Collections.emptyList());
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(null);
 
-        urlService.deleteOldURL(removedPeriod);
+        assertThrows(NullPointerException.class, () -> urlService.deleteOldURL(removedPeriod));
 
         verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
     }
@@ -168,7 +144,7 @@ class UrlServiceTest {
     @DisplayName("deleteOldURLHashRepositoryException")
     void testDeleteOldURLHashRepositoryException() {
         List<String> hashes = List.of("1", "2");
-        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(hashes);
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Optional.of(hashes));
         when(hashRepository.saveAll(anyList())).thenThrow(new RuntimeException("exception"));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
@@ -184,7 +160,7 @@ class UrlServiceTest {
     @DisplayName("deleteOldURLValid")
     void testDeleteOldURLValid() {
         List<String> hashes = List.of("1", "2");
-        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(hashes);
+        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Optional.of(hashes));
         when(hashRepository.saveAll(anyList())).thenReturn(List.of(new Hash()));
 
         urlService.deleteOldURL(removedPeriod);
