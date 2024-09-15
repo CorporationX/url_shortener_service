@@ -38,7 +38,7 @@ public class UrlService {
         }
 
         String resultHash = host + hash;
-        log.info("Hash is ready - {} sent to client.", resultHash);
+        log.info("Hash is ready - {} sent to client", resultHash);
 
         return resultHash;
     }
