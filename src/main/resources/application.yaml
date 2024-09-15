@@ -25,4 +25,7 @@ logging:
     root: info
 
 hash:
-  maxvalue: 10000
+  maxvalue: 100000
+  max_hash_cash: 100000
+  min_percent: 20
+  thread_pull_amount: 100
