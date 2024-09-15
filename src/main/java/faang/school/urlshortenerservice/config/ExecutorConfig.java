@@ -12,25 +12,48 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class ExecutorConfig {
 
-    @Value("${hash.executor.core-size:10}")
-    private int hashCorePoolSize;
+    @Value("${executor.hash-generator.core-size:10}")
+    private int hashGeneratorCorePoolSize;
 
-    @Value("${hash.executor.max-size:20}")
-    private int hashMaxPoolSize;
+    @Value("${executor.hash-generator.max-size:20}")
+    private int hashGeneratorMaxPoolSize;
 
-    @Value("${hash.executor.queue-capacity:100}")
-    private int hashQueueCapacity;
+    @Value("${executor.hash-generator.queue-capacity:100}")
+    private int hashGeneratorQueueCapacity;
 
-    @Value("${hash.executor.prefix:HashGenerator-}")
-    private String hashPrefix;
+    @Value("${executor.hash-generator.prefix:HashGenerator-}")
+    private String hashGeneratorPrefix;
+
+    @Value("${executor.hash-cache.core-size:10}")
+    private int hashCacheCorePoolSize;
+
+    @Value("${executor.hash-cache.max-size:20}")
+    private int hashCacheMaxPoolSize;
+
+    @Value("${executor.hash-cache.queue-capacity}")
+    private int hashCacheQueueCapacity;
+
+    @Value("${executor.hash-cache.prefix:HashCache-}")
+    private String hashCachePrefix;
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(hashCorePoolSize);
-        executor.setMaxPoolSize(hashMaxPoolSize);
-        executor.setQueueCapacity(hashQueueCapacity);
-        executor.setThreadNamePrefix(hashPrefix);
+        executor.setCorePoolSize(hashGeneratorCorePoolSize);
+        executor.setMaxPoolSize(hashGeneratorMaxPoolSize);
+        executor.setQueueCapacity(hashGeneratorQueueCapacity);
+        executor.setThreadNamePrefix(hashGeneratorPrefix);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "hashCacheExecutor")
+    public Executor hashCacheExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(hashCacheCorePoolSize);
+        executor.setMaxPoolSize(hashCacheMaxPoolSize);
+        executor.setQueueCapacity(hashCacheQueueCapacity);
+        executor.setThreadNamePrefix(hashCachePrefix);
         executor.initialize();
         return executor;
     }
