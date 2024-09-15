@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,6 +17,7 @@ class Base62EncoderTest {
     }
 
     @Test
+    @DisplayName("Should encode a single number to Base62")
     void testEncode_singleNumber() {
         List<Long> inputNumbers = List.of(123L);
         List<String> encoded = base62Encoder.encode(inputNumbers);
@@ -25,6 +27,7 @@ class Base62EncoderTest {
     }
 
     @Test
+    @DisplayName("Should encode multiple numbers to Base62")
     void testEncode_multipleNumbers() {
         List<Long> inputNumbers = List.of(0L, 456789L, 99999999L);
         List<String> encoded = base62Encoder.encode(inputNumbers);
@@ -36,6 +39,7 @@ class Base62EncoderTest {
     }
 
     @Test
+    @DisplayName("Should return empty list when input is empty")
     void testEncode_emptyList() {
         List<Long> inputNumbers = List.of();
         List<String> encoded = base62Encoder.encode(inputNumbers);
