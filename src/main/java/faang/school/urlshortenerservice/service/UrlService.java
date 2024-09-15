@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,6 +68,21 @@ public class UrlService {
 
         hashRepository.saveAll(hashes);
     }
+
+    @Transactional(readOnly = true)
+    public String getUrlByHash(String hash) {
+
+        return urlCacheRepository.getUrl(hash).orElseGet(() -> {
+            Url dbUrl = urlRepository.findById(hash)
+                    .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash));
+
+            urlCacheRepository.save(dbUrl.getHash(), dbUrl.getUrl());
+
+            return dbUrl.getUrl();
+        });
+    }
+
+
 
     private HashDto convertToHashDto(String hashValue) {
         Hash hash = new Hash(host + hashValue);
