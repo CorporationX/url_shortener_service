@@ -21,13 +21,14 @@ public class HashRepository {
         );
     }
 
-    public void save(List<String> hashes) {
+    public List<String> save(List<String> hashes) {
         jdbcTemplate.batchUpdate(
             "INSERT INTO hash (hash) VALUES (?)",
             hashes,
             hashes.size(),
             (ps, hash) -> ps.setString(1, hash)
         );
+        return hashes;
     }
 
     public List<String> getHashBatch(int n) {
