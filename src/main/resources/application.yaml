@@ -18,6 +18,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: localhost
   port: 8080
 
 logging:
@@ -33,3 +34,9 @@ async:
   generator:
     poolSize: 2
     queueSize: 100
+
+data:
+  redis:
+    port: 6379
+    host: localhost
+    url-ttl: 5
