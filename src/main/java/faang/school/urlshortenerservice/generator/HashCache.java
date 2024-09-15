@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 @Slf4j
 public class HashCache {
-    @Value("${queue.capacity:1000}")
+    @Value("${hash.cache.queue.capacity}")
     private int capacity;
     @Value("${hash.cache.low-threshold-percentage}")
     private double lowThresholdPercentage;
