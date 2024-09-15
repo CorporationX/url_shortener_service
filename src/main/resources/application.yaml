@@ -34,7 +34,7 @@ app:
     min_value: 1000
   hash:
     batch_size: 20000
-    expiration: 1
+    expiration_period_hours: 1
   async:
     hash_generator:
       core_pool_size: 5
@@ -47,5 +47,5 @@ app:
     hash:
       cron: 0 0 0 * * *
     removal:
-      cron: 0 */24 * * *
+      cron: 0 0 0 * * *
       months_before_expiration: 12

@@ -12,11 +12,11 @@ import static java.util.concurrent.TimeUnit.HOURS;
 @RequiredArgsConstructor
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
-    @Value("app.hash.expiration")
-    private long expirationTime;
+    @Value("${app.hash.expiration_period_hours}")
+    private long ttlHours;
 
     public void saveUrl(Url url){
-        redisTemplate.opsForValue().set(url.getHash(), url.getUrl(), expirationTime, HOURS);
+        redisTemplate.opsForValue().set(url.getHash(), url.getUrl(), ttlHours, HOURS);
     }
     public String getUrl(String key){
         return redisTemplate.opsForValue().get(key);

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
+import faang.school.urlshortenerservice.mapper.HashMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
@@ -18,6 +19,7 @@ public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final HashMapper hashMapper;
 
     @Scheduled(cron = "${app.scheduling.removal.cron}")
     @Transactional
@@ -25,8 +27,11 @@ public class CleanerScheduler {
         var expirationTime = LocalDateTime.now().minusMonths(monthsBeforeExpiration);
         var deletedHashes = urlRepository.deleteUrlsOlderThan(expirationTime);
 
+
         if (!deletedHashes.isEmpty()) {
-            hashRepository.saveAll(deletedHashes);
+            hashRepository.saveAll(deletedHashes.stream()
+                    .map(hashMapper::toEntity)
+                    .toList());
         }
     }
 }

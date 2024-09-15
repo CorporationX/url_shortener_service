@@ -16,7 +16,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM url " +
-            "WHERE created_at <= :tags " +
+            "WHERE created_at <= :time " +
             "RETURNING hash", nativeQuery = true)
     List<String> deleteUrlsOlderThan(@Param("time") LocalDateTime expirationTime);
 }

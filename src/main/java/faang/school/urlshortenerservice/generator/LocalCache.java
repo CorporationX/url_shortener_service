@@ -24,15 +24,23 @@ public class LocalCache {
     private int minValue;
     @Value("${app.async.local_hash_refill.pool_size:10}")
     private int threadsNumber;
+    private final Queue<String> hashes = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
     private final HashGenerator hashGenerator;
-    private final Queue<String> hashes = new ConcurrentLinkedQueue<>();
-
-    private final ExecutorService refillExecutor = Executors.newFixedThreadPool(threadsNumber);
+    private ExecutorService refillExecutor;
 
     @PostConstruct
-    public void init(){
-      hashes.addAll(hashGenerator.getHashes(capacity));
+    public void init() {
+        try {
+            refillExecutor = Executors.newFixedThreadPool(threadsNumber);
+            log.info("LocalCache thread pool initialized with threadsNumber: {}", threadsNumber);
+
+            hashes.addAll(hashGenerator.getHashes(capacity));
+            log.info("LocalCache initialized with {} hashes", hashes.size());
+        } catch (Exception e) {
+            log.error("Error initializing LocalCache: ", e);
+            throw e;
+        }
     }
 
     public String getHash(){

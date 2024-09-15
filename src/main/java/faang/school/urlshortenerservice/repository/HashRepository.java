@@ -18,13 +18,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO hash (hash) VALUES (:hashes)", nativeQuery = true)
-    List<String> saveAll(@Param("hashes") List<String> hashes);
-
-    @Modifying
-    @Transactional
     @Query(value = "DELETE FROM hash " +
-            "WHERE hash IN (SELECT hash FROM hash LIMIT = :n) " +
+            "WHERE hash IN (SELECT hash FROM hash LIMIT :n) " +
             "RETURNING hash", nativeQuery = true)
     List<String> getAndDeleteHashes(@Param("n")int quantity);
 }

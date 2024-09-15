@@ -2,12 +2,15 @@ package faang.school.urlshortenerservice.config.context;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
 
-@Component
+@Configuration
+@EnableAsync
 public class AsyncConfig {
     @Value("${app.async.hash_generator.core_pool_size}")
     private int corePoolSize;
