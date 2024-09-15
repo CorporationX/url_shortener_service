@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,7 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public String getLongUrl(@PathVariable String hash) {
-        Url longUrl = urlService.getLongUrl(hash);
-        return longUrl.getUrl();
+        return urlService.getLongUrl(hash);
     }
 
 }

@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -29,14 +28,14 @@ public class UrlService {
                     .lastReceivedAt(LocalDateTime.now())
                     .build();
         shortUrl = urlRepository.save(shortUrl);
-        urlCacheRepository.save(new Hash(shortUrl.getHash()), shortUrl);
+        urlCacheRepository.save(shortUrl.getHash(), shortUrl.getUrl());
         return String.valueOf(shortUrl.getHash());
     }
 
     @Transactional(readOnly = true)
-    public Url getLongUrl(String hash) {
-        Optional<Url> url = urlCacheRepository.findByHash(new Hash(hash));
-        return url.orElseGet(() -> urlRepository.findByHash(hash).
-                orElseThrow(() -> new EntityNotFoundException("no url with such hash: " + hash)));
+    public String getLongUrl(String hash) {
+        Optional<String> url = urlCacheRepository.findByHash(hash);
+        return url.orElseGet(() -> urlRepository.findByHash(hash).map(Url::getUrl)
+                .orElseThrow(() -> new EntityNotFoundException("no url with such hash: " + hash)));
     }
 }

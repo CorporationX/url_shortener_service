@@ -18,7 +18,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  host: localhost
   port: 8080
 
 logging:
@@ -39,7 +38,6 @@ data:
   redis:
     port: 6379
     host: localhost
-    url-ttl: 5
 
 cleaner-scheduler:
   cron: "0 0 * * * *"
