@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.exception.ErrorResponse;
 import faang.school.urlshortenerservice.exception.HashCacheException;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -19,6 +20,16 @@ public class UrlExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .details(e.getMessage())
                 .message("Failed to retrieve hash")
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<Object> entityExistsException(EntityExistsException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .details(e.getMessage())
+                .message("Entity already exists")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
