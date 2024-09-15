@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -125,4 +127,17 @@ class UrlServiceTest {
         verifyNoMoreInteractions(urlCacheRepository);
     }
 
+    @Test
+    public void testGetUrlByHash_CacheHit() {
+        String hash = "existingHash";
+        String expectedUrl = "http://cached-url.com";
+
+        when(urlCacheRepository.getUrl(hash)).thenReturn(Optional.of(expectedUrl));
+
+        String url = urlService.getUrlByHash(hash);
+
+        assertEquals(expectedUrl, url);
+        verify(urlCacheRepository).getUrl(hash);
+        verifyNoMoreInteractions(urlRepository);
+    }
 }
