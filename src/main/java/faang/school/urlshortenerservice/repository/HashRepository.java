@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -24,7 +26,7 @@ public class HashRepository {
     }
 
     public int[] saveHashes(List<String> hashes) {
-        return jdbcTemplate.batchUpdate("insert into hash(hash) values (?) on conflict do nothing", new BatchPreparedStatementSetter() {
+        return jdbcTemplate.batchUpdate("insert into hash(hash) values (?) on conflict (hash) do nothing ", new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, hashes.get(i));
             }

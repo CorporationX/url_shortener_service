@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,28 +14,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController()
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class UrlController {
     private final UrlService urlService;
     private final RestTemplate restTemplate;
 
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
-    public int createUrl(@PathVariable String hash) {
+    public RedirectView redirectToOriginalUrl(@PathVariable String hash) {
         String url = urlService.findUrl(hash).getUrl();
-        return redirectToUrl(url).getStatusCode().value();
+        return redirectToUrl(url);
     }
 
     @PostMapping("/url")
     public UrlDto createShortUrl(@RequestBody UrlDto url) {
+
         return urlService.convertToShortUrl(url);
     }
 
-    private ResponseEntity<String> redirectToUrl(String url) {
-        return restTemplate.getForEntity(url, String.class);
+    private RedirectView redirectToUrl(String url) {
+        log.info("redirecting to url: {}", url);
+        return new RedirectView(url);
     }
 
 }

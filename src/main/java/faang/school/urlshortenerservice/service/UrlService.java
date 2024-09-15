@@ -28,20 +28,36 @@ public class UrlService {
         Optional<Pair<String,String>> originalUrlPair = urlCacheRepository.getAssociation(hash);
 
         if (originalUrlPair.isPresent()) {
-            urlDto.setUrl(originalUrlPair.get().getSecond());
+            urlDto.setUrl(originalUrlPair.get().getFirst());
+            log.info("Got original url {} from redis", urlDto.getUrl());
         } else {
             urlDto.setUrl(urlRepository.findByHash(hash));
+            log.info("Got original url {} from database", urlDto.getUrl());
         }
         return urlDto;
     }
 
-
     public UrlDto convertToShortUrl(UrlDto urlDto) {
-        String hash = hashCache.getHash();
-        urlCacheRepository.saveAssociation(urlDto.getUrl(), hash);
-        urlRepository.saveAssociation(urlDto.getUrl(), hash);
-        UrlDto shortUrl = new UrlDto();
-        shortUrl.setUrl(staticAddress.concat(hash));
-        return shortUrl;
+        String existedHash = containsUrl(urlDto.getUrl());
+        if(existedHash.isEmpty()) {
+            String hash = hashCache.getHash();
+            log.info("got hash {} from cache", hash);
+            urlCacheRepository.saveAssociation(urlDto.getUrl(), hash);
+            urlRepository.saveAssociation(urlDto.getUrl(), hash);
+            UrlDto shortUrl = new UrlDto();
+            shortUrl.setUrl(staticAddress.concat(hash));
+            log.info("configured shortUrl is {}", shortUrl.getUrl());
+            return shortUrl;
+        } else {
+            log.info("Found url in database {} so hash will not be generated", urlDto.getUrl());
+            urlDto.setUrl(staticAddress.concat(existedHash));
+            log.info("configured shortUrl is {}", urlDto.getUrl());
+            return urlDto;
+        }
+    }
+
+    private String containsUrl(String url) {
+        Optional<String> hash = urlRepository.findByUrl(url);
+        return hash.orElse("");
     }
 }

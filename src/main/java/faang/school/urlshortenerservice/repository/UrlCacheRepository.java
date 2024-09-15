@@ -16,8 +16,8 @@ public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveAssociation(String url, String hash) {
-        log.info("Url {} and hash {} was saved successfully in redis", url, hash);
         redisTemplate.opsForValue().set(hash, url);
+        log.info("Url {} and hash {} was saved successfully in redis", url, hash);
     }
 
     public Optional<Pair<String, String>> getAssociation(String hash) {

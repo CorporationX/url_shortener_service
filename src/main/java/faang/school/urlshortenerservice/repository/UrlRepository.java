@@ -33,12 +33,21 @@ public class UrlRepository {
         }
     }
 
+    public Optional<String> findByUrl(String url) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("select url.hash from url where url=?", String.class, url));
+        } catch (EmptyResultDataAccessException e) {
+            log.info("Url {} was not found", url);
+            return Optional.empty();
+        }
+    }
+
     public int saveAssociation(String url, String hash) {
         log.info("Url {} and hash {} was saved successfully in database", url, hash);
         return jdbcTemplate.update("insert into url(url, hash) values(?, ?)", url, hash);
     }
 
-    public List<String> getUnusedHashesFromMonthsPeriod(int months){
+    public List<String> getUnusedHashesFromMonthsPeriod(int months) {
         LocalDateTime period = LocalDateTime.now().minusMonths(months);
         List<String> unusedHashes = new ArrayList<>();
         unusedHashes = jdbcTemplate.query("delete from url where url.created_at in (select url.created_at from url where url.created_at<=?) returning url.hash", (rs, rowNum) -> rs.getString("hash"), period);

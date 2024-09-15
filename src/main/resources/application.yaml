@@ -31,11 +31,11 @@ cache:
     host: localhost
     port: 6379
     ttl_days: 2
-  capacity: 10000
+  capacity: 1000
   low_fill_percentage: 20
 
 hashes:
-  amount: 1000
+  amount: 10000
 
 schedulers:
   hash_generator:
