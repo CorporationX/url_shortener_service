@@ -24,9 +24,6 @@ public class RedisConfig {
     @Value("${spring.data.redis.host}")
     private String host;
 
-    @Value("${spring.data.cache.redis.time-to-live}")
-    private int timeToLive;
-
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);

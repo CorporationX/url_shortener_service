@@ -30,6 +30,7 @@ class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
     private final int batchSize = 2;
+    private final long size = 10;
 
     @BeforeEach
     void init() {
@@ -42,7 +43,7 @@ class HashGeneratorTest {
         when(hashRepository.getUniqueNumbers(anyLong())).thenThrow(new RuntimeException("exception"));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
-                hashGenerator.generateBatch());
+                hashGenerator.generateBatch(size));
 
         assertEquals("exception", exception.getMessage());
 
@@ -58,32 +59,12 @@ class HashGeneratorTest {
         when(base62Encoder.encode(anyList())).thenThrow(new RuntimeException("exception"));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
-                hashGenerator.generateBatch());
+                hashGenerator.generateBatch(size));
 
         assertEquals("exception", exception.getMessage());
 
         verify(hashRepository, times(1)).getUniqueNumbers(anyLong());
         verify(base62Encoder, times(1)).encode(anyList());
-    }
-
-    @Test
-    @DisplayName("generateBatchHashRepositorySaveAllException")
-    void testHashRepositorySaveAllException() {
-        List<Long> uniqueNumbers = List.of(1L, 2L);
-        List<String> hashes = List.of("1L", "2L");
-
-        when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(uniqueNumbers);
-        when(base62Encoder.encode(anyList())).thenReturn(hashes);
-        when(hashRepository.saveAll(anyList())).thenThrow(new RuntimeException("exception"));
-
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                hashGenerator.generateBatch());
-
-        assertEquals("exception", exception.getMessage());
-
-        verify(hashRepository, times(1)).getUniqueNumbers(anyLong());
-        verify(base62Encoder, times(1)).encode(anyList());
-        verify(hashRepository, times(1)).saveAll(anyList());
     }
 
     @Test
@@ -94,13 +75,11 @@ class HashGeneratorTest {
 
         when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(uniqueNumbers);
         when(base62Encoder.encode(anyList())).thenReturn(hashes);
-        when(hashRepository.saveAll(anyList())).thenReturn(List.of(new Hash()));
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch(size);
 
         verify(hashRepository, times(1)).getUniqueNumbers(anyLong());
         verify(base62Encoder, times(1)).encode(anyList());
-        verify(hashRepository, times(1)).saveAll(anyList());
     }
 
     @Test
@@ -140,7 +119,7 @@ class HashGeneratorTest {
 
         hashGenerator.getHashBatch(batchSize);
 
-        verify(hashRepository, times(2)).getHashBatch(anyInt());
+        verify(hashRepository, times(1)).getHashBatch(anyInt());
     }
 
     @Test

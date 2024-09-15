@@ -23,6 +23,6 @@ public class CleanerGeneratorScheduler {
 
     @Scheduled(cron = "${generator.scheduled.cron}")
     public void generateBatch(){
-        hashGenerator.generateBatch();
+        hashGenerator.generateAndSaveBatch();
     }
 }

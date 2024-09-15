@@ -19,12 +19,6 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class UrlExceptionHandler {
 
-    @ExceptionHandler(DataValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDataValidationException(DataValidationException ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -40,6 +34,7 @@ public class UrlExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoSuchElementException(Exception ex, WebRequest request) {
         String uri = request.getDescription(false).replace("uri=", "");
+        log.error("No element found " + uri, ex.getMessage());
         return new ErrorResponse(ex.getMessage(), uri);
 
     }
@@ -48,6 +43,7 @@ public class UrlExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalStateException(Exception ex, WebRequest request) {
         String uri = request.getDescription(false).replace("uri=", "");
+        log.error("Object {} is in an unsuitable state for the operation being performed " + uri, ex.getMessage());
         return new ErrorResponse(ex.getMessage(), uri);
     }
 
@@ -55,12 +51,14 @@ public class UrlExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(Exception ex, WebRequest request) {
         String uri = request.getDescription(false).replace("uri=", "");
+        log.error("Method is called with invalid argument " + ex.getMessage());
         return new ErrorResponse(ex.getMessage(), uri);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMessageNotReadable(Exception ex, WebRequest request) {
+        log.error("Request body coming into controller method, unreadable" + ex.getMessage());
         return new ErrorResponse(ex.getMessage(), request.getDescription(false));
     }
 
@@ -68,6 +66,7 @@ public class UrlExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUrlNotFoundException(UrlNotFoundException ex, WebRequest request) {
         String uri = request.getDescription(false).replace("uri=", "");
+        log.error("URL not found" + ex.getMessage());
         return new ErrorResponse(ex.getMessage(), uri);
     }
 
