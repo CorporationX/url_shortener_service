@@ -46,3 +46,4 @@ hash:
   cache:
     capacity: 10000
     fill-percentage: 20
+    key: "urlMappings"
