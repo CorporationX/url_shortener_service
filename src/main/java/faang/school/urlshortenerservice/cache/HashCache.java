@@ -23,12 +23,13 @@ public class HashCache {
     @Value("${hash.cache.fill-percentage:20}")
     private int fillPercentage;
 
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private Queue<String> hashes;
 
     private final AtomicBoolean isFilling = new AtomicBoolean();
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         fillQueue(capacity);
     }
 
