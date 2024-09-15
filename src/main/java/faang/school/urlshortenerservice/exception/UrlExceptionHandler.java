@@ -21,6 +21,12 @@ public class UrlExceptionHandler {
         return exception.getMessage();
     }
 
+    @ExceptionHandler({HashGenerationException.class, RecordCleanupException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleSchedulerExceptions(Exception exception) {
+        return exception.getMessage();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

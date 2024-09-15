@@ -31,11 +31,14 @@ logging:
 
 hash:
   batch-size: 50
-  hash-size: 40
-  unique-numbers-size: 150
+  hash-size: 50
+  unique-numbers-size: 300
   min-filling-percentage: 0.2
-  cache-capacity: 100
-
+  cache-capacity: 300
+scheduler:
+  cron:
+    cleaner: "0 0 0 * * ?"
+    hash_generator: "0 0 0 * * ?"
 task-executor:
   pool-size: 10
   queue-capacity: 20

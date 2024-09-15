@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.config.HashProperties;
 import faang.school.urlshortenerservice.model.Hash;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +11,10 @@ import java.util.stream.IntStream;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    private final HashProperties properties;
+    @Value("${hash.batch-size}")
+    private int batchSize;
+    @Value("${hash.hash-size}")
+    private int hashSize;
     private final HashJpaRepository hashJpaRepository;
 
     public List<Long> getUniqueNumbers(long numbersCount) {
@@ -19,13 +22,12 @@ public class HashRepository {
     }
 
     public void saveHashes(List<Hash> hashes) {
-        int batchSize = properties.getBatchSize();
         IntStream.iterate(0, i -> i < hashes.size(), i -> i + batchSize)
                 .mapToObj(i -> hashes.subList(i, Math.min(i + batchSize, hashes.size())))
                 .forEach(hashJpaRepository::saveAll);
     }
 
     public List<Hash> getHashBatch() {
-        return hashJpaRepository.getHashBatch(properties.getHashSize());
+        return hashJpaRepository.getHashBatch(hashSize);
     }
 }
