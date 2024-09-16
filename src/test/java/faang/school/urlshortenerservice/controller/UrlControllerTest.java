@@ -1,7 +1,9 @@
 package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import faang.school.urlshortenerservice.dto.DtoValidationConstraints;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.exception.ExceptionMessages;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,17 +54,21 @@ class UrlControllerTest {
         mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(DtoValidationConstraints.VALIDATION_FAILED))
+                .andExpect(jsonPath("$.details").value(containsString(DtoValidationConstraints.EMPTY_URL)));
     }
 
     @Test
-    void createShortUrl_NullInput_ReturnsBadRequest() throws Exception {
-        UrlRequestDto requestDto = new UrlRequestDto(null);
+    void createShortUrl_InvalidEmail_ReturnsBadRequest() throws Exception {
+        UrlRequestDto requestDto = new UrlRequestDto("google/com");
 
         mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(DtoValidationConstraints.VALIDATION_FAILED))
+                .andExpect(jsonPath("$.details").value(containsString(DtoValidationConstraints.INVALID_URL)));
     }
 
     @Test
@@ -80,9 +87,10 @@ class UrlControllerTest {
     void redirectUrl_InvalidHash_ReturnsNotFound() throws Exception {
         String hash = "invalid";
 
-        when(urlService.getLongUrl(hash)).thenThrow(new UrlNotFoundException("URL not found for hash: " + hash));
+        when(urlService.getLongUrl(hash)).thenThrow(new UrlNotFoundException(String.format(ExceptionMessages.URL_NOT_FOUND, hash)));
 
         mockMvc.perform(get("/url/{hash}", hash))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(containsString(hash)));
     }
 }

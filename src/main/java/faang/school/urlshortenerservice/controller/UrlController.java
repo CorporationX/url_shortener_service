@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +31,9 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirect(@PathVariable String hash) {
-        try {
-            String longUrl = urlService.getLongUrl(hash);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create(longUrl))
-                    .build();
-        } catch (UrlNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        String longUrl = urlService.getLongUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(longUrl))
+                .build();
     }
 }

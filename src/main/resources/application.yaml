@@ -40,5 +40,6 @@ url:
     thread-pool:
       size: 50
       queue: 200
+      ttl: 60000
       max-size: 100
     batch-size: 1000

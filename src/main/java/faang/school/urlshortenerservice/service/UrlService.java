@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.exception.ExceptionMessages;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -32,6 +33,7 @@ public class UrlService {
         return String.format("%s/%s", hostname, hash);
     }
 
+    @Transactional
     public String getLongUrl(String hash) {
         String url = urlCacheRepository.getUrl(hash);
         if (url != null) {
@@ -44,6 +46,6 @@ public class UrlService {
             return url;
         }
 
-        throw new UrlNotFoundException(String.format("URL not found for hash: %s", hash));
+        throw new UrlNotFoundException(String.format(ExceptionMessages.URL_NOT_FOUND, hash));
     }
 }

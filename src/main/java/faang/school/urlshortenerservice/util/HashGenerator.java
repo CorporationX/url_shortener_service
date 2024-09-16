@@ -33,7 +33,7 @@ public class HashGenerator {
             hashRepository.save(hashes);
             log.info("Finished generating and saving {} hashes", hashes.size());
         } catch (Exception e) {
-            log.error("Error in generateBatch", e);
+            log.error("Error while generating batch", e);
             throw e;
         }
     }

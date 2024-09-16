@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,13 @@ public class HashCache {
     private int thresholdPercent;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
+
+    @PostConstruct
+    public void init() {
+        log.info("Pre-generating first batch of hashes");
+        refillCache();
+        log.info("Hash cache initialized with {} hashes", cache.size());
+    }
 
     public String getHash() {
         if (shouldRefill()) {
