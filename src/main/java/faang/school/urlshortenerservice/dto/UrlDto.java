@@ -1,9 +1,9 @@
 package faang.school.urlshortenerservice.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import org.hibernate.validator.constraints.URL;
 
-@Data
+@Getter
 public class UrlDto {
     @URL
     private String url;
