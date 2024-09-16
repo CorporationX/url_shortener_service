@@ -10,7 +10,7 @@ import java.util.List;
 
 @Profile(value = "jpa_profile")
 @Repository
-public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepository { //todo: 6. Не нужно мапить эти данные на какие-либо hibernate сущности.
+public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepository {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_number_seq') FROM generate_series(1, :n);
@@ -23,7 +23,7 @@ public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepo
                          (SELECT hash.hash from hash LIMIT :n)
             returning h.hash;
             """)
-    List<String> pollHashBatch(long n); //todo select 1
+    List<String> pollHashBatch(long n);
 
     @Override
     default void saveBatch(List<String> hashes) {

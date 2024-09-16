@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +60,7 @@ public class HashCacheImpl implements HashCache {
     }
 
     private void refillAsync() {
+
         executor.execute(this::refill);
     }
 

@@ -53,8 +53,7 @@ public class UrlService {
         String url = redisTemplate.opsForValue().get(hash);
         if (url != null) {
             log.info("Got original url from Redis");
-        }
-        if (url == null) {
+        } else {
             url = urlRepository.findById(hash)
                     .orElseThrow(() -> new NotFoundException(String.format("Url by hash %s not found!", hash)))
                     .getUrl();
