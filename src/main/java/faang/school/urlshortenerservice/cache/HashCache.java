@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-@Setter
+//@Setter
 public class HashCache {
     @Value("${cache.capacity}")
     private int capacity;
@@ -30,7 +30,7 @@ public class HashCache {
 
 
     @PostConstruct
-    private void init() {
+    public void init() {
         hashesCache.addAll(hashGenerator.getHashes(capacity));
     }
 

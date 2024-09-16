@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +29,7 @@ public class HashRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, hashes.get(i));
             }
+
             public int getBatchSize() {
                 return hashes.size();
             }

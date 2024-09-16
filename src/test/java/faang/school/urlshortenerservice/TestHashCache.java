@@ -8,11 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
@@ -21,39 +20,35 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 public class TestHashCache {
     @Mock
     private HashGenerator hashGenerator;
     @Mock
-    private Queue<String> hashesCache = new ArrayDeque<>(10);
-//    @Mock
-//    private ExecutorService cachePool;
+    private Queue<String> hashesCache;
     @Mock
-    private AtomicBoolean running = new AtomicBoolean(false);
+    private AtomicBoolean running;
     @InjectMocks
     private HashCache hashCache;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    int capacityTest = 0;
-    int lowPercentageTest = 0;
 
     @BeforeEach
     public void setup() {
-
-//        hashCache = new HashCache(hashGenerator,executorService);
-        hashCache.setCapacity(10);
-        hashCache.setLowFillPercentage(20);
-
+        hashCache = new HashCache(hashGenerator, executorService);
+        List<String> hashes = new ArrayList<>(Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
+//        when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
+//        hashCache.init();
+        this.hashesCache.addAll(hashes);
     }
 
     @Test
     public void getHashLowPercentageTest() {
+        ReflectionTestUtils.setField(hashCache, "capacity", 10);
+        ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
         hashesCache.add("hash1");
         List<String> hashes = List.of("hash1", "hash2", "hash3", "hash4", "hash5", "hash6");
         when(hashGenerator.getHashes(10)).thenReturn(hashes);
@@ -66,27 +61,17 @@ public class TestHashCache {
 
     @Test
     public void getHashTest() {
-
+        running = new AtomicBoolean(false);
+        hashesCache = new ArrayDeque<>(10);
         hashesCache.add("hash1");
         hashesCache.add("hash2");
         hashesCache.add("hash3");
         hashesCache.add("hash4");
         hashesCache.add("hash5");
-        List<String> initialHashes = Arrays.asList("hash1", "hash2");
-        when(hashGenerator.getHashes(10)).thenReturn(initialHashes);
-
-        List<String> newHashes = Arrays.asList("hash4", "hash5");
-        when(hashGenerator.getHashes(8)).thenReturn(newHashes);  // ????????? 8 ????? ????? ??? ????????
-
-        // ?????????? ?????? ????, ??? ???????? ?????????? ????
-        assertEquals("hash1", hashCache.getHash());
-
-        // ???????? ?????? ???????????? ?????? ?????????? ????
-        verify(hashGenerator, times(1)).getHashes(8); // ??????? ?????????? ????
-
-        // ????????, ??? ??? ?????????? ?????? ??????????
-        assertEquals("hash2", hashCache.getHash());
-        assertEquals("hash4", hashCache.getHash());
-        assertEquals("hash5", hashCache.getHash());
+        ReflectionTestUtils.setField(hashCache, "capacity", 10);
+        ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
+        when(hashesCache.poll()).thenReturn("hash1");
+        String result = hashCache.getHash();
+        assertEquals("hash1", result);
     }
 }

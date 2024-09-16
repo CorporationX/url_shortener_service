@@ -25,7 +25,7 @@ public class HashGenerator {
         List<Long> numbers = hashRepository.getUniqueNumbers(hashesAmount);
         log.info("got {} Number of unique numbers", numbers.size());
         List<String> hashes = base62Encoder.encode(numbers);
-        log.info("{} numbers were encoded to base62",hashes.size());
+        log.info("{} numbers were encoded to base62", hashes.size());
         hashRepository.saveHashes(hashes);
         log.info("{} hashes were saved", hashes.size());
     }
@@ -37,8 +37,9 @@ public class HashGenerator {
         if (hashes.size() < amount) {
             log.info("there were not enough hashes in database");
             generateBatch();
-            hashes = hashRepository.getAndDeleteHashes(amount - hashes.size());
-            log.info("missing {} hashes were extracted from Database", amount - hashes.size());
+            List<String> additionalHashes = hashRepository.getAndDeleteHashes(amount - hashes.size());
+            hashes.addAll(additionalHashes);
+            log.info("missing hashes were extracted from Database");
         }
         return hashes;
     }
