@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import io.lettuce.core.RedisConnectionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,13 @@ public class UrlExceptionHandler {
     public ErrorResponse handleMessageNotReadable(Exception ex, WebRequest request) {
         log.error("Request body coming into controller method, unreadable" + ex.getMessage());
         return new ErrorResponse(ex.getMessage(), request.getDescription(false));
+    }
+
+    @ExceptionHandler(RedisConnectionException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public String handleRedisConnectionException(RedisConnectionException ex){
+        log.error("Redis connection error: ", ex);
+        return "Redis service is currently unavailable. Please try again later.";
     }
 
     @ExceptionHandler(UrlNotFoundException.class)

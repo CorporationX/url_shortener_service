@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.exception.handler.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import io.lettuce.core.RedisConnectionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,19 +49,25 @@ public class UrlService {
         String actualHash = hash.substring(lastIndex + 1);
         log.info("Split the hash obtained - {} and received - {}", hash, actualHash);
 
-        return urlCacheRepository.findUrlByHash(actualHash)
-                .map(cachedUrl -> {
-                    log.info("URL - {} found in cache", cachedUrl);
-                    return cachedUrl;
-                })
-                .or(() -> urlRepository.findUrlByHash(actualHash)
-                        .map(urlInBD -> {
-                            log.info("URL - {} not cached", urlInBD);
-                            log.info("URL - {} obtained from the BD", urlInBD);
-                            urlCacheRepository.save(urlInBD, actualHash);
-                            return urlInBD;
-                        }))
-                .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
+        try {
+            return urlCacheRepository.findUrlByHash(actualHash)
+                    .map(cachedUrl -> {
+                        log.info("URL - {} found in cache", cachedUrl);
+                        return cachedUrl;
+                    })
+                    .or(() -> urlRepository.findUrlByHash(actualHash)
+                            .map(urlInBD -> {
+                                log.info("URL - {} not cached", urlInBD);
+                                log.info("URL - {} obtained from the BD", urlInBD);
+                                urlCacheRepository.save(urlInBD, actualHash);
+                                return urlInBD;
+                            }))
+                    .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
+        } catch (RedisConnectionException e) {
+            log.warn("Redis is unavailable. Proceeding with fallback to database.", e);
+            return urlRepository.findUrlByHash(actualHash)
+                    .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
+        }
     }
 
     @Transactional
@@ -78,9 +85,23 @@ public class UrlService {
     }
 
     private String getHashIfExistsInDBOrHash(String url) {
-        return urlCacheRepository.findHashByUrl(url)
-                .or(() -> urlRepository.findHashByUrl(url))
-                .orElse(null);
+        try {
+            return urlCacheRepository.findHashByUrl(url)
+                    .or(() -> urlRepository.findHashByUrl(url)
+                            .map(hashInBD -> {
+                                try {
+                                    urlCacheRepository.save(url, hashInBD);
+                                    log.info("Hash saved again in Cash");
+                                } catch (RedisConnectionException e) {
+                                    log.warn("Redis is unavailable. Unable to cache hash.", e);
+                                }
+                                return hashInBD;
+                            }))
+                    .orElse(null);
+        } catch (RedisConnectionException e) {
+            log.warn("Redis is unavailable. Proceeding with fallback to database.", e);
+            return urlRepository.findHashByUrl(url).orElse(null);
+        }
     }
 
     private String generateAndSaveNewUrl(URLDto urlDto) {
@@ -96,8 +117,12 @@ public class UrlService {
         try {
             urlRepository.save(newUrl);
             log.info("New URL {} save in DB", newUrl);
-            urlCacheRepository.save(urlDto.getUrl(), newHash);
-            log.info("New URL {} and hash {} save in Cash", newUrl.getUrl(), newUrl.getHash());
+            try {
+                urlCacheRepository.save(urlDto.getUrl(), newHash);
+                log.info("New URL {} and hash {} save in Cash", newUrl.getUrl(), newUrl.getHash());
+            } catch (RedisConnectionException e) {
+                log.warn("Redis is unavailable. Unable to cache new URL and hash.", e);
+            }
         } catch (DataIntegrityViolationException e) {
             log.error(ExceptionMessage.EXCEPTION_IN_SAVE + e.getMessage());
         }
