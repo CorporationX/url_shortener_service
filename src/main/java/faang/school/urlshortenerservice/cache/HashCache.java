@@ -31,7 +31,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashes.size() * 100 / capacity < lowPercentage && isFilling.compareAndSet(false, true)) {
+        if (hashes.size() * 100 / capacity <= lowPercentage && isFilling.compareAndSet(false, true)) {
             hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll).thenRun(()->{
                 isFilling.set(false);
                 log.info("Cache has been updated, its size is {}", hashes.size());
