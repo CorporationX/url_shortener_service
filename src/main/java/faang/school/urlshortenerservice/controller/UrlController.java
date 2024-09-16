@@ -21,8 +21,8 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/")
-    public void createHash(@RequestBody @Valid UrlDto url, HttpServletResponse response) throws IOException {
-        response.sendRedirect(urlService.getShortUrl(url));
+    public String createHash(@RequestBody @Valid UrlDto url) {
+        return urlService.getShortUrl(url);
     }
 
     @GetMapping("/{hash}")
@@ -33,7 +33,7 @@ public class UrlController {
     }
 
     @GetMapping("/some_url")
-    public void goToLongUrl() {
+    public void goToSomeUrl() {
         System.out.println("Попали куда надо");
     }
 }

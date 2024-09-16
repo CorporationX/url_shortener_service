@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service.generator;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,12 +12,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-@RequiredArgsConstructor
 public class HashGenerator {
     public static final String BASE_62_CHARACTER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final HashRepository hashRepository;
-    @Value("${data.hash.generator.max_range:10000}")
-    private int maxRange;
+    private final int maxRange;
+
+    public HashGenerator(HashRepository hashRepository,
+                         @Value("${data.hash.generator.max_range:10000}") int maxRange) {
+        this.hashRepository = hashRepository;
+        this.maxRange = maxRange;
+    }
 
     @Transactional
     @Scheduled(cron = "${data.hash.generator.cron:0 0 0 * * *}")
