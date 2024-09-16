@@ -5,7 +5,8 @@ import lombok.*;
 
 @Getter
 @Setter
-//@Builder
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "hash")

@@ -1,60 +1,132 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.mapper.HashMapper;
+import faang.school.urlshortenerservice.entity.URL;
+import faang.school.urlshortenerservice.exception.ExceptionMessage;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import jakarta.transaction.Transactional;
+import io.lettuce.core.RedisConnectionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
+
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final HashCache hashCache;
-    private final HashMapper hashMapper;
     private final HashRepository hashRepository;
+    private final HashCache hashCache;
 
-    @Value("${url.host.}")
+    @Value("${url.host}")
     private String host;
 
     @Transactional
-    public HashDto create(UrlDto urlDto) {
-        String hash = hashCache.getHashCache();
+    public String create(UrlDto urlDto) {
+        String hash = getHashIfExistsInDBOrHash(urlDto.getUrl());
 
-        Url url = Url.builder()
-                .url(urlDto.getUrl())
-                .hash(hash)
-                .build();
+        if (hash == null) {
+            hash = generateAndSaveNewUrl(urlDto);
+        }
 
-        urlRepository.save(url);
-        urlCacheRepository.save(url);
+        String resultHash = host + hash;
+        log.info("Hash is ready - {} sent to client", resultHash);
 
-        return hashMapper.toDto(new Hash(host + hash));
+        return resultHash;
+    }
+
+    public String getUrlByHash(String hash) {
+        int lastIndex = hash.lastIndexOf('/');
+        String actualHash = hash.substring(lastIndex + 1);
+        log.info("Split the hash obtained - {} and received - {}", hash, actualHash);
+
+        try {
+            return urlCacheRepository.findUrlByHash(actualHash)
+                    .map(cachedUrl -> {
+                        log.info("URL - {} found in cache", cachedUrl);
+                        return cachedUrl;
+                    })
+                    .or(() -> urlRepository.findUrlByHash(actualHash)
+                            .map(urlInBD -> {
+                                log.info("URL - {} not cached", urlInBD);
+                                log.info("URL - {} obtained from the BD", urlInBD);
+                                urlCacheRepository.save(urlInBD, actualHash);
+                                return urlInBD;
+                            }))
+                    .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
+        } catch (RedisConnectionException e) {
+            log.warn("Redis is unavailable. Proceeding with fallback to database.", e);
+            return urlRepository.findUrlByHash(actualHash)
+                    .orElseThrow(() -> new UrlNotFoundException(ExceptionMessage.URL_NOT_FOUND + actualHash));
+        }
     }
 
     @Transactional
-    public void deleteOldURL() {
-        List<String> hashes = urlRepository.getHashAndDeleteURL();
-        if (hashes.isEmpty()) {
-            log.info("No old URL in database");
-            return;
+    public void deleteOldURL(String removedPeriod) {
+        urlRepository.getHashAndDeleteURL(removedPeriod).ifPresent(hashes -> {
+            if (hashes.isEmpty()) {
+                log.info("No old URL in database");
+            } else {
+                hashRepository.saveAll(hashes.stream()
+                        .map(Hash::new)
+                        .toList());
+                log.info("Deleted old URLs and saved {} hashes.", hashes.size());
+            }
+        });
+    }
+
+    private String getHashIfExistsInDBOrHash(String url) {
+        try {
+            return urlCacheRepository.findHashByUrl(url)
+                    .or(() -> urlRepository.findHashByUrl(url)
+                            .map(hashInBD -> {
+                                try {
+                                    urlCacheRepository.save(url, hashInBD);
+                                    log.info("Hash saved again in Cash");
+                                } catch (RedisConnectionException e) {
+                                    log.warn("Redis is unavailable. Unable to cache hash.", e);
+                                }
+                                return hashInBD;
+                            }))
+                    .orElse(null);
+        } catch (RedisConnectionException e) {
+            log.warn("Redis is unavailable. Proceeding with fallback to database.", e);
+            return urlRepository.findHashByUrl(url).orElse(null);
         }
-        hashRepository.saveAll(hashes.stream()
-                .map(Hash::new)
-                .toList());
-        log.info("Deleted old URLs and saved {} hashes.", hashes.size());
+    }
+
+    private String generateAndSaveNewUrl(UrlDto urlDto) {
+        String newHash = hashCache.getHash();
+        log.info("Get generated hash {}", newHash);
+
+        URL newUrl = URL.builder()
+                .url(urlDto.getUrl())
+                .hash(newHash)
+                .build();
+        log.info("New URL {} created", newUrl);
+
+        try {
+            urlRepository.save(newUrl);
+            log.info("New URL {} save in DB", newUrl);
+            try {
+                urlCacheRepository.save(urlDto.getUrl(), newHash);
+                log.info("New URL {} and hash {} save in Cash", newUrl.getUrl(), newUrl.getHash());
+            } catch (RedisConnectionException e) {
+                log.warn("Redis is unavailable. Unable to cache new URL and hash.", e);
+            }
+        } catch (DataIntegrityViolationException e) {
+            log.error(ExceptionMessage.EXCEPTION_IN_SAVE + e.getMessage());
+        }
+        return newHash;
     }
 }

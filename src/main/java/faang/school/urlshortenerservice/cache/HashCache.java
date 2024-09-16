@@ -25,7 +25,8 @@ public class HashCache {
         hashQueue = new ArrayBlockingQueue<>(capacity);
         hashQueue.addAll(hashGenerator.getHashBatch(capacity));
     }
-    public String getHashCache() {
+
+    public String getHash() {
         if (hashQueue.size() < (minPercentage * capacity)) {
             if (isFilling.compareAndSet(false, true)) {
                 hashGenerator.getHashBatchAsync(capacity)

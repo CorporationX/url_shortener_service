@@ -17,8 +17,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name="Url")
-public class Url {
+@Table(name="url")
+public class URL {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
