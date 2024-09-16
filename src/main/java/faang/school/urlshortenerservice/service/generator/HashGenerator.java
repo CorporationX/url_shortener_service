@@ -17,11 +17,11 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
     public static final String BASE_62_CHARACTER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final HashRepository hashRepository;
-    @Value("${data.hash.range:10000}")
+    @Value("${data.hash.generator.max_range:10000}")
     private int maxRange;
 
     @Transactional
-    @Scheduled(cron = "${data.hash.cron:0 0 0 * * *}")
+    @Scheduled(cron = "${data.hash.generator.cron:0 0 0 * * *}")
     public void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashesToInsert = range.stream()

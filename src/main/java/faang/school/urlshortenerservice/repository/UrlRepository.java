@@ -22,4 +22,6 @@ public interface UrlRepository extends CrudRepository<Url, Long> {
             """)
     @Modifying
     List<String> findAndDeleteHashExpired(LocalDateTime dateExpired);
+
+    Url findByHash(String hash);
 }

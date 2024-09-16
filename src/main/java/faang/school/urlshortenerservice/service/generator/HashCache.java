@@ -9,7 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-public class HashCash {
+public class HashCache {
     private final HashGenerator hashGenerator;
     private final AtomicBoolean filling;
     private final Queue<String> hashes;
@@ -17,9 +17,9 @@ public class HashCash {
     private final int percentFill;
     private final int minValue;
 
-    public HashCash(HashGenerator hashGenerator,
-                    @Value("${data.hash.cash.capacity:10000}") int capacity,
-                    @Value("${data.hash.cash.fill_percent:20}") int percentFill) {
+    public HashCache(HashGenerator hashGenerator,
+                     @Value("${data.hash.cash.capacity:10000}") int capacity,
+                     @Value("${data.hash.cash.fill_percent:20}") int percentFill) {
         this.hashGenerator = hashGenerator;
         this.capacity = capacity;
         this.percentFill = percentFill;

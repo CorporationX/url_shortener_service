@@ -10,16 +10,20 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "url")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Url {
 
     @Id
