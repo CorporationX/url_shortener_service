@@ -15,10 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HashCacheTest {
@@ -32,7 +30,29 @@ class HashCacheTest {
     void setUp() {
         ReflectionTestUtils.setField(hashCache, "capacity", 10);
         ReflectionTestUtils.setField(hashCache, "minPercentage", 0.50);
+    }
+
+    @Test
+    @DisplayName("initValid")
+    void testInitValid() {
+        when(hashGenerator.getHashBatch(anyInt()))
+                .thenReturn(Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
+
         hashCache.init();
+
+        verify(hashGenerator, times(1)).getHashBatch(anyInt());
+    }
+
+    @Test
+    @DisplayName("initException")
+    void testInitException() {
+        when(hashGenerator.getHashBatch(anyInt()))
+                .thenThrow(new RuntimeException("exception"));
+
+        Exception exception =  assertThrows(RuntimeException.class, () ->
+                hashCache.init());
+
+        assertEquals("exception", exception.getMessage());
     }
 
     @Test
