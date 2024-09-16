@@ -67,7 +67,7 @@ public class UrlService {
     public void deleteOldURL(String removedPeriod) {
         urlRepository.getHashAndDeleteURL(removedPeriod).ifPresent(hashes -> {
             if (hashes.isEmpty()) {
-                log.info("No old URL in database");
+                log.info("No old URL in database.");
             } else {
                 hashRepository.saveAll(hashes.stream()
                         .map(Hash::new)
