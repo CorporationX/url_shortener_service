@@ -96,7 +96,7 @@ public class UrlService {
                 .url(urlDto.getUrl())
                 .hash(newHash)
                 .build();
-        log.info("New URL {} created", newUrl);
+        log.info("New URL {} created.", newUrl);
 
         try {
             urlRepository.save(newUrl);
