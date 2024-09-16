@@ -3,8 +3,10 @@ package faang.school.urlshortenerservice.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -19,17 +21,32 @@ public class URLCacheRepository {
     private long timeToLive;
 
     public void save(String url, String hash) {
-        redisTemplate.opsForValue()
-                .set(url, hash, timeToLive, TimeUnit.SECONDS);
-        redisTemplate.opsForValue()
-                .set(hash, url, timeToLive, TimeUnit.SECONDS);
+        try {
+            redisTemplate.opsForValue()
+                    .set(url, hash, timeToLive, TimeUnit.SECONDS);
+            redisTemplate.opsForValue()
+                    .set(hash, url, timeToLive, TimeUnit.SECONDS);
+            log.info("Successfully cached URL: {} with Hash: {}", url, hash);
+        } catch (RedisConnectionFailureException | JedisConnectionException e) {
+            log.warn("Failed to connect to Redis. Cache will be skipped for URL: {}", url, e);
+        }
     }
 
-    public Optional<String>  findUrlByHash(String hash) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
+    public Optional<String> findUrlByHash(String hash) {
+        try {
+            return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
+        } catch (RedisConnectionFailureException | JedisConnectionException e) {
+            log.warn("Failed to connect to Redis. Returning empty result for Hash: {}", hash, e);
+            return Optional.empty();
+        }
     }
 
     public Optional<String> findHashByUrl(String url) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(url));
+        try {
+            return Optional.ofNullable(redisTemplate.opsForValue().get(url));
+        } catch (RedisConnectionFailureException | JedisConnectionException e) {
+            log.warn("Failed to connect to Redis. Returning empty result for URL: {}", url, e);
+            return Optional.empty();
+        }
     }
 }
