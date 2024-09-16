@@ -21,13 +21,15 @@ public class URLCacheRepository {
     public void save(String url, String hash) {
         redisTemplate.opsForValue()
                 .set(url, hash, timeToLive, TimeUnit.SECONDS);
+        redisTemplate.opsForValue()
+                .set(hash, url, timeToLive, TimeUnit.SECONDS);
     }
 
     public Optional<String>  findUrlByHash(String hash) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
     }
 
-    public Optional<String> findHashUrlByUrl(String url) {
+    public Optional<String> findHashByUrl(String url) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(url));
     }
 }
