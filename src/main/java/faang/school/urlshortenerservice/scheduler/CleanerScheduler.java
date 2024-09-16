@@ -15,7 +15,6 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@EnableScheduling
 @Slf4j
 public class CleanerScheduler {
     private final UrlRepository urlRepository;

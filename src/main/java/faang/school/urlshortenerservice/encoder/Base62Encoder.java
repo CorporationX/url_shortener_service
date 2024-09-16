@@ -15,11 +15,6 @@ public class Base62Encoder {
         StringBuilder sb = new StringBuilder();
 
         for (Long number : numbers) {
-            if (number == 0) {
-                hashes.add(String.valueOf(BASE62_CHARS.charAt(0)));
-                continue;
-            }
-
             sb.setLength(0);
             while (number > 0) {
                 int remainder = (int) (number % BASE);

@@ -14,18 +14,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+    private final HashGenerator hashGenerator;
+    private final HashRepository hashRepository;
+    private AtomicBoolean isFilling = new AtomicBoolean(false);
+    private Queue<String> queue;
+
     @Value("${spring.task.array_blocking_queue_capacity}")
     private int capacity;
     @Value("${spring.task.fill_percent}")
     private double fillPercent;
 
-    private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
-    private final Queue<String> queue = new ArrayBlockingQueue<>(capacity);
-
     @PostConstruct
     public void init() {
+        queue = new ArrayBlockingQueue<>(capacity);
         queue.addAll(hashGenerator.getHashBatch(capacity));
     }
 
