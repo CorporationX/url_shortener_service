@@ -37,6 +37,8 @@ logging:
     root: info
 
 app:
+  cleaner-scheduler:
+    cron: 0 0 0 * * * #every day at 00:00:00
   hash-generator:
     batch-size: 5000
     executor:
