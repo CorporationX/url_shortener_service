@@ -14,6 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,6 +47,21 @@ class UrlRepositoryTest {
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS url");
         jdbcTemplate.execute("CREATE TABLE url (hash VARCHAR(6) PRIMARY KEY, url TEXT NOT NULL, created_at TIMESTAMP)");
+    }
+
+    @Test
+    void testSave() {
+        String hash = "abc123";
+        String url = "https://example.com";
+
+        urlRepository.save(hash, url);
+
+        List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM url WHERE hash = ?", hash);
+
+        assertEquals(1, result.size());
+        Map<String, Object> row = result.get(0);
+        assertEquals(hash, row.get("hash"));
+        assertEquals(url, row.get("url"));
     }
 
     @Test

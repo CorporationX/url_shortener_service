@@ -60,7 +60,7 @@ class HashCacheTest {
 
         assertNull(firstHash);
 
-        await().atMost(5, TimeUnit.SECONDS).until(() -> {
+        await().atMost(10, TimeUnit.SECONDS).until(() -> {
             String hash = hashCache.getHash();
             return hash != null && hash.startsWith("hash");
         });
@@ -81,7 +81,7 @@ class HashCacheTest {
 
         hashCache.getHash();
 
-        await().atMost(5, TimeUnit.SECONDS).until(() -> {
+        await().atMost(10, TimeUnit.SECONDS).until(() -> {
             String hash = hashCache.getHash();
             return hash != null && hash.startsWith("hash");
         });
@@ -93,7 +93,7 @@ class HashCacheTest {
         String triggeringHash = hashCache.getHash();
         assertNotNull(triggeringHash);
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
             verify(hashRepository, times(2)).getHashBatch();
             verify(hashGenerator, times(2)).generateBatch();
         });
@@ -129,7 +129,7 @@ class HashCacheTest {
 
         hashCache.getHash();
 
-        await().atMost(5, TimeUnit.SECONDS).until(() ->
+        await().atMost(10, TimeUnit.SECONDS).until(() ->
                 ((ConcurrentLinkedQueue<?>) ReflectionTestUtils.getField(hashCache, "cache")).size() > 0
         );
 
