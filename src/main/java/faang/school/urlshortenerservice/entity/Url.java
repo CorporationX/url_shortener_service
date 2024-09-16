@@ -12,11 +12,10 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "hash")
+    @Column(name = "hash", length = 6)
     private String hash;
 
-    @Column(name = "url")
+    @Column(name = "url", nullable = false)
     private String url;
 
     @CreationTimestamp

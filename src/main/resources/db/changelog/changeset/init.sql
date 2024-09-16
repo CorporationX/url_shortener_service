@@ -1,11 +1,11 @@
 CREATE TABLE url (
     hash      VARCHAR(7) PRIMARY KEY,
     url       TEXT      NOT NULL,
-    create_at TIMESTAMP NOT NULL
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE hash (
-    hash VARCHAR(7) PRIMARY KEY
+    hash VARCHAR(6) PRIMARY KEY
 );
 
 CREATE SEQUENCE unique_hash_number_seq

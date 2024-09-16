@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public interface HashRepository extends CrudRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE hash IN (
-                SELECT hash FROM hash ORDER BY hash ASC LIMIT :amount
+                SELECT hash FROM hash ORDER BY hash ASC LIMIT :n
             ) RETURNING *
             """)
-    List<Hash> findAndDelete(long amount);
+    List<String> findAndDelete(@Param("n") long amount);
 
 }

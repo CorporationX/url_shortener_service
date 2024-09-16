@@ -3,20 +3,19 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HashGenerator {
-
-    private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
@@ -26,23 +25,30 @@ public class HashGenerator {
 
     @Transactional
     public void generateHash() {
-        List<Long> range = hashRepository.getNextRange();
-        List<Hash> hashes = encoder.encode(range);
-        for (int i = 0; i < 10; i++) {
-            System.out.println(hashes.get(i).getHash());
-        }
-        hashRepository.saveAll(hashes);
+        var range = hashRepository.getNextRange();
+        var hashes = encoder.encode(range);
+        var testHash = hashes.stream().limit(10).toList();
+
+        hashRepository.saveAll(testHash);
     }
 
     @Transactional
-    public List<String> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateHash();
-            hashes.addAll(hashRepository.findAndDelete(amount));
-        }
-        return hashes.stream().map(Hash::getHash).toList();
+    public List<String> getHashes(long hashSize) {
+        generateHash();
+        log.info("Hash generated");
+        return hashRepository.findAndDelete(hashSize);
     }
+
+//    @Transactional
+//    public List<String> getHashes(long hashSize) {
+//        generateHash();
+//        List<Hash> hashes = hashRepository.findAndDelete(hashSize);
+//        if (hashes.size() < hashSize) {
+//            generateHash();
+//            hashes.addAll(hashRepository.findAndDelete(hashSize));
+//        }
+//        return hashes.stream().map(Hash::getHash).toList();
+//    }
 
     @Transactional
     @Async("hashGeneratorExecutor")

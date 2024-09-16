@@ -32,7 +32,7 @@ logging:
 hash:
   range: 10000
   cache:
-    capacity: 10000
+    capacity: 10
     fill.percent: 20
   thread:
     pool:
