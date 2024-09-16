@@ -20,15 +20,19 @@ public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepo
     @Query(nativeQuery = true, value = """
             DELETE FROM hash h
                    WHERE h.hash IN
-                         (SELECT hash from hash LIMIT 2)
+                         (SELECT hash.hash from hash LIMIT :n)
             returning h.hash;
             """)
-    List<String> getHashBatch(long n);
+    List<String> pollHashBatch(long n); //todo select 1
 
     @Override
     default void saveBatch(List<String> hashes) {
-
         List<Hash> entities = hashes.stream().map(Hash::new).toList();
         saveAll(entities);
     }
+
+    @Query(nativeQuery = true, value = """
+            SELECT count(*) FROM hash
+            """)
+    int getHashesNumber();
 }

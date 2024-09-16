@@ -18,14 +18,14 @@ public class AsyncConfig {
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor(
-            @Value("${app.hash-generator.executor.pool-size}") int poolSize,
-            @Value("${app.hash-generator.executor.queue-size}") int queueSize) {
+            @Value("${app.hash-generator.executor.pool-size:1}") int poolSize,
+            @Value("${app.hash-generator.executor.queue-size:1}") int queueSize) {
         BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(queueSize);
         return new ThreadPoolExecutor(poolSize, poolSize, 0, TimeUnit.MILLISECONDS, queue, new ThreadPoolExecutor.DiscardPolicy());
     }
 
     @Bean(name = "hashCacheExecutor")
-    public Executor hashGeneratorExecutor() {
+    public Executor hashCacheExecutor() {
         return Executors.newSingleThreadExecutor();
     }
 }

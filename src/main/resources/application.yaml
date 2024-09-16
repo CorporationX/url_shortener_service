@@ -18,6 +18,11 @@ spring:
         order_inserts: true
         generate_statistics: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   profiles:
@@ -33,7 +38,7 @@ logging:
 
 app:
   hash-generator:
-    batch-size: 100
+    batch-size: 5000
     executor:
       pool-size: 1
       queue-size: 1
