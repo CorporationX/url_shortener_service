@@ -37,5 +37,4 @@ url:
       size: 50
       queue: 200
       max-size: 100
-      ttl: 60000
     batch-size: 1000
