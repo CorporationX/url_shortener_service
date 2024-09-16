@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.exception.handler;
 
 import io.lettuce.core.RedisConnectionException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -63,11 +64,18 @@ public class UrlExceptionHandler {
         return new ErrorResponse(ex.getMessage(), request.getDescription(false));
     }
 
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public String handlerRedisConnectionFailureException(RedisConnectionFailureException ex){
+        log.error("Failed to connect to Redis", ex);
+        return "Failed to connect to Redis. " + ex.getMessage();
+    }
+
     @ExceptionHandler(RedisConnectionException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public String handleRedisConnectionException(RedisConnectionException ex){
         log.error("Redis connection error: ", ex);
-        return "Redis service is currently unavailable. Please try again later.";
+        return "Redis service is currently unavailable. Please try again later. " + ex.getMessage();
     }
 
     @ExceptionHandler(UrlNotFoundException.class)

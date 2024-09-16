@@ -19,8 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +45,31 @@ class UrlServiceTest {
         urlDto = URLDto.builder()
                 .url(urlString)
                 .build();
+    }
+
+    @Test
+    @DisplayName("createShortLinkUrlCacheRepositorySaveException")
+    void testCreateShortLinkSaveInCashException() {
+        when(urlCacheRepository.findHashByUrl(anyString())).thenReturn(Optional.empty());
+        when(urlRepository.findHashByUrl(anyString())).thenReturn(Optional.of(hashString));
+        doThrow(new RuntimeException("exception")).when(urlCacheRepository).save(anyString(), anyString());
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                urlService.createShortLink(urlDto));
+
+        assertEquals("exception", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("createShortLinkUrlCacheRepositorySaveValid")
+    void testCreateShortLinkSaveInCashValid() {
+        when(urlCacheRepository.findHashByUrl(anyString())).thenReturn(Optional.empty());
+        when(urlRepository.findHashByUrl(anyString())).thenReturn(Optional.of(hashString));
+        doNothing().when(urlCacheRepository).save(anyString(), anyString());
+
+        urlService.createShortLink(urlDto);
+
+        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
     }
 
     @Test
@@ -95,6 +119,16 @@ class UrlServiceTest {
     }
 
     @Test
+    @DisplayName("getUrlByHashUrlCacheRepositoryValid")
+    void testGetUrlByHashUrlCacheRepositoryValid(){
+        when(urlCacheRepository.findUrlByHash(anyString())).thenReturn(Optional.of(urlString));
+
+        urlService.getUrlByHash(hashAndHost);
+
+        verify(urlCacheRepository, times(1)).findUrlByHash(anyString());
+    }
+
+    @Test
     @DisplayName("getUrlByHashUrlCacheRepositoryException")
     void testUrlCacheRepositoryException() {
         when(urlCacheRepository.findUrlByHash(anyString())).thenThrow(new RuntimeException("exception"));
@@ -131,8 +165,8 @@ class UrlServiceTest {
     }
 
     @Test
-    @DisplayName("deleteOldURLUrlRepositoryIsEmpty")
-    void testDeleteOldURLUrlRepositoryIsEmpty() {
+    @DisplayName("deleteOldURLUrlRepositoryNullException")
+    void testDeleteOldURLUrlRepositoryNullException() {
         when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(null);
 
         assertThrows(NullPointerException.class, () -> urlService.deleteOldURL(removedPeriod));

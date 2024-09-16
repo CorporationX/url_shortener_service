@@ -30,7 +30,6 @@ public class HashGenerator {
 
         hashRepository.saveAll(hashes);
         log.info("New hashes saved in HashRepository");
-
     }
 
     public List<Hash> generateBatch(long countUniqueNumbers) {
@@ -39,8 +38,6 @@ public class HashGenerator {
         log.info("Create: {} new hash", hashes.size());
 
         return hashes;
-
-
     }
 
     @Transactional
