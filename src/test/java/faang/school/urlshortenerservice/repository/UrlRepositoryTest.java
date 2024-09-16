@@ -65,6 +65,27 @@ class UrlRepositoryTest {
     }
 
     @Test
+    void testFindUrlByHash() {
+        String hash = "abc123";
+        String expectedUrl = "https://www.example.com";
+
+        jdbcTemplate.update("INSERT INTO url (hash, url) VALUES (?, ?)", hash, expectedUrl);
+
+        String result = urlRepository.findUrl(hash);
+
+        assertEquals(expectedUrl, result);
+    }
+
+    @Test
+    void testFindUrlByHash_NonExistentHash() {
+        String nonExistentHash = "nonexistent";
+
+        String result = urlRepository.findUrl(nonExistentHash);
+
+        assertNull(result);
+    }
+
+    @Test
     void testDeleteUrlsAndFreeHashes() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oldDate = now.minusDays(7);

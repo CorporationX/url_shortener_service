@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,5 +62,27 @@ class UrlControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void redirectUrl_ValidHash_ReturnsRedirect() throws Exception {
+        String hash = "abc123";
+        String longUrl = "https://www.example.com";
+
+        when(urlService.getLongUrl(hash)).thenReturn(longUrl);
+
+        mockMvc.perform(get("/url/{hash}", hash))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", longUrl));
+    }
+
+    @Test
+    void redirectUrl_InvalidHash_ReturnsNotFound() throws Exception {
+        String hash = "invalid";
+
+        when(urlService.getLongUrl(hash)).thenThrow(new UrlNotFoundException("URL not found for hash: " + hash));
+
+        mockMvc.perform(get("/url/{hash}", hash))
+                .andExpect(status().isNotFound());
     }
 }
