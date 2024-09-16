@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -23,6 +24,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    /**
+     * redis
+     */
+    implementation("redis.clients:jedis")
 
     /**
      * Database
@@ -66,4 +72,68 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory.set(file("${buildDir}/customJacocoReportDir"))
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        csv.required.set(true)
+        html.required.set(true)
+        html.outputLocation.set(file("${buildDir}/jacocoHtml"))
+    }
+    classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude(
+                            "faang/school/urlshortenerservice/dto/**",
+                            "faang/school/urlshortenerservice/exception/handler/**",
+                            "faang/school/urlshortenerservice/entity/**",
+                            "faang/school/urlshortenerservice/encoder/**",
+                            "faang/school/urlshortenerservice/config/redis/**",
+                            "faang/school/urlshortenerservice/config/context/**",
+                            "faang/school/urlshortenerservice/controller/**",
+                            "faang/school/urlshortenerservice/repository/**",
+                            "faang/school/urlshortenerservice/client/**",
+                            "faang/school/urlshortenerservice/config/async/**",
+                            "faang/school/urlshortenerservice/mapper/**",
+                            "faang/school/urlshortenerservice/scheduler/**",
+                            "faang/school/urlshortenerservice/exception/url/**"
+                    )
+                }
+            })
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.5".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("faang.school.urlshortenerservice.service.*",
+                    "faang.school.urlshortenerservice.generator.*",
+                    "faang.school.urlshortenerservice.cache.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.3".toBigDecimal()
+            }
+        }
+    }
 }
