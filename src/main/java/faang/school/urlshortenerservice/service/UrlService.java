@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,5 +18,11 @@ public class UrlService {
         Url newUrl = new Url(hash, url);
         urlRepository.save(newUrl);
         return hash;
+    }
+
+    public String getUrl(String hash) {
+        return urlRepository.findById(hash)
+                .orElseThrow(() -> new EntityNotFoundException("Url by hash '" + hash + "' not found"))
+                .getUrl();
     }
 }
