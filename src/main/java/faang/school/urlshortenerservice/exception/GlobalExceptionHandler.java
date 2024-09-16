@@ -13,4 +13,10 @@ public class GlobalExceptionHandler {
     public String handleHashException(HashException e) {
         return e.getMessage();
     }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleDataNotFoundException(DataNotFoundException e) {
+        return e.getMessage();
+    }
 }
