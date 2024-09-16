@@ -1,3 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/changeset/V001-create-table-url-hash-and-sequence.sql
