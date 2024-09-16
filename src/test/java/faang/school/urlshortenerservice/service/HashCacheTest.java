@@ -67,7 +67,7 @@ public class HashCacheTest {
     }
 
     @Test
-    public void testGetAllHashWithLowStorage() throws InterruptedException {
+    public void testGetAllHashWithLowStorage() {
         List<String> newHashes = new ArrayList<>();
         newHashes.add("hash6");
         newHashes.add("hash7");
