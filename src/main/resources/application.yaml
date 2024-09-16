@@ -5,6 +5,15 @@ spring:
     username: user
     password: password
 
+  cache:
+    type: redis
+    ttl: 15
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -17,9 +26,32 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  messages:
+    basename: messages
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+data:
+  hash:
+    cash:
+      capacity: 10
+      fill_percent: 20
+
+    generator:
+      max_range: 20
+      cron: 0 0 0 * * *
+      executor:
+        pool_size: 5
+        max_pool_size: 10
+        queue_capacity: 25
+        prefix: HashGenerator-
+
+    cleaner:
+      cron: 0 0 0 * * *
+      expired_after_years: 0
+

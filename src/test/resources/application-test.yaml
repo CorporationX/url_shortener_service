@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: user
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-test.yaml
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+data:
+  hash:
+    range: 10
+    table_name: hash
+    sequence_name: unique_numbers_seq
+    cron: 0 0 0 * * *
+    cash:
+      capacity: 10
+      fill_percent: 20
