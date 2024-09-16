@@ -14,7 +14,7 @@ public class HashRepository {
     private final int batchSize;
 
     public HashRepository(JdbcTemplate jdbcTemplate,
-                          @Value("${url.hash.batch-size:100}") int batchSize) {
+                          @Value("${url.hash.batch-size:1000}") int batchSize) {
         this.jdbcTemplate = jdbcTemplate;
         this.batchSize = batchSize;
     }

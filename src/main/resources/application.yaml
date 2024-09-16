@@ -26,13 +26,16 @@ logging:
 
 url:
   hash:
+    cache:
+      size: 1000
+      threshold-percent: 20
     cleaner:
       cron: 0 0 0 * * ?
       retention-period: P1Y
     length: 6
-    generator:
-      thread-pool:
-        size: 50
-        queue: 100
-        max-size: 100
-    batch-size: 100
+    thread-pool:
+      size: 50
+      queue: 200
+      max-size: 100
+      ttl: 60000
+    batch-size: 1000

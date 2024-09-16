@@ -1,21 +1,47 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.JdbcAwareTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UrlRepositoryTest extends JdbcAwareTest {
+@JdbcTest
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class UrlRepositoryTest {
+
+    @Container
+    protected static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:15")
+            .withDatabaseName("testdb")
+            .withDatabaseName("testuser")
+            .withPassword("testpass");
+
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgresContainer::getUsername);
+        registry.add("spring.datasource.password", postgresContainer::getPassword);
+    }
+
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
     private UrlRepository urlRepository;
 
     @BeforeEach
     void setup() {
-        super.initJdbcTemplate();
         urlRepository = new UrlRepository(jdbcTemplate);
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS url");
