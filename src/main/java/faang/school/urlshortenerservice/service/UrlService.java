@@ -46,7 +46,7 @@ public class UrlService {
         return CompletableFuture.completedFuture(hash.getHash());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public String getUrl(String hash) {
         String url = urlCacheRepository.getUrl(hash);
         if (url == null) {
