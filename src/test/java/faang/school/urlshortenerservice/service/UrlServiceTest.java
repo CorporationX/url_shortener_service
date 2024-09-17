@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.сache.HashCache;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,24 +56,22 @@ public class UrlServiceTest {
     @Test
     void testSaveUrlExists() {
         when(hashCache.getHash()).thenReturn(hash);
-        when(urlRepository.existsById(hash.getHash())).thenReturn(true);
+        when(urlRepository.existsByUrl(url.getUrl())).thenReturn(true);
 
-        urlService.save(urlDto);
-
-        verify(urlRepository, times(0)).save(any(Url.class));
-        verify(urlCacheRepository, times(0)).saveUrl(url);
+        assertThrows(EntityExistsException.class, () -> urlService.save(urlDto));
     }
 
     @Test
     void testSaveUrlNotExists() {
         when(hashCache.getHash()).thenReturn(hash);
-        when(urlRepository.existsById(hash.getHash())).thenReturn(false);
+        when(urlRepository.existsByUrl(url.getUrl())).thenReturn(false);
 
         urlService.save(urlDto);
 
         verify(urlRepository, times(1)).save(any(Url.class));
         verify(urlCacheRepository, times(1)).saveUrl(url);
     }
+
     @Test
     void testGetUrlFromCache() {
         when(urlCacheRepository.getUrl(hash.getHash())).thenReturn(url.getUrl());
@@ -110,7 +109,7 @@ public class UrlServiceTest {
         List<Hash> hashes = Collections.singletonList(new Hash("1"));
         when(urlRepository.deleteOlderOneYearUrls()).thenReturn(hashes);
 
-        urlService.deleteOlderUrls();
+        urlService.deleteUrlsOlderThanOneYear();
 
         verify(urlRepository, times(1)).deleteOlderOneYearUrls();
         verify(hashService, times(1)).saveBatch(hashes);

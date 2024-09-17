@@ -48,20 +48,21 @@ public class UrlService {
 
     @Transactional
     public String getUrl(String hash) {
-        String url = urlCacheRepository.getUrl(hash);
-        if (url == null) {
-            url = urlRepository.findById(hash).orElseThrow(() -> {
+        String urlString = urlCacheRepository.getUrl(hash);
+        if (urlString == null) {
+            urlString = urlRepository.findById(hash).orElseThrow(() -> {
                 String errorMessage = String.format("Url with hash: %s not found", hash);
                 log.error(errorMessage);
                 return new EntityNotFoundException(errorMessage);
             }).getUrl();
 
-            urlCacheRepository.saveUrl(Url.builder()
+            Url url = Url.builder()
                     .hash(hash)
-                    .url(url)
-                    .build());
+                    .url(urlString)
+                    .build();
+            CompletableFuture.runAsync(() -> urlCacheRepository.saveUrl(url));
         }
-        return url;
+        return urlString;
     }
 
     @Transactional
