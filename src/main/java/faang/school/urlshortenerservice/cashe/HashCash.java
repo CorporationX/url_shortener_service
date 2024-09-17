@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configuration
@@ -23,15 +23,16 @@ public class HashCash {
     private final HashRepository hashRepository;
 
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
-    @Value("${hash.queue_capacity:1000}")
+    @Value("${hash.queue_capacity}")
     private int capacity;
     @Value("${hash.min_fill_percent}")
     private int minFillPercent;
-    private final BlockingQueue<Hash> queue = new ArrayBlockingQueue<>(capacity);
+    private  BlockingQueue<Hash> queue;
 
     @PostConstruct
     public void init() {
         log.info("Initializing Hash Cash");
+        queue = new LinkedBlockingDeque<>(capacity);
         fillingQueue();
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 public class Base62Encoder {
 
-    @Value("${hash.generate_batch_size}")
+    @Value("${hash.batch_size}")
     private String base62Charsets;
 
     public List<String> encode(List<Long> numbers) {
