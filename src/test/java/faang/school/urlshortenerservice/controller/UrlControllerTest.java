@@ -17,7 +17,10 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,10 +33,14 @@ class UrlControllerTest {
 
     private UrlDto urlDto;
     private String urlDtoJson;
+    private String hash;
+    private String redirectUrl;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
         String url = "url";
+        hash = "hash";
+        redirectUrl = "redirectUrl";
         mockMvc = MockMvcBuilders.standaloneSetup(urlController).build();
         urlDto = UrlDto.builder()
                 .url(url)
@@ -54,5 +61,17 @@ class UrlControllerTest {
                 .andExpect(status().isOk());
 
         verify(urlService, times(1)).createShortUrl(urlDto);
+    }
+
+    @Test
+    @DisplayName("Testing redirect methods")
+    void testRedirect() throws Exception {
+        when(urlService.getUrlByHash(hash)).thenReturn(redirectUrl);
+
+        mockMvc.perform(get("/api/v1/url/{hash}", hash))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", redirectUrl));
+
+        verify(urlService, times(1)).getUrlByHash(hash);
     }
 }
