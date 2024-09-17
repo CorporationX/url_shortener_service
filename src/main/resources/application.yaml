@@ -1,15 +1,4 @@
 spring:
-  data:
-    redis:
-      port: 6379
-      host: localhost
-    cache:
-      redis:
-        time-to-live: 86400
-
-  cache:
-    type: redis
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -24,7 +13,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    batch_size: 50
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -35,26 +23,3 @@ server:
 logging:
   level:
     root: info
-
-generator:
-  queue:
-    capacity: 100
-    min:
-      percentage: 0.2
-  hash:
-    count: 1000
-  scheduled:
-    cron: "0 0 0 * * *"
-    removedPeriod: 1 year
-  delete:
-    url:
-      scheduled:
-        cron: "0 0 0 * * *"
-
-async:
-  core-pool-size: 5
-  max-pool-size: 50
-  queue-capacity: 100
-
-url:
-  host: http://localhost:8080/shortener/
