@@ -31,6 +31,9 @@ url:
       ttl: PT12H
     secondary:
       ttl: PT1H
+  scheduler:
+    cron: "0 0 0 * * ?"
+    expired-interval: '1 YEAR'
 
 hash:
   batch:

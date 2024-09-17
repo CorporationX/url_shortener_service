@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import faang.school.urlshortenerservice.repository.url.UrlJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class UrlService {
     private Duration SECONDARY_TIMEOUT;
 
     private final UrlMapper urlMapper;
-    private final UrlRepository urlRepository;
+    private final UrlJpaRepository urlRepository;
     private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
 

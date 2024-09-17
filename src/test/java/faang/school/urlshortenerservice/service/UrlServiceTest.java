@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import faang.school.urlshortenerservice.repository.url.UrlJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +35,7 @@ class UrlServiceTest {
     @Spy
     private UrlMapper urlMapper;
     @Mock
-    private UrlRepository urlRepository;
+    private UrlJpaRepository urlRepository;
     @Mock
     private HashCache hashCache;
     @Mock
