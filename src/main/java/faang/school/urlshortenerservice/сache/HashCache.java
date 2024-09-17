@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.сache;
 import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +21,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
     private final HashGenerator hashGenerator;
+    private final HashRepository hashRepository;
 
     @Value("${spring.hash_cache.queue_size}")
     private int queueSize;
     @Value("${spring.hash_cache.percentage_to_replenish_queue}")
     private int percentageToReplenishQueue;
+    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    private int batchSize;
     private BlockingQueue<Hash> queueHashes;
 
     @PostConstruct
     public void initializationQueue() {
         log.info("Initializing Hash Cache");
-        queueHashes = new LinkedBlockingDeque<>(queueSize);
 
-        queueHashes.addAll(hashGenerator.generateBatch());
+        queueHashes = new LinkedBlockingDeque<>(queueSize);
+        hashGenerator.generateBatch();
+        fillQueue();
+
         log.info("Hash cache initialization complete.");
     }
 
@@ -40,7 +46,7 @@ public class HashCache {
         if (queueHashes.size() < (queueSize * percentageToReplenishQueue) / 100) {
             if (isGenerating.compareAndSet(false, true)) {
                 hashGenerator.generateBatchAsync()
-                        .thenAccept(queueHashes::addAll)
+                        .thenRun(this::fillQueue)
                         .thenRun(() -> isGenerating.set(false));
             }
         }
@@ -52,5 +58,9 @@ public class HashCache {
             Thread.currentThread().interrupt();
             throw new HashCacheException("Queue hashes is empty");
         }
+    }
+
+    private void fillQueue() {
+        queueHashes.addAll(hashRepository.getHashBatch(batchSize));
     }
 }
