@@ -10,6 +10,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +37,10 @@ public class UrlService {
             urlRepository.save(url);
             urlCacheRepository.saveUrl(url);
         } else {
+            log.error(String.format("This url %s already exists", url.getUrl()));
             throw new EntityExistsException("Url already exists");
         }
+
         return hash.getHash();
     }
 
@@ -56,7 +59,7 @@ public class UrlService {
     }
 
     @Transactional
-    public void deleteOlderUrls() {
+    public void deleteUrlsOlderThanOneYear() {
         List<Hash> hashes = urlRepository.deleteOlderOneYearUrls();
 
         hashService.saveBatch(hashes);

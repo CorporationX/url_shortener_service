@@ -15,7 +15,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${spring.cleaner.cron}")
     public void cleanUrl() {
         log.info("Urls cleaning");
-        urlService.deleteOlderUrls();
+        urlService.deleteUrlsOlderThanOneYear();
         log.info("Urls cleaned");
     }
 }

@@ -3,16 +3,15 @@ package faang.school.urlshortenerservice.сache;
 import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.model.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -21,14 +20,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
     private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
 
     @Value("${spring.hash_cache.queue_size}")
     private int queueSize;
     @Value("${spring.hash_cache.percentage_to_replenish_queue}")
     private int percentageToReplenishQueue;
-    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
-    private int hashBatch;
     private BlockingQueue<Hash> queueHashes;
 
     @PostConstruct
@@ -36,24 +32,24 @@ public class HashCache {
         log.info("Initializing Hash Cache");
         queueHashes = new LinkedBlockingDeque<>(queueSize);
 
-        hashGenerator.generateBatch();
-        queueHashes.addAll(hashRepository.getHashBatch(hashBatch));
+        queueHashes.addAll(hashGenerator.generateBatch());
         log.info("Hash cache initialization complete.");
     }
 
-    @Async("executorService")
     public Hash getHash() {
-        if (queueHashes.size() < (queueSize * (percentageToReplenishQueue / 100))) {
+        if (queueHashes.size() < (queueSize * percentageToReplenishQueue) / 100) {
             if (isGenerating.compareAndSet(false, true)) {
-                hashGenerator.generateBatch();
-                isGenerating.set(false);
+                hashGenerator.generateBatchAsync()
+                        .thenAccept(queueHashes::addAll)
+                        .thenRun(() -> isGenerating.set(false));
             }
         }
 
         try {
-            return queueHashes.take();
+            return queueHashes.poll(3000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error(e.getMessage());
+            Thread.currentThread().interrupt();
             throw new HashCacheException("Queue hashes is empty");
         }
     }
