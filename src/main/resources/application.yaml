@@ -17,9 +17,39 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  short_url_prefix: "https://dd.n/"
+  local_hash:
+    capacity: 9000
+    min_value: 1000
+  hash:
+    batch_size: 20000
+    expiration_period_hours: 1
+  async:
+    hash_generator:
+      core_pool_size: 5
+      max_pool_size: 10
+      queue_capacity: 500
+      thread_name_prefix: "AsyncExecutor-"
+  local_hash_refill:
+    core_pool_size: 5
+    max_pool_size: 10
+    queue_capacity: 500
+    thread_name_prefix: "RefillExecutor-"
+  scheduling:
+    hash:
+      cron: 0 0 0 * * *
+    removal:
+      cron: 0 0 0 * * *
+      months_before_expiration: 12
