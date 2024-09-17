@@ -18,4 +18,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING *
                        """)
     List<Url> getOldHashesAndDelete();
+
+//
+    @Query(nativeQuery = true, value =
+            "SELECT u.hash FROM Url u WHERE u.url = :url")
+    String findHashByUrl(String url);
 }
