@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -25,8 +26,9 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashService hashService;
 
+    @Async("executorService")
     @Transactional
-    public String save(UrlDto urlDto) {
+    public CompletableFuture<String> save(UrlDto urlDto) {
         Hash hash = hashCache.getHash();
         Url url = Url.builder()
                 .url(urlDto.getUrl())
@@ -41,7 +43,7 @@ public class UrlService {
             throw new EntityExistsException("Url already exists");
         }
 
-        return hash.getHash();
+        return CompletableFuture.completedFuture(hash.getHash());
     }
 
     @Transactional(readOnly = true)
