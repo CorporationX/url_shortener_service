@@ -19,8 +19,8 @@ spring:
       port: 6379
       host: localhost
 
-    batch_size: 1000
-    unique_numbers_number: 1000
+    batch_size: 5
+    unique_numbers_number: 10
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -38,8 +38,9 @@ executor:
 
 hash:
   cache:
-    size: 10000
+    size: 5
     min_threshold: 20
+  length: 6
 
 server:
   port: 8080

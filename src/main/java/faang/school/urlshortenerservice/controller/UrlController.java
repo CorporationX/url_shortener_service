@@ -24,7 +24,7 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @PostMapping
+    @PostMapping("/url")
     @ResponseStatus(HttpStatus.CREATED)
     public String createHash(@Validated @RequestBody UrlDto urlDto) {
 

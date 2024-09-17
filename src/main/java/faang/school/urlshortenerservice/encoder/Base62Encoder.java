@@ -1,31 +1,39 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class Base62Encoder {
+
+    @Value("${hash.length}")
+    private int hashLength;
+    char[] base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+
 
     public List<String> encode(List<Long> numbers) {
 
-        char[] base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
         List<String> hashes = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
 
         for (Long number : numbers) {
+            StringBuilder sb = new StringBuilder();
 
-            if (number == 0) {
-                return List.of(String.valueOf(base62Chars[0]));
-            }
             while (number > 0) {
                 sb.insert(0, base62Chars[(int) (number % 62)]);
                 number /= 62;
             }
             String hash = sb.toString();
+            if (hash.length() > hashLength) {
+                hash = hash.substring(0, hashLength);
+            }
             hashes.add(hash);
         }
+        log.info("Encoded hashes: {}", hashes);
         return hashes;
     }
 }

@@ -1,9 +1,9 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -12,14 +12,14 @@ public class UrlCacheRepositoryImpl {
 
     private final UrlRepository urlRepository;
 
-    @CachePut(value = "originalUrl", key = "hash")
-    public String save(String hash, String originalUrl) {
-        Url saveUrl = urlRepository.create(hash, originalUrl);
-        return saveUrl.getHash();
+    @CachePut(value = "originalUrl", key = "#hash")
+    public Url save(String hash, String originalUrl) {
+        return urlRepository.create(hash, originalUrl);
     }
 
-    @Cacheable(value = "originalUrl", key = "hash")
     public String getUrl(String hash) {
-        return urlRepository.getUrlByHash(hash);
+        Url urlEntity = urlRepository.findByHash(hash)
+                .orElseThrow(() -> new NotFoundException("Url for hash " + hash + " is not found"));
+        return urlEntity.getOriginalUrl();
     }
 }

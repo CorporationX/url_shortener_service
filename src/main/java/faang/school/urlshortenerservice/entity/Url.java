@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,10 +21,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "urls")
-public class Url {
+public class Url
+        implements Serializable
+         {
     @Id
-    @Column(name = "hash")
-    private String hash;
+    @Column(name = "hash", length = 6)
+    public String hash;
 
     @Column(name = "url", length = 512, nullable = false, unique = true)
     private String originalUrl;
