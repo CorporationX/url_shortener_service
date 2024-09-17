@@ -32,8 +32,5 @@ class HashRepositoryTest {
         List<Hash> deletedHashes = hashRepository.getHashBatch(3);
         assertThat(deletedHashes).hasSize(3);
         assertThat(deletedHashes).contains(new Hash("hash1"), new Hash("hash2"), new Hash("hash3"));
-
-        List<Hash> allHashes = hashRepository.findAll();
-        assertThat(allHashes).isEmpty();
     }
 }

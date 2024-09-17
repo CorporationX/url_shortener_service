@@ -5,6 +5,13 @@ spring:
     username: user
     password: password
 
+  cache:
+    type: redis
+    host: localhost
+    port: 6379
+    redis:
+      time-to-live: 60000
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -32,7 +39,7 @@ spring:
     max_range: 10000
 
   scheduling:
-    cron: 0 0 * * *
+    cron: 0 0 0 * * *
 
 server:
   port: 8080
@@ -40,3 +47,6 @@ server:
 logging:
   level:
     root: info
+
+app:
+  base_url: http:/localhost:8080
