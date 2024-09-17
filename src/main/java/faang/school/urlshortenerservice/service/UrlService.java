@@ -9,6 +9,8 @@ import faang.school.urlshortenerservice.repository.URLCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,10 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
+
+    @Setter
+    @Value("${hash.url_prefix}")
+    private String urlPrefix;
 
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
@@ -35,7 +41,7 @@ public class UrlService {
         Url savedUrl = urlRepository.save(url);
         urlCacheRepository.saveUrl(savedUrl);
 
-        return hash;
+        return urlPrefix + hash;
     }
 
     @Transactional(readOnly = true)

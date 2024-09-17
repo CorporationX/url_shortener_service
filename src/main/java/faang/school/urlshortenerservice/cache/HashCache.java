@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -28,11 +29,12 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
-    private final BlockingQueue<String> hashQueue;
+    private final BlockingQueue<String> hashQueue = new LinkedBlockingDeque<>();
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
+        hashGenerator.generateHash();
         hashQueue.addAll(hashRepository.getHashBatchAndDelete(hashBatchSize));
     }
 

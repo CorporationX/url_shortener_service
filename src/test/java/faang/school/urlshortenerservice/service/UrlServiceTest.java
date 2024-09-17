@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -36,11 +35,17 @@ class UrlServiceTest {
     @InjectMocks
     private UrlService urlService;
 
+    @BeforeEach
+     void beforeAll() {
+        urlService.setUrlPrefix("https://example/");
+    }
+
     @Test
     @DisplayName("Test get short url")
     void testGetShortUrl() {
+        String expectedShortUrl = "https://example/abc123";
         String expectedHash = "abc123";
-        String expectedUrl = "https://example.com";
+        String expectedUrl = "https://example/abracadabra";
         UrlDto urlDto = new UrlDto(expectedUrl);
 
         when(hashCache.getHash()).thenReturn(expectedHash);
@@ -52,9 +57,9 @@ class UrlServiceTest {
 
         when(urlRepository.save(any(Url.class))).thenReturn(expectedUrlObject);
 
-        String actualHash = urlService.getShortUrl(urlDto);
+        String actualShortUrl = urlService.getShortUrl(urlDto);
 
-        assertEquals(expectedHash, actualHash);
+        assertEquals(expectedShortUrl, actualShortUrl);
         verify(urlCacheRepository).saveUrl(expectedUrlObject);
     }
 
