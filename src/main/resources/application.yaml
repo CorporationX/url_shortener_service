@@ -31,6 +31,7 @@ hash:
   cache_size: 1000
   percent_to_refresh_cache: 20
   url_prefix: http://localhost:9080/
+  scheduled: 0 0 0 1 1 *
 
 executor:
   pool_size: 10
