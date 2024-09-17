@@ -1,13 +1,24 @@
 package faang.school.urlshortenerservice.repository.url;
 
-import faang.school.urlshortenerservice.entity.Url;
-import org.springframework.data.jpa.repository.JpaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url, Long> {
+@RequiredArgsConstructor
+public class UrlRepository {
+    @Value("${url.scheduler.expired-interval}")
+    private String INTERVAL;
 
-    Optional<Url> findByHash(String hash);
+    @PersistenceContext
+    private final EntityManager entityManager;
+
+    public List<String> deleteExpiredUrlsReturningHashes() {
+        String query = "DELETE FROM url WHERE created_at < NOW() - INTERVAL '%s' RETURNING hash".formatted(INTERVAL);
+        return entityManager.createNativeQuery(query).getResultList();
+    }
 }
