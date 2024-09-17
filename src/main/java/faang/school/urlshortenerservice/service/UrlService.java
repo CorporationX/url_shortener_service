@@ -35,7 +35,7 @@ public class UrlService {
                 .hash(hash.getHash())
                 .build();
 
-        if(!urlRepository.existsByUrl(url.getUrl())) {
+        if (!urlRepository.existsByUrl(url.getUrl())) {
             urlRepository.save(url);
             urlCacheRepository.saveUrl(url);
         } else {
@@ -55,8 +55,12 @@ public class UrlService {
                 log.error(errorMessage);
                 return new EntityNotFoundException(errorMessage);
             }).getUrl();
-        }
 
+            urlCacheRepository.saveUrl(Url.builder()
+                    .hash(hash)
+                    .url(url)
+                    .build());
+        }
         return url;
     }
 
