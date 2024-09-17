@@ -10,12 +10,14 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -50,6 +52,7 @@ public class UrlService {
         if (Objects.isNull(url)) {
             url = urlRepository.findById(hash)
                     .orElseThrow(() -> new DataNotFoundException("Url not with hash " + hash + " not found")).getUrl();
+            log.info("Getting url for hash {} from database", hash);
         }
         return Redirect.builder().url(url).build();
     }

@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -20,11 +21,11 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
 
     @Async("executorService")
-    public void generateHash() {
+    public CompletableFuture<List<Hash>> generateHash() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(generateBatchSize);
 
         List<Hash> hashes = uniqueNumbers.stream().map(base62Encoder::encode).map(Hash::new).toList();
 
-        hashRepository.saveAll(hashes);
+        return CompletableFuture.completedFuture(hashes);
     }
 }
