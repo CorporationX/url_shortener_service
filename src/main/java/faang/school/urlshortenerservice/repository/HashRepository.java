@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = "SELECT nextval('unique_number_seq') " +
-            "FROM generate_series(1, :n)", nativeQuery = true)
-    List<Long> getUniqueNumbers(@Param("n") int batchSize);
+            "FROM generate_series(1, :batch)", nativeQuery = true)
+    List<Long> getUniqueNumbers(@Param("batch") long batchSize);
 
     @Modifying
     @Transactional

@@ -1,21 +1,18 @@
 package faang.school.urlshortenerservice.generator;
 
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class LocalCache {
     @Value("${app.local_hash.capacity:9000}")
@@ -24,17 +21,21 @@ public class LocalCache {
     private int minValue;
     @Value("${app.async.local_hash_refill.pool_size:10}")
     private int threadsNumber;
-    private final Queue<String> hashes = new ConcurrentLinkedQueue<>();
-    private final AtomicBoolean isRefilling = new AtomicBoolean(false);
+    private final Queue<String> hashes;
+    private final AtomicBoolean isRefilling;
     private final HashGenerator hashGenerator;
-    private ExecutorService refillExecutor;
+    private final ExecutorService refillExecutor;
+
+    public LocalCache(HashGenerator hashGenerator, @Qualifier("refillExecutor") ExecutorService refillExecutor) {
+        this.hashGenerator = hashGenerator;
+        this.refillExecutor = refillExecutor;
+        this.hashes = new ConcurrentLinkedQueue<>();
+        this.isRefilling = new AtomicBoolean(false);
+    }
 
     @PostConstruct
     public void init() {
         try {
-            refillExecutor = Executors.newFixedThreadPool(threadsNumber);
-            log.info("LocalCache thread pool initialized with threadsNumber: {}", threadsNumber);
-
             hashes.addAll(hashGenerator.getHashes(capacity));
             log.info("LocalCache initialized with {} hashes", hashes.size());
         } catch (Exception e) {

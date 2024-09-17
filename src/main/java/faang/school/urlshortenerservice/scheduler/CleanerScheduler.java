@@ -27,7 +27,6 @@ public class CleanerScheduler {
         var expirationTime = LocalDateTime.now().minusMonths(monthsBeforeExpiration);
         var deletedHashes = urlRepository.deleteUrlsOlderThan(expirationTime);
 
-
         if (!deletedHashes.isEmpty()) {
             hashRepository.saveAll(deletedHashes.stream()
                     .map(hashMapper::toEntity)

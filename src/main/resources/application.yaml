@@ -29,6 +29,7 @@ logging:
     root: info
 
 app:
+  short_url_prefix: "https://dd.n/"
   local_hash:
     capacity: 9000
     min_value: 1000
@@ -41,8 +42,11 @@ app:
       max_pool_size: 10
       queue_capacity: 500
       thread_name_prefix: "AsyncExecutor-"
-    local_hash_refill:
-      pool_size: 10
+  local_hash_refill:
+    core_pool_size: 5
+    max_pool_size: 10
+    queue_capacity: 500
+    thread_name_prefix: "RefillExecutor-"
   scheduling:
     hash:
       cron: 0 0 0 * * *
