@@ -82,7 +82,7 @@ public class UrlService {
                 .or(() -> urlRepository.findHashByUrl(url)
                         .map(hashInBD -> {
                             urlCacheRepository.save(url, hashInBD);
-                            log.info("Hash saved again in Cash.");
+                            log.info("Hash saved again in Cash");
                             return hashInBD;
                         }))
                 .orElse(null);
