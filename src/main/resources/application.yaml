@@ -27,7 +27,10 @@ server:
 
 url:
   cache:
+    initial:
       ttl: PT12H
+    secondary:
+      ttl: PT1H
 
 hash:
   batch:
