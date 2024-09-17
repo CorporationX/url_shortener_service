@@ -30,9 +30,12 @@ hash:
   base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
   cache_size: 1000
   percent_to_refresh_cache: 20
+  url_prefix: http://localhost:9080/
 
 executor:
   pool_size: 10
+
+
 
 
 logging:
