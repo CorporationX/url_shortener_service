@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.service.Validator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UrlController {
 
     private final Validator validator;
+    private final UrlService urlService;
 
     @PostMapping("/url")
     public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlDto longUrl) {
         validator.validateUrl(longUrl);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(200).body(urlService.createShortUrl(longUrl));
     }
+
 }

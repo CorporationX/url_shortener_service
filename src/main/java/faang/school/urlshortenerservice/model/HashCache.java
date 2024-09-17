@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 
 @Service
 @RequiredArgsConstructor
-public class HashCash {
+public class HashCache {
 
     private final ConcurrentLinkedQueue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
     private final ExecutorService executorService;
