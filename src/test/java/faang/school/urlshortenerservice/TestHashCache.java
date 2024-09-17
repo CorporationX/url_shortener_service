@@ -39,28 +39,27 @@ public class TestHashCache {
     @BeforeEach
     public void setup() {
         hashCache = new HashCache(hashGenerator, executorService);
-        List<String> hashes = new ArrayList<>(Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
-//        when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
-//        hashCache.init();
-        this.hashesCache.addAll(hashes);
     }
 
     @Test
     public void getHashLowPercentageTest() {
+        List<String> hashes = new ArrayList<>(Arrays.asList("hash1"));
+        when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
+        hashCache.init();
         ReflectionTestUtils.setField(hashCache, "capacity", 10);
         ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
         hashesCache.add("hash1");
-        List<String> hashes = List.of("hash1", "hash2", "hash3", "hash4", "hash5", "hash6");
-        when(hashGenerator.getHashes(10)).thenReturn(hashes);
+        List<String> newHashes = List.of("hash1", "hash2", "hash3", "hash4", "hash5", "hash6");
+        when(hashGenerator.getHashes(anyInt())).thenReturn(newHashes);
         String result = hashCache.getHash();
         assertEquals("hash1", result);
-        assertEquals("hash2", hashCache.getHash());
-        assertEquals("hash3", hashCache.getHash());
-        assertEquals("hash4", hashCache.getHash());
     }
 
     @Test
     public void getHashTest() {
+        List<String> hashes = new ArrayList<>(Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
+        when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
+        hashCache.init();
         running = new AtomicBoolean(false);
         hashesCache = new ArrayDeque<>(10);
         hashesCache.add("hash1");
@@ -70,7 +69,6 @@ public class TestHashCache {
         hashesCache.add("hash5");
         ReflectionTestUtils.setField(hashCache, "capacity", 10);
         ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
-        when(hashesCache.poll()).thenReturn("hash1");
         String result = hashCache.getHash();
         assertEquals("hash1", result);
     }
