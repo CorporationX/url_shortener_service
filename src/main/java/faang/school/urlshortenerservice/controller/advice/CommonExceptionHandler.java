@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller.advice;
 
+import faang.school.urlshortenerservice.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +25,7 @@ public class CommonExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({ChangeSetPersister.NotFoundException.class})
+    @ExceptionHandler({NotFoundException.class})
     public ErrorMessage handleNotFound(RuntimeException e) {
         log.error(e.getMessage(), e);
         return ErrorMessage.builder()

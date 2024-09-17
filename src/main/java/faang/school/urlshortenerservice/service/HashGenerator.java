@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.db.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +38,10 @@ public class HashGenerator {
             List<String> hashes = base62Encoder.encode(uniqueNumbers);
             hashRepository.saveBatch(hashes);
         }
+    }
+
+    @Transactional
+    public List<String> getHashes(int numberToRefill) {
+        return hashRepository.pollHashBatch(numberToRefill);
     }
 }

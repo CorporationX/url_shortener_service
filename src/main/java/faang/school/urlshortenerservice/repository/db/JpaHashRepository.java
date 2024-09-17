@@ -1,16 +1,14 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.db;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Profile(value = "jpa_profile")
 @Repository
-public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepository {
+public interface JpaHashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_number_seq') FROM generate_series(1, :n);
@@ -24,12 +22,6 @@ public interface JpaHashRepository extends JpaRepository<Hash, String>, HashRepo
             returning h.hash;
             """)
     List<String> pollHashBatch(long n);
-
-    @Override
-    default void saveBatch(List<String> hashes) {
-        List<Hash> entities = hashes.stream().map(Hash::new).toList();
-        saveAll(entities);
-    }
 
     @Query(nativeQuery = true, value = """
             SELECT count(*) FROM hash
