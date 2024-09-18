@@ -12,7 +12,7 @@ import java.util.Optional;
 public class UrlCacheRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${hash.cache.key}")
+    @Value("${executor.hash-cache.prefix}")
     private String cacheKey;
 
     public void save(String hash, String url) {

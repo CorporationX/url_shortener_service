@@ -15,7 +15,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.batch.size}")
+    @Value("${hash.cache.capacity}")
     private int batchSize;
 
     @Async("hashGeneratorExecutor")
