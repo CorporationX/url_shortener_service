@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.concurrent.TimeUnit;
+
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -17,8 +19,8 @@ public class UrlCacheRepository {
     private int ttl;
 
     public void save(UrlDto urlDto) {
-        redisTemplate.opsForValue().set(urlDto.getUrl(), urlDto.getHash(), ttl);
-        redisTemplate.opsForValue().set(urlDto.getHash(), urlDto.getUrl(), ttl);
+        redisTemplate.opsForValue().set(urlDto.getUrl(), urlDto.getHash(), ttl, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(urlDto.getHash(), urlDto.getUrl(), ttl, TimeUnit.MILLISECONDS);
         log.info("Put into cache: {}", urlDto);
     }
 

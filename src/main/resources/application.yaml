@@ -49,4 +49,4 @@ logging:
     root: info
 
 app:
-  base_url: http:/localhost:8080/shortener
+  base_url: http://localhost:8080/shortener
