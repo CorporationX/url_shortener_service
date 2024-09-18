@@ -12,7 +12,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional
 public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
