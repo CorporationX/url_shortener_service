@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -31,7 +30,7 @@ public class UrlService {
         }
 
         Url url = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new EntityNotFoundException(Url.class, hash));
+                .orElseThrow(() -> new EntityNotFoundException("Entity of type: %s with id: %s not found.".formatted(Url.class, hash)));
 
         urlCacheRepository.save(hash, url.getUrl());
 
