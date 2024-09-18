@@ -12,9 +12,9 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${hash.batch.size.get}")
+    @Value("${hash.batch_size.get}")
     private int getBatchSize;
-    @Value("${hash.batch.size.insert}")
+    @Value("${hash.batch_size.insert}")
     private int insertBatchSize;
 
     public List<Long> getUniqueNumbers(int amount) {
