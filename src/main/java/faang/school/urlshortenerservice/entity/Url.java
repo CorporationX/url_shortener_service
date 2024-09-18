@@ -8,13 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "url")
 @NoArgsConstructor
 @Getter
-public class Url {
+public class Url implements Serializable {
     @Id
     @Column(name = "hash", unique = true, nullable = false)
     private String hash;

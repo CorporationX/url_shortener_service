@@ -1,9 +1,9 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.util.Base62Encoder;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -14,19 +14,22 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    private final Base62Encoder encoder;
-    @Value("${hash.batch_size}")
-    private int batchSize;
+    private final int batchSize;
+
+    public HashGenerator(HashRepository hashRepository,
+                         @Value("${hash.batch_size}") int batchSize) {
+        this.hashRepository = hashRepository;
+        this.batchSize = batchSize;
+    }
 
     @Async
     @Transactional
     public void generateBatch() {
         log.info("Generating {} hashes", batchSize);
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-        List<Hash> hashes = encoder.encode(numbers).stream()
+        List<Hash> hashes = Base62Encoder.encode(numbers).stream()
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashes);

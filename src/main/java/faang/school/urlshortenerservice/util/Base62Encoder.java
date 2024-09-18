@@ -1,11 +1,11 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.util;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@UtilityClass
 public class Base62Encoder {
     private static final String BASE_62_SYMBOLS = "PTIWaXgjHdfDCrR1YZuVUF9Sm78Q46AJoweh3psvKOiyqnBkE2lMG0c5txLzbN";
 

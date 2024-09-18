@@ -1,8 +1,8 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,21 +13,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class HashCache {
-
-    @Value("${hash.cache.capacity}")
-    private int capacity;
-    @Value("${hash.cache.min_percentage_filling}")
-    private int minPercentageFilling;
-    private Queue<Hash> cache;
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
+    private final int capacity;
+    private final int minPercentageFilling;
+    private final Queue<Hash> cache;
+    private final AtomicBoolean isFilling;
     private final HashGenerator hashGenerator;
+
+    public HashCache(@Value("${hash.cache.capacity}") int capacity,
+                     @Value("${hash.cache.min_percentage_filling}") int minPercentageFilling,
+                     HashGenerator hashGenerator) {
+        this.capacity = capacity;
+        this.minPercentageFilling = minPercentageFilling;
+        this.cache = new ArrayBlockingQueue<>(capacity);
+        this.isFilling = new AtomicBoolean(false);
+        this.hashGenerator = hashGenerator;
+    }
 
     @PostConstruct
     public void init() {
-        cache = new ArrayBlockingQueue<>(capacity);
-
         log.info("Initializing hash cache");
         cache.addAll(hashGenerator.getHashes(capacity));
     }
