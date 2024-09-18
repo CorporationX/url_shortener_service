@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,16 +9,15 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepository {
-    private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${executor.hash-cache.prefix}")
-    private String cacheKey;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String hash, String url) {
-        redisTemplate.opsForHash().put(cacheKey, hash, url);
+    public Optional<String> getUrlByHash(String hash) {
+        return Optional.ofNullable(redisTemplate.opsForValue()
+                .get(hash));
     }
 
-    public Optional<String> findByHash(String hash) {
-        return Optional.ofNullable((String) redisTemplate.opsForHash().get(cacheKey, hash));
+    public void saveUrlByHash(String hash, String url) {
+        redisTemplate.opsForValue().set(hash, url);
     }
 }

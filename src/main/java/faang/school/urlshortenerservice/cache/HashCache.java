@@ -1,51 +1,48 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-
     private final HashGenerator hashGenerator;
-    @Value("${hash.cache.capacity:10000}")
+    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+
+    @Value("${hash.queue_capacity}")
     private int capacity;
-    @Value("${hash.cache.fill-percentage:20}")
-    private int fillPercentage;
-
-    private Queue<String> hashes;
-
-    private final AtomicBoolean isFilling = new AtomicBoolean();
+    @Value("${hash.min_fill_percent}")
+    private int minFillPercent;
+    private BlockingQueue<Hash> queue;
 
     @PostConstruct
     public void init() {
-        hashes = new ArrayBlockingQueue<>(capacity);
-        fillQueue();
+        queue = new LinkedBlockingDeque<>(capacity) ;
+        fillingQueue();
     }
 
-    @Async("hashCacheExecutor")
-    public CompletableFuture<String> getHash() {
-        if (((double) hashes.size() / capacity) * 100.0 < fillPercentage) {
-            triggerBatchFill();
+
+    public String getHash() {
+        if (queue.size() / (capacity / 100.0) < minFillPercent) {
+            if (isGenerating.compareAndSet(false, true)) {
+                hashGenerator.getBatch();
+                hashGenerator.getBatchAsync().thenAccept(queue::addAll);
+                isGenerating.set(false);
+            }
         }
-        return CompletableFuture.completedFuture(hashes.poll());
+        return queue.poll().getHash();
     }
-    private void triggerBatchFill() {
-        if (isFilling.compareAndSet(false, true)) {
-            fillQueue();
-        }
-    }
-    private void fillQueue() {
-        hashGenerator.generateBatch();
-//                .thenAccept(hashes::addAll)
-//                .thenRun(() -> isFilling.set(false));
+
+    public void fillingQueue() {
+        hashGenerator.generatedBatch();
+        queue.addAll(hashGenerator.getBatch());
     }
 }
