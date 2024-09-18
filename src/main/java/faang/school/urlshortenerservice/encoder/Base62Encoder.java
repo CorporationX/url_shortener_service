@@ -6,18 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Setter
 public class Base62Encoder {
 
-    @Value("${hash.batch_size}")
+    @Value("${hash.base62_charset}")
     private String base62Charsets;
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
                 .map(this::encodeNumber)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private String encodeNumber(long number) {
