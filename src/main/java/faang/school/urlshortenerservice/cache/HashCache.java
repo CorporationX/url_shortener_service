@@ -10,9 +10,11 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+
     private final HashGenerator hashGenerator;
     @Value("${hash.cache.capacity:10000}")
     private int capacity;
