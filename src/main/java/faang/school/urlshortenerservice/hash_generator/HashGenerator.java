@@ -25,6 +25,7 @@ public class HashGenerator {
     @Transactional
     public void generatedBatch(){
         List<Long> generatedNumbers =hashRepository.getUniqueNumbers(batchSize);
+        List<String> strings = base62Encoder.encode(generatedNumbers);
         List<Hash> hashes = base62Encoder.encode(generatedNumbers).stream().map(string ->
                 Hash.builder().hash(string).build()).collect(Collectors.toList());
         hashRepository.saveAll(hashes);

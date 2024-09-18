@@ -4,25 +4,27 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.hash_generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class HashCash {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
-
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+
     @Value("${hash.queue_capacity}")
     private int capacity;
     @Value("${hash.min_fill_percent}")
@@ -37,7 +39,7 @@ public class HashCash {
     }
 
     @Async("executorService")
-    public CompletableFuture<Hash> getHash(int size) {
+    public CompletableFuture<String> getHash() {
         if (queue.size() / (capacity / 100.0) < minFillPercent) {
             if (isGenerating.compareAndSet(false, true)) {
             }
@@ -45,10 +47,10 @@ public class HashCash {
             isGenerating.set(false);
             log.info("Generated new batch hashes");
         }
-        return CompletableFuture.completedFuture(queue.poll());
+        return CompletableFuture.completedFuture(queue.poll().getHash());
     }
 
-    private void fillingQueue() {
+    public void fillingQueue() {
         hashGenerator.generatedBatch();
         queue.addAll(hashRepository.getHashBatch(capacity));
     }
