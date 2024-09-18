@@ -17,7 +17,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,5 +54,16 @@ public class UrlControllerTest {
                         .content(json))
                 .andExpect(status().isCreated());
         verify(urlService, times(1)).getShortUrl(urlDtoRequest);
+    }
+
+    @Test
+    void getOriginalTest() throws Exception {
+         String hash = "abcABC";
+        String expectedUrl = "http://example.com";
+        when(urlService.getUrlFromHash(hash)).thenReturn(anyString());
+
+//        mockMvc.perform(get("/url/{hash}", hash))
+//                .andExpect(status().isFound())
+//                .andExpect(redirectedUrl(expectedUrl));
     }
 }

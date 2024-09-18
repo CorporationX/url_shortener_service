@@ -39,7 +39,7 @@ public class HashCash {
     }
 
     @Async("executorService")
-    public CompletableFuture<String> getHash() {
+    public String getHash() {
         if (queue.size() / (capacity / 100.0) < minFillPercent) {
             if (isGenerating.compareAndSet(false, true)) {
             }
@@ -47,7 +47,7 @@ public class HashCash {
             isGenerating.set(false);
             log.info("Generated new batch hashes");
         }
-        return CompletableFuture.completedFuture(queue.poll().getHash());
+        return queue.poll().getHash();
     }
 
     public void fillingQueue() {
