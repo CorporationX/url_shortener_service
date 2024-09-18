@@ -10,28 +10,24 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @EnableScheduling
 @RequiredArgsConstructor
 public class CleanerScheduler {
 
-    @Value("${hash.cleaner.cron}")
-    private String cleanedCron;
-
-    @Value("${hash.cleaner.interval}")
+    @Value("${hash.cleaner.interval.month}")
     private int interval;
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Scheduled(cron = "#{cleanedCron}")
+    @Scheduled(cron = "${hash.cleaner.cron}")
     @Transactional
     public void cleanOldAssociation() {
         List<Url> oldUrls = urlRepository.findAndDelete(interval);
 
-        hashRepository.saveAll( oldUrls.stream().
+        hashRepository.saveAll(oldUrls.stream().
                 map(url -> new Hash(url.getHash())).
                 toList());
     }

@@ -42,7 +42,7 @@ hash:
       alive.time: 5
   cleaner:
     cron: "0 0 0 * * ?"
-    interval: 1
+    interval.month: 1
 
 logging.level.org.hibernate.SQL: DEBUG
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
