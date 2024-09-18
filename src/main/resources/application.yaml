@@ -14,11 +14,43 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 20
+        queue-capacity: 10000
+        keep-alive: 60
+
+  batch:
+    size: 100
+  base62:
+    base62-alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    base: 62
+
+  queue:
+    size: 10
+    minimum-size: 4
+
+  hours: 8760
+  url:
+    name: https://short.url/
+
+url:
+  url-deleted:
+    scheduler:
+      cron: "0 0 * * * *" # once an hour
+
 server:
-  port: 8080
+  port: 8343
 
 logging:
   level:
