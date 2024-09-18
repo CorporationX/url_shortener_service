@@ -8,12 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url, Long> {
-
-    Url findByHash(String hash);
+public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM url 
+            DELETE FROM url
             WHERE create_at< NOW() - INTERVAL '#{interval} year'
             RETURNING *
             """)

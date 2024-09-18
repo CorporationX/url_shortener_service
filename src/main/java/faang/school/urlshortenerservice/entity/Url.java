@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 

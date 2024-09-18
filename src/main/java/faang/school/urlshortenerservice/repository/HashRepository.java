@@ -13,9 +13,9 @@ import java.util.List;
 public interface HashRepository extends CrudRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_hash_number_seq') FROM generate_series(1, 10000)
+            SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :batch)
             """)
-    List<Long> getNextRange();
+    List<Long> getNextRange(long batch);
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE hash IN (

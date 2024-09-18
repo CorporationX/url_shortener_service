@@ -33,9 +33,6 @@ public class LocalCache {
     @PostConstruct
     public void init() {
         try {
-            ExecutorService executorService = Executors.newFixedThreadPool(corePoolSize);
-            log.info("ExecutorService initialization started with thread pool size: {}", corePoolSize);
-
             hashes.addAll(hashGenerator.getHashes(capacity));
             log.info("LocalCache initialization started with {} hashes", hashes.size());
         } catch (Exception e) {
@@ -45,10 +42,14 @@ public class LocalCache {
     }
 
     public String getHash() {
-        if (capacity / hashes.size() * 100 < fillPercent &&
+        if (hashes.size() / capacity * 100 < fillPercent &&
                 filling.compareAndSet(false, true)) {
             hashGenerator.getHashesAsync(capacity)
                     .thenAccept(hashes::addAll)
+                    .exceptionally(ex -> {
+                        log.error("Error initializing LocalCache ", ex);
+                        return null;
+                    })
                     .thenRun(() -> filling.set(false));
         }
         return hashes.poll();

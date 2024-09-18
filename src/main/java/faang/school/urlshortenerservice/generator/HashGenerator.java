@@ -20,39 +20,27 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
 
-    @Value("${hash.range}")
-    private int maxRange;
+    @Value("${hash.cache.batchSize}")
+    private int batchSize;
+
 
     @Transactional
     public void generateHash() {
-        var range = hashRepository.getNextRange();
+        var range = hashRepository.getNextRange(batchSize);
         var hashes = encoder.encode(range);
-        var testHash = hashes.stream().limit(10).toList();
 
-        hashRepository.saveAll(testHash);
+        hashRepository.saveAll(hashes);
     }
 
     @Transactional
     public List<String> getHashes(long hashSize) {
         generateHash();
-        log.info("Hash generated");
         return hashRepository.findAndDelete(hashSize);
     }
 
-//    @Transactional
-//    public List<String> getHashes(long hashSize) {
-//        generateHash();
-//        List<Hash> hashes = hashRepository.findAndDelete(hashSize);
-//        if (hashes.size() < hashSize) {
-//            generateHash();
-//            hashes.addAll(hashRepository.findAndDelete(hashSize));
-//        }
-//        return hashes.stream().map(Hash::getHash).toList();
-//    }
-
     @Transactional
     @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(long amount) {
-        return CompletableFuture.completedFuture(getHashes(amount));
+    public CompletableFuture<List<String>> getHashesAsync(long hashSize) {
+        return CompletableFuture.completedFuture(getHashes(hashSize));
     }
 }

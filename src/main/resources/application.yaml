@@ -21,6 +21,7 @@ spring:
     redis:
       port: 6379
       host: localhost
+      ttl: 1
 
 server:
   port: 8080
@@ -30,9 +31,9 @@ logging:
     root: info
 
 hash:
-  range: 10000
   cache:
-    capacity: 10
+    batchSize: 20000
+    capacity: 10000
     fill.percent: 20
   thread:
     pool:
@@ -42,3 +43,6 @@ hash:
   cleaner:
     cron: "0 0 0 * * ?"
     interval: 1
+
+logging.level.org.hibernate.SQL: DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
