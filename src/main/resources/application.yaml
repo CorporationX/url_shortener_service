@@ -26,6 +26,7 @@ hash:
   base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
   min_fill_percent: 20
   queue_capacity: 1000
+  url_prefix: http://localhost:8089/api/v1/url/
 
 executor:
   pool_size: 10
