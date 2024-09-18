@@ -33,13 +33,21 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashes.size() / (capacity / 100.0) < fillPercent) {
+        if (getHashesCapacity() < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                generator.getHashBatchAsync((int) (capacity * (100 - fillPercent / 100.0)))
+                generator.getHashBatchAsync(getFreeCapacity())
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> filling.set(false));
             }
         }
         return hashes.poll();
+    }
+
+    private int getFreeCapacity() {
+        return (int) (capacity * (100 - fillPercent / 100.0));
+    }
+
+    private double getHashesCapacity() {
+        return hashes.size() / (capacity / 100.0);
     }
 }
