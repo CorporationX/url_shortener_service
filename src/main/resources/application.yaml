@@ -38,3 +38,5 @@ hash:
 
 my_domain_name: https://mydomain.ru
 
+cron_expression: 0 0 0 ? * *
+
