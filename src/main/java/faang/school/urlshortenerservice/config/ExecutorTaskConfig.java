@@ -25,7 +25,7 @@ public class ExecutorTaskConfig {
 
 
     @Bean
-    public ThreadPoolTaskExecutor executorTask() {
+    public ThreadPoolTaskExecutor taskExecutor() {
         log.info("Creating executor service");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
