@@ -26,7 +26,7 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashes = new ArrayBlockingQueue<>(capacity);
-        fillQueue(capacity);
+        fillQueue();
     }
 
     @Async("hashCacheExecutor")
@@ -38,12 +38,12 @@ public class HashCache {
     }
     private void triggerBatchFill() {
         if (isFilling.compareAndSet(false, true)) {
-            fillQueue(capacity);
+            fillQueue();
         }
     }
-    private void fillQueue(int size) {
-        hashGenerator.generateBatch(size)
-                .thenAccept(hashes::addAll)
-                .thenRun(() -> isFilling.set(false));
+    private void fillQueue() {
+        hashGenerator.generateBatch();
+//                .thenAccept(hashes::addAll)
+//                .thenRun(() -> isFilling.set(false));
     }
 }
