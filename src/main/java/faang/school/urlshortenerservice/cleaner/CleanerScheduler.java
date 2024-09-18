@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cleaner;
 
-
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Period;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,13 @@ public class CleanerScheduler {
     @Transactional
     @Scheduled(cron = "${hash.scheduled.cron}")
     public void clean() {
-        urlService.cleanOldUrls(cleanupPeriod);
-        hashGenerator.generateAndSaveBatch();
+        Period period = Period.parse(cleanupPeriod);
+
+        int freedHashedCount = urlService.cleanOldUrls(period);
+        if (freedHashedCount > 0) {
+            hashGenerator.generateAndSaveBatch(freedHashedCount);
+        } else {
+            log.info("No old URLs cleaned, skipping hash generation.");
+        }
     }
 }

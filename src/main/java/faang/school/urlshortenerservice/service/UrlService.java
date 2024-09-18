@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -29,9 +30,6 @@ public class UrlService {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    @Value("${redis.cache-ttl}")
-    private long cacheTtl;
-
     @Transactional
     public String shortenUrl(UrlDto urlDto){
         String existingHash = urlCacheRepository.getCacheValueByUrl(urlDto.getUrl());
@@ -41,7 +39,7 @@ public class UrlService {
 
         existingHash = urlRepository.findHashByUrl(urlDto.getUrl());
         if (existingHash != null) {
-            urlCacheRepository.save(existingHash, urlDto.getUrl(), cacheTtl);
+            urlCacheRepository.save(existingHash, urlDto.getUrl());
             return String.format("%s/%s", baseUrl, existingHash);
         }
 
@@ -53,7 +51,7 @@ public class UrlService {
                 .createdAt(LocalDateTime.now())
                 .build();
         urlRepository.save(url);
-        urlCacheRepository.save(hash, url.getUrl(), cacheTtl);
+        urlCacheRepository.save(hash, url.getUrl());
 
         return String.format("%s/%s", baseUrl, hash);
     }
@@ -68,14 +66,15 @@ public class UrlService {
                 .map(Url::getUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash));
 
-        urlCacheRepository.save(hash, originalUrl, cacheTtl);
+        urlCacheRepository.save(hash, originalUrl);
 
         return originalUrl;
     }
 
-    public void cleanOldUrls(String cleanupPeriod) {
-        LocalDateTime cutoffDate = LocalDateTime.now().minusYears(parsePeriod(cleanupPeriod));
+    public int cleanOldUrls(Period period) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minus(period);
         List<String> freedHashes = urlRepository.deleteOldUrlsAndReturnHashes(cutoffDate);
+
         if (!freedHashes.isEmpty()) {
             List<Hash> hashEntities = freedHashes.stream()
                     .map(Hash::new)
@@ -85,9 +84,6 @@ public class UrlService {
         } else {
             log.info("No old URLs to clean");
         }
-    }
-
-    private long parsePeriod(String cleanupPeriod) {
-        return Long.parseLong(cleanupPeriod.replace("Y", ""));
+        return freedHashes.size();
     }
 }

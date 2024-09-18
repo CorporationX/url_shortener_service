@@ -17,6 +17,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -39,8 +40,6 @@ logging:
     root: info
 
 hash:
-  generator:
-    batch-size: 100
   cache:
     low-threshold-percentage: 20
     queue:
@@ -49,10 +48,10 @@ hash:
     cron : "0 0 0 * * *"
 
 app:
-  base-url : http://localhost:8080
+  base-url : http://localhost:8080/shortener
 
 redis:
   cache-ttl: 86400
 
 cleanup:
-  period: 1Y
+  period: "P1Y"

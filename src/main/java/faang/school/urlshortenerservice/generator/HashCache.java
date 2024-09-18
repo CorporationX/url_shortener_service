@@ -28,16 +28,11 @@ public class HashCache {
     public void init() {
         hashes = new ArrayBlockingQueue<>(capacity);
         List<String> generatedHashes = hashGenerator.getHashBatch(capacity);
-        if (generatedHashes.size() > capacity) {
-            generatedHashes = generatedHashes.subList(0, capacity);
-        }
-
         try {
             hashes.addAll(generatedHashes);
         } catch (IllegalStateException e) {
             log.error("Error initializing HashCache: Queue is full", e);
         }
-
     }
 
     public String getHash() {
