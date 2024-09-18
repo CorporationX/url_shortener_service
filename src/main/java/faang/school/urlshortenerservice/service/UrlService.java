@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.model.HashCache;
 import faang.school.urlshortenerservice.model.Url;
@@ -20,6 +19,7 @@ public class UrlService {
 
     public final HashCache hashCache;
     public final HashMapper hashMapper;
+    public final UrlMapper urlMapper;
     public final UrlRepository urlRepository;
     public final UrlCacheRepository urlCacheRepository;
 
@@ -53,5 +53,17 @@ public class UrlService {
         urlInRedis.setLongUrl(longUrl.url());
         urlInRedis.setCreatedAt(LocalDateTime.now());
         urlCacheRepository.save(urlInRedis);
+    }
+
+    public String getOriginUrl(String shortUrl) {
+        Optional<UrlInRedis> longUrlFromRedis = urlCacheRepository.findById(shortUrl);
+        if (longUrlFromRedis.isPresent()) {
+            return longUrlFromRedis.get().getLongUrl();
+        }
+        Optional<Url> longUrlFromDb = urlRepository.findByHash(shortUrl);
+        if (longUrlFromDb.isPresent()) {
+            return urlMapper.urlToUrlDto(longUrlFromDb.get()).url();
+        }
+        throw new IllegalArgumentException("Такого URL не существует. Создайте новый.");
     }
 }

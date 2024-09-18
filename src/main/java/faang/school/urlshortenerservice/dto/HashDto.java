@@ -1,3 +1,6 @@
 package faang.school.urlshortenerservice.dto;
 
-public record HashDto(String hash) {}
+import jakarta.validation.constraints.NotNull;
+
+public record HashDto(@NotNull(message = "Url не может отсутствовать.") String hash) {
+}
