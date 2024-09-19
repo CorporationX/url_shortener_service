@@ -34,24 +34,25 @@ public class HashCash {
     @PostConstruct
     public void init() {
         log.info("Initializing Hash Cash");
-        queue = new LinkedBlockingDeque<>(capacity);
+        queue = new LinkedBlockingDeque<>(capacity) ;
         fillingQueue();
     }
 
-    @Async("executorService")
+
     public String getHash() {
         if (queue.size() / (capacity / 100.0) < minFillPercent) {
             if (isGenerating.compareAndSet(false, true)) {
+                hashGenerator.getBatch();
+                hashGenerator.getBatchAsync().thenAccept(queue::addAll);
+                isGenerating.set(false);
+                log.info("Generated new batch hashes");
             }
-            fillingQueue();
-            isGenerating.set(false);
-            log.info("Generated new batch hashes");
         }
         return queue.poll().getHash();
     }
 
     public void fillingQueue() {
         hashGenerator.generatedBatch();
-        queue.addAll(hashRepository.getHashBatch(capacity));
+        queue.addAll(hashGenerator.getBatch());
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,13 +22,27 @@ public class HashGenerator {
     @Value("${hash.batch_size:1000}")
     private int batchSize;
 
-    @Async("executorService")
+
     @Transactional
-    public void generatedBatch(){
-        List<Long> generatedNumbers =hashRepository.getUniqueNumbers(batchSize);
-        List<String> strings = base62Encoder.encode(generatedNumbers);
+    public void generatedBatch() {
+        List<Long> generatedNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = base62Encoder.encode(generatedNumbers).stream().map(string ->
                 Hash.builder().hash(string).build()).collect(Collectors.toList());
         hashRepository.saveAll(hashes);
+    }
+
+    @Transactional
+    public List<Hash> getBatch() {
+        List<Hash> hashes = hashRepository.getAndDeleteHashBatch(batchSize);
+        if (hashes.size() < batchSize) {
+            generatedBatch();
+            hashes.addAll(hashRepository.getAndDeleteHashBatch(batchSize - hashes.size()));
+        }
+        return hashes;
+    }
+
+    @Async("executorService")
+    public CompletableFuture<List<Hash>> getBatchAsync() {
+        return CompletableFuture.completedFuture(getBatch());
     }
 }

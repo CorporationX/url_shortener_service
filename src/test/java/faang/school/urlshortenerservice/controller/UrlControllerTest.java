@@ -33,14 +33,14 @@ public class UrlControllerTest {
     private String json;
 
     @BeforeEach
-     void setUp(){
+    void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(urlController).build();
         urlDtoRequest = UrlDtoRequest.builder()
                 .url("http://example.com")
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            json= objectMapper.writeValueAsString(urlDtoRequest);
+            json = objectMapper.writeValueAsString(urlDtoRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -58,12 +58,12 @@ public class UrlControllerTest {
 
     @Test
     void getOriginalTest() throws Exception {
-         String hash = "abcABC";
-        String expectedUrl = "http://example.com";
-        when(urlService.getUrlFromHash(hash)).thenReturn(anyString());
+        String hash = "abcABC";
+        String expectedUrl = "http://example.com/abcABC";
+        when(urlService.getUrlFromHash(hash)).thenReturn(expectedUrl);
 
-//        mockMvc.perform(get("/url/{hash}", hash))
-//                .andExpect(status().isFound())
-//                .andExpect(redirectedUrl(expectedUrl));
+        mockMvc.perform(get("/api/v1/url/{hash}", hash))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
     }
 }

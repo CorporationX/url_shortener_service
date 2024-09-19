@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cashe.HashCash;
 import faang.school.urlshortenerservice.dto.UrlDtoRequest;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,12 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 ;
 
@@ -32,6 +34,8 @@ public class UrlServiceTest {
     private HashCash hashCash;
     @Mock
     private UrlCacheRepository urlCacheRepository;
+    @Mock
+    private HashRepository hashRepository;
     private Url url;
     private UrlDtoRequest urlDtoRequest;
     private String hash;
@@ -65,15 +69,16 @@ public class UrlServiceTest {
     }
 
     @Test
-    void getUrlFormHashFromCashTest(){
+    void getUrlFormHashFromCashTest() {
         when(urlCacheRepository.getUrlByHash(hash)).thenReturn(Optional.of(url.getUrl()));
         String actual = urlService.getUrlFromHash(hash);
         assertEquals(url.getUrl(), actual);
         verify(urlCacheRepository).getUrlByHash(hash);
 
     }
+
     @Test
-    void getUrlFromHashFromRepositoryTest(){
+    void getUrlFromHashFromRepositoryTest() {
         when(urlCacheRepository.getUrlByHash(hash)).thenReturn(Optional.empty());
         when(urlRepository.findById(hash)).thenReturn(Optional.of(url));
         String actual = urlService.getUrlFromHash(hash);
@@ -83,9 +88,19 @@ public class UrlServiceTest {
     }
 
     @Test
-    void getUrlFromRepositoryNotFoundTest(){
+    void getUrlFromRepositoryNotFoundTest() {
         when(urlCacheRepository.getUrlByHash(hash)).thenReturn(Optional.empty());
         when(urlRepository.findById(hash)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> urlService.getUrlFromHash(hash));
+    }
+
+    @Test
+    void deleteOldUrls() {
+        LocalDateTime fromDate = LocalDateTime.now().minusYears(1L);
+        List<String> hashes = List.of("A", "B", "C", "D", "E", "F");
+        when(urlRepository.removeOldUrlAndGetHashes(any(LocalDateTime.class))).thenReturn(hashes);
+        urlService.deleteOldUrls();
+        verify(urlRepository, times(1)).removeOldUrlAndGetHashes(any(LocalDateTime.class));
+        verify(hashRepository, times(1)).saveAll(anyCollection());
     }
 }
