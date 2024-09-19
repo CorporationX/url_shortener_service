@@ -11,17 +11,32 @@ import java.util.concurrent.Executor;
 @Configuration
 public class ThreadPoolConfig {
     @Value("${hash-generator.thread-pool.size:5}")
-    private int poolSize;
+    private int hashGeneratorPoolSize;
 
     @Value("${hash-generator.thread-pool.queue-capacity:50}")
-    private int queueCapacity;
+    private int hashGeneratorQueueCapacity;
+    @Value("${hash-cache.thread-pool.size:5}")
+    private int hashCachePoolSize;
 
-    @Bean(name = "hashGeneratorTaskExecutor")
-    public Executor threadPoolTaskExecutor() {
+    @Value("${hash-cache.thread-pool.queue-capacity:50}")
+    private int hashCacheQueueCapacity;
+
+    @Bean
+    public Executor hashGeneratorTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(poolSize);
-        executor.setMaxPoolSize(poolSize);
-        executor.setQueueCapacity(queueCapacity);
+        executor.setCorePoolSize(hashGeneratorPoolSize);
+        executor.setMaxPoolSize(hashGeneratorPoolSize);
+        executor.setQueueCapacity(hashGeneratorQueueCapacity);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean
+    public Executor hashCacheTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(hashCachePoolSize);
+        executor.setMaxPoolSize(hashCachePoolSize);
+        executor.setQueueCapacity(hashCacheQueueCapacity);
         executor.initialize();
         return executor;
     }
