@@ -12,8 +12,6 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${hash.batch_size.get}")
-    private int getBatchSize;
     @Value("${hash.batch_size.insert}")
     private int insertBatchSize;
 
@@ -37,17 +35,20 @@ public class HashRepository {
         }
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(int amount) {
         String sql = """
-                DELETE FROM hash
-                WHERE hash IN (
+                WITH cte AS (
                     SELECT hash
                     FROM hash
                     ORDER BY RANDOM()
                     LIMIT ?
+                    FOR UPDATE SKIP LOCKED
                 )
-                RETURNING hash
+                DELETE FROM hash
+                USING cte
+                WHERE hash.hash = cte.hash
+                RETURNING hash.hash
                 """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), getBatchSize);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), amount);
     }
 }

@@ -27,8 +27,12 @@ logging:
 hash:
   batch_size:
     insert: 1000
-    get: 10000
     generate: 100000
   generator:
     pool_size: 8
     queue_capacity: 50
+  cache:
+    pool_size: 8
+    queue_capacity: 50
+    capacity: 10000
+    fill_percent: 20
