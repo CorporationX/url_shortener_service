@@ -22,7 +22,6 @@ public class HashGenerator {
     @Value("${hash.batch_size:1000}")
     private int batchSize;
 
-
     @Transactional
     public void generatedBatch() {
         List<Long> generatedNumbers = hashRepository.getUniqueNumbers(batchSize);
