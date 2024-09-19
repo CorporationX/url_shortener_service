@@ -38,7 +38,8 @@ logging:
 
 app:
   cleaner-scheduler:
-    cron: 0 0 0 * * * #every day at 00:00:00
+    cron: 0 0 0 * * * # every day at 00:00:00
+    period: P1Y # PnYnMnWnD format for Period.parse
   hash-generator:
     batch-size: 5000
     executor:

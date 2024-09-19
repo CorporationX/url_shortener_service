@@ -14,8 +14,8 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
             DELETE FROM url u
-                   WHERE u.created_at <= :before
+                   WHERE u.created_at <= :stamp
             returning u.hash;
             """)
-    List<String> pollBefore(LocalDateTime before);
+    List<String> pollBeforeStamp(LocalDateTime stamp);
 }
