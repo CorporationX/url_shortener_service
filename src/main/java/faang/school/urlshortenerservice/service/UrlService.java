@@ -33,7 +33,7 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String hash) {
-        String originalUrl = urlCacheRepositoryImpl.getUrl(hash);
+        String originalUrl = urlCacheRepositoryImpl.getUrl(hash).getOriginalUrl();
         if (originalUrl == null) {
             throw new NotFoundException("Original Url for hash: " + hash + "hot found. " +
                     "Check the correctness of the entered data");

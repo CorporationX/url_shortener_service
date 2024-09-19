@@ -46,6 +46,7 @@ public class UrlServiceTest {
 
     Url testUrl = Url.builder()
             .hash("abc")
+            .originalUrl("testUrl")
             .build();
 
     @Test
@@ -78,14 +79,14 @@ public class UrlServiceTest {
 
     @Test
     void testGetOriginalUrlIfOriginalUrlIsNull() {
-        when(urlCacheRepositoryImpl.getUrl(anyString())).thenReturn(null);
+        when(urlCacheRepositoryImpl.getUrl(anyString())).thenReturn(new Url());
 
-        assertThrows(NotFoundException.class, () ->urlService.getOriginalUrl(anyString()));
+        assertThrows(NotFoundException.class, () -> urlService.getOriginalUrl(anyString()));
     }
 
     @Test
     void testGetOriginalUrlIfOriginalUrlNotNull() {
-        when(urlCacheRepositoryImpl.getUrl(anyString())).thenReturn(testHash);
+        when(urlCacheRepositoryImpl.getUrl(anyString())).thenReturn(testUrl);
 
         urlService.getOriginalUrl(anyString());
 

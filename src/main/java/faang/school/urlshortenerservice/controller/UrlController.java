@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -41,7 +43,8 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
-    public String getOriginalUrl(@PathVariable String hash) {
-        return urlService.getOriginalUrl(hash);
+    public void getOriginalUrl(@PathVariable String hash, HttpServletResponse response) throws IOException {
+        String originalUrl = urlService.getOriginalUrl(hash);
+        response.sendRedirect(originalUrl);
     }
 }

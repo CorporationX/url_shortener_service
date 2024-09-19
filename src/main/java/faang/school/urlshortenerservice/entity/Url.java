@@ -21,8 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "urls")
-public class Url
-        implements Serializable
+public class Url implements Serializable
          {
     @Id
     @Column(name = "hash", length = 6)
