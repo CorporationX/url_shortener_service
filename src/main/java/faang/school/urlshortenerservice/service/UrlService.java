@@ -1,14 +1,16 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.MissingDataException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Data
 @RequiredArgsConstructor
 public class UrlService {
     private final HashCache hashCache;
@@ -29,7 +31,7 @@ public class UrlService {
         String url = cacheRepository.get(hash);
         if (url == null) {
             url = urlRepository.findByHash(hash)
-                    .orElseThrow(() -> new MissingDataException("URL on " + hostName +":"+ hash + " not found!"))
+                    .orElseThrow(() -> new EntityNotFoundException("URL on " + hostName +":"+ hash + " not found!"))
                     .getUrl();
         }
         return url;
