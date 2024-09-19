@@ -22,7 +22,7 @@ public class UrlCleanerScheduler {
     private final String interval;
 
     @Transactional
-    @Scheduled(cron = "${cleaner-scheduler.cron:0 0 * * *}")
+    @Scheduled(cron = "${cleaner-scheduler.cron:0 0 0 * * *}")
     public void clean() {
         List<Hash> hashes = urlRepository.getExpiredHashes(interval);
         if (!hashes.isEmpty()) {

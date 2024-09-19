@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  redis:
+    host: localhost
+    port: 6379
+    ttl: 24
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -35,12 +39,15 @@ hash-generator:
     queue-capacity: 50
 
 hash-cache:
-  capacity: 100
+  capacity: 10
   low-limit-percent: 20
   thread-pool:
     size: 5
     queue-capacity: 50
 
 cleaner-scheduler:
-  cron: 0 0 * * *
+  cron: 0 0 0 * * *
   interval: 1 year
+
+url-shortener:
+  url: https://shrtnr.com/
