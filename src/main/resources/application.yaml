@@ -38,6 +38,7 @@ executor:
 
 hash:
   cache:
+    type: redis
     size: 5
     min_threshold: 20
   length: 6
