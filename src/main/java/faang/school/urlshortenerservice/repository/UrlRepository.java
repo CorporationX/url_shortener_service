@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(nativeQuery = true, value = """
@@ -15,4 +17,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING hash;
             """)
     List<Hash> getExpiredHashes(String interval);
+
+    Optional<Url> findByHash(String hash);
 }

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.validator;
 
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import org.springframework.stereotype.Component;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -10,7 +11,7 @@ public class UrlValidator {
         try {
             new URL(url).toURI();
         } catch (MalformedURLException | URISyntaxException e) {
-            throw new IllegalArgumentException("Неправильный url " + url);
+            throw new DataValidationException("Wrong url " + url);
         }
     }
 }
