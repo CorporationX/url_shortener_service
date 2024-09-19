@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cashe.HashCash;
 import faang.school.urlshortenerservice.dto.UrlDtoRequest;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +24,7 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final HashCash hashCash;
     private final UrlCacheRepository urlCacheRepository;
+    private final HashRepository hashRepository;
     @Value("${hash.url_prefix}")
     @Setter
     private String urlPrefix;
@@ -40,6 +45,19 @@ public class UrlService {
         Url entity = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Url with " + hash + " not found!"));
         return entity.getUrl();
+    }
+
+    @Transactional
+    public void deleteOldUrls() {
+        LocalDateTime fromDate = LocalDateTime.now().minusYears(1L);
+        List<String> hashes = urlRepository.removeOldUrlAndGetHashes(fromDate);
+        if (!hashes.isEmpty()) {
+            hashRepository.saveAll(
+                    hashes.stream()
+                            .map(string -> Hash.builder().hash(string).build())
+                            .toList()
+            );
+        }
     }
 
     private void saveShortUrl(String hash, UrlDtoRequest request) {

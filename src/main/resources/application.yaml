@@ -28,6 +28,10 @@ hash:
   queue_capacity: 1000
   url_prefix: http://localhost:8089/api/v1/url/
 
+url:
+  cleaner:
+    scheduler: 0 0 0 * * *
+
 executor:
   pool_size: 10
 
