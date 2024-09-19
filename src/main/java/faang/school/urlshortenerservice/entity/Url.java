@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class Url implements Serializable {
     @Id
     @Column(name = "hash", unique = true, nullable = false)

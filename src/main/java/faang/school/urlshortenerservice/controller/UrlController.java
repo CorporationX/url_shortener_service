@@ -24,8 +24,8 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public ResponseEntity<String> createUrl(@RequestBody @Valid UrlDto url) {
-        String hash = urlService.createUrl(url);
+    public ResponseEntity<String> createUrl(@RequestBody @Valid UrlDto urlDto) {
+        String hash = urlService.createUrl(urlDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(hash);
     }
 

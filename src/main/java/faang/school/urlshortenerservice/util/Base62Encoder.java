@@ -7,7 +7,7 @@ import java.util.List;
 
 @UtilityClass
 public class Base62Encoder {
-    private static final String BASE_62_SYMBOLS = "PTIWaXgjHdfDCrR1YZuVUF9Sm78Q46AJoweh3psvKOiyqnBkE2lMG0c5txLzbN";
+    private final String BASE_62_SYMBOLS = "PTIWaXgjHdfDCrR1YZuVUF9Sm78Q46AJoweh3psvKOiyqnBkE2lMG0c5txLzbN";
 
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
