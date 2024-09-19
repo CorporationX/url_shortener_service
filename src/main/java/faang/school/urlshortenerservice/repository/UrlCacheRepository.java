@@ -12,4 +12,8 @@ public class UrlCacheRepository {
     public void save(String hash, String longUrl) {
         redisTemplate.opsForValue().set(hash, longUrl);
     }
+
+    public String findLongUrlByHash(String hash) {
+        return redisTemplate.opsForValue().get(hash);
+    }
 }
