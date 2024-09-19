@@ -38,7 +38,6 @@ public class HashCash {
         fillingQueue();
     }
 
-
     public String getHash() {
         if (queue.size() / (capacity / 100.0) < minFillPercent) {
             if (isGenerating.compareAndSet(false, true)) {
