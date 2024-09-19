@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      jdbc:
+        batch_size: 5
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +25,13 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    capacity: 1000
+    fill:
+      percent: 20
+    cron: 0 0 0 * * *
+
+url:
+  host: http://localhost:8080/url/
