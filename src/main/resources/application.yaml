@@ -47,5 +47,6 @@ app:
       queue-size: 1
   hash-cache:
     cache-capacity: 1000
+    fill-percent: 20
   redis-cache:
     hours-to-expire: 24
