@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends CrudRepository<Url, Long> {
 
+    @Modifying
     @Query(nativeQuery = true, value = """
             WITH deleted AS (
                 DELETE FROM url
@@ -20,6 +21,5 @@ public interface UrlRepository extends CrudRepository<Url, Long> {
             )
             SELECT hash FROM deleted
             """)
-    @Modifying
     List<String> findAndDeleteHashExpired(LocalDateTime dateExpired);
 }

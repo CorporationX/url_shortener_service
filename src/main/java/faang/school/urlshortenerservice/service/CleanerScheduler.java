@@ -18,13 +18,13 @@ public class CleanerScheduler {
 
     public CleanerScheduler(UrlRepository urlRepository,
                             HashRepository hashRepository,
-                            @Value("${data.hash.cleaner.expired_after_years}") int expirationYears) {
+                            @Value("${hash.cleaner.expired_after_years}") int expirationYears) {
         this.urlRepository = urlRepository;
         this.hashRepository = hashRepository;
         this.expirationYears = expirationYears;
     }
 
-    @Scheduled(cron = "${data.hash.cleaner.cron:0 0 0 * * *}")
+    @Scheduled(cron = "${hash.cleaner.cron:0 0 0 * * *}")
     public void clean() {
         LocalDateTime dateExpired = LocalDateTime.now().minusYears(expirationYears);
         List<Hash> hashesExpired = urlRepository.findAndDeleteHashExpired(dateExpired).stream()
@@ -32,5 +32,4 @@ public class CleanerScheduler {
                 .toList();
         hashRepository.saveAll(hashesExpired);
     }
-
 }

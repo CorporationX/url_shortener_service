@@ -18,8 +18,8 @@ public class HashCash {
     private final int minValue;
 
     public HashCash(HashGenerator hashGenerator,
-                    @Value("${data.hash.cash.capacity:10000}") int capacity,
-                    @Value("${data.hash.cash.fill_percent:20}") int percentFill) {
+                    @Value("${hash.cash.capacity:10000}") int capacity,
+                    @Value("${hash.cash.fill_percent:20}") int percentFill) {
         this.hashGenerator = hashGenerator;
         this.capacity = capacity;
         this.percentFill = percentFill;

@@ -12,7 +12,7 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :range)
+            SELECT nextval('unique_number_seq') FROM generate_series(1, :range)
             """)
     List<Long> getUniqueNumbers(int range);
 
