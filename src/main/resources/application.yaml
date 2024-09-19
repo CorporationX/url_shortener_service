@@ -40,3 +40,7 @@ hash-cache:
   thread-pool:
     size: 5
     queue-capacity: 50
+
+cleaner-scheduler:
+  cron: 0 0 * * *
+  interval: 1 year
