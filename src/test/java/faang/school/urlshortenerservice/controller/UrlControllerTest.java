@@ -35,7 +35,7 @@ public class UrlControllerTest {
     }
 
     @Test
-    void testAdd() throws Exception {
+    void testAddUrl() throws Exception {
         when(urlService.add(url)).thenReturn(hash);
 
         mockMvc.perform(post("/url")
@@ -49,7 +49,7 @@ public class UrlControllerTest {
     }
 
     @Test
-    void testGet() throws Exception {
+    void testGetUrl() throws Exception {
         when(urlService.get(hash)).thenReturn(url);
 
         mockMvc.perform(get("/" + hash))

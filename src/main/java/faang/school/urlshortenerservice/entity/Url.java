@@ -19,12 +19,15 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url {
     @Id
+    @Column(name = "hash", length = 6)
     private String hash;
 
     @NotBlank
+    @Column(name = "url", length = 4096)
     private String url;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }
