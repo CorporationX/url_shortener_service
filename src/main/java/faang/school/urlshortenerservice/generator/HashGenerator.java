@@ -28,7 +28,7 @@ public class HashGenerator {
     }
 
     @PostConstruct
-    private void generateBatch() {
+    public void generateBatch() {
         try {
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(generateBatchSize);
             List<String> hashes = encoder.encode(uniqueNumbers);
