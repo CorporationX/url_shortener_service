@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,15 +19,17 @@ public class HashGenerator {
     public static final String BASE_62_CHARACTER =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final HashRepository hashRepository;
-    @Value("${data.hash.range:10000}")
+    @Value("${hash.range:10000}")
     private int maxRange;
+    @Value("${hash.generator.hash_length:6}")
+    private int hashLength;
 
     @Transactional
-    @Scheduled(cron = "${data.hash.cron:0 0 0 * * *}")
+    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
     public void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashesToInsert = range.stream()
-                .map(this::applyBase62Encoding)
+                .map(hash -> applyBase62Encoding(maxRange))
                 .map(Hash::new)
                 .toList();
 
@@ -54,11 +57,11 @@ public class HashGenerator {
         return CompletableFuture.completedFuture(hashes.stream().map(Hash::getHash).toList());
     }
 
-    private String applyBase62Encoding(long number) {
+    private String applyBase62Encoding(int borders) {
         StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE_62_CHARACTER.charAt((int) (number % BASE_62_CHARACTER.length())));
-            number /= BASE_62_CHARACTER.length();
+        while (builder.length() < hashLength) {
+            int num = new SecureRandom().nextInt(1,borders);
+            builder.append(BASE_62_CHARACTER.charAt(num % BASE_62_CHARACTER.length()));
         }
         return builder.toString();
     }

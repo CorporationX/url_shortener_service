@@ -14,10 +14,10 @@ import java.util.concurrent.Executor;
 public class AsyncConfig implements AsyncConfigurer {
 
     @Bean(name = "hashGeneratorExecutor")
-    public Executor hashGeneratorExecutor(@Value("${data.hash.generator.executor.pool_size}") int poolSize,
-                                          @Value("${data.hash.generator.executor.max_pool_size}") int maxPoolSize,
-                                          @Value("${data.hash.generator.executor.queue_capacity}") int queueCapacity,
-                                          @Value("${data.hash.generator.executor.prefix}") String prefix) {
+    public Executor hashGeneratorExecutor(@Value("${hash.executor.pool_size}") int poolSize,
+                                          @Value("${hash.executor.max_pool_size}") int maxPoolSize,
+                                          @Value("${hash.executor.queue_capacity}") int queueCapacity,
+                                          @Value("${hash.executor.prefix}") String prefix) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(poolSize);
         executor.setMaxPoolSize(maxPoolSize);
