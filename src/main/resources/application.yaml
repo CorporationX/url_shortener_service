@@ -44,3 +44,7 @@ hash:
     queue_capacity: 50
     capacity: 10000
     fill_percent: 20
+
+  cleaner:
+    cron: 0 0 0 * * ?
+    interval: 1 year
