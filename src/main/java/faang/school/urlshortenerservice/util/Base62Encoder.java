@@ -18,10 +18,21 @@ public class Base62Encoder {
     }
 
     private String encode(long number) {
+        if (number == 0) {
+            return "0";
+        }
+        boolean negative = false;
+        if (number < 0) {
+            negative = true;
+            number = -number;
+        }
         StringBuilder stringBuilder = new StringBuilder();
         while (number != 0) {
             stringBuilder.append(ALPHABET[(int) number % BASE]);
             number = number / BASE;
+        }
+        if (negative) {
+            stringBuilder.append("-");
         }
         return stringBuilder.reverse().toString();
     }

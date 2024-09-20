@@ -74,6 +74,6 @@ class HashCacheImplTest {
         assertTrue(testCache.containsAll(newHashes));
         verify(mockedExecutor, times(1)).execute(any(Runnable.class));
         verify(mockedHashGenerator, times(1)).getHashes(remainingCapacity);
-        verify(mockedHashGenerator, times(1)).generateBatchIfNeeded();
+        verify(mockedHashGenerator, times(1)).generateBatchIfNeededAsync();
     }
 }

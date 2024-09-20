@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.db.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,13 +21,6 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @PostConstruct
-    @Transactional
-    public void init() {
-        generateBatchIfNeeded();
-    }
-
-    @Async("hashGeneratorExecutor")
     @Transactional
     public void generateBatchIfNeeded() {
         if (hashRepository.getHashesNumber() < batchSize) {
@@ -38,6 +30,12 @@ public class HashGenerator {
             List<String> hashes = base62Encoder.encode(uniqueNumbers);
             hashRepository.saveBatch(hashes);
         }
+    }
+
+    @Async("hashGeneratorExecutor")
+    @Transactional
+    public void generateBatchIfNeededAsync() {
+        generateBatchIfNeeded();
     }
 
     @Transactional

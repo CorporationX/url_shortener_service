@@ -63,6 +63,6 @@ public class HashCacheImpl implements HashCache {
         List<String> hashes = hashGenerator.getHashes(numberToRefill);
         cache.addAll(hashes);
         refillProcessing.set(false);
-        hashGenerator.generateBatchIfNeeded();
+        hashGenerator.generateBatchIfNeededAsync();
     }
 }
