@@ -15,7 +15,7 @@ public interface UrlHashRepository extends JpaRepository<UrlHash, Long> {
             where id IN (
                 select id from hash limit :amount
             )
-            returning hash
+            returning *
             """
     )
     List<UrlHash> popAll(int amount);
