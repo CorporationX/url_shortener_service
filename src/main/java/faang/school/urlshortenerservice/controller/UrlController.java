@@ -22,7 +22,6 @@ import org.springframework.web.servlet.view.RedirectView;
 @Slf4j
 public class UrlController {
     private final UrlService urlService;
-    private final RestTemplate restTemplate;
 
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)

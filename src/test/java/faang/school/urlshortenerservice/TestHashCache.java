@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+
 public class TestHashCache {
     @Mock
     private HashGenerator hashGenerator;
