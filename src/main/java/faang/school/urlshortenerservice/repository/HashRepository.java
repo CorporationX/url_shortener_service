@@ -1,53 +1,29 @@
 package faang.school.urlshortenerservice.repository;
 
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.jdbc.core.JdbcTemplate;
+import faang.school.urlshortenerservice.model.Hash;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
-@RequiredArgsConstructor
-public class HashRepository {
-    private final JdbcTemplate jdbcTemplate;
+public interface HashRepository extends JpaRepository<Hash, String> {
 
-    public List<Long> getUniqueNumbers(int n) {
-        return jdbcTemplate.queryForList(
-                "SELECT NEXTVAL('unique_number_seq') FROM GENERATE_SERIES(1, ?)",
-                Long.class,
-                n
-        );
-    }
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            SELECT nextval('unique_number_seq')
+            FROM generate_series(1, :batchSize);
+            """)
+    List<Long> getUniqueNumbers(@Param("batchSize") long batchSize);
 
-    public List<String> save(List<String> hashes) {
-        jdbcTemplate.batchUpdate(
-                "INSERT INTO hash (hash) VALUES (?)",
-                hashes,
-                hashes.size(),
-                (ps, hash) -> ps.setString(1, hash)
-        );
-        return hashes;
-    }
-
-    public List<String> getHashBatch(int n) {
-        List<String> hashes = jdbcTemplate.queryForList(
-                "SELECT hash FROM hash ORDER BY RANDOM() LIMIT ?",
-                String.class,
-                n
-        );
-
-        if (!hashes.isEmpty()) {
-            String placeholders = hashes.stream()
-                    .map(hash -> "?")
-                    .collect(Collectors.joining(","));
-
-            jdbcTemplate.update(
-                    "DELETE FROM hash WHERE hash IN (" + placeholders + ")",
-                    hashes
-            );
-        }
-        return hashes;
-    }
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash WHERE hash IN (
+                SELECT hash FROM hash ORDER BY random() LIMIT :batchSize
+            )
+            RETURNING hash;
+            """)
+    List<Hash> getAndDeleteHashBatch(@Param("batchSize") long batchSize);
 }
