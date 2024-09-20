@@ -33,7 +33,15 @@ public class Url {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "requested_at")
-    private LocalDateTime requestedAt;
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
