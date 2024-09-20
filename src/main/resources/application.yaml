@@ -13,9 +13,34 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 500
+        order_inserts: true
+        order_updates: true
+        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      connection_factory: jedis # `jedis` or `lettuce`
+
+  hash-generator:
+    max-generated-hashes: 2000 # must be equals `batch_size`
+    generation-cron: 0 0 */6 * * * # every 6 hours
+    thread-pool-size: 12
+
+  cache:
+    url-cache:
+      ttl: 60 # in minute
+    url-hash-cache:
+      capacity: 1000
+      exhaustion-percentage: 20 # in percent !
+
+
 
 server:
   port: 8080
@@ -23,3 +48,11 @@ server:
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        sql: debug
+        engine:
+          jdbc:
+            batch:
+              internal:
+                BatchingBatch: TRACE
