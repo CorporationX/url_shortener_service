@@ -25,6 +25,7 @@ spring:
 
   encoder:
     number-of-digits: 6
+    base-string: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
   generator:
     batch-size: 25

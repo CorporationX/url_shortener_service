@@ -14,13 +14,13 @@ public class HashRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public List<Long> getUniqueNumbers(int quantity) {
-        String query = "select nextval('unique_number_seq') as unique_numbers from generate_series(1, :quantity)";
+        String query = "SELECT NEXTVAL('unique_number_seq') AS unique_numbers FROM generate_series(1, :quantity)";
         MapSqlParameterSource params = new MapSqlParameterSource("quantity", quantity);
         return jdbcTemplate.queryForList(query, params, Long.class);
     }
 
     public void batchSave(List<String> hashes) {
-        String query = "insert into hash (hash) values(:hash)";
+        String query = "INSERT INTO hash (hash) VALUES (:hash)";
         MapSqlParameterSource[] params = new MapSqlParameterSource[hashes.size()];
         for (int i = 0; i < hashes.size(); i++) {
             params[i] = new MapSqlParameterSource("hash", hashes.get(i));
@@ -30,16 +30,16 @@ public class HashRepository {
 
     public List<String> getHashBatch(int batchSize) {
         String query = """
-                with deleted_rows as (
-                    select * from hash
-                    where true
-                    limit :batch_size
-                    for update skip locked
+                WITH deleted_rows AS (
+                    SELECT * FROM hash
+                    WHERE true
+                    LIMIT :batch_size
+                    FOR UPDATE SKIP LOCKED
                 )
-                delete from hash
-                using deleted_rows
-                where hash.hash = deleted_rows.hash
-                returning hash.hash
+                DELETE FROM hash
+                USING deleted_rows
+                WHERE hash.hash = deleted_rows.hash
+                RETURNING hash.hash
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource("batch_size", batchSize);
         return jdbcTemplate.queryForList(query, params, String.class);

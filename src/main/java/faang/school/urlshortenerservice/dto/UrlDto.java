@@ -1,10 +1,14 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 
-@Getter
+@Data
 public class UrlDto {
-    @NotEmpty
+
+    @Pattern(
+            regexp = "^(https://|http://)([\\w.-]+)+(:\\d+)?(/\\S+)?$",
+            message = "Passed string is not valid Url"
+    )
     private String url;
 }

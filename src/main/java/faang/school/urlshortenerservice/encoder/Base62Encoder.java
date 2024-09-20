@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.encoder;
 
+import faang.school.urlshortenerservice.exception.ExceedHashDigitsLimitException;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,10 +13,16 @@ import java.util.List;
 @Component
 public class Base62Encoder implements BaseEncoder {
 
-    private final String base62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final int base = base62.length();
+    @Value("${spring.encoder.base-string}")
+    private String base62;
+    private int base;
     @Value("${spring.encoder.number-of-digits}")
     private int digits;
+
+    @PostConstruct
+    public void init() {
+        base = base62.length();
+    }
 
     @Override
     public List<String> batchEncoding(List<Long> numbers) {
@@ -37,7 +45,7 @@ public class Base62Encoder implements BaseEncoder {
         }
         if (stringBuilder.length() > digits) {
             log.error("Encoded string exceeds digits limit");
-            throw new RuntimeException("Encoded string exceeds digits limit");
+            throw new ExceedHashDigitsLimitException("Encoded string exceeds digits limit");
         }
         return stringBuilder.reverse().toString();
     }

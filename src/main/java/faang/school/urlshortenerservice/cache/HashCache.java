@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.exception.TimeOutException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -35,18 +37,18 @@ public class HashCache {
 
     public String getHash() {
         try {
-            if (isCacheSizeBelowThreshold(cache.remainingCapacity()) && !isGeneratingHash.get()) {
+            if (isCacheSizeBelowThreshold(cache.remainingCapacity()) &&
+                    isGeneratingHash.compareAndSet(false, true)) {
                 generateAdditional();
             }
-            return cache.take();
+            return cache.poll(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Error: timeout while taking hash", e);
-            throw new RuntimeException("Error: timeout while taking hash" + e);
+            throw new TimeOutException("Error: timeout while taking hash" + e);
         }
     }
 
     protected void generateAdditional() {
-        isGeneratingHash.set(true);
         hashGenerator.generateBatch();
         cache.addAll(hashRepository.getHashBatch(cache.remainingCapacity()));
         isGeneratingHash.set(false);

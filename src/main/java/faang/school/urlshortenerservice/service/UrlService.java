@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +22,11 @@ public class UrlService {
     @Value("${spring.url.ttl-in-days}")
     private int ttlInDays;
     private final UrlRepository urlRepository;
-    private final UrlValidator urlValidator;
     private final HashService hashService;
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
     public String getShortUrl(UrlDto urlDto) {
-        urlValidator.validateUrl(urlDto.getUrl());
         Url url = prepareUrl(urlDto);
         urlCacheRepository.save(url.getHash(), url.getUrl());
         return urlRepository.save(url).getHash();
