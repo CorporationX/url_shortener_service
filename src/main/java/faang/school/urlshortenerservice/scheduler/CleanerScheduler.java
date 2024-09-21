@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.cleaner;
+package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import java.time.Period;
 @RequiredArgsConstructor
 @Slf4j
 public class CleanerScheduler {
-    private final HashGenerator hashGenerator;
     private final UrlService urlService;
 
     @Value("${cleanup.period}")
@@ -28,9 +26,9 @@ public class CleanerScheduler {
 
         int freedHashedCount = urlService.cleanOldUrls(period);
         if (freedHashedCount > 0) {
-            hashGenerator.generateAndSaveBatch(freedHashedCount);
+            log.info("{} old hashes freed", freedHashedCount);
         } else {
-            log.info("No old URLs cleaned, skipping hash generation.");
+            log.info("No old URLs to clean.");
         }
     }
 }

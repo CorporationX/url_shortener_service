@@ -19,7 +19,6 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Transactional
     public List<Hash> generateBatch(long amount) {
         List<Long> range = hashRepository.getUniqueNumbers(amount);
         log.info("Generating {} Base62 hashes for range: {}", amount, range);
@@ -42,7 +41,6 @@ public class HashGenerator {
         if (hashes.size() < amount) {
             log.info("Not enough hashes, generating more.");
             List<Hash> generatedHashes = generateBatch(amount - hashes.size());
-            hashRepository.saveAll(generatedHashes);
             hashes.addAll(generatedHashes.stream().map(Hash::getHash).toList());
         }
         log.info("Final hash batch size: {}", hashes.size());

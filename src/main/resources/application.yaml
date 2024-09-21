@@ -40,6 +40,10 @@ logging:
     root: info
 
 hash:
+  generator:
+    scheduled:
+      cron: "0 0 0 * * *"
+    batch-size: 100
   cache:
     low-threshold-percentage: 20
     queue:
