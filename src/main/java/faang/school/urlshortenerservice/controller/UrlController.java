@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("api/v1")
@@ -21,14 +22,15 @@ public class UrlController {
     private final Validator validator;
     private final UrlService urlService;
 
+
     @PostMapping("/url")
     public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlDto longUrl) {
         validator.validateUrl(longUrl);
         return ResponseEntity.status(200).body(urlService.createShortUrl(longUrl));
     }
 
-    @GetMapping("/url/{shortUrl}")
-    public ResponseEntity<?> getOriginUrl(@PathVariable String shortUrl) {
-        return ResponseEntity.status(302).body(urlService.getOriginUrl(shortUrl));
+    @GetMapping("/{hash}")
+    public RedirectView redirectToOriginUrl(@PathVariable String hash) {
+        return new RedirectView(urlService.getOriginUrl(hash), true);
     }
 }

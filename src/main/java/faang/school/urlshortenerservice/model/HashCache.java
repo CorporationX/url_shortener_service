@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 public class HashCache {
 
-    private final ConcurrentLinkedQueue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<String> queue = new ConcurrentLinkedQueue<>();
     private final ExecutorService executorService;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
@@ -26,17 +27,17 @@ public class HashCache {
     private long minPercent;
 
     public Hash getHash() {
-        if (concurrentLinkedQueue.size() <= minPercent * maxHashCash / 100) {
+        if (queue.size() <= minPercent * maxHashCash / 100) {
             executorService.execute(() -> {
                 List<Hash> hashes = hashRepository.getHashBatch(
                         maxHashCash - minPercent * maxHashCash);
                 List<String> strings = hashes.stream()
                         .map(Hash::getHash)
                         .toList();
-                concurrentLinkedQueue.addAll(strings);
+                queue.addAll(strings);
             });
             hashGenerator.generateBatch();
         }
-        return new Hash(concurrentLinkedQueue.poll());
+        return new Hash(queue.poll());
     }
 }
