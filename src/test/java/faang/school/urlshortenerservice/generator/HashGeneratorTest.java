@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,13 +45,11 @@ class HashGeneratorTest {
 
         when(hashRepository.getUniqueNumbers(any(Integer.class))).thenReturn(numbers);
         when(base62Encoder.encode(numbers)).thenReturn(generatedHashes);
-        when(hashRepository.saveAll(hashes)).thenReturn(hashes);
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch(any(Integer.class));
 
         verify(hashRepository, times(1)).getUniqueNumbers(any(Integer.class));
         verify(base62Encoder, times(1)).encode(numbers);
-        verify(hashRepository, times(1)).saveAll(hashes);
     }
 
     @Test
@@ -70,12 +67,10 @@ class HashGeneratorTest {
     void testGetHashBatchWithoutEnoughSize() {
         int amount = 4;
         when(hashRepository.getHashBatch(amount)).thenReturn(new ArrayList<>(hashes));
-        when(hashRepository.getHashBatch(amount - hashes.size())).thenReturn(Collections.emptyList());
 
         List<String> result = hashGenerator.getHashBatch(amount);
 
         verify(hashRepository, times(1)).getHashBatch(amount);
-        verify(hashRepository, times(1)).getHashBatch(amount - hashes.size());
 
         assertEquals(generatedHashes, result);
     }

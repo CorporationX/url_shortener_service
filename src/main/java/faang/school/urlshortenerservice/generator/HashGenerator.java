@@ -23,20 +23,24 @@ public class HashGenerator {
     private int maxRange;
 
     @Transactional
-    public void generateBatch() {
+    public List<Hash> generateAndSaveBatches() {
+        List<Hash> hashes = generateBatch(maxRange);
+        return hashRepository.saveAll(hashes);
+    }
+
+    public List<Hash> generateBatch(int maxRange) {
         List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
-        List<Hash> hashes = base62Encoder.encode(numbers).stream()
+        return base62Encoder.encode(numbers).stream()
                 .map(Hash::new)
                 .toList();
-        hashRepository.saveAll(hashes);
     }
 
     @Transactional
     public List<String> getHashBatch(int amount) {
         List<Hash> hashes = hashRepository.getHashBatch(amount);
         if (hashes.size() < amount) {
-            generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+            List<Hash> extraHashes = generateBatch(amount - hashes.size());
+            hashes.addAll(extraHashes);
         }
 
         return hashes.stream()
