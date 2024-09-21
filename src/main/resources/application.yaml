@@ -17,6 +17,31 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl:
+        minutes: 10
+
+  async:
+    executor:
+      corePoolSize: 10
+      maxPoolSize: 20
+      queueCapacity: 100
+
+hash:
+  batch_size: 1000
+  cache:
+    capacity: 100
+    min_percentage_filling: 20
+
+url:
+  expiration:
+    days: 365
+    cleanup:
+      cron: "@daily"
+
 server:
   port: 8080
 
