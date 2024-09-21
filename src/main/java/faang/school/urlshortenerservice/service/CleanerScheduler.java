@@ -19,12 +19,12 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     @Value("${url.days-to-live}")
-    private int daysToLive;
+    private int timeToLive;
 
     @Scheduled(cron = "${cleaner-scheduler.cron}")
     @Transactional
     public void cleanOldUrls() {
-        List<Url> urls = urlRepository.findUrlsOlderThan(LocalDateTime.now().minusDays(daysToLive));
+        List<Url> urls = urlRepository.findUrlsOlderThan(LocalDateTime.now().minusDays(timeToLive));
         List<Hash> hashes = urls.stream().map(Url::getHash).map(Hash::new).toList();
         hashRepository.saveAll(hashes);
     }

@@ -21,9 +21,9 @@ public class UrlService {
     private final HashCache hashCache;
 
     @Transactional
-    public String shortenUrl(UrlDto url) {
+    public String shortenUrl(String url) {
         Url shortUrl = Url.builder()
-                    .url(url.getUrl())
+                    .url(url)
                     .hash(hashCache.getHash())
                     .lastReceivedAt(LocalDateTime.now())
                     .build();

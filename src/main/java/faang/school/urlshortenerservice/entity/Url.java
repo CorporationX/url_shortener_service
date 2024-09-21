@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class Url {
     @Id
     @NotNull
+    @Length(min = 1, max = 6)
     private String hash;
 
     @Column(name = "url", nullable = false)
