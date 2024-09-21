@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
     @Column(nullable = false, name = "url", unique = true)
     private String longUrl;
     @Column(name = "hash", length = 6, unique = true, nullable = false)
