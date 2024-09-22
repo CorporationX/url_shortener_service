@@ -42,7 +42,7 @@ schedulers:
     cron: 0 0 0 * * *
   cleaner:
     cron: 0 0 0 * * *
-    months_period: 12
+    period: 12m
 
 URL:
   static_address: https://sh.c/

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.exception.Base62EncoderException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,15 +23,17 @@ public class Base62Encoder {
 
     private String generateBase62Characters(long number) {
         StringBuilder str = new StringBuilder();
-        if (str.length() <= 6) {
-            while (number > 0) {
+
+        while (number > 0) {
+            if (str.length() <= 6) {
                 str.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
                 number /= BASE_62_CHARACTERS.length();
+            } else {
+                log.error("number {} is too big, because hash is {} length. Allowed length is 6", number, str.length());
+                throw new Base62EncoderException("the length of the hash is too big. It should be less or equal to 6 characters long");
             }
-            return str.toString();
-        } else {
-            log.error("number {} is too big, because hash is {} length", number, str.length());
-            throw new RuntimeException("Number is too big");
         }
+        return str.toString();
+
     }
 }

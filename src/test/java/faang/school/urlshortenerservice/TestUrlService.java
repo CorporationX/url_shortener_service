@@ -38,7 +38,7 @@ public class TestUrlService {
     public void testFindUrlInRedis() {
         String url = "https://www.google.com";
         String key = "test";
-        when(urlCacheRepository.getAssociation(any())).thenReturn(Optional.of(Pair.of(url, key)));
+        when(urlCacheRepository.getAssociation(any())).thenReturn(Optional.of(url));
         UrlDto dto = urlService.findUrl(key);
         assertThat(url).isEqualTo(dto.getUrl());
     }

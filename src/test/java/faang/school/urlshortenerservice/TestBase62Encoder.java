@@ -4,22 +4,15 @@ import faang.school.urlshortenerservice.generator.Base62Encoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 public class TestBase62Encoder {
@@ -37,11 +30,12 @@ public class TestBase62Encoder {
     @Test
     public void testEncode() {
         List<Long> numbers = Arrays.asList(123L, 456L, 789L);
+        List<String> hashes = List.of("z1", "M7", "jC");
         List<String> result = base62Encoder.encode(numbers);
         assertEquals(3, result.size());
-        assertEquals(encodeBase62(123L), result.get(0));
-        assertEquals(encodeBase62(456L), result.get(1));
-        assertEquals(encodeBase62(789L), result.get(2));
+        assertEquals(hashes.get(0), result.get(0));
+        assertEquals(hashes.get(1), result.get(1));
+        assertEquals(hashes.get(2), result.get(2));
     }
 
 

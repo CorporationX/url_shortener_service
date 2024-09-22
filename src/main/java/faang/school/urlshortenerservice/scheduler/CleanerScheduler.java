@@ -9,22 +9,24 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Period;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class CleanerScheduler {
-    @Value("${schedulers.cleaner.months_period}")
-    private int monthsPeriod;
-     private final UrlRepository urlRepository;
-     private final HashRepository hashRepository;
+    @Value("${schedulers.cleaner.period}")
+    private Period period;
+    private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+
     @Scheduled(cron = "${schedulers.cleaner.cron}")
     @Transactional
     public void clean() {
-        List<String> hashes = urlRepository.getUnusedHashesFromMonthsPeriod(monthsPeriod);
-        log.info("Gathered all hashes unused longer than {} months: ", monthsPeriod);
+        List<String> hashes = urlRepository.getUnusedHashesForPeriod(period);
+        log.info("Gathered all hashes unused longer than {} ", period);
         hashRepository.saveHashes(hashes);
-        log.info("save a batch of unused hashes created {} months ago", monthsPeriod);
+        log.info("save a batch of unused hashes created {} ago", period);
     }
 }

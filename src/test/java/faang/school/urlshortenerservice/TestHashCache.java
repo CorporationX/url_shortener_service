@@ -46,9 +46,9 @@ public class TestHashCache {
     public void getHashLowPercentageTest() {
         List<String> hashes = new ArrayList<>(Arrays.asList("hash1"));
         when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
-        hashCache.init();
         ReflectionTestUtils.setField(hashCache, "capacity", 10);
         ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
+        hashCache.init();
         hashesCache.add("hash1");
         List<String> newHashes = List.of("hash1", "hash2", "hash3", "hash4", "hash5", "hash6");
         when(hashGenerator.getHashes(anyInt())).thenReturn(newHashes);
@@ -60,16 +60,10 @@ public class TestHashCache {
     public void getHashTest() {
         List<String> hashes = new ArrayList<>(Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
         when(hashGenerator.getHashes(anyInt())).thenReturn(hashes);
-        hashCache.init();
-        running = new AtomicBoolean(false);
-        hashesCache = new ArrayDeque<>(10);
-        hashesCache.add("hash1");
-        hashesCache.add("hash2");
-        hashesCache.add("hash3");
-        hashesCache.add("hash4");
-        hashesCache.add("hash5");
         ReflectionTestUtils.setField(hashCache, "capacity", 10);
         ReflectionTestUtils.setField(hashCache, "lowFillPercentage", 20);
+        hashCache.init();
+        running = new AtomicBoolean(false);
         String result = hashCache.getHash();
         assertEquals("hash1", result);
     }

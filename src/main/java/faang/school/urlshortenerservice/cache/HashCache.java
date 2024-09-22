@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -25,21 +24,22 @@ public class HashCache {
     private int lowFillPercentage;
 
     private final HashGenerator hashGenerator;
-    private final Queue<String> hashesCache = new LinkedBlockingQueue<>(capacity);
+    private Queue<String> hashesCache;
     private final ExecutorService cachePool;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
 
     @PostConstruct
     public void init() {
+        this.hashesCache = new LinkedBlockingQueue<>(capacity);
         hashesCache.addAll(hashGenerator.getHashes(capacity));
     }
 
     public String getHash() {
-        if ((hashesCache.size() / capacity) * 100 < lowFillPercentage) {
+        if (hashesCache.size() * 100 / capacity < lowFillPercentage) {
             log.info("Low fill percentage: {}", lowFillPercentage);
             if (running.compareAndSet(false, true)) {
-                CompletableFuture<List<String>> future = CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(capacity-hashesCache.size())
+                CompletableFuture<List<String>> future = CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(capacity - hashesCache.size())
                         , cachePool);
                 future.thenAccept(hashesCache::addAll).thenRun(() -> running.set(false)).join();
                 log.info("hashes cache was additionally filled");

@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice;
 
-import faang.school.urlshortenerservice.exception.NotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +14,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,9 +95,10 @@ public class TestUrlRepository {
     public void testUnusedHashesFromMonthsPeriod() {
         String url = "https://www.google.com";
         String key = "url";
+        Period period = Period.ofMonths(12);
         urlRepository.saveAssociation(url, key);
         jdbcTemplate.update("update url set created_at = created_at - INTERVAL '12 months' where url.hash = ?", key);
-        List<String> retrievedHashes = urlRepository.getUnusedHashesFromMonthsPeriod(12);
+        List<String> retrievedHashes = urlRepository.getUnusedHashesForPeriod(period);
         assertThat(retrievedHashes).hasSize(1);
     }
 
@@ -105,8 +106,9 @@ public class TestUrlRepository {
     public void testUnusedHashesFromMonthsPeriodNotFount() {
         String url = "https://www.google.com";
         String key = "url";
+        Period period = Period.ofMonths(12);
         urlRepository.saveAssociation(url, key);
-        assertThrows(NotFoundException.class, () -> urlRepository.getUnusedHashesFromMonthsPeriod(12));
+        assertThat(urlRepository.getUnusedHashesForPeriod(period)).isEmpty();
     }
 
 }

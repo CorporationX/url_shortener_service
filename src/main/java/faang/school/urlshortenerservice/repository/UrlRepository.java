@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,13 +48,16 @@ public class UrlRepository {
         return jdbcTemplate.update("insert into url(url, hash) values(?, ?)", url, hash);
     }
 
-    public List<String> getUnusedHashesFromMonthsPeriod(int months) {
-        LocalDateTime period = LocalDateTime.now().minusMonths(months);
+    public List<String> getUnusedHashesForPeriod(Period range) {
+        LocalDateTime period = LocalDateTime.now().minus(range);
         List<String> unusedHashes = new ArrayList<>();
-        unusedHashes = jdbcTemplate.query("delete from url where url.created_at in (select url.created_at from url where url.created_at<=?) returning url.hash", (rs, rowNum) -> rs.getString("hash"), period);
-        if (unusedHashes.isEmpty()) {
-            log.info("No hashes found in database for last month {}", months);
-            throw new NotFoundException("No hashes found in database for last " + months + " months");
-        } else return unusedHashes;
+        unusedHashes = jdbcTemplate.query(
+                "delete from url where url.created_at in " +
+                        "(select url.created_at from url where url.created_at<=?) " +
+                        "returning url.hash"
+                , (rs, rowNum) -> rs.getString("hash")
+                , period);
+        log.info("managed to get {} unused hashes from {}", unusedHashes.size(), period);
+        return unusedHashes;
     }
 }
