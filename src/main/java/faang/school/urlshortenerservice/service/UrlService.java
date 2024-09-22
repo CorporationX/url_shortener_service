@@ -10,7 +10,6 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +25,10 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashService hashService;
 
-    @Async("executorService")
     @Transactional
     public CompletableFuture<String> save(UrlDto urlDto) {
-        Hash hash = hashCache.getHash();
+        Hash hash = hashCache.getHash().join();
+
         Url url = Url.builder()
                 .url(urlDto.getUrl())
                 .hash(hash.getHash())

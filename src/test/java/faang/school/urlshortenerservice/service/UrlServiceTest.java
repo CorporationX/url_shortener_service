@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,7 +56,7 @@ public class UrlServiceTest {
 
     @Test
     void testSaveUrlExists() {
-        when(hashCache.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(CompletableFuture.completedFuture(hash));
         when(urlRepository.existsByUrl(url.getUrl())).thenReturn(true);
 
         assertThrows(EntityExistsException.class, () -> urlService.save(urlDto));
@@ -63,7 +64,7 @@ public class UrlServiceTest {
 
     @Test
     void testSaveUrlNotExists() {
-        when(hashCache.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(CompletableFuture.completedFuture(hash));
         when(urlRepository.existsByUrl(url.getUrl())).thenReturn(false);
 
         urlService.save(urlDto);

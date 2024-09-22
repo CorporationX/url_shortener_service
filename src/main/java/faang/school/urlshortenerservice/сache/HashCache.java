@@ -8,9 +8,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,7 +44,8 @@ public class HashCache {
         log.info("Hash cache initialization complete.");
     }
 
-    public Hash getHash() {
+    @Async("executorService")
+    public CompletableFuture<Hash> getHash() {
         if (queueHashes.size() < (queueSize * percentageToReplenishQueue) / 100) {
             if (isGenerating.compareAndSet(false, true)) {
                 hashGenerator.generateBatchAsync()
@@ -52,7 +55,7 @@ public class HashCache {
         }
 
         try {
-            return queueHashes.poll(3000, TimeUnit.MILLISECONDS);
+            return CompletableFuture.completedFuture(queueHashes.poll(3000, TimeUnit.MILLISECONDS));
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             Thread.currentThread().interrupt();
