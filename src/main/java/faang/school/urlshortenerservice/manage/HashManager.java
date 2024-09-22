@@ -33,12 +33,15 @@ public class HashManager {
     public String getHash() {
         if (hashCache.cacheSizeLessThanRequired()) {
             if (indicateGenerationHash.compareAndSet(false, true)) {
-                hashGenerator.generateBatchAsync(hashCache.getFreeCapacityInCollection())
-                        .thenAccept(hashCache::fillingCache)
-                        .whenComplete((result, exception) -> indicateGenerationHash.set(false));
+                try {
+                    hashGenerator.generateBatchAsync(hashCache.getFreeCapacityInCollection())
+                            .thenAccept(hashCache::fillingCache)
+                            .whenComplete((result, exception) -> indicateGenerationHash.set(false));
+                } catch (Exception e) {
+                    indicateGenerationHash.set(false);
+                }
             }
         }
-
         String hash = hashCache.getHash();
         if (hash == null) {
             throw new HashCacheIsEmptyException("List with hashes is empty");
