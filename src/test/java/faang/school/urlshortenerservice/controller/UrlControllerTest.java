@@ -57,8 +57,8 @@ public class UrlControllerTest {
         UrlRequestDto requestDto = new UrlRequestDto(invalidUrl);
 
         mockMvc.perform(post(postUrlTemplate)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.timestamp", notNullValue()))

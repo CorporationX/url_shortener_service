@@ -17,16 +17,16 @@ public class HashRepository {
 
     public List<Long> getUniqueNumbers(int amount) {
         String sql = """
-                    SELECT nextval('unique_numbers_seq')
-                    FROM generate_series(1, ?)
-                    """;
+                SELECT nextval('unique_number_seq')
+                FROM generate_series(1, ?)
+                """;
         return jdbcTemplate.queryForList(sql, Long.class, amount);
     }
 
     public void save(List<String> hashes) {
         String sql = """
-                    INSERT INTO hash (hash) VALUES (?)
-                    """;
+                INSERT INTO hash (hash) VALUES (?)
+                """;
         for (int i = 0; i < hashes.size(); i += insertBatchSize) {
             List<String> batchList = hashes.subList(i, Math.min(i + insertBatchSize, hashes.size()));
             jdbcTemplate.batchUpdate(sql, batchList, batchList.size(),

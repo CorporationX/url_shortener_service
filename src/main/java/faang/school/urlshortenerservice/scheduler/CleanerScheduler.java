@@ -24,9 +24,11 @@ public class CleanerScheduler {
     @Scheduled(cron = "${cleaner.cron}")
     @Transactional
     public void cleanOldUrls() {
+        log.info("Start cleanOldUrls");
         List<String> hashes = urlRepository.deleteOldUrlsAndReturnHashes(interval);
         if (!hashes.isEmpty()) {
             hashRepository.save(hashes);
         }
+        log.info("Finish cleanOldUrls. Now these hashes reusable: " + hashes);
     }
 }

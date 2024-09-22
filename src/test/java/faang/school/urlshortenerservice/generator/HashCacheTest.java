@@ -18,7 +18,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -81,7 +80,7 @@ public class HashCacheTest {
         hashCache.getHash();
         when(hashRepository.getHashBatch(1))
                 .thenReturn(List.of())
-                        .thenReturn(List.of("hash1"));
+                .thenReturn(List.of("hash1"));
         when(hashGenerator.generateBatchAsync()).thenReturn(CompletableFuture.completedFuture(null));
         String result = hashCache.getHash();
 
