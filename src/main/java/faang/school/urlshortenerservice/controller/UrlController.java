@@ -20,7 +20,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/{hash}")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.PERMANENT_REDIRECT)
     public String getOriginalUrl(@PathVariable String hash) {
         return urlService.getByHash(hash);
     }
