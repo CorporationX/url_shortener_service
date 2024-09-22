@@ -44,7 +44,7 @@ public class HashService {
     @Async("hashGeneratorThreadPool")
     @Transactional
     public CompletableFuture<List<String>> getHashesAsync(int amount) {
-        return CompletableFuture.supplyAsync(() -> getHashes(amount));
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 
     @Transactional
