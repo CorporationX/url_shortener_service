@@ -4,8 +4,10 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.UrlCache;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.entity.UrlHash;
 import faang.school.urlshortenerservice.exception.UrlNotExistException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.repository.UrlHashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,13 +34,15 @@ public class UrlShorterServiceTest {
     private UrlCache urlCache;
     @Mock
     private UrlRepository urlRepository;
+    @Mock
+    private UrlHashRepository urlHashRepository;
 
     @InjectMocks
     private UrlShorterService urlShorterService;
 
     private final static String longUrl = "https://extra-ultra-mega-super-puper-long-url.com";
 
-    private final static String shortUrl = "http://localhost:8000/hf3j6nsg";
+    private final static String shortUrl = "hf3j6nsg";
 
     @Test
     @DisplayName("Test create short URL")
@@ -112,9 +118,33 @@ public class UrlShorterServiceTest {
     }
 
     @Test
-    @DisplayName("Test attempt update non existent URL")
+    @DisplayName("Test attempt update non-existent URL")
     public void testUpdateNonExistentUrl() {
-        when(urlRepository.findById(-1L)).thenReturn(Optional.empty());
-        assertThrows(UrlNotExistException.class, () -> urlShorterService.updateUrl(-1L, longUrl));
+
+        when(urlRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UrlNotExistException.class, () -> urlShorterService.updateUrl(1L, "https://non-existent-url.com"));
+
+        verify(urlCache, never()).saveUrl(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Test deleting old URL's")
+    public void testDeleteOldUrl() {
+
+        LocalDate obsolescenceDate = LocalDate.of(2023, 1, 1);
+
+        List<Url> oldUrls = List.of(
+                Url.builder().id(1L).url("https://old-url-1.com").shortUrl("abc123").build(),
+                Url.builder().id(2L).url("https://old-url-2.com").shortUrl("xyz789").build()
+        );
+
+        when(urlRepository.popAllOldUrl(obsolescenceDate)).thenReturn(oldUrls);
+
+        urlShorterService.deleteOldULRs(obsolescenceDate);
+
+        verify(urlHashRepository, times(1)).saveAll(
+                oldUrls.stream().map(u -> new UrlHash(u.getShortUrl())).toList()
+        );
     }
 }
