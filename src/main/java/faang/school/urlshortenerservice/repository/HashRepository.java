@@ -1,15 +1,19 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.exception.QueryException;
 import faang.school.urlshortenerservice.model.Hash;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Service
+@Repository
 @RequiredArgsConstructor
+@Slf4j
 public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -33,8 +37,13 @@ public class HashRepository {
     }
 
     public void save(List<String> hashes) {
-        jdbcTemplate.batchUpdate(INSERT_QUERY, hashes, batchSize, (ps, argument) -> {
-            ps.setString(1, argument);
-        });
+        try {
+            jdbcTemplate.batchUpdate(INSERT_QUERY, hashes, batchSize, (ps, argument) -> {
+                ps.setString(1, argument);
+            });
+        } catch (DataAccessException e) {
+            log.error("Error during executing query batch update: {}", e.getMessage());
+            throw new QueryException(e.getMessage());
+        }
     }
 }
