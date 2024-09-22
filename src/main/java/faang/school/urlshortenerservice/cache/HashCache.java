@@ -35,7 +35,7 @@ public class HashCache {
 
     @Async("hashCacheExecutor")
     public CompletableFuture<String> getHash() {
-        double currentFillPercentage = (double) (hashes.size() / capacity) * 100;
+        double currentFillPercentage = ((double) hashes.size() / capacity) * 100.0;
         if (currentFillPercentage < fillPercentage) {
             if (isFilling.compareAndSet(false, true)) {
                 fillQueue(capacity);
