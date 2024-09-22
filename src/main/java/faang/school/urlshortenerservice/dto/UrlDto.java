@@ -18,7 +18,7 @@ public class UrlDto {
     private String hash;
 
     @NotBlank(message = "Url can't be empty")
-    @Pattern(regexp = "^(https?|ftp):\\/\\/[^\\s/$.?#].[^\\s]*$\n", message = "Incorrect url format")
+    @Pattern(regexp = "^(https?|ftp):\\/\\/[^\\s/$.?#].[^\\s]*$", message = "Incorrect url format")
     private String url;
     private LocalDateTime createdAt;
 }
