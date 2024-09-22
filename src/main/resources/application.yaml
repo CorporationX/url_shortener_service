@@ -23,3 +23,24 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  range: 100
+  capacity: 500
+  lowPercentage: 20
+
+async:
+  generator:
+    poolSize: 2
+    queueSize: 100
+
+data:
+  redis:
+    port: 6379
+    host: localhost
+
+cleaner-scheduler:
+  cron: "0 0 * * * *"
+
+url:
+  days-to-live: 5
