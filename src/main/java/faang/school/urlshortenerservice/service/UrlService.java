@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
     @Value("${hash.url_prefix}")
+    @Setter
     private String urlPrefix;
 
     @Transactional
