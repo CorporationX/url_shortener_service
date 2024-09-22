@@ -17,13 +17,16 @@ public class HashThreadPoolExecutor {
     @Value("${spring.task.execution.hash-executor.queue-capacity}")
     private int queueCapacity;
 
+    @Value("${spring.task.execution.hash-executor.thread-name-prefix}")
+    private String threadNamePrefix;
+
     @Bean(name = "hashTaskExecutor")
     public ThreadPoolTaskExecutor hashTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(coreSize);
         executor.setMaxPoolSize(maxSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("hashAsyncThread-");
+        executor.setThreadNamePrefix(threadNamePrefix);
         executor.initialize();
         return executor;
     }

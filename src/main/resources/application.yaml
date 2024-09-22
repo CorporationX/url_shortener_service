@@ -27,12 +27,12 @@ spring:
         core-size: 5
         max-size: 20
         queue-capacity: 50
-        thread-name-prefix: hashAsyncThread
+        thread-name-prefix: hashAsyncThread-
       hash-cache-executor:
         core-size: 5
         max-size: 20
         queue-capacity: 50
-        thread-name-prefix: hashCacheAsyncThread
+        thread-name-prefix: hashCacheAsyncThread-
   data:
     redis:
       host: localhost
