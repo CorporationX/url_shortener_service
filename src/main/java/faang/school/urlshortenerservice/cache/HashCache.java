@@ -42,9 +42,20 @@ public class HashCache {
             CompletableFuture
                     .supplyAsync(() -> hashGenerator.getHashes(countHashesToFetch), hashCacheTaskExecutor)
                     .thenAccept(cachedHashes::addAll)
-                    .thenRun(() -> isFetching.set(false))
+                    .thenRun(() -> {
+                        if (cachedHashes.isEmpty()) {
+                            CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(countHashesToFetch), hashCacheTaskExecutor)
+                                    .thenAccept(cachedHashes::addAll)
+                                    .exceptionally((throwable) -> {
+                                        log.error("Error during re-fetching hashes, error message: {}", throwable.getMessage());
+                                        return null;
+                                    });
+                        }
+
+                        isFetching.set(false);
+                    })
                     .exceptionally((throwable) -> {
-                        log.error(String.format("Error during getting hashes, error message: %s", throwable.getMessage()));
+                        log.error("Error during getting hashes, error message: {}", throwable.getMessage());
                         isFetching.set(false);
                         return null;
                     });
