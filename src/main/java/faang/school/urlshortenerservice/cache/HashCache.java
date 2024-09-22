@@ -1,11 +1,11 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.config.properties.HashCacheProperties;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -23,17 +23,12 @@ public class HashCache {
 
     private LinkedBlockingQueue<String> cachedHashes;
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
-
-    @Value("${hash-cache.capacity}")
-    private int capacity;
-
-    @Value("${hash-cache.minimum-required-size-percent}")
-    private int minimumRequiredSize;
+    private final HashCacheProperties hashCacheProperties;
 
     @PostConstruct
     public void initCachedHashes() {
-        cachedHashes = new LinkedBlockingQueue<>(capacity);
-        cachedHashes.addAll(hashGenerator.getHashes(capacity));
+        cachedHashes = new LinkedBlockingQueue<>(hashCacheProperties.getCapacity());
+        cachedHashes.addAll(hashGenerator.getHashes(hashCacheProperties.getCapacity()));
     }
 
     @PreDestroy
@@ -43,7 +38,7 @@ public class HashCache {
 
     public String getHash() {
         if (isCacheSizeLessMinimumRequiredSize() && isFetching.compareAndSet(false, true)) {
-            int countHashesToFetch = capacity - cachedHashes.size();
+            int countHashesToFetch = hashCacheProperties.getCapacity() - cachedHashes.size();
             CompletableFuture
                     .supplyAsync(() -> hashGenerator.getHashes(countHashesToFetch), hashCacheTaskExecutor)
                     .thenAccept(cachedHashes::addAll)
@@ -58,6 +53,6 @@ public class HashCache {
     }
 
     private boolean isCacheSizeLessMinimumRequiredSize() {
-        return (100.0 * cachedHashes.size())/(capacity) < minimumRequiredSize;
+        return (100.0 * cachedHashes.size())/(hashCacheProperties.getCapacity()) < hashCacheProperties.getMinimumRequiredSize();
     }
 }
