@@ -14,6 +14,7 @@ public class Base62Encoder {
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
                 .map(this::encodeNumber)
+                .filter(encodedNumber -> !encodedNumber.isBlank())
                 .toList();
     }
 
