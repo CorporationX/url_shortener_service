@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 public class UrlShorterConfig {
@@ -41,5 +40,13 @@ public class UrlShorterConfig {
     @Bean("hashGeneratorThreadPool")
     public ExecutorService hashGeneratorThreadPool() {
         return Executors.newFixedThreadPool(generationThreadPoolSize);
+    }
+
+    @Value("${spring.storage.url.obsolescence-period}")
+    private int obsolescenceUrlMonthPeriod;
+
+    @Bean
+    public int obsolescenceUrlMonthPeriod() {
+        return obsolescenceUrlMonthPeriod;
     }
 }
