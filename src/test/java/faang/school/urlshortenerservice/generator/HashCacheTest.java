@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +44,7 @@ public class HashCacheTest {
         ReflectionTestUtils.setField(hashCache, "fillPercent", fillPercent);
         ReflectionTestUtils.setField(hashCache, "hashes", queue);
 
-        doAnswer(invocation -> {
+        lenient().doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(0);
             runnable.run();
             return null;

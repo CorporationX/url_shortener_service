@@ -20,6 +20,7 @@ spring:
   redis:
     port: 6379
     host: localhost
+    ttl_hours: 24
 
 server:
   port: 8080
