@@ -42,6 +42,11 @@ public class UrlExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response(ex), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(QueryException.class)
+    public ResponseEntity<Object> handleQueryException(QueryException ex) {
+        return new ResponseEntity<>(response(ex), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private Map<String, String> response(Exception ex) {
         Map<String, String> response = new HashMap<>();
         response.put("error", ex.getMessage());
