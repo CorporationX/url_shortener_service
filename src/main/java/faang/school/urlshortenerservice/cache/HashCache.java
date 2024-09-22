@@ -35,16 +35,13 @@ public class HashCache {
 
     @Async("hashCacheExecutor")
     public CompletableFuture<String> getHash() {
-        if (((double) hashes.size() / capacity) * 100.0 < fillPercentage) {
-            triggerBatchFill();
+        double currentFillPercentage = (double) (hashes.size() / capacity) * 100;
+        if (currentFillPercentage < fillPercentage) {
+            if (isFilling.compareAndSet(false, true)) {
+                fillQueue(capacity);
+            }
         }
         return CompletableFuture.completedFuture(hashes.poll());
-    }
-
-    private void triggerBatchFill() {
-        if (isFilling.compareAndSet(false, true)) {
-            fillQueue(capacity);
-        }
     }
 
     private void fillQueue(int size) {
