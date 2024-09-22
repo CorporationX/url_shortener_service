@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -23,3 +28,29 @@ server:
 logging:
   level:
     root: info
+
+menageUrlShortener:
+  delete-cron: "0 0 0 * * *"
+  time-zone: "Europe/Moscow"
+  month-after-which-url-is-deleted: 12
+
+cache:
+  collection-capacity: 200
+  percentage-of-initial-size-fill: 20
+  lifetime-minutes: 240
+
+thread-pool:
+  clearing:
+    core-pool-size: 10
+    maximum-pool-size: 100
+    queue-capacity: 200
+    await-termination-second: 600
+  hash:
+    core-pool-size: 10
+    maximum-pool-size: 100
+    queue-capacity: 200
+    await-termination-second: 600
+
+base62:
+  chars: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
