@@ -14,18 +14,19 @@ import java.util.Optional;
 public class UrlRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private String sql;
 
     public String save(String hash, String url, int hours) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiredAt = now.plusHours(hours);
 
-        String sql = "INSERT INTO url (hash, url, created_at, expired_at) VALUES (?, ?, ?, ?)";
+        sql = "INSERT INTO url (hash, url, created_at, expired_at) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, hash, url, Timestamp.valueOf(now), Timestamp.valueOf(expiredAt));
         return hash;
     }
 
     public Optional<String> getOriginalUrl(String hash) {
-        String sql = "SELECT url FROM url WHERE hash = ?";
+        sql = "SELECT url FROM url WHERE hash = ?";
 
         List<String> result = jdbcTemplate.query(sql, ps -> ps.setString(1, hash),
                 (rs, rowNum) -> rs.getString("url")
@@ -35,18 +36,18 @@ public class UrlRepository {
     }
 
     public List<String> findAndDeleteExpiredUrls() {
-        String selectSql = "SELECT hash FROM url WHERE expired_at <= ?";
+        sql = "SELECT hash FROM url WHERE expired_at <= ?";
         LocalDateTime now = LocalDateTime.now();
 
         List<String> expiredHashes = jdbcTemplate.queryForList(
-                selectSql,
+                sql,
                 String.class,
                 now
         );
 
         if (!expiredHashes.isEmpty()) {
-            String deleteSql = "DELETE FROM url WHERE expired_at <= ?";
-            jdbcTemplate.update(deleteSql, now);
+            sql = "DELETE FROM url WHERE expired_at <= ?";
+            jdbcTemplate.update(sql, now);
         }
 
         return expiredHashes;

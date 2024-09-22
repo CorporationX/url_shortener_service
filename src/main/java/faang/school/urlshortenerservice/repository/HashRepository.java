@@ -15,6 +15,7 @@ public class HashRepository {
 
     @Value("${spring.batch.size}")
     private int batchSize;
+    private String sql;
 
     public void save(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
@@ -24,7 +25,7 @@ public class HashRepository {
     }
 
     public List<Long> getUniqueNumbers() {
-        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
+        sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
 
         return jdbcTemplate.query(
                 sql,
@@ -34,7 +35,7 @@ public class HashRepository {
     }
 
     public List<String> getHashBatch() {
-        String sql = "DELETE FROM hash USING ("
+        sql = "DELETE FROM hash USING ("
                 + "    SELECT hash FROM hash ORDER BY RANDOM() LIMIT ?"
                 + ") AS sub WHERE hash.hash = sub.hash RETURNING hash.hash";
 
@@ -46,7 +47,7 @@ public class HashRepository {
     }
 
     public Long getCount() {
-        String sql = "SELECT COUNT(*) FROM hash";
+        sql = "SELECT COUNT(*) FROM hash";
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 }

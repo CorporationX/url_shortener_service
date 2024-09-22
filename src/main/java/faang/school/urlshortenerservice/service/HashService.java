@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class HashService {
         hashRepository.save(hashes);
     }
 
+    @Transactional
     public List<Long> getUniqueNumbers() {
         return hashRepository.getUniqueNumbers();
     }

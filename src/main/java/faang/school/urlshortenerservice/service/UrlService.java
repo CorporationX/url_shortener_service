@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -47,14 +46,18 @@ public class UrlService {
 
     public String getOriginalUrl(String shortUrl) {
         try {
-            String longUrl = Objects.requireNonNull(redisTemplate.opsForValue().get(shortUrl)).toString();
-            log.info("url retrieved from cache: {}, {}", shortUrl, longUrl);
+            String longUrl = (String) redisTemplate.opsForValue().get(shortUrl);
             if (longUrl != null) {
+                log.info("URL retrieved from cache: {}, {}", shortUrl, longUrl);
                 return longUrl;
             }
         } catch (Exception e) {
             log.error("Failed to retrieve from Redis: {}", e.getMessage());
         }
+        return getOriginalUrlFromDatabase(shortUrl);
+    }
+
+    private String getOriginalUrlFromDatabase(String shortUrl) {
         String hash = extractHash(shortUrl);
         return urlRepository.getOriginalUrl(hash)
                 .orElseThrow(() -> new EntityNotFoundException("No match found for: " + shortUrl));

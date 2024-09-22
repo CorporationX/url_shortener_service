@@ -29,8 +29,10 @@ public class HashCache {
         if (queue.size() <= minimumSize) {
             if (isFilling.compareAndSet(false, true)) {
                 try {
-                    if (hashService.getCount() < queueCapacity) {
-                        generator.generateBatch();
+                    if (queue.size() <= minimumSize) {
+                        if (hashService.getCount() < queueCapacity) {
+                            generator.generateBatch();
+                        }
                     }
                 } finally {
                     isFilling.set(false);
@@ -38,7 +40,6 @@ public class HashCache {
             }
             fillCache();
         }
-        System.out.println(queue.stream().findFirst());
         return queue.poll();
     }
 

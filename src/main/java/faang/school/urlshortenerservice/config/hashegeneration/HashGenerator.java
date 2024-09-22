@@ -23,10 +23,7 @@ public class HashGenerator {
 
     @Async("generateHashExecutor")
     public void fillQueueAsync(LinkedBlockingQueue<String> queue, List<String> hashes) {
-        while (queue.size() < queue.remainingCapacity() && !hashes.isEmpty()) {
-            String value = hashes.remove(0);
-            queue.add(value);
-        }
+        hashes.removeIf(hash -> !queue.offer(hash));
         if (!hashes.isEmpty()) {
             hashService.save(hashes);
         }
