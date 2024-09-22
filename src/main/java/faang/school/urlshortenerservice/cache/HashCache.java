@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.service.HashGenerator;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,12 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-    private final AtomicBoolean indicateGenerationHash = new AtomicBoolean(false);
     private final HashGenerator hashGenerator;
     private Queue<String> hashQueue;
     @Value("${cache.collection-capacity}")
@@ -26,14 +23,15 @@ public class HashCache {
     @PostConstruct
     public void setUp() {
         hashQueue = new ArrayBlockingQueue<String>(collectionCapacity);
-        hashQueue.addAll(hashGenerator.generateBatch());
+        hashQueue.addAll(hashGenerator.generateBatch(collectionCapacity));
     }
 
     public String getHash() {
-        if (cacheSizeLessThanRequired()) {
+        return hashQueue.poll();
+    }
 
-        }
-        return hashQueue.remove();
+    public void fillingCache(List<String> hashes) {
+        hashQueue.addAll(hashes);
     }
 
     public boolean cacheSizeLessThanRequired() {
@@ -43,19 +41,7 @@ public class HashCache {
         return false;
     }
 
-    public void fillingCacheWithHashes(List<String> hashes) {
-        hashQueue.addAll(hashes);
-    }
-
-    public boolean getIndicateGenerationHash() {
-        return indicateGenerationHash.get();
-    }
-
-    public void setIndicateGenerationHashInTrue() {
-        indicateGenerationHash.set(true);
-    }
-
-    public void setIndicateGenerationHashInFalse() {
-        indicateGenerationHash.set(false);
+    public int getFreeCapacityInCollection() {
+        return collectionCapacity - hashQueue.size();
     }
 }

@@ -54,5 +54,3 @@ thread-pool:
 base62:
   chars: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-generator-hash:
-  number-hashes-batch: 50

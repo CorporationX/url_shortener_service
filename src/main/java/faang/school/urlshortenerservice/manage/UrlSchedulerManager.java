@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.manage;
 
-import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UrlShortenerService {
+public class UrlSchedulerManager {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
@@ -20,10 +19,7 @@ public class UrlShortenerService {
     public void removingExpiredHashes(LocalDateTime dateExpired) {
         List<String> hashes = urlRepository.removeExpiredHash(dateExpired);
         if (!hashes.isEmpty()) {
-            List<Hash> ListHash = hashes.stream()
-                    .map(Hash::new)
-                    .toList();
-            hashRepository.saveAll(ListHash);
+            hashRepository.save(hashes);
         }
     }
 }
