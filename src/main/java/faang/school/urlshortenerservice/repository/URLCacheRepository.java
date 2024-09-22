@@ -24,7 +24,7 @@ public class URLCacheRepository {
     }
 
     public Optional<String> get(String key) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(key));
+        return Optional.ofNullable((String) redisTemplate.opsForHash().get(cachedUrlKey, key));
     }
 
     public void delete(String key) {
