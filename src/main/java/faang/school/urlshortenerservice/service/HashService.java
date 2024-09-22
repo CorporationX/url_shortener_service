@@ -21,7 +21,7 @@ public class HashService {
 
     private void generateUrlHashes(int amount) {
         List<UrlHash> urlHashes = hashGenerator.generateHashes(amount)
-                .map(h -> UrlHash.builder().hash(h).build())
+                .map(UrlHash::new)
                 .toList();
 
         urlHashRepository.saveAll(urlHashes);
