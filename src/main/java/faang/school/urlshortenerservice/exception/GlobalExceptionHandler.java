@@ -11,14 +11,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InternalError.class)
-    public ResponseEntity<String> internalServerErrorHandler(InternalError error) {
+    @ExceptionHandler(HashCacheIsEmptyException.class)
+    public ResponseEntity<String> HashCacheIsEmptyExceptionHandler(HashCacheIsEmptyException error) {
         log.error(error.getMessage());
         return new ResponseEntity<>(error.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> validationExceptionHandler(ValidationException exception) {
+    @ExceptionHandler(DataValidationException.class)
+    public ResponseEntity<String> DataValidationExceptionHandler(DataValidationException exception) {
+        log.error(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundEntityException.class)
+    public ResponseEntity<String> NotFoundEntityExceptionHandler(NotFoundEntityException exception) {
         log.error(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
