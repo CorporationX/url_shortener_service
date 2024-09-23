@@ -14,7 +14,7 @@ public class Hash {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "hash", unique = true, nullable = false, length = 6)
     String hash;

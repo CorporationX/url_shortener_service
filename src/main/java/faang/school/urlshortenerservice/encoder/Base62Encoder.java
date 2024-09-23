@@ -13,11 +13,6 @@ public class Base62Encoder {
         for (Long number : numbers) {
             StringBuilder encodedString = new StringBuilder();
 
-            if (number == 0) {
-                resultHash.add(String.valueOf(BASE62_ALPHABET.charAt(0)));
-                continue;
-            }
-
             Long currentNumber = number;
             while (currentNumber > 0) {
                 int remainder = (int) (currentNumber % BASE_LENGHT);

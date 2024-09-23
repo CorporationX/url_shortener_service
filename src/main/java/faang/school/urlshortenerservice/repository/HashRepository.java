@@ -23,7 +23,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                 ORDER BY random()
                 LIMIT :batchSize
                 )
-            RETURNING hash
+            RETURNING *
             """)
     List<Hash> getHashBatch(@Param("batchSize") int batchSize);
 }

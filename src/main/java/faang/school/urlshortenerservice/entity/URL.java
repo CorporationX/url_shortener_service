@@ -21,10 +21,11 @@ import java.sql.Timestamp;
 public class URL {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name="hash", length = 6, nullable = false, unique = true)
     String hash;
+
     @Column(name = "url", nullable = false)
     String url;
 

@@ -53,6 +53,7 @@ generator:
 async:
   core-pool-size: 5
   max-pool-size: 50
+  queue-capacity: 100
 
 url:
-  host: http://localhost:8080/shortener/
+  host: http://localhost:8080/url/
