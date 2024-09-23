@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/V1__create_url_table.sql
+  - include:
+      file: db/changelog/changeset/V2__create_hash_table.sql
+  - include:
+      file: db/changelog/changeset/V3__create_unique_number_seq.sql

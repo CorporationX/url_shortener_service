@@ -17,9 +17,31 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+executor:
+  hash-generator:
+    core-size: 10
+    max-size: 20
+    queue-capacity: 100
+    prefix: HashGenerator-
+
+hash:
+  cache:
+    key: urlMappings
+    capacity: 10000
+    fill-percentage: 20
+
+cleanup:
+  cron: 0 0 0 * * *
+  expiration-years: 1

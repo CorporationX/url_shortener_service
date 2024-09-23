@@ -1,0 +1,4 @@
+CREATE TABLE hash
+(
+    hash VARCHAR(6) PRIMARY KEY
+);
