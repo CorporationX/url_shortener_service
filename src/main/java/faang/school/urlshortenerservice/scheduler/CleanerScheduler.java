@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final HashGenerator hashGenerator;
 
     @Value("${spring.scheduling.period}")
     private String period;
@@ -34,5 +36,10 @@ public class CleanerScheduler {
         hashRepository.saveAll(hashesToSave);
 
         log.info("Total cleaned hashes that older than 1 year: {}", hashesToSave.size());
+    }
+
+    @Scheduled(cron = "${spring.scheduling.cron}")
+    public void generateAnsSaveBatches() {
+        hashGenerator.generateAndSaveBatches();
     }
 }
