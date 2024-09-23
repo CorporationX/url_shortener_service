@@ -1,11 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.NotFoundException;
-import faang.school.urlshortenerservice.repository.UrlCacheRepositoryImpl;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.service.cache.HashCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,22 +17,21 @@ import java.util.Optional;
 @Slf4j
 public class UrlService {
 
-    private final UrlRepository urlRepository;
-    private final UrlCacheRepositoryImpl urlCacheRepositoryImpl;
+    private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
 
     @Transactional
     public String shorten(UrlDto urlDto) {
         String originalUrl = urlDto.getOriginalUrl();
-        Optional<Url> urlOptional = urlRepository.findByOriginalUrl(originalUrl);
-        Url url = urlOptional.orElseGet(() -> urlCacheRepositoryImpl.save(hashCache.getHash(), originalUrl));
+        Optional<Url> urlOptional = urlCacheRepository.getByOriginalUrl(originalUrl);
+        Url url = urlOptional.orElseGet(() -> urlCacheRepository.save(hashCache.getHash(), originalUrl));
         String hash = url.hash;
         log.info("Hash for url {} is {}", originalUrl, hash);
         return hash;
     }
 
     public String getOriginalUrl(String hash) {
-        String originalUrl = urlCacheRepositoryImpl.getUrl(hash).getOriginalUrl();
+        String originalUrl = urlCacheRepository.getUrl(hash).getOriginalUrl();
         if (originalUrl == null) {
             throw new NotFoundException("Original Url for hash: " + hash + "hot found. " +
                     "Check the correctness of the entered data");

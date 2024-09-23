@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
+import faang.school.urlshortenerservice.service.cache.AsyncExecutorForHashCash;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

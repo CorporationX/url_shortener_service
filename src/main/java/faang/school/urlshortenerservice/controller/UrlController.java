@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,9 @@ public class UrlController {
 
     private final UrlService urlService;
 
+    @Value("${url.head}")
+    private String urlHead;
+
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.CREATED)
     public String createHash(@Validated @RequestBody UrlDto urlDto) {
@@ -38,7 +42,7 @@ public class UrlController {
             throw new RuntimeException(e);
         }
         log.info("Valid URL: {}", url);
-        return urlService.shorten(urlDto);
+        return urlHead + urlService.shorten(urlDto);
     }
 
     @GetMapping("/{hash}")

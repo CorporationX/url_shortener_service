@@ -7,9 +7,11 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
-public class UrlCacheRepositoryImpl {
+public class UrlCacheRepository {
 
     private final UrlRepository urlRepository;
 
@@ -22,5 +24,10 @@ public class UrlCacheRepositoryImpl {
     public Url getUrl(String hash) {
         return urlRepository.findByHash(hash)
                 .orElseThrow(() -> new NotFoundException("Url for hash " + hash + " is not found"));
+    }
+
+    //@Cacheable(value = "originalUrl", key = "#hash")
+    public Optional<Url> getByOriginalUrl(String originalUrl) {
+        return urlRepository.findByOriginalUrl(originalUrl);
     }
 }

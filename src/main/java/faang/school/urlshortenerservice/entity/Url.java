@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public class Url implements Serializable
          {
     @Id
-    @Column(name = "hash", length = 6)
+    @Column(name = "hash", length = 7)
     public String hash;
 
     @Column(name = "url", length = 512, nullable = false, unique = true)

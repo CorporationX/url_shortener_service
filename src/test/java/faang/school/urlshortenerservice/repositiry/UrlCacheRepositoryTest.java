@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.repositiry;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.NotFoundException;
-import faang.school.urlshortenerservice.repository.UrlCacheRepositoryImpl;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UrlCacheRepositoryImplTest {
+public class UrlCacheRepositoryTest {
 
     @Mock
     UrlRepository urlRepository;
     @InjectMocks
-    UrlCacheRepositoryImpl urlCacheRepositoryImpl;
+    UrlCacheRepository urlCacheRepository;
 
     Url testUrl = Url.builder()
             .hash("abc")
@@ -33,7 +33,7 @@ public class UrlCacheRepositoryImplTest {
     @Test
     void testSaveUrlSuccessful() {
 
-        urlCacheRepositoryImpl.save(anyString(), anyString());
+        urlCacheRepository.save(anyString(), anyString());
 
         verify(urlRepository, times(1))
                 .create(anyString(), anyString());
@@ -43,14 +43,14 @@ public class UrlCacheRepositoryImplTest {
     void testGetUrlIfUrlNotFound() {
         when(urlRepository.findByHash(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> urlCacheRepositoryImpl.getUrl(anyString()));
+        assertThrows(NotFoundException.class, () -> urlCacheRepository.getUrl(anyString()));
     }
 
     @Test
     void testGetUrlSuccessful() {
         when(urlRepository.findByHash(anyString())).thenReturn(Optional.of(testUrl));
 
-        urlCacheRepositoryImpl.getUrl(anyString());
+        urlCacheRepository.getUrl(anyString());
 
         verify(urlRepository, times(1))
                 .findByHash(anyString());

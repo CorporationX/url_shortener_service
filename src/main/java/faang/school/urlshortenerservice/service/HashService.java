@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public class HashService {
 
     private final HashRepository hashRepository;
 
-    public List<String> getHashBatch(@Param("batchSize") int batchSize) {
+    public List<String> getHashBatch(int batchSize) {
         List<String> hashBatch = hashRepository.getHashBatch(batchSize);
         log.info("Got hashBatch: {}", hashBatch);
         return hashBatch;

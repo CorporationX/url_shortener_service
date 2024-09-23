@@ -13,8 +13,7 @@ public class Base62Encoder {
 
     @Value("${hash.length}")
     private int hashLength;
-    char[] base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-
+    private final char[] BASE_62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 
     public List<String> encode(List<Long> numbers) {
 
@@ -24,8 +23,8 @@ public class Base62Encoder {
             StringBuilder sb = new StringBuilder();
 
             while (number > 0) {
-                sb.insert(0, base62Chars[(int) (number % 62)]);
-                number /= 62;
+                sb.insert(0, BASE_62_CHARS[(int) (number % BASE_62_CHARS.length)]);
+                number /= BASE_62_CHARS.length;
             }
             String hash = sb.toString();
             if (hash.length() > hashLength) {

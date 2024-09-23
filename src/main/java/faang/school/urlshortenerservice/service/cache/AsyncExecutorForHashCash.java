@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.service.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
@@ -10,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
@@ -21,19 +20,16 @@ public class AsyncExecutorForHashCash {
     private final HashService hashService;
     private final HashGenerator hashGenerator;
 
-    Lock lock = new ReentrantLock();
+    private final AtomicBoolean exclAccessAllowed = new AtomicBoolean(false);
 
     @Async("executor")
     @Transactional
     public void exclusiveTransferHashBatch(int batchSize, ConcurrentLinkedQueue<String> queue) {
-        if (lock.tryLock()) {
-            try {
-                List<String> hashBatch = hashService.getHashBatch(batchSize);
-                queue.addAll(hashBatch);
-                log.info("{} hashes added to hashCache: {}", queue.size(), hashBatch);
-            } finally {
-                lock.unlock();
-            }
+        if (exclAccessAllowed.compareAndSet(false, true)) {
+            List<String> hashBatch = hashService.getHashBatch(batchSize);
+            queue.addAll(hashBatch);
+            log.info("{} hashes added to hashCache: {}", queue.size(), hashBatch);
+            exclAccessAllowed.set(false);
         }
     }
 
