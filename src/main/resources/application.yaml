@@ -36,12 +36,6 @@ executor:
     queue-capacity: 100
     prefix: HashGenerator-
 
-  hash-cache:
-    core-size: 10
-    max-size: 20
-    queue-capacity: 100
-    prefix: HashCache-
-
 hash:
   cache:
     key: urlMappings

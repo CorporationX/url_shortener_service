@@ -24,18 +24,6 @@ public class ExecutorConfig {
     @Value("${executor.hash-generator.prefix:HashGenerator-}")
     private String hashGeneratorPrefix;
 
-    @Value("${executor.hash-cache.core-size:10}")
-    private int hashCacheCorePoolSize;
-
-    @Value("${executor.hash-cache.max-size:20}")
-    private int hashCacheMaxPoolSize;
-
-    @Value("${executor.hash-cache.queue-capacity}")
-    private int hashCacheQueueCapacity;
-
-    @Value("${executor.hash-cache.prefix:HashCache-}")
-    private String hashCachePrefix;
-
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -43,17 +31,6 @@ public class ExecutorConfig {
         executor.setMaxPoolSize(hashGeneratorMaxPoolSize);
         executor.setQueueCapacity(hashGeneratorQueueCapacity);
         executor.setThreadNamePrefix(hashGeneratorPrefix);
-        executor.initialize();
-        return executor;
-    }
-
-    @Bean(name = "hashCacheExecutor")
-    public Executor hashCacheExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(hashCacheCorePoolSize);
-        executor.setMaxPoolSize(hashCacheMaxPoolSize);
-        executor.setQueueCapacity(hashCacheQueueCapacity);
-        executor.setThreadNamePrefix(hashCachePrefix);
         executor.initialize();
         return executor;
     }

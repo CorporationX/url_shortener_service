@@ -1,10 +1,10 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.generator.HashGeneratorAsync;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
     private final HashGenerator hashGenerator;
+    private final HashGeneratorAsync hashGeneratorAsync;
 
     @Value("${hash.cache.capacity:10000}")
     private int capacity;
@@ -33,20 +34,20 @@ public class HashCache {
         fillQueue(capacity);
     }
 
-    @Async("hashCacheExecutor")
     public CompletableFuture<String> getHash() {
         double currentFillPercentage = ((double) hashes.size() / capacity) * 100.0;
         if (currentFillPercentage < fillPercentage) {
             if (isFilling.compareAndSet(false, true)) {
-                fillQueue(capacity);
+                hashGeneratorAsync.getBatchAsync(capacity)
+                    .thenAccept(hashes::addAll)
+                    .thenRun(() -> isFilling.set(false));
             }
         }
         return CompletableFuture.completedFuture(hashes.poll());
     }
 
     private void fillQueue(int size) {
-        hashGenerator.generateBatch(size)
-            .thenAccept(hashes::addAll)
-            .thenRun(() -> isFilling.set(false));
+        hashGenerator.generateBatch(size);
+        hashes.addAll(hashGenerator.getBatch(size));
     }
 }
