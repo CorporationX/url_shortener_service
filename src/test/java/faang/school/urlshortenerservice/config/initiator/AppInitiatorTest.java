@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.config.initiator;
 
+import faang.school.urlshortenerservice.service.HashCache;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,18 +10,22 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class HashGeneratorInitiatorTest {
+class AppInitiatorTest {
 
     @InjectMocks
-    private HashGeneratorInitiator hashGeneratorInitiator;
+    private AppInitiator appInitiator;
 
     @Mock
     private HashGenerator hashGenerator;
+    @Mock
+    private HashCache hashCache;
 
     @Test
     void run() {
-        hashGeneratorInitiator.run();
+        appInitiator.run();
         Mockito.verify(hashGenerator, Mockito.times(1))
                 .generateBatchIfNeeded();
+        Mockito.verify(hashCache, Mockito.times(1))
+                .refill();
     }
 }

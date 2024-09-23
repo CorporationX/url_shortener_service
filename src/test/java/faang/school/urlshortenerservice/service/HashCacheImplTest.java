@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -13,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -26,11 +26,8 @@ class HashCacheImplTest {
     private final HashGenerator mockedHashGenerator = mock(HashGenerator.class);
 
     private final HashCacheImpl hashCache
-            = new HashCacheImpl(cacheCapacity, fillPercent, mockedExecutor, mockedHashGenerator);
+            = spy(new HashCacheImpl(cacheCapacity, fillPercent, mockedExecutor, mockedHashGenerator));
 
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void getHash_capacityGreaterThanThreshold_justPoll() {
@@ -54,11 +51,18 @@ class HashCacheImplTest {
         testCache.addAll(initialHashes);
         ReflectionTestUtils.setField(hashCache, "cache", testCache);
 
-        doAnswer(invocation -> { // Вызываем метод, который должен быть вызван асинхронно
-                    invocation.getArgument(0, Runnable.class).run();
-                    return null;
-                })
-                .when(mockedExecutor).execute(any(Runnable.class));
+        String result = hashCache.getHash();
+
+        assertEquals("1", result);
+        assertEquals(1, testCache.size());
+        assertTrue(testCache.contains("2"));
+        verify(hashCache, times(1)).refillAsync();
+    }
+
+    @Test
+    void refill() {
+        LinkedBlockingQueue<String> testCache = new LinkedBlockingQueue<>(cacheCapacity);
+        ReflectionTestUtils.setField(hashCache, "cache", testCache);
 
         List<String> newHashes = List.of("3", "4");
         int remainingCapacity = testCache.remainingCapacity();
@@ -66,14 +70,25 @@ class HashCacheImplTest {
                 .thenReturn(newHashes);
 
 
-        String result = hashCache.getHash();
+        hashCache.refill();
 
-        assertEquals("1", result);
-        assertEquals(3, testCache.size());
-        assertTrue(testCache.contains("2"));
+        assertEquals(2, testCache.size());
         assertTrue(testCache.containsAll(newHashes));
-        verify(mockedExecutor, times(1)).execute(any(Runnable.class));
         verify(mockedHashGenerator, times(1)).getHashes(remainingCapacity);
         verify(mockedHashGenerator, times(1)).generateBatchIfNeededAsync();
+    }
+
+    @Test
+    void refillAsync() {
+        doAnswer(invocation -> { // Вызываем метод, который должен быть вызван асинхронно
+            invocation.getArgument(0, Runnable.class).run();
+            return null;
+        })
+                .when(mockedExecutor).execute(any(Runnable.class));
+
+        hashCache.refillAsync();
+
+        verify(mockedExecutor, times(1)).execute(any(Runnable.class));
+        verify(hashCache, times(1)).refill();
     }
 }

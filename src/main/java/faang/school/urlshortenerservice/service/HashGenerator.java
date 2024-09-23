@@ -16,15 +16,17 @@ import java.util.List;
 @Slf4j
 public class HashGenerator {
 
-    @Value("${app.hash-generator.batch-size:5000}")
+    @Value("${app.hash-generator.batch-size:10000}")
     private int batchSize;
+    @Value("${app.hash-generator.minimum-size:5000}")
+    private int minimumSize;
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
     @Transactional
     public void generateBatchIfNeeded() {
-        if (hashRepository.getHashesNumber() < batchSize) {
-            log.info("Hashes number is under {}, refilling DB", batchSize);
+        if (hashRepository.getHashesNumber() < minimumSize) {
+            log.info("Hashes number is under minimum amount [{}], refilling DB", minimumSize);
 
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
             List<String> hashes = base62Encoder.encode(uniqueNumbers);

@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +35,6 @@ public class HashCacheImpl implements HashCache {
         this.hashGenerator = hashGenerator;
     }
 
-    @PostConstruct
-    private void initCache() {
-        refill();
-    }
-
     @SneakyThrows
     @Override
     public String getHash() {
@@ -53,11 +47,13 @@ public class HashCacheImpl implements HashCache {
         return cache.poll();
     }
 
-    private void refillAsync() {
+    @Override
+    public void refillAsync() {
         executor.execute(this::refill);
     }
 
-    private void refill() {
+    @Override
+    public void refill() {
         int numberToRefill = cache.remainingCapacity();
         log.info("Refilling cache from DB for {} hashes", numberToRefill);
         List<String> hashes = hashGenerator.getHashes(numberToRefill);
