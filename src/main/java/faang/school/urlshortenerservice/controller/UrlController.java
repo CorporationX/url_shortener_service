@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/v1/url")
@@ -25,10 +26,8 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToLongUrl(@PathVariable String hash) {
+    public RedirectView redirectToLongUrl(@PathVariable String hash) {
         String longUrl = urlService.getLongUrlByHash(hash);
-        return ResponseEntity.status(302)
-                .header("Location", longUrl)
-                .build();
+        return new RedirectView(longUrl);
     }
 }
