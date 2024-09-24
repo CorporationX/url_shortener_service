@@ -26,11 +26,13 @@ class HashGeneratorTest {
     @Mock
     private Base62Encoder base62Encoder;
 
-    private final int batchSize = 5000;
+    private final int batchSize = 10000;
+    private final int minimumSize = 5000;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(hashGenerator, "batchSize", batchSize);
+        ReflectionTestUtils.setField(hashGenerator, "minimumSize", minimumSize);
     }
 
 
@@ -61,7 +63,11 @@ class HashGeneratorTest {
 
     @Test
     void test_generateBatchIfNeededAsync() {
-        test_generateBatchIfNeeded();
+        HashGenerator spiedHashGenerator = Mockito.spy(hashGenerator);
+
+        spiedHashGenerator.generateBatchIfNeededAsync();
+
+        verify(spiedHashGenerator, times(1)).generateBatchIfNeeded();
     }
 
     @Test
