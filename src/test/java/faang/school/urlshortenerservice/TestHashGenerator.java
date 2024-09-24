@@ -16,6 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,7 @@ public class TestHashGenerator {
         List<String> hashes = Arrays.asList("a", "b", "c");
         when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(numbers);
         when(base62Encoder.encode(anyList())).thenReturn(hashes);
-        hashGenerator.generateBatch();
+        hashGenerator.generateAndSaveHashes();
         verify(hashRepository, times(1)).saveHashes(hashes);
     }
 
@@ -55,10 +56,8 @@ public class TestHashGenerator {
         int amount = 5;
         List<String> hashes = new ArrayList<>(Arrays.asList("a", "b", "c"));
         List<String> additionalHashes = Arrays.asList("d", "e");
-        when(hashRepository.getAndDeleteHashes(amount)).thenReturn(hashes);
-        when(hashRepository.getAndDeleteHashes(amount - 3)).thenReturn(additionalHashes);
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
-        when(base62Encoder.encode(anyList())).thenReturn(Arrays.asList("f", "g", "h"));
+        when(hashRepository.getAndDeleteHashes(eq(amount))).thenReturn(hashes);
+        when(hashGenerator.generateBatch(eq(amount - hashes.size()))).thenReturn(additionalHashes);
         List<String> result = hashGenerator.getHashes(amount);
         assertEquals(5, result.size());
         assertEquals("a", result.get(0));

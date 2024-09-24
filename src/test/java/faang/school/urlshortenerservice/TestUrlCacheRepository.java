@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -30,8 +28,8 @@ public class TestUrlCacheRepository {
         String url = "https://www.google.com";
         String key = "url";
         urlCacheRepository.saveAssociation(url, key);
-        Optional<String> pair = urlCacheRepository.getAssociation(key);
-        assertThat(pair.isPresent()).isTrue();
-        assertThat(pair.get()).isEqualTo(url);
+        String pair = urlCacheRepository.getAssociation(key);
+        assertThat(pair != null).isTrue();
+        assertThat(pair).isEqualTo(url);
     }
 }

@@ -27,21 +27,16 @@ public class UrlService {
 
     public UrlDto findUrl(String hash) {
         UrlDto urlDto = new UrlDto();
-        try {
-            Optional<String> originalUrl = urlCacheRepository.getAssociation(hash);
-            if (originalUrl.isPresent()) {
-                urlDto.setUrl(originalUrl.get());
-                log.info("Got original url {} from redis", urlDto.getUrl());
-            } else {
-                urlDto.setUrl(urlRepository.findByHash(hash));
-                log.info("Got original url {} from database", urlDto.getUrl());
-                urlCacheRepository.saveAssociation(urlDto.getUrl(), hash);
-                log.info("Saved original url {} in cache", urlDto.getUrl());
-            }
-        } catch (RedisConnectionFailureException ex) {
-            log.error("Redis connection failure", ex);
+
+        String originalUrl = urlCacheRepository.getAssociation(hash);
+        if (originalUrl != null) {
+            urlDto.setUrl(originalUrl);
+            log.info("Got original url {} from redis", urlDto.getUrl());
+        } else {
             urlDto.setUrl(urlRepository.findByHash(hash));
             log.info("Got original url {} from database", urlDto.getUrl());
+            urlCacheRepository.saveAssociation(urlDto.getUrl(), hash);
+            log.info("Saved original url {} in cache", urlDto.getUrl());
         }
         return urlDto;
     }

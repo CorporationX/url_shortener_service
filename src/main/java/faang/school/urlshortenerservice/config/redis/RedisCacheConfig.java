@@ -26,13 +26,6 @@ public class RedisCacheConfig {
         return redisTemplate;
     }
 
-//@Bean
-//    public RedisCacheConfiguration cacheConfiguration() {
-//        return RedisCacheConfiguration.defaultCacheConfig()
-//                .disableCachingNullValues()
-//                .entryTtl(Duration.ofDays(2));
-//    }
-
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration factory = new RedisStandaloneConfiguration();
@@ -42,9 +35,4 @@ public class RedisCacheConfig {
         jedisConnectionFactory.afterPropertiesSet();
         return jedisConnectionFactory;
     }
-
-//    @Bean
-//    public RedisCacheManager cacheManager() {
-//    return RedisCacheManager.builder(jedisConnectionFactory()).cacheDefaults(cacheConfiguration()).build();
-//    }
 }
