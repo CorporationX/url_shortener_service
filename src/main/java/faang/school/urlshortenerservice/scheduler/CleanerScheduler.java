@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
-    UrlService urlService;
+    private final UrlService urlService;
 
     @Transactional
     @Scheduled(cron = "${url.cleaner.scheduler}")
