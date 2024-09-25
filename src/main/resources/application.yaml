@@ -23,3 +23,28 @@ server:
 logging:
   level:
     root: info
+
+redis:
+  host: localhost
+  port: 6379
+
+hash:
+  count_hash: 10
+  unique_numbers: 10
+  daily_batch_size: 5
+  min_percentage_free_hash: 0.2
+
+scheduled:
+  generate_batch: "0 0 0 * * ?"
+  cleaner_scheduler: "0 0 0 * * ?"
+
+async:
+    hash_generator:
+      core_pool_size: 5
+      max_pool_size: 10
+      queue_capacity: 10
+
+base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+cleaner_scheduler:
+  period_clear_years: 1
