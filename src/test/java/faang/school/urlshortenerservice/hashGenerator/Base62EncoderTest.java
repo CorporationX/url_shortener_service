@@ -22,7 +22,7 @@ public class Base62EncoderTest {
     public void test_Encode_LargeNumber() {
 
         long number = 1234567890L;
-        String expected = "UfHiVB";
+        String expected = "BViHfU";
         String actual = encoder.encode(number);
         assertEquals(expected, actual);
     }

@@ -20,6 +20,6 @@ public class Base62Encoder {
 
             number /= base62Charset.length();
         }
-        return builder.toString();
+        return builder.reverse().toString();
     }
 }

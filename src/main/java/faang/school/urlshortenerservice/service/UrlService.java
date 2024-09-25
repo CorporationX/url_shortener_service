@@ -50,8 +50,11 @@ public class UrlService {
     public Redirect getUrl(@NotNull String hash) {
         String url = urlCacheRepository.getUrl(hash);
         if (Objects.isNull(url)) {
-            url = urlRepository.findById(hash)
-                    .orElseThrow(() -> new DataNotFoundException("Url not with hash " + hash + " not found")).getUrl();
+            Url urlFromDB = urlRepository.findById(hash)
+                    .orElseThrow(() -> new DataNotFoundException("Url not with hash " + hash + " not found"));
+
+            urlCacheRepository.saveUrl(urlFromDB);
+            url = urlFromDB.getUrl();
             log.info("Getting url for hash {} from database", hash);
         }
         return Redirect.builder().url(url).build();

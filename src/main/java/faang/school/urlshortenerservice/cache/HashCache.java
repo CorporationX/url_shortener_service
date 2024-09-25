@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -24,7 +25,7 @@ public class HashCache {
     private int hashBatchSize;
 
     @Value("${hash.cache_size}")
-    private int cacheSize;
+    private float cacheSize;
 
     @Value("${hash.percent_to_refresh_cache}")
     private int percentToRefreshCache;
@@ -48,17 +49,17 @@ public class HashCache {
                 hashGenerator.generateHash()
                         .thenAccept(hashes -> {
                             List<String> list = hashes.stream().map(Hash::getHash).toList();
-                            hashQueue.addAll(list);
+                            list.forEach(hashQueue::offer);
                         })
                         .thenRun(() -> isGenerating.set(false));
                 log.info("Hash generated and added to cache");
             }
         }
         try {
-            return hashQueue.take();
+            return hashQueue.poll(10, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error("Failed to get hash from cache", e);
-            throw new HashException(e.getMessage());
+            throw new HashException("Failed to get hash from cache", e);
         }
     }
 
