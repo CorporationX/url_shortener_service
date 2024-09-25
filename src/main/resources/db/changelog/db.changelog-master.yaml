@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/url_shortener_V001__cr_hash.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V002__cr_unique_hash_number_seq.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V003__cr_url.sql

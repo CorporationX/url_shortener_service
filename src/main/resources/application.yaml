@@ -1,18 +1,25 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5433/postgres
     username: user
     password: password
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +30,10 @@ server:
 logging:
   level:
     root: info
+#   org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.jdbc.core: TRACE
+# logging:
+  #   level:
+  #      liquibase: DEBUG
+
+hash.cron: '-'
