@@ -42,7 +42,7 @@ public class HashGenerator {
     @Transactional
     public List<String> getHashBatch(int batchSize){
         List<Hash> hashes = hashRepository.getHashBatch(batchSize);
-        if (!hashes.isEmpty() && hashes.size() < batchSize) {
+        if (hashes.size() < batchSize) {
             List<Hash> leftHashes = generateBatch(batchSize - hashes.size());
             log.info("Remaining hashes generated");
             hashes.addAll(leftHashes);
