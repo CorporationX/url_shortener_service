@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class UrlDto {
     private String hash;
     @URL
-    @NotBlank(message = "The hash must The hash must not be blank!")
+    @NotBlank(message = "The hash must not be blank!")
     private String url;
     private LocalDateTime createdAt;
 }
