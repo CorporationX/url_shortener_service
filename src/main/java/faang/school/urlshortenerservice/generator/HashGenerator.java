@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,20 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    @Value("${hashes.amount}")
-    private int hashesAmount;
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-
-    public List<String> generateBatch() {
-        log.info("Generating hashes for batch");
-        List<Long> numbers = hashRepository.getUniqueNumbers(hashesAmount);
-        log.info("got {} Number of unique numbers", numbers.size());
-        List<String> hashes = base62Encoder.encode(numbers);
-        log.info("{} numbers were encoded to base62", hashes.size());
-        return hashes;
-    }
 
     public List<String> generateBatch(int batchSize) {
         log.info("Generating hashes for batch");
@@ -37,8 +25,8 @@ public class HashGenerator {
         return hashes;
     }
 
-    public void generateAndSaveHashes() {
-        List<String> hashes = generateBatch();
+    public void generateAndSaveHashes(int batchSize) {
+        List<String> hashes = generateBatch(batchSize);
         hashRepository.saveHashes(hashes);
         log.info("{} hashes were saved", hashes.size());
     }

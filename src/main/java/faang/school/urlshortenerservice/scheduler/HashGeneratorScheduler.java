@@ -15,7 +15,7 @@ public class HashGeneratorScheduler {
 
     @Scheduled(cron = "${schedulers.hash_generator.cron}")
     public void generateHashes(){
-        hashGenerator.generateAndSaveHashes();
+        hashGenerator.generateAndSaveHashes(hashesAmount);
     }
 
 }

@@ -36,13 +36,12 @@ public class TestHashGenerator {
         List<String> hashes = Arrays.asList("a", "b", "c");
         when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(numbers);
         when(base62Encoder.encode(anyList())).thenReturn(hashes);
-        hashGenerator.generateAndSaveHashes();
+        hashGenerator.generateAndSaveHashes(2);
         verify(hashRepository, times(1)).saveHashes(hashes);
     }
 
     @Test
     public void testGetHashes() {
-        int amount = 3;
         List<String> hashes = Arrays.asList("a", "b", "c");
         when(hashRepository.getAndDeleteHashes(anyInt())).thenReturn(hashes);
         List<String> result = hashGenerator.getHashes(3);
