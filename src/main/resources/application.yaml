@@ -1,4 +1,12 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+    cache:
+      redis:
+        time-to-live: 86400
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -33,3 +41,16 @@ async:
 
 hash:
   range: 100
+  scheduled:
+    cron: "0 */10 * * * *"
+
+  cache:
+    size: 10
+    threshold: 0.2
+
+url:
+  host: http://localhost:8080/urls/
+  scheduled:
+    cron: "0 0 0 * * *"
+  cleaner:
+    period: P1Y

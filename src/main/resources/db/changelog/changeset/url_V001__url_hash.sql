@@ -1,7 +1,7 @@
 create table url
 (
     hash       varchar(6) NOT NULL primary key,
-    url        character  not null,
+    url        varchar  not null,
     created_at timestamptz DEFAULT current_timestamp
 );
 
