@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,8 @@ class CleanerSchedulerTest {
     private UrlRepository urlRepository;
     @Mock
     private HashRepository hashRepository;
+    @Mock
+    private HashGenerator hashGenerator;
 
     @Test
     void testClean() {
@@ -41,5 +44,12 @@ class CleanerSchedulerTest {
 
         verify(urlRepository, times(1)).getOldHashesAndDelete(any());
         verify(hashRepository, times(1)).saveAll(hashes);
+    }
+
+    @Test
+    void testGenerateAndSaveBatches() {
+        cleanerScheduler.generateAnsSaveBatches();
+
+        verify(hashGenerator, times(1)).generateAndSaveBatches();
     }
 }
