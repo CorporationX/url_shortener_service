@@ -46,7 +46,6 @@ public class UrlServiceImpl implements UrlService {
                 .url(url)
                 .build());
         redisTemplate.opsForValue().set(hash, objectMapper.writeValueAsString(saved));
-
         return urlMapper.toDto(saved);
     }
 

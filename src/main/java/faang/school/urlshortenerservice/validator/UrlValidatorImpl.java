@@ -21,7 +21,7 @@ public class UrlValidatorImpl implements UrlValidator {
                 .matcher(hash)
                 .find();
         if (!isHashValid) {
-            throw new DataValidationException("Invalid url");
+            throw new DataValidationException("Invalid hash");
         }
     }
 

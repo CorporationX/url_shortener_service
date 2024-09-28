@@ -46,10 +46,9 @@ encoder:
 local-cache:
   minimalAmountInPercentage: 20
   maxSize: 5
-  maxWaitTimeMillis: 5000
 
 validator:
-  hashPattern: "^[a-zA-Z0-9]{6}$"
+  hashPattern: "^[a-zA-Z0-9_]{6}$"
   urlPattern: "\\b(https?|ftp|file):\\/\\/[-a-zA-Z0-9+&@#\\/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\/%=~_|]"
 
 async:
@@ -66,3 +65,10 @@ scheduler:
   expired-time-years: 1
   cron:
     cleaner: "0 0 0 * * ?"
+
+retryable:
+  hash-cash:
+    maxAttempts: 5
+    delay: 500
+    multiplier: 2
+    maxDelay: 3000
