@@ -17,9 +17,32 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl: 1
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    batchSize: 20000
+    capacity: 10000
+    fill.percent: 20
+  thread:
+    pool:
+      core: 5
+      max: 10
+      alive.time: 5
+  cleaner:
+    cron: "0 0 0 * * ?"
+    interval.month: 1
+
+logging.level.org.hibernate.SQL: DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
