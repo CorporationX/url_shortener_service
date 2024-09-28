@@ -1,57 +1,61 @@
-package faang.school.urlshortenerservice.cashe;
+package faang.school.urlshortenerservice.caсhe;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.hash_generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class HashCash {
+public class HashCache {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
 
-    @Value("${hash.queue_capacity}")
+    @Value("${hash.queue_capacity:1000}")
     private int capacity;
-    @Value("${hash.min_fill_percent}")
+    @Value("${hash.min_fill_percent:20}")
     private int minFillPercent;
-    private  BlockingQueue<Hash> queue;
+    private BlockingQueue<Hash> queue;
 
     @PostConstruct
     public void init() {
         log.info("Initializing Hash Cash");
-        queue = new LinkedBlockingDeque<>(capacity) ;
+        queue = new LinkedBlockingDeque<>(capacity);
         fillingQueue();
     }
 
     public String getHash() {
-        if (queue.size() / (capacity / 100.0) < minFillPercent) {
-            if (isGenerating.compareAndSet(false, true)) {
+        if (isGenerating.compareAndSet(false, true)) {
+            if (queue.remainingCapacity() / (capacity / 100.0) < minFillPercent) {
                 hashGenerator.getBatch();
                 hashGenerator.getBatchAsync().thenAccept(queue::addAll);
                 isGenerating.set(false);
                 log.info("Generated new batch hashes");
             }
         }
-        return queue.poll().getHash();
+        try {
+            return queue.poll(1000l, TimeUnit.MILLISECONDS).getHash();
+        } catch (InterruptedException e) {
+            String msg = "Queue is empty";
+            log.error(msg, e);
+            throw new HashCacheException(msg);
+        }
     }
 
     public void fillingQueue() {
         hashGenerator.generatedBatch();
-        queue.addAll(hashGenerator.getBatch());
+        hashGenerator.getBatch().stream().forEach(queue::offer);
     }
 }

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cashe.HashCash;
+import faang.school.urlshortenerservice.caсhe.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDtoRequest;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -31,7 +31,7 @@ public class UrlServiceTest {
     @Mock
     private UrlRepository urlRepository;
     @Mock
-    private HashCash hashCash;
+    private HashCache hashCash;
     @Mock
     private UrlCacheRepository urlCacheRepository;
     @Mock

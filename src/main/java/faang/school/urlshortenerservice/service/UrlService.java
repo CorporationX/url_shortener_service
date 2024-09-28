@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cashe.HashCash;
+import faang.school.urlshortenerservice.caсhe.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDtoRequest;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
-    private final HashCash hashCash;
+    private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
     @Value("${hash.url_prefix}")
@@ -31,7 +31,7 @@ public class UrlService {
 
     @Transactional
     public String getShortUrl(UrlDtoRequest request) {
-        String hash = hashCash.getHash();
+        String hash = hashCache.getHash();
         saveShortUrl(hash, request);
         return urlPrefix + hash;
     }
@@ -44,6 +44,7 @@ public class UrlService {
         }
         Url entity = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Url with " + hash + " not found!"));
+        urlCacheRepository.saveUrlByHash(hash, entity.getUrl());
         return entity.getUrl();
     }
 

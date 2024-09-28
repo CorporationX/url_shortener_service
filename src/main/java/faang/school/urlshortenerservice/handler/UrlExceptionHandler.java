@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.handler;
 
+import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.exception.ValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class UrlExceptionHandler {
         return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class, HashCacheException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRuntimeException(Exception e, HttpServletRequest request) {
         log.error("Server error: {}", e.getMessage(), e);
