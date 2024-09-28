@@ -5,6 +5,13 @@ spring:
     username: user
     password: password
 
+  cache:
+    type: redis
+    host: localhost
+    port: 6379
+    redis:
+      time-to-live: 86400
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -17,9 +24,30 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 100
+        keep-alive: 60
+      thread-name-prefix: AsyncThread-
+    array_blocking_queue_capacity: 1000
+    fill_percent: 0.2
+
+  hash:
+    max_range: 10000
+
+  scheduling:
+    cron: 0 0 0 * * *
+    period: 1 year
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  base_url: http://localhost:8080/shortener
