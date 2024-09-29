@@ -13,12 +13,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      port: 6379
+    host: localhost
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash:
+  batch_size: 1000
+  base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  min_fill_percent: 20
+  queue_capacity: 1000
+  url_prefix: http://localhost:8089/api/v1/url/
+
+url:
+  cleaner:
+    scheduler: 0 0 0 * * *
+
+executor:
+  pool_size: 10
+
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
