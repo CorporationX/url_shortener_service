@@ -1,4 +1,8 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -8,7 +12,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -19,6 +23,21 @@ spring:
 
 server:
   port: 8080
+
+hash:
+  generate_batch_size: 100
+  hash_batch_and_delete_size: 100
+  base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  cache_size: 1000
+  percent_to_refresh_cache: 20
+  url_prefix: http://localhost:9080/
+  scheduled: 0 0 0 1 1 *
+
+executor:
+  pool_size: 10
+
+
+
 
 logging:
   level:

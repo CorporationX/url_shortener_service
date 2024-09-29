@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/V001_urlshortener_service_url.sql
+  - include:
+      file: db/changelog/changeset/V002_urlshortener_service_hash.sql
+  - include:
+      file: db/changelog/changeset/V003_urlshortener_service_sequence.sql
