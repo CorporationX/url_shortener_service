@@ -43,7 +43,6 @@ public class UrlService {
 
     public UrlDto convertToShortUrl(UrlDto urlDto) {
         String existedHash = containsUrl(urlDto.getUrl());
-        try {
             if (existedHash.isEmpty()) {
                 String hash = hashCache.getHash();
                 return saveHashUrlConvertToShortUrl(existedHash, hash
@@ -55,13 +54,6 @@ public class UrlService {
                 log.info("configured shortUrl is {}", urlDto.getUrl());
                 return urlDto;
             }
-        } catch (RedisConnectionFailureException ex) {
-            log.error("Redis connection failure", ex);
-            String hash = hashCache.getHash();
-            return saveHashUrlConvertToShortUrl(existedHash, hash
-                    , null
-                    , (dbCache) -> dbCache.saveAssociation(urlDto.getUrl(), hash));
-        }
     }
 
     private UrlDto saveHashUrlConvertToShortUrl(String existedHash, String hash, Consumer<UrlCacheRepository> redisConsumer, Consumer<UrlRepository> dBConsumer) {
