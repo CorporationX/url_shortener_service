@@ -17,7 +17,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/url")
+@RequestMapping("/short")
 public class UrlController {
     private final UrlService urlService;
 

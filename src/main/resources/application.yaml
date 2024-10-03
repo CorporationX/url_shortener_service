@@ -52,7 +52,7 @@ hash:
   cache:
     size:
       1000
-    min-percentage: 0.20
+    min-percentage: 20
     queue:
       size: 10000
     thread-pool:

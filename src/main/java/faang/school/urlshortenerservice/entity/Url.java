@@ -28,10 +28,10 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "hash")
+    @Column(name = "hash", nullable = false)
     private String hash;
 
-    @Column(name = "url")
+    @Column(name = "url", nullable = false)
     private String url;
 
     @Column(name = "created_at")

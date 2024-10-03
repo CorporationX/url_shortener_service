@@ -30,6 +30,12 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDto("Requested Entity Not Found", exception.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleIllegalArgumentException(IllegalArgumentException exception) {
+        return new ErrorResponseDto("Illegal Argument", exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleInternalServerError(Exception exception) {

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
@@ -17,9 +16,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequiredArgsConstructor
 public class HashCache {
     @Value("${hash.cache.size}")
-    private Double CACHE_SIZE;
+    private Integer cacheSize;
     @Value("${hash.cache.min-percentage}")
-    private Double CACHE_MIN_PERCENTAGE;
+    private Integer cacheMinPercentage;
 
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
@@ -33,7 +32,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashCacheQueue.size() / CACHE_SIZE <= CACHE_MIN_PERCENTAGE) {
+        if ((double) hashCacheQueue.size() / cacheSize <= cacheMinPercentage) {
             cache();
         }
         return hashCacheQueue.poll();
@@ -42,15 +41,17 @@ public class HashCache {
     public void cache() {
         hashCacheThreadPool.execute(() -> {
             if (lock.tryLock()) {
-                cacheHashes();
-                lock.unlock();
+                try {
+                    cacheHashes();
+                } finally {
+                    lock.unlock();
+                }
             }
         });
     }
 
     private void cacheHashes() {
         hashGenerator.generateBatch();
-        List<String> hashBatch = hashRepository.getHashBatch();
-        hashCacheQueue.addAll(hashBatch);
+        hashRepository.getHashBatch().forEach(hashCacheQueue::offer);
     }
 }
