@@ -11,22 +11,22 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class HashConfig {
     @Value("${hash.thread-pool.size.min}")
-    private Integer HASH_THREAD_POOL_MIN_SIZE;
+    private Integer hashThreadPoolMinSize;
     @Value("${hash.thread-pool.size.max}")
-    private Integer HASH_THREAD_POOL_MAX_SIZE;
+    private Integer hashThreadPoolMaxSize;
     @Value("${hash.thread-pool.keep-alive.time}")
-    private Integer HASH_THREAD_POOL_ALIVE_TIME;
+    private Integer hashThreadPoolAliveTime;
     @Value("${hash.thread-pool.keep-alive.time-unit}")
-    private TimeUnit HASH_THREAD_POOL_ALIVE_TIME_UNIT;
+    private TimeUnit hashThreadPoolAliveTimeUnit;
     @Value("${hash.thread-pool.queue.size}")
-    private Integer HASH_THREAD_POOL_QUEUE_SIZE;
+    private Integer hashThreadPoolQueueSize;
 
     @Bean
     public ThreadPoolExecutor hashThreadPool() {
-        return new ThreadPoolExecutor(HASH_THREAD_POOL_MIN_SIZE,
-                HASH_THREAD_POOL_MAX_SIZE,
-                HASH_THREAD_POOL_ALIVE_TIME,
-                HASH_THREAD_POOL_ALIVE_TIME_UNIT,
-                new LinkedBlockingQueue<>(HASH_THREAD_POOL_QUEUE_SIZE));
+        return new ThreadPoolExecutor(hashThreadPoolMinSize,
+                hashThreadPoolMaxSize,
+                hashThreadPoolAliveTime,
+                hashThreadPoolAliveTimeUnit,
+                new LinkedBlockingQueue<>(hashThreadPoolQueueSize));
     }
 }

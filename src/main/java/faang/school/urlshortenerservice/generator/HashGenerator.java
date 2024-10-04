@@ -19,7 +19,9 @@ public class HashGenerator {
     @Transactional
     public void generateBatch() {
         List<Long> uniqueValues = hashRepository.getUniqueValues();
-        List<String> hashes = baseEncoder.encode(uniqueValues);
+        List<String> hashes = uniqueValues.stream()
+                .map(baseEncoder::encode)
+                .toList();
         hashRepository.batchSave(hashes);
     }
 }
