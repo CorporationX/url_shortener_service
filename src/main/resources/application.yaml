@@ -14,11 +14,60 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 9090
+
+url:
+  cache:
+    initial:
+      ttl: PT12H
+    secondary:
+      ttl: PT1H
+  scheduler:
+    cron: "0 0 0 * * ?"
+    expired-interval: '1 YEAR'
+
+hash:
+  batch:
+    size: 300
+  sequence:
+    name: unique_number_seq
+  thread-pool:
+    size:
+      min: 5
+      max: 10
+    keep-alive:
+      time: 60
+      time-unit: SECONDS
+    queue:
+      size: 10000
+  cache:
+    size:
+      1000
+    min-percentage: 20
+    queue:
+      size: 10000
+    thread-pool:
+      size:
+        min: 5
+        max: 5
+      keep-alive:
+        time: 0
+        time-unit: SECONDS
+      queue:
+        size: 10000
+
+encoder:
+  base:
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 logging:
   level:
