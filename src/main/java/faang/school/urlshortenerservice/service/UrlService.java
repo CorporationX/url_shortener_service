@@ -8,7 +8,6 @@ import faang.school.urlshortenerservice.exception.ExceptionMessage;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import io.lettuce.core.RedisConnectionException;
 import lombok.RequiredArgsConstructor;

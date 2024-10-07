@@ -20,7 +20,6 @@ public class Base62Encoder {
                 currentNumber /= BASE_LENGHT;
             }
             if (encodedString.length() > 6){
-                log.info("Генерация хеша остановлена для числа " + number + " из-за превышения длины хеша.");
                 log.info("Hash generation is stopped for " + number + " because of the hash length being exceeded.");
                 continue;
             }

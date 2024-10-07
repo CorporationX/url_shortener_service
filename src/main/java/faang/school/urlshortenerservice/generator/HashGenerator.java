@@ -44,9 +44,9 @@ public class HashGenerator {
         List<Hash> hashes = hashRepository.getHashBatch(batchSize);
         if (hashes.size() < batchSize) {
             List<Hash> leftHashes = generateBatch(batchSize - hashes.size());
-            log.info("Remaining hashes generated");
+            log.info("Create: {} new hash", hashes.size());
             hashes.addAll(leftHashes);
-            log.info("Remaining hashes added to the general list");
+            log.info("New hashes saved in HashRepository");
         }
         return hashes.stream().map(Hash::getHash).toList();
     }
