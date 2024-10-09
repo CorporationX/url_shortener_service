@@ -4,7 +4,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,12 +12,27 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      port: 6379
+    host: localhost
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-server:
-  port: 8080
+hash:
+  batch_size: 1000
+  min_fill_percent: 20
+  queue_capacity: 1000
+  base62_charset: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  url_prefix: http://localhost:8080/url/
+
+url:
+  cleaner:
+    scheduler: 0 0 0 * * *
+
+executor:
+  pool_size: 10
 
 logging:
   level:
