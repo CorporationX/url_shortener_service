@@ -7,22 +7,21 @@ import redis.clients.jedis.Jedis;
 @Service
 public class UrlCacheService {
 
-    private final Jedis jedis;
-    private final int ttl;
+  private final Jedis jedis;
+  private final int ttl;
 
-    public UrlCacheService(Jedis jedis,
-                           @Value("${spring.cache.ttl:3600}") int ttl) {
-        this.jedis = jedis;
-        this.ttl = ttl;
-    }
+  public UrlCacheService(Jedis jedis,
+                         @Value("${spring.cache.ttl:3600}") int ttl) {
+    this.jedis = jedis;
+    this.ttl = ttl;
+  }
 
-    public String getCachedLongUrl(String shortUrl) {
-        return jedis.get(shortUrl);
-    }
+  public String getCachedLongUrl(String hash) {
+    return jedis.get(hash);
+  }
 
-    public void cacheLongUrl(String shortUrl, String longUrl) {
-        jedis.set(shortUrl, longUrl);
-        jedis.expire(shortUrl, ttl);
-    }
-
+  public void cacheLongUrl(String hash, String longUrl) {
+    jedis.set(hash, longUrl);
+    jedis.expire(hash, ttl);
+  }
 }

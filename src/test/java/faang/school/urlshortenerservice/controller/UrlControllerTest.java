@@ -17,19 +17,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class UrlControllerTest {
+    private final String hash = "aaaaaa";
+    private final String longUrl = "http://localhost:8080/api/url/some_url";
     @InjectMocks
     private UrlController controller;
     @Mock
     private UrlService service;
     private ObjectMapper objectMapper;
     private MockMvc mockMvc;
-    private final String hash = "aaaaaa";
-    private final String longUrl = "http://localhost:8080/api/url/some_url";
 
     @BeforeEach
     void setUp() {
@@ -42,15 +44,17 @@ class UrlControllerTest {
     @Test
     void testCreateHash() throws Exception {
         // given
-        String uri = "/api/url/";
+        String uri = "/api/url";
         UrlDto requestDto = new UrlDto(longUrl);
 
-        when(service.getShortUrl(requestDto)).thenReturn(hash);
+        when(service.getHash(requestDto)).thenReturn(hash);
 
         // then
         mockMvc.perform(post(uri)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(hash))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

@@ -1,19 +1,17 @@
 package faang.school.urlshortenerservice.service.handler;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-@AllArgsConstructor
-public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private String url;
-    private int status;
-    private String error;
-    private String message;
-
+public record ErrorResponse(
+        String url,
+        String message,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        LocalDateTime timestamp,
+        int status,
+        String error
+) {
 }

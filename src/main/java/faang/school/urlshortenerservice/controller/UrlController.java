@@ -20,20 +20,20 @@ import java.io.IOException;
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/")
+    @PostMapping
     public String createHash(@RequestBody @Valid UrlDto url) {
-        return urlService.getShortUrl(url);
+        return urlService.getHash(url);
     }
 
     @GetMapping("/{hash}")
-    public void goToLongUrl(@PathVariable(name = "hash") String shortUrl,
-                            HttpServletResponse response) throws IOException {
+    public void goToLongUrl(@PathVariable(name = "hash") String hash,
+                                    HttpServletResponse response) throws IOException {
         response.setStatus(302);
-        response.sendRedirect(urlService.getLongUrl(shortUrl));
+        response.sendRedirect(urlService.getLongUrl(hash));
     }
 
     @GetMapping("/some_url")
-    public void goToSomeUrl() {
-        System.out.println("Попали куда надо");
+    public void checkRedirect() {
+        System.out.println("checkRedirect(): success");
     }
 }

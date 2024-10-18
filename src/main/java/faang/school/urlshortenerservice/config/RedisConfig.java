@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.client;
+package faang.school.urlshortenerservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
