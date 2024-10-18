@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    url: ${DATABASE_URL:jdbc:h2:mem:testdb}
+    username: ${DATABASE_USERNAME:user}
+    password: ${DATABASE_PASSWORD:pass}
 
   cache:
     type: redis
@@ -37,8 +37,10 @@ logging:
     root: info
 
 data:
+  url_prefix: http://api/url/
+
   hash:
-    cash:
+    cache:
       capacity: 10
       fill_percent: 20
 
@@ -54,4 +56,3 @@ data:
     cleaner:
       cron: 0 0 0 * * *
       expired_after_years: 0
-
