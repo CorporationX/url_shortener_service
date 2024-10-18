@@ -3,8 +3,8 @@ package faang.school.urlshortenerservice.cache;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
@@ -28,6 +27,12 @@ public class HashCache {
     @Value("${cache.fill-threshold}")
     private double fillThreshold;
     private ArrayBlockingQueue<String> hashCacheQueue;
+
+    public HashCache(HashRepository hashRepository, HashGenerator hashGenerator, @Qualifier("threadPool") ThreadPoolTaskExecutor taskExecutor) {
+        this.hashRepository = hashRepository;
+        this.hashGenerator = hashGenerator;
+        this.taskExecutor = taskExecutor;
+    }
 
     @PostConstruct
     public void init() {

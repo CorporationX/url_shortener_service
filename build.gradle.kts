@@ -13,6 +13,21 @@ repositories {
     mavenCentral()
 }
 
+val springCloudStarter = "2.0.2"
+val springCloudStarterOpenfeign = "4.0.2"
+val springRetry = "2.0.2"
+val jedis = "4.3.2"
+val jacksonDatabind = "2.14.2"
+val slf4j = "2.0.5"
+val logback = "1.4.6"
+val lombok = "1.18.26"
+val mapstruct = "1.5.3.Final"
+val testcontainersBom = "1.17.6"
+val testcontainersRedis = "1.4.6"
+val junitJupiterParams = "5.9.2"
+val assertj = "3.24.2"
+val openapi = "2.5.0"
+
 dependencies {
     /**
      * Spring boot starters
@@ -22,42 +37,44 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springCloudStarter}")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudStarterOpenfeign}")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.retry:spring-retry:2.0.2")
+    implementation("org.springframework.retry:spring-retry:${springRetry}")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapi}")
 
     /**
      * Database
      */
     implementation("org.liquibase:liquibase-core")
-    implementation("redis.clients:jedis:4.3.2")
+    implementation("redis.clients:jedis:${jedis}")
     runtimeOnly("org.postgresql:postgresql")
+    //runtimeOnly ("com.h2database:h2")
 
     /**
      * Utils & Logging
      */
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
-    implementation("org.slf4j:slf4j-api:2.0.5")
-    implementation("ch.qos.logback:logback-classic:1.4.6")
-    implementation("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    implementation("org.mapstruct:mapstruct:1.5.3.Final")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonDatabind}")
+    implementation("org.slf4j:slf4j-api:${slf4j}")
+    implementation("ch.qos.logback:logback-classic:${logback}")
+    implementation("org.projectlombok:lombok:${lombok}")
+    annotationProcessor("org.projectlombok:lombok:${lombok}")
+    implementation("org.mapstruct:mapstruct:${mapstruct}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     /**
      * Test containers
      */
-    implementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
+    implementation(platform("org.testcontainers:testcontainers-bom:${testcontainersBom}"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:1.4.6")
+    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:${testcontainersRedis}")
 
     /**
      * Tests
      */
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
-    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${junitJupiterParams}")
+    testImplementation("org.assertj:assertj-core:${assertj}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -93,12 +110,14 @@ tasks.jacocoTestCoverageVerification {
         rule {
             isEnabled = true
             element = "CLASS"
-            includes = listOf("school.faang.user_service.service.*",
+            includes = listOf(
+                "school.faang.user_service.service.*",
                 "school.faang.user_service.cash.*",
                 "school.faang.user_service.controller.*",
                 "school.faang.user_service.encoder.*",
                 "school.faang.user_service.generator.*",
-                "school.faang.user_service.validator.*")
+                "school.faang.user_service.validator.*"
+            )
             limit {
                 minimum = "0.80".toBigDecimal()
             }

@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.dto.RequestUrl;
 import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,13 @@ public class UrlController {
 
     @PostMapping("/shorten")
     @Operation(summary = "Get short url")
-    public String getHash(@RequestBody RequestUrl url) {
+    public String getHash(@RequestBody @Valid RequestUrl url) {
         return urlService.getHash(url.getUrl());
     }
 
     @GetMapping("/redirect")
     @Operation(summary = "Get long url")
-    public ResponseEntity<String> getUrl(@RequestBody RequestUrl shortUrl) {
+    public ResponseEntity<String> getUrl(@RequestBody @Valid RequestUrl shortUrl) {
         String url = urlService.getLongUrl(shortUrl.getUrl());
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(url)).build();

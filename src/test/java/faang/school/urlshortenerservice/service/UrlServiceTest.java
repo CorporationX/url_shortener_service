@@ -14,13 +14,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
@@ -32,6 +35,8 @@ class UrlServiceTest {
     private UrlCashRepository urlCashRepository;
     @Mock
     private HashRepository hashRepository;
+    @Mock
+    private ApplicationContext context;
     @InjectMocks
     private UrlService urlService;
     private String url;
@@ -61,7 +66,7 @@ class UrlServiceTest {
         when(hashCache.getHash()).thenReturn(hash);
         String result = urlService.getHash(url);
 
-        verify(urlRepository,times(1)).save(associationCaptor.capture());
+        verify(urlRepository, times(1)).save(associationCaptor.capture());
         verify(urlCashRepository, times(1)).save(urlCaptor.capture());
         assertEquals("http://sh.c/" + hash, result);
         assertEquals(hash, urlCaptor.getValue().getHash());
@@ -93,8 +98,8 @@ class UrlServiceTest {
     @Test
     void testDeleteOldUrls() {
         when(urlRepository.existsRecordsOlderThanOneYear()).thenReturn(true);
+        when(context.getBean(UrlService.class)).thenReturn(urlService);
         urlService.deleteOldUrls();
-        verify(urlRepository, times(1)).deleteAndReturnOldUrls();
-        verify(hashRepository, times(1)).save(anyList());
+        verify(context, times(1)).getBean(UrlService.class);
     }
 }

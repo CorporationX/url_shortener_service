@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCashRepository urlCashRepository;
     private final HashRepository hashRepository;
+    private final ApplicationContext context;
 
     @Value("${static-url.url}")
     private String staticUrl;
@@ -60,14 +62,18 @@ public class UrlService {
         return associationHashUrl.getUrl();
     }
 
-    @Transactional
-    @Async("executorService")
+    @Async("taskExecutor")
     public void deleteOldUrls() {
         boolean satisfactionCondition = urlRepository.existsRecordsOlderThanOneYear();
         if (satisfactionCondition) {
-            List<String> hashes = urlRepository.deleteAndReturnOldUrls();
-            hashRepository.save(hashes);
-            log.info("Hashes saved as free");
+            context.getBean(UrlService.class).reuseHash();
         }
+    }
+
+    @Transactional
+    public void reuseHash() {
+        List<String> hashes = urlRepository.deleteAndReturnOldUrls();
+        hashRepository.save(hashes);
+        log.info("Hashes saved as free");
     }
 }

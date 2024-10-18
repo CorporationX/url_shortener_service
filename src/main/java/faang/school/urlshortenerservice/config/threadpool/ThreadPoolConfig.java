@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 @Configuration
 public class ThreadPoolConfig {
     @Value("${thread-pool.size}")
@@ -26,7 +23,13 @@ public class ThreadPoolConfig {
     }
 
     @Bean
-    public ExecutorService executorService() {
-        return Executors.newCachedThreadPool();
+    public ThreadPoolTaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(threadPoolSize);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(threadPoolQueue);
+        executor.setThreadNamePrefix("AsyncExecutor-");
+        executor.initialize();
+        return executor;
     }
 }
