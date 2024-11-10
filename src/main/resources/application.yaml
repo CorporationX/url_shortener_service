@@ -26,6 +26,9 @@ logging:
 
 hash:
   batch-size: 7
+  sequence-amount: 4
+  thread-pool:
+    size: 3
 
 base62:
   alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
