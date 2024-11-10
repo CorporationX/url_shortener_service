@@ -45,6 +45,7 @@ public class UrlExceptionHandler {
         log.error(message, exception);
 
         return ErrorResponse.builder()
+                .serviceName(serviceName)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .globalMessage(message)
                 .build();
@@ -63,6 +64,7 @@ public class UrlExceptionHandler {
         log.error("Validation errors: {}", errors);
 
         return ErrorResponse.builder()
+                .serviceName(serviceName)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .errorDetails(errors)
                 .build();
