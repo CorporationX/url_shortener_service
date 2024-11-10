@@ -34,7 +34,7 @@ public class Base62Encoder {
             throw new IllegalArgumentException("number must not be negative");
         }
         StringBuilder result = new StringBuilder();
-        while (number.compareTo(BigInteger.ZERO) > 0 && result.length() < 7) {
+        while (number.compareTo(BigInteger.ZERO) > 0 && result.length() < 6) {
             BigInteger[] divmod = number.divideAndRemainder(BASE);
             number = divmod[0];
             int digit = divmod[1].intValue();
