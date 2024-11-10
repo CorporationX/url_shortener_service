@@ -18,6 +18,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  name: url-shortener-service
   port: 8080
 
 logging:
