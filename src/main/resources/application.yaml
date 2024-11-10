@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  batch-size: 7
