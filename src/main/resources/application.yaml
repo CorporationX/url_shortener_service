@@ -26,3 +26,7 @@ logging:
 
 hash:
   batch-size: 7
+
+base62:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  length: 62
