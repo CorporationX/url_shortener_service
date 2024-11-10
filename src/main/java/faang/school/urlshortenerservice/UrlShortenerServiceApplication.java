@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableFeignClients("school.faang.servicetemplate.client")
-public class ServiceTemplateApplication {
+@EnableFeignClients("faang.school.urlshortenerservice.client")
+public class UrlShortenerServiceApplication  {
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ServiceTemplateApplication.class)
+        new SpringApplicationBuilder(UrlShortenerServiceApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }
