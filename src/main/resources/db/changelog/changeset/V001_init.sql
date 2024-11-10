@@ -10,4 +10,4 @@ create table if not exists hash
     hash varchar(6) primary key
 );
 
-create sequence unique_number_seq increment 1 start 1;
+create sequence unique_number_seq start 1;

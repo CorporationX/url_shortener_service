@@ -20,6 +20,11 @@ spring:
 server:
   port: 8080
 
+hash:
+  batch-size:
+    insert: 100
+    get: 1000
+
 logging:
   level:
     root: info
