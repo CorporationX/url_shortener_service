@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  range: 1000
+
+executor:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
