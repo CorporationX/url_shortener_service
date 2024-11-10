@@ -20,6 +20,16 @@ spring:
 server:
   name: url-shortener-service
   port: 8080
+  hash:
+    generate:
+      batch-size: 10000
+  thread:
+    pool:
+      corePoolSize: 4
+      maximumPoolSize: 10
+      keepAliveTime: 60
+      queueCapacity: 100
+
 
 logging:
   level:
