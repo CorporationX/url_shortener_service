@@ -1,0 +1,3 @@
+databaseChangelog:
+  - include:
+    file: db/changelog/changeset/url-shortener_V001__initial.sql
