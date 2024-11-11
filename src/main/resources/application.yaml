@@ -24,6 +24,11 @@ hash:
   batch-size:
     insert: 100
     get: 1000
+    generate: 1000
+  generator:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 50
 
 logging:
   level:
