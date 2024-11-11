@@ -24,6 +24,6 @@ logging:
   level:
     root: info
 
-db:
+hash:
   batch-size: 100
-
+  count-to-returning: 5

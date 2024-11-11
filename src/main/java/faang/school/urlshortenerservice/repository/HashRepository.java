@@ -16,8 +16,10 @@ import java.util.Map;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    @Value("${db.batch-size}")
+    @Value("${hash.batch-size}")
     private Integer batchSize;
+    @Value("${hash.count-to-returning}")
+    private Integer countToReturning;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -44,6 +46,13 @@ public class HashRepository {
         }
 
         log.info("batches save to database, count: {}", batches.size());
+    }
+
+    @Transactional
+    public List<String> getHashBatch() {
+        String query = "delete from hash where hash IN (select hash from hash order by random() limit :limit) returning *;";
+        return namedParameterJdbcTemplate.queryForList(query,
+                Collections.singletonMap("limit", countToReturning), String.class);
     }
 
     private Map<String, String>[] getMapParams(List<String> hashes, int start, int end) {

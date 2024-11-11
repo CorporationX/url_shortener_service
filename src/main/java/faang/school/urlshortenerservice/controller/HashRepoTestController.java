@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/testing/hash/repository")
 public class HashRepoTestController {
     private final HashRepository repository;
+
     @GetMapping("/unique/{n}")
     public List<Integer> getUniqueNums(@PathVariable("n") int n) {
         return repository.getUniqueNumbers(n);
@@ -24,5 +25,10 @@ public class HashRepoTestController {
     @PutMapping("/hashes")
     public void putHashes(@RequestBody List<String> hashes) {
         repository.save(hashes);
+    }
+
+    @GetMapping("/hashes")
+    public List<String> getHashes() {
+        return repository.getHashBatch();
     }
 }
