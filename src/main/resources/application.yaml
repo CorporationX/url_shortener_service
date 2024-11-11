@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+app:
+  jdbc-template:
+    batch-size:
+      save-hashes: 1_000
