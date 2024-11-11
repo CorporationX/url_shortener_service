@@ -27,8 +27,16 @@ logging:
 hash:
   batch-size: 7
   sequence-amount: 4
-  thread-pool:
-    size: 3
+  thread:
+    fixed:
+      pool-size: 3
+    task:
+      pool-size: 3
+      max-pool-size: 3
+      capacity: 100
+      prefix: queueTaskExecutor-
+  queue:
+    size: 15
 
 base62:
   alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
