@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "hash")
+@Table(name = "hashes")
 public class Hash {
 
     @Id
