@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class FeignUserInterceptor implements RequestInterceptor {
-
     private final UserContext userContext;
 
     @Override

@@ -73,11 +73,19 @@ tasks.bootJar {
  * JaCoCo settings
  */
 val jacocoInclude = listOf(
-    "**/service/**"
+    "**/aspect/**",
+    "**/scheduler/**",
+    "**/service/**",
+    "**/util/**"
 )
 val jacocoExclude = listOf(
+    "**/annotation/**",
     "**/client/**",
-    "**/config/**"
+    "**/config/**",
+    "**/controller/**",
+    "**/dto/**",
+    "**/entity/**",
+    "**/repository/**"
 )
 
 jacoco {
