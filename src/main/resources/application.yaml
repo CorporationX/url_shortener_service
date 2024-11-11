@@ -32,4 +32,4 @@ hash:
 thread-pool:
   size: 10
   max-size: 20
-  timeout-seconds: 120
+  timeout: 120
