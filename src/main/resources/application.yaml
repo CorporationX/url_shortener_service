@@ -25,10 +25,19 @@ logging:
     root: info
 
 hash:
-  batch-size: 7
-  sequence-amount: 4
-  thread-pool:
-    size: 3
+  batch-size: 4
+  sequence-amount: 8
+  thread:
+    fixed:
+      pool-size: 3
+    task:
+      pool-size: 3
+      max-pool-size: 3
+      capacity: 100
+      prefix: queueTaskExecutor-
+  queue:
+    size: 15
+    percentage-multiplier: 0.2
 
 base62:
   alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz

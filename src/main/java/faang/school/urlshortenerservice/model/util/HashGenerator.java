@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -20,10 +21,12 @@ public class HashGenerator {
     private int sequenceAmount;
 
     @Async("fixedThreadPool")
-    public void generateBatch() {
-        List<Long> sequencesForHash = hashRepository.getUniqueNumbers(sequenceAmount);
-        log.info("sequence numbers to be hashed: {}", sequencesForHash);
-        List<String> encodedHashes = encoder.encode(sequencesForHash);
-        hashRepository.save(encodedHashes);
+    public CompletableFuture<Void> generateBatch() {
+        return CompletableFuture.runAsync(() -> {
+            List<Long> sequencesForHash = hashRepository.getUniqueNumbers(sequenceAmount);
+            log.info("sequence numbers to be hashed: {}", sequencesForHash);
+            List<String> encodedHashes = encoder.encode(sequencesForHash);
+            hashRepository.save(encodedHashes);
+        });
     }
 }
