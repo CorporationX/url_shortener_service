@@ -22,7 +22,7 @@ public class UniqueNumberSequenceRepositoryTest {
     private UniqueNumberSequenceRepository uniqueNumberSequenceRepository;
 
     @Test
-    public void testGetNextSequenceValues() {
+    public void testGetUniqueNumbers() {
         List<Long> mockResult = List.of(10001L, 10002L, 10003L, 10004L, 10005L);
         int count = 5;
         String query = """
@@ -31,7 +31,7 @@ public class UniqueNumberSequenceRepositoryTest {
                 """;
         when(jdbcTemplate.queryForList(query, Long.class, count)).thenReturn(mockResult);
 
-        List<Long> result = uniqueNumberSequenceRepository.getNextSequenceValues(count);
+        List<Long> result = uniqueNumberSequenceRepository.getUniqueNumbers(count);
 
         assertEquals(mockResult, result);
     }

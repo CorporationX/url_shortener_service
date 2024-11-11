@@ -12,7 +12,7 @@ public class UniqueNumberSequenceRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Long> getNextSequenceValues(int count) {
+    public List<Long> getUniqueNumbers(int count) {
         String query = """
                 SELECT nextval('unique_number_seq')
                 FROM generate_series(1, :count)

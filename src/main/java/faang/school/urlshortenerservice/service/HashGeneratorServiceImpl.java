@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class HashGeneratorServiceImpl implements HashGeneratorService {
     @Override
     @Async("mainThreadPoolExecutor")
     public void generateBatch() {
-        List<Long> uniqueNumbers = numberSequenceRepository.getNextSequenceValues(generateBatchSize);
+        List<Long> uniqueNumbers = numberSequenceRepository.getUniqueNumbers(generateBatchSize);
         List<Hash> hashes = encoder.encode(uniqueNumbers);
         hashRepository.saveAll(hashes);
     }
