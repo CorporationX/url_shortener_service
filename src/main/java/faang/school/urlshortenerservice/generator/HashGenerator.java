@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class HashGenerator {
     private int range;
 
     @Async("customThreadPoolForHashGenerator")
+    @Transactional
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(range);
         List<String> hashesEncoder = base62Encoder.encode(numbers);
