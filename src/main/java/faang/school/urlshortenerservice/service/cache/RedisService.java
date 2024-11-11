@@ -18,18 +18,8 @@ public class RedisService<T> implements CacheService<T> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void put(String key, T value) {
-        redisTemplate.opsForValue().set(key, value);
-    }
-
-    @Override
     public void put(String key, T value, Duration time) {
         redisTemplate.opsForValue().set(key, value, time);
-    }
-
-    @Override
-    public void expire(String key, Duration duration) {
-        redisTemplate.expire(key, duration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override

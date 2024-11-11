@@ -1,4 +1,4 @@
-package faang.school.service;
+package faang.school.urlshortenerservice.service;
 
 public interface UrlService {
 

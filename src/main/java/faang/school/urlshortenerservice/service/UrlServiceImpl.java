@@ -1,4 +1,4 @@
-package faang.school.service;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
 import faang.school.urlshortenerservice.entity.Url;
