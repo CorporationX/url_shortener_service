@@ -32,7 +32,7 @@ public class HashGeneratorTest {
         when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(sequenceNumbers);
         when(encoder.encode(sequenceNumbers)).thenReturn(hashes);
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch().join();
 
         verify(hashRepository).save(hashes);
         verify(hashRepository).getUniqueNumbers(anyLong());
