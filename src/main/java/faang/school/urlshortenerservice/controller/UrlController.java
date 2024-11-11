@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpHeaders;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +22,6 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/{hash}")
-    @Retryable(retryFor = IOException.class,
-            maxAttemptsExpression = "${server.redirect.max-attempts}",
-            backoff = @Backoff(delayExpression = "${server.redirect.backoff-delay}"))
     public void redirect(@PathVariable
                          @Length(min = 6, max = 6, message = "Hash must be exactly 6 characters long")
                          String hash,
