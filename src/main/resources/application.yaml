@@ -4,7 +4,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,6 +15,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 200
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

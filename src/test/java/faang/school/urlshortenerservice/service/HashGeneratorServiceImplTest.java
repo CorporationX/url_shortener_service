@@ -45,12 +45,12 @@ public class HashGeneratorServiceImplTest {
         List<Long> sequenceValues = List.of(1L, 2L, 3L);
         List<Hash> encodedHashes = List.of(new Hash("hash1"), new Hash("hash2"), new Hash("hash3"));
 
-        when(numberSequenceRepository.getNextSequenceValues(generateBatchSize)).thenReturn(sequenceValues);
+        when(numberSequenceRepository.getUniqueNumbers(generateBatchSize)).thenReturn(sequenceValues);
         when(encoder.encode(sequenceValues)).thenReturn(encodedHashes);
 
         hashGeneratorService.generateBatch();
 
-        verify(numberSequenceRepository).getNextSequenceValues(generateBatchSize);
+        verify(numberSequenceRepository).getUniqueNumbers(generateBatchSize);
         verify(encoder).encode(sequenceValues);
         verify(hashRepository).saveAll(encodedHashes);
     }
