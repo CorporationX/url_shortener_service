@@ -28,5 +28,5 @@ public class Url {
     private String url;
 
     @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 }
