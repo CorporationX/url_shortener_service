@@ -21,6 +21,9 @@ server:
   port: 8080
 
 hash:
+  encoder:
+    base62:
+      value: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   batch-size:
     get: 1000
     generate: 1000
@@ -29,7 +32,7 @@ hash:
       core-pool-size: 10
       max-pool-size: 20
       queue-capacity: 50
-      thread-name-prefix: "HashGenerator-"
+      thread-name-prefix: HashGenerator-
   cache:
     size: 10
     low-threshold-percentage: 20
@@ -37,7 +40,11 @@ hash:
       core-pool-size: 5
       max-pool-size: 10
       queue-capacity: 50
-      thread-name-prefix: "CacheExecutor-"
+      thread-name-prefix: CacheExecutor-
+
+url:
+  cleaner:
+    cron: "0 0 0 * * *" # every day at midnight
 
 logging:
   level:
