@@ -1,30 +1,39 @@
 package faang.school.urlshortenerservice.generator;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class Base62Encoder {
 
-    private static final char[] BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int BASE = BASE62.length;
+    @Value("${hash.encoder.base62.value}")
+    private String base62;
+
+    private int base;
+
+    @PostConstruct
+    private void init() {
+        this.base = base62.length();
+    }
 
     public List<String> encode(List<Long> numbers) {
-        List<String> hashes = new ArrayList<>(numbers.size());
-        for (Long number : numbers) {
-            hashes.add(encodeNumberToBase62(number));
-        }
-        return hashes;
+        return numbers.stream()
+                .map(this::encodeNumberToBase62)
+                .toList();
     }
 
     private String encodeNumberToBase62(long number) {
+        if (number == 0) {
+            return String.valueOf(base62.charAt(0));
+        }
         StringBuilder hash = new StringBuilder();
         while (number > 0) {
-            int remainder = (int) (number % BASE);
-            hash.insert(0, BASE62[remainder]);
-            number /= BASE;
+            int remainder = (int) (number % base);
+            hash.insert(0, base62.charAt(remainder));
+            number /= base;
         }
         return hash.toString();
     }
