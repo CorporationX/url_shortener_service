@@ -7,6 +7,10 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.AppUrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static faang.school.urlshortenerservice.entity.UrlBuilder.build;
 
@@ -30,5 +34,11 @@ public class UrlService {
         urlCacheRepository.save(hash, longUrl);
 
         return generalProperties.getAppUrl() + GET_URL_PATH + hash;
+    }
+
+    @Transactional
+    public List<String> cleanHashes() {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        return urlRepository.deleteAndReturnOldUrls(oneYearAgo);
     }
 }

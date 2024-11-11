@@ -28,3 +28,7 @@ server:
 app:
   protocol: http
   host: localhost
+
+  scheduler:
+    clean-hashes:
+      cron: "0 * * * * *" # every minutes

@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,5 +59,15 @@ class UrlServiceTest {
 
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).save(anyString(), anyString());
+    }
+
+    @Test
+    void testCleanHashes_Success() {
+        when(urlRepository.deleteAndReturnOldUrls(any(LocalDateTime.class))).thenReturn(List.of(HASH));
+
+        List<String> hashes = urlService.cleanHashes();
+
+        assertEquals(1, hashes.size());
+        assertEquals(HASH, hashes.get(0));
     }
 }
