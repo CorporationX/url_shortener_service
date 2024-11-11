@@ -23,10 +23,10 @@ public class HashRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public List<Integer> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(int n) {
         String query = "SELECT nextval('unique_number_seq') from generate_series(1,:n)";
         Map<String, Integer> namedParams = Collections.singletonMap("n", n);
-        return namedParameterJdbcTemplate.queryForList(query, namedParams, Integer.class);
+        return namedParameterJdbcTemplate.queryForList(query, namedParams, Long.class);
     }
 
     @Transactional
