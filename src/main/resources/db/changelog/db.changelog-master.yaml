@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: user (generated)
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/V001_SEQUENCE.sql
+            relativeToChangelogFile: true
