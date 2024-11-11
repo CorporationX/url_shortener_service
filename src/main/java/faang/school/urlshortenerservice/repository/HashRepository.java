@@ -13,31 +13,29 @@ public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${hash.batch-size.insert}")
-    private int insertBatchSize;
-
     @Value("${hash.batch-size.get}")
     private int getBatchSize;
 
-    public List<Long> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(int amount) {
         String sql = """
                 select nextval('unique_number_seq')
                 from generate_series(1, ?)
                 """;
-        return jdbcTemplate.queryForList(sql, Long.class, n);
+        return jdbcTemplate.queryForList(sql, Long.class, amount);
     }
 
     public void save(List<String> hashes) {
+        if (hashes.isEmpty()) {
+            return;
+        }
         String sql = """
                 insert into hash (hash)
                 values (?)
                 """;
-        for (int i = 0; i < hashes.size(); i += insertBatchSize) {
-            List<String> batchList = hashes.subList(i, Math.min(i + insertBatchSize, hashes.size()));
-            jdbcTemplate.batchUpdate(sql, batchList, batchList.size(),
-                    (ps, hash) -> ps.setString(1, hash)
-            );
-        }
+        List<Object[]> mappedList = hashes.stream()
+                .map(hash -> new Object[]{hash})
+                .toList();
+        jdbcTemplate.batchUpdate(sql, mappedList);
     }
 
     public List<String> getHashBatch() {
@@ -46,6 +44,6 @@ public class HashRepository {
                 where hash in (select hash from hash limit ?)
                 returning hash
                 """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), getBatchSize);
+        return jdbcTemplate.queryForList(sql, String.class, getBatchSize);
     }
 }
