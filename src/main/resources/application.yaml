@@ -17,6 +17,20 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash:
+  repository:
+    batch:
+      batch-size: 3
+  generator:
+    batch:
+      batch-size: 3
+
+task-executor:
+  core-pool-size: 10
+  max-pool-size: 20
+  queue-capacity: 100
+  thread-name-prefix: taskExecutor-
+
 server:
   port: 8080
 
