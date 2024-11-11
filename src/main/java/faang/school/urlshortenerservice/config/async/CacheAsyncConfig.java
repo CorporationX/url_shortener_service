@@ -10,24 +10,24 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-public class AsyncConfig {
+public class CacheAsyncConfig {
 
-    @Value("${hash.generator.core-pool-size}")
-    int corePoolSize;
-    @Value("${hash.generator.max-pool-size}")
-    int maxPoolSize;
-    @Value("${hash.generator.queue-capacity}")
-    int queueCapacity;
+    @Value("${hash.cache.async.core-pool-size}")
+    private int corePoolSize;
+    @Value("${hash.cache.async.max-pool-size}")
+    private int maxPoolSize;
+    @Value("${hash.cache.async.queue-capacity}")
+    private int queueCapacity;
+    @Value("${hash.cache.async.thread-name-prefix}")
+    private String threadNamePrefix;
 
     @Bean
-    public Executor generatorThreadPoolTaskExecutor() {
+    public Executor cacheThreadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-
-        executor.setThreadNamePrefix("HashGenerator-");
+        executor.setThreadNamePrefix(threadNamePrefix);
         executor.initialize();
 
         return executor;
