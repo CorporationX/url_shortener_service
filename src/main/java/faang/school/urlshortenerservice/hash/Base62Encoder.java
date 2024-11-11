@@ -12,6 +12,8 @@ public class Base62Encoder {
     private final Base62 base62;
 
     public List<String> encode(List<Long> nums) {
-        return null;
+        return nums.stream()
+                .map(val -> new String(base62.encode(val.toString().getBytes())))
+                .toList();
     }
 }
