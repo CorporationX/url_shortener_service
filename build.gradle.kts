@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -66,4 +67,65 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+/**
+ * JaCoCo settings
+ */
+val jacocoInclude = listOf(
+    "**/service/**"
+)
+val jacocoExclude = listOf(
+    "**/client/**",
+    "**/config/**"
+)
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
+}
+tasks.test {
+    exclude("**/faang/school/urlshortenerservice/integration/**")
+    finalizedBy(tasks.jacocoTestReport)
+}
+tasks.register<Test>("integrationTest") {
+    group = "verification"
+    include("**/faang/school/urlshortenerservice/integration/**")
+}
+tasks.jacocoTestReport {
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        csv.required.set(false)
+    }
+
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            include(jacocoInclude)
+            exclude(jacocoExclude)
+        }
+    )
+}
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.70".toBigDecimal()
+            }
+        }
+    }
+
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            include(jacocoInclude)
+            exclude(jacocoExclude)
+        }
+    )
 }
