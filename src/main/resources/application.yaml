@@ -15,8 +15,16 @@ spring:
         format_sql: true
 
   liquibase:
-    enabled: false
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
-  port: 8080
+  port: 8088
+
+app:
+  protocol: http
+  host: localhost
