@@ -1,0 +1,9 @@
+hash:
+  threadPool:
+    initialPoolSize: 5
+    maxPoolSize: 10
+  queue:
+    capacity: 50
+  batchValues:
+    saveBatch: 100
+    getBatch: 1000

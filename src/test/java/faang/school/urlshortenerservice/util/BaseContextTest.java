@@ -36,8 +36,7 @@ public abstract class BaseContextTest {
 
     @Container
     public static PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
-            new PostgreSQLContainer<>("postgres:14")
-                    .withInitScript("create_schema.sql");
+            new PostgreSQLContainer<>("postgres:14");
     @Container
     private static final RedisContainer REDIS_CONTAINER =
             new RedisContainer(DockerImageName.parse("redis/redis-stack:latest"));

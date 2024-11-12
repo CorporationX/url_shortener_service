@@ -30,6 +30,11 @@ logging:
     root: info
 
 hash:
+  threadPool:
+    initialPoolSize: 5
+    maxPoolSize: 20
+  queue:
+    capacity: 200
   batchValues:
     saveBatch: 10_000
     getBatch: 10_000
