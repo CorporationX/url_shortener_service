@@ -1,0 +1,80 @@
+name: ci for achievement service
+
+on:
+  push:
+    branches:
+      - url-shortener-BJS2-42662
+  pull_request:
+    branches:
+      - url-shortener-BJS2-42662
+
+jobs:
+  build_test_and_checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Cache
+        uses: actions/cache@v4.1.2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build project
+        run: ./gradlew build -x test -x check --no-daemon
+
+      - name: Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest
+
+      - name: Test project
+        run: ./gradlew test --no-daemon --continue
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports
+          path: build/reports/
+
+      - name: Comment on Pull Request if tests failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = "⚡️⚡️⚡️Some tests failed!⚡️⚡️⚡️ Please 🙏 check the logs 📝 below!";
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                issue_number: context.payload.pull_request.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: message
+              });
+            } else {
+              console.log("This is not a pull request.");
+            }

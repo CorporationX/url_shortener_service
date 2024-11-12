@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
+    id("checkstyle")
 }
 
 group = "faang.school"
@@ -56,6 +57,18 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+checkstyle {
+    toolVersion = "10.20.0"
+    configFile = file("${rootDir}/src/main/resources/checkstyle/checkstyle.xml")
+}
+
+tasks.withType<Checkstyle>().configureEach {
+    reports {
+        xml.required.set(false)
+        html.required.set(true)
+    }
 }
 
 tasks.withType<Test> {
