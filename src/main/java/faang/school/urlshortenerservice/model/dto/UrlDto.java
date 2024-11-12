@@ -1,0 +1,11 @@
+package faang.school.urlshortenerservice.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
+public record UrlDto(
+        @NotNull(message = "URL can not be null")
+        @Pattern(regexp = "^(http|https)://.*$", message = "URL must start with http or https")
+        String url
+) {
+}

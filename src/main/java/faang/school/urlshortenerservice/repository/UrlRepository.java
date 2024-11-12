@@ -20,4 +20,12 @@ public class UrlRepository {
                 """;
        return jdbcTemplate.queryForList(sql, String.class, LocalDateTime.now().minusYears(1));
     }
+
+    public void saveUrlWithNewHash(String hash, String url){
+        String sql = """
+                INSERT INTO url
+                VALUES (?, ?)
+                """;
+        jdbcTemplate.update(sql, hash, url);
+    }
 }

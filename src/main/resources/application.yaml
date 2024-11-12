@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -46,3 +51,4 @@ base62:
 url:
   cleaner:
     cron: "0 0 0 * * *" # every day at midnight
+  original-path: http://localhost:8080/api/v1/url/
