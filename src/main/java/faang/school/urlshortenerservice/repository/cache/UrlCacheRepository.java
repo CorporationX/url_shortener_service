@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Repository
 public class UrlCacheRepository {
@@ -16,5 +18,9 @@ public class UrlCacheRepository {
 
     public Url findByHash(String hash) {
         return urlRedisTemplate.opsForValue().get(hash);
+    }
+
+    public void deleteAll(List<String> hashes) {
+        urlRedisTemplate.delete(hashes);
     }
 }

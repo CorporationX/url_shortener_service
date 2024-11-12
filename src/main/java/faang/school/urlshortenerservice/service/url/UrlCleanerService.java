@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UrlCleanerService {
+    private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
     private final HashService hashService;
 
@@ -23,5 +25,6 @@ public class UrlCleanerService {
     public void cleanExpiredUrls() {
         List<String> hashes = urlRepository.getDeleteUrlsByDate(LocalDateTime.now().minusDays(days));
         hashService.saveBatch(hashes);
+        urlCacheRepository.deleteAll(hashes);
     }
 }
