@@ -13,10 +13,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 20
-        order_updates: true
-        order_inserts: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -29,11 +25,11 @@ logging:
     root: info
 
 hash:
-  range: 10
+  range: 500000
 
 thread:
   generate_batch_executor:
-    size: 10
-    max_size: 20
+    size: 2
+    max_size: 2
     task_queue:
       size: 10

@@ -18,6 +18,11 @@ public class Hash {
     @Column(name = "hash", unique = true, nullable = false)
     private String hash;
 
+    //TODO need to think about this field
     @OneToOne(mappedBy = "hash")
     Url url;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }
