@@ -26,4 +26,11 @@ public class UrlExceptionHandler {
                         error -> Objects.requireNonNullElse(error.getDefaultMessage(), "")
                 ));
     }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDataNotFoundException(DataNotFoundException e) {
+        log.error("Error on getting url by hash: ", e);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
 }
