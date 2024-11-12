@@ -27,6 +27,9 @@ server:
   hash:
     generate:
       batch-size: 10000
+      length: 6
+    fetch:
+      batch-size: 9900
   thread:
     pool:
       corePoolSize: 4

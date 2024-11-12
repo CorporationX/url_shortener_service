@@ -8,6 +8,8 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
 import faang.school.urlshortenerservice.service.cache.HashCacheService;
 import faang.school.urlshortenerservice.service.outbox.OutboxService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class UrlServiceImpl implements UrlService {
     private final HashCacheService hashCacheService;
     private final CacheProperties cacheProperties;
     private final UrlMapper urlMapper;
+    private final EntityManager entityManager;
 
     @Override
     public String redirectByHash(String hash) {
@@ -65,10 +68,14 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional
     public String shortenUrl(UrlDto urlDto) {
+        if (urlRepository.existsByUrl(urlDto.getUrl())) {
+            throw new EntityExistsException("Url %s already exists".formatted(urlDto.getUrl()));
+        }
+
         String freeHash = hashCacheService.getHash();
         Url url = urlMapper.toEntity(urlDto, freeHash);
 
-        urlRepository.save(url);
+        entityManager.persist(url);
         outboxService.saveOutbox(url);
 
         return url.getUrl();
