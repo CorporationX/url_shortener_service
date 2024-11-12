@@ -9,11 +9,4 @@ public class HashBuilder {
                 .hash(hash)
                 .build();
     }
-
-    public static Hash build(Long id, String hash) {
-        return Hash.builder()
-                .id(id)
-                .hash(hash)
-                .build();
-    }
 }

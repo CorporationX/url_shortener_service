@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.LongUrlDto;
+import faang.school.urlshortenerservice.dto.UrlToShortDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public String generateShortUrl(@RequestBody @Valid LongUrlDto longUrlDto) {
-        return urlService.generateShortUrl(longUrlDto.getUrl());
+    public String generateShortUrl(@RequestBody @Valid UrlToShortDto urlToShortDto) {
+        return urlService.generateShortUrl(urlToShortDto.getUrl());
     }
 }

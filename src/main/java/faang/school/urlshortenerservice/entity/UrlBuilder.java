@@ -4,10 +4,10 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class UrlBuilder {
-    public static Url build(String hash, String longUrl) {
+    public static Url build(String hash, String url) {
         return Url.builder()
                 .hash(hash)
-                .longUrl(longUrl)
+                .url(url)
                 .build();
     }
 }

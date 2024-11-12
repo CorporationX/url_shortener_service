@@ -28,7 +28,7 @@ class HashServiceTest {
 
     @Test
     void testSaveAll_Success() {
-        List<Hash> hashes = List.of(build(1L, HASH_1), build(2L, HASH_2));
+        List<Hash> hashes = List.of(build(HASH_1), build(HASH_2));
 
         when(hashRepository.saveAll(anyList())).thenReturn(hashes);
 

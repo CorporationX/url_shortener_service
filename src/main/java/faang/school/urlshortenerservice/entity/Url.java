@@ -2,12 +2,8 @@ package faang.school.urlshortenerservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,18 +22,13 @@ import java.time.LocalDateTime;
 @Entity
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "hash", length = 128, nullable = false)
+    @Column(name = "hash", length = 6, nullable = false)
     private String hash;
 
-    @Column(name = "long_url", length = 128, nullable = false)
-    private String longUrl;
+    @Column(name = "url", length = 128, nullable = false)
+    private String url;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

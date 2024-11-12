@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HashCache {
+    private static int i = 0;
+
     public String getHash(String url) {
-        return "mocked_hash_for_" + url;
+        return "abc" + i++;
     }
 }
