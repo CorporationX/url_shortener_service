@@ -12,6 +12,7 @@ public class Base62Encoder {
     private static final int CHARS_LENGTH = BASE62_CHARS.length();
     private static final int HASH_LENGTH = 6;
 
+
     public Set<String> encode(List<Long> numbers) {
         StringBuilder sb = new StringBuilder();
         return numbers.stream().map(num -> {
