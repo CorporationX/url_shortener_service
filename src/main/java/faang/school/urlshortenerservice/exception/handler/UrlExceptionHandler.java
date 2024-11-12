@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.exception.DataValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -79,6 +80,19 @@ public class UrlExceptionHandler {
                 .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .serviceName(serviceName)
                 .globalMessage(SOMETHING_MESSAGE_ERROR)
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ErrorResponse handleDataIntegrityViolation(DataIntegrityViolationException exception) {
+        String message = exception.getMessage();
+        log.error(message, exception);
+
+        return ErrorResponse.builder()
+                .serviceName(serviceName)
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .globalMessage(message)
                 .build();
     }
 }

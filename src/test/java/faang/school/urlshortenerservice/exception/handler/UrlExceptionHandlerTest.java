@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -84,6 +85,21 @@ class UrlExceptionHandlerTest {
         RuntimeException exception = new RuntimeException("Unexpected error");
 
         ErrorResponse result = exceptionHandler.handleRuntimeException(exception);
+
+        assertEquals(correctResult, result);
+    }
+
+    @Test
+    void handleDataIntegrityViolation_shouldReturnErrorResponse() {
+        String message = "Data Integrity Violation Error";
+        ErrorResponse correctResult = ErrorResponse.builder()
+                .serviceName(serviceName)
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .globalMessage(message)
+                .build();
+        DataIntegrityViolationException exception = new DataIntegrityViolationException(message);
+
+        ErrorResponse result = exceptionHandler.handleDataIntegrityViolation(exception);
 
         assertEquals(correctResult, result);
     }

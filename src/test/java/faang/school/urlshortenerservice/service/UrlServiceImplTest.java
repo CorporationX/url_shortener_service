@@ -1,9 +1,13 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
+import faang.school.urlshortenerservice.service.cache.HashCacheService;
+import faang.school.urlshortenerservice.service.outbox.OutboxService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,10 +34,19 @@ public class UrlServiceImplTest {
     private UrlRepository urlRepository;
 
     @Mock
+    private OutboxService outboxService;
+
+    @Mock
     private CacheService<String> cacheService;
+
+    @Mock
+    private HashCacheService hashCacheService;
 
     @Spy
     private CacheProperties cacheProperties;
+
+    @Spy
+    private UrlMapperImpl urlMapper;
 
     @InjectMocks
     private UrlServiceImpl urlService;
@@ -41,6 +54,7 @@ public class UrlServiceImplTest {
     private String hash;
     private String url;
     private Url entityUrl;
+    private UrlDto urlDto;
     private String counterKey;
 
     @BeforeEach
@@ -49,6 +63,9 @@ public class UrlServiceImplTest {
         url = "http://example.com";
         entityUrl = Url.builder()
                 .hash(hash)
+                .url(url)
+                .build();
+        urlDto = UrlDto.builder()
                 .url(url)
                 .build();
         counterKey = hash + "::counter";
@@ -136,5 +153,16 @@ public class UrlServiceImplTest {
         assertEquals(url, result);
         verify(cacheService).put(hash, url, Duration.ofMillis(60000L));
         verify(cacheService).delete(counterKey);
+    }
+
+    @Test
+    void shortenUrl_shouldSaveUrlAndReturnUrl() {
+        when(hashCacheService.getHash()).thenReturn(hash);
+
+        String shortenedUrl = urlService.shortenUrl(urlDto);
+
+        verify(urlRepository).save(entityUrl);
+        verify(outboxService).saveOutbox(entityUrl);
+        assertEquals(url, shortenedUrl);
     }
 }

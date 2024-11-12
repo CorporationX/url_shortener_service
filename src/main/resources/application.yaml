@@ -35,7 +35,13 @@ server:
       queueCapacity: 100
   cache:
     request-threshold: 100               # Порог обращений для кэширования url
-    ttl-increment-time-ms: 3600000       # 1 час в миллисекундах для увеличения TTL
+    ttl-increment-time-ms: 1800000       # 30 минут в миллисекундах для увеличения TTL
+    ttl-initial-time-sec: 86400          # 12 часов в секундах для инициализации нового url
+  regex:
+    url: '^(https?|ftp):\/\/([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(:\d+)?(\/[^\s]*)?$'
+  outbox:
+    scheduled:
+      create-url-time-ms: 120000
 
 logging:
   level:

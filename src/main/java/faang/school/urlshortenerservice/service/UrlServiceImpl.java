@@ -1,12 +1,17 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
+import faang.school.urlshortenerservice.service.cache.HashCacheService;
+import faang.school.urlshortenerservice.service.outbox.OutboxService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
@@ -15,8 +20,11 @@ import java.time.Duration;
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
+    private final OutboxService outboxService;
     private final CacheService<String> cacheService;
+    private final HashCacheService hashCacheService;
     private final CacheProperties cacheProperties;
+    private final UrlMapper urlMapper;
 
     @Override
     public String redirectByHash(String hash) {
@@ -52,5 +60,17 @@ public class UrlServiceImpl implements UrlService {
         return urlRepository.findById(hash)
                 .map(Url::getUrl)
                 .orElseThrow(() -> new EntityNotFoundException("Url with hash %s not found".formatted(hash)));
+    }
+
+    @Override
+    @Transactional
+    public String shortenUrl(UrlDto urlDto) {
+        String freeHash = hashCacheService.getHash();
+        Url url = urlMapper.toEntity(urlDto, freeHash);
+
+        urlRepository.save(url);
+        outboxService.saveOutbox(url);
+
+        return url.getUrl();
     }
 }

@@ -8,4 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CacheProperties {
     private long requestThreshold;
     private long ttlIncrementTimeMs;
+    private long ttlInitialTimeSec;
 }
