@@ -14,7 +14,7 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${hash-repository.batch-size}")
+    @Value("${hash.hash-batch-size}")
     private int batchSize;
 
     public List<Long> getUniqueNumbers(int count) {

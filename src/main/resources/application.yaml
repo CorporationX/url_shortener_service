@@ -20,8 +20,15 @@ spring:
 server:
   port: 8080
 
-hash-repository:
-  batch-size: 10000
+hash:
+  unique-num-count: 100
+  hash-batch-size: 10
+
+thread-pool:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 50
+
 
 logging:
   level:
