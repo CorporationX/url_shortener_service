@@ -32,3 +32,12 @@ app:
   scheduler:
     clean-hashes:
       cron: "0 * * * * *" # every minutes
+
+  hash:
+    batch-size: 5
+
+  thread-pool:
+    corePoolSize: 10
+    maxPoolSize: 50
+    queueCapacity: 100
+    threadNamePrefix: "HashesGenerator-"

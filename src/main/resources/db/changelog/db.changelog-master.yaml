@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changeset/url_shortener_V001__create_url.sql
   - include:
       file: db/changelog/changeset/url_shortener_V002__create_hash.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V003__create_unique_number_sequence.sql
