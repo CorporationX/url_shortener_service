@@ -11,26 +11,34 @@ import java.util.List;
 @Component
 public class Base62EncoderImpl implements Base62Encoder {
 
-    @Value("${spring.base62.alphabet}")
-    private static String alphabet;
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE = ALPHABET.length();
 
-    @Value("${spring.base62.base}")
-    private static int base;
+    @Value("${spring.base62.number of characters in hashcode}")
+    private int numberOfCharacters;
 
-    public static Hash encodeSingle(long num) {
+    @Override
+    public Hash encodeSingle(long number) {
         StringBuilder sb = new StringBuilder();
-        while (num > 0) {
-            int remainder = (int) (num % base);
-            sb.append(alphabet.charAt(remainder));
-            num /= base;
+        while (number > 0) {
+            int remainder = (int) (number % BASE);
+            sb.append(ALPHABET.charAt(remainder));
+            number /= BASE;
+        }
+
+        sb.reverse();
+
+        while (sb.length() < numberOfCharacters) {
+            sb.insert(0, '0');
         }
         return Hash.builder()
                 .hash(String.valueOf(sb))
                 .build();
     }
 
-    public static List<Hash> encode(List<Long> numbers) {
-        List<String> encodedList = new ArrayList<>();
+    @Override
+    public List<Hash> encode(List<Long> numbers) {
+        List<Hash> encodedList = new ArrayList<>();
         for (Long number : numbers) {
             encodedList.add(encodeSingle(number));
         }

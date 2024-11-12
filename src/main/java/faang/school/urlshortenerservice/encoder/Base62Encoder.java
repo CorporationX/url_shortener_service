@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface Base62Encoder {
 
+    Hash encodeSingle(long number);
+
     List<Hash> encode(List<Long> numbers);
 }
