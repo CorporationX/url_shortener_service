@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: DariaMak
+      changes:
+        - createTable:
+            tableName: urls
+            columns:
+              - column:
+                  name: hash
+                  type: VARCHAR(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: longUrl
+                  type: TEXT
+                  constraints:
+                    nullable: false
