@@ -3,8 +3,6 @@ package faang.school.urlshortenerservice.generator;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class Base62Encoder {
@@ -13,7 +11,7 @@ public class Base62Encoder {
     private static final int HASH_LENGTH = 6;
 
 
-    public Set<String> encode(List<Long> numbers) {
+    public List<String> encode(List<Long> numbers) {
         StringBuilder sb = new StringBuilder();
         return numbers.stream().map(num -> {
             while (num > 0) {
@@ -26,6 +24,6 @@ public class Base62Encoder {
                 sb.setLength(HASH_LENGTH);
             }
             return sb.toString();
-        }).collect(Collectors.toSet());
+        }).toList();
     }
 }

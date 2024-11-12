@@ -28,7 +28,7 @@ public class ThreadPoolConfig {
         executor.setCorePoolSize(generateBatchExecutorSize);
         executor.setMaxPoolSize(generateBatchExecutorMaxSize);
         executor.setQueueCapacity(generateBatchQueueSize);
-        executor.setThreadNamePrefix("CalcPercentAsyncThread-");
+        executor.setThreadNamePrefix("GenerateBatchExecutor-");
         executor.initialize();
         return executor;
     }

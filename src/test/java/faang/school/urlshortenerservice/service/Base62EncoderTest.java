@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.LongStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,9 +26,9 @@ public class Base62EncoderTest {
         List<Long> numbers = new ArrayList<>();
         LongStream.range(1, 100_000).forEach(numbers::add);
 
-        Set<String> hashes = encoder.encode(numbers);
+        List<String> hashes = encoder.encode(numbers);
 
-        assertEquals(99196L, hashes.size());
+        assertEquals(99999, hashes.size());
         String hash = hashes.iterator().next();
         assertTrue(hash.length() <= 6);
     }

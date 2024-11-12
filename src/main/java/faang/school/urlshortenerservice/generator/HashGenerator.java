@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -27,20 +26,16 @@ public class HashGenerator {
     @Transactional
     @Async("generateBatchExecutor")
     public void generateBatch() {
-        System.out.println("thread "+Thread.currentThread().getName());
-        Long start = System.currentTimeMillis();
-
-        // TODO remove commemnts and remake hashesToSave try remove @OneToOne from Hash
-        List<Long> hashes = hashRepository.getNextRange(range);
-        Set<String> hashesSet = base62Encoder.encode(hashRepository.getNextRange(range));
-        List<String> listt = hashesSet.stream().toList();
+        //TODO remove sout's
+        System.out.println("Start");
+        List<String> hashes = base62Encoder.encode(hashRepository.getNextRange(range));
+        System.out.println("Continue");
 
         String sql = "INSERT INTO hash (hash) VALUES (?)";
-
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setString(1, listt.get(i));
+                ps.setString(1, hashes.get(i));
             }
 
             @Override
@@ -48,8 +43,5 @@ public class HashGenerator {
                 return hashes.size();
             }
         });
-        Long end = System.currentTimeMillis();
-        System.out.println("duration " + (end - start));
     }
-
 }

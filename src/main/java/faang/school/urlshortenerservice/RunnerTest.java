@@ -13,8 +13,9 @@ public class RunnerTest implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        hashGenerator.generateBatch();
-        hashGenerator.generateBatch();
+        // TODO asdfsfd
+//        hashGenerator.generateBatch();
+//        hashGenerator.generateBatch();
 
     }
 }
