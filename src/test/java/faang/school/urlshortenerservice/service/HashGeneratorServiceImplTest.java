@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UniqueNumberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -25,9 +23,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @EnableAsync
 class HashGeneratorServiceImplTest {
-
-    @Mock
-    private UniqueNumberRepository uniqueNumberRepository;
 
     @Mock
     private HashRepository hashRepository;
@@ -55,7 +50,7 @@ class HashGeneratorServiceImplTest {
                 Hash.builder().hash("000003").build()
         );
 
-        lenient().when(uniqueNumberRepository.getNextUniqueNumbers(amountHash)).thenReturn(uniqueNumbers);
+        lenient().when(hashRepository.getUniqueNumbers(amountHash)).thenReturn(uniqueNumbers);
         lenient().when(encoder.encode(uniqueNumbers)).thenReturn(encodedHashes);
         when(hashRepository.saveAll(encodedHashes)).thenReturn(encodedHashes);
         CompletableFuture<List<Hash>> future = hashGeneratorService.generateBatch();
@@ -67,14 +62,14 @@ class HashGeneratorServiceImplTest {
         assertEquals("000002", result.get(1).getHash());
         assertEquals("000003", result.get(2).getHash());
 
-        verify(uniqueNumberRepository).getNextUniqueNumbers(amountHash);
+        verify(hashRepository).getUniqueNumbers(amountHash);
         verify(encoder).encode(uniqueNumbers);
         verify(hashRepository).saveAll(encodedHashes);
     }
 
     @Test
     public void testGenerateBatch_failure() throws Exception {
-        when(uniqueNumberRepository.getNextUniqueNumbers(3)).thenThrow(new RuntimeException("Database error"));
+        when(hashRepository.getUniqueNumbers(3)).thenThrow(new RuntimeException("Database error"));
 
         CompletableFuture<List<Hash>> future = hashGeneratorService.generateBatch();
 
