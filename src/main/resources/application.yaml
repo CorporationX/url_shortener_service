@@ -23,3 +23,10 @@ server:
 logging:
   level:
     root: info
+
+uniqueNumbers:
+  amount: 10_000
+
+hash:
+  batch:
+    size: 10_000
