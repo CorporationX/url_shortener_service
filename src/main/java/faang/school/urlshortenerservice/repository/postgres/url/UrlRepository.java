@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.postgres.url;
 
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    @Query(value = "DELETE FROM url WHERE created_at < :date RETURNING hash", nativeQuery = true)
+    @Query(nativeQuery = true, value = """
+            DELETE FROM url WHERE created_at < :date RETURNING hash
+            """)
     List<String> deleteAndReturnOldUrls(@Param("date") LocalDateTime date);
 }

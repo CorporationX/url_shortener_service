@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.config.encoding.Base62Encoder;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.postgres.hash.HashRepository;
 import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

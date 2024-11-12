@@ -2,8 +2,8 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.GeneralProperties;
 import faang.school.urlshortenerservice.config.cache.HashCache;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
+import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import faang.school.urlshortenerservice.validator.AppUrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
