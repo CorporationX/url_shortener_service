@@ -28,6 +28,7 @@ hash:
   batch-size: 100
   count-to-returning: 5
   generated-batch-size: 10
+  cached-count: 10
 
 thread-pool:
   size: 10

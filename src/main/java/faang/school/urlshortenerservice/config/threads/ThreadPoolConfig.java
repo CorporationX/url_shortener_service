@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.threadPool;
+package faang.school.urlshortenerservice.config.threads;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

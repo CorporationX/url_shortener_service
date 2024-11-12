@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice;
 
-import faang.school.urlshortenerservice.config.threadPool.ThreadPoolProperties;
+import faang.school.urlshortenerservice.config.threads.ThreadPoolProperties;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
