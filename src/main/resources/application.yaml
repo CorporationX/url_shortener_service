@@ -16,6 +16,13 @@ spring:
         format_sql: true
     amount-hash: 100
 
+  cache:
+    type: redis
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 10
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
