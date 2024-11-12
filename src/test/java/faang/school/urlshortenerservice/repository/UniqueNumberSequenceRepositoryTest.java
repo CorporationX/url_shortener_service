@@ -27,7 +27,7 @@ public class UniqueNumberSequenceRepositoryTest {
         int count = 5;
         String query = """
                 SELECT nextval('unique_number_seq')
-                FROM generate_series(1, :count)
+                FROM generate_series(1, ?)
                 """;
         when(jdbcTemplate.queryForList(query, Long.class, count)).thenReturn(mockResult);
 

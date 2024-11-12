@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.exception.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
@@ -37,9 +39,24 @@ class UrlExceptionHandlerTest {
                 .errorCode(HttpStatus.NOT_FOUND.value())
                 .globalMessage(message)
                 .build();
-        EntityNotFoundException exception = new EntityNotFoundException(message);
+        PersistenceException exception = new EntityNotFoundException(message);
 
         ErrorResponse result = exceptionHandler.handleEntityNotFoundException(exception);
+
+        assertEquals(correctResult, result);
+    }
+
+    @Test
+    void handleEntityExistsException_ShouldReturnNotFoundStatus() {
+        String message = "Entity exists";
+        ErrorResponse correctResult = ErrorResponse.builder()
+                .serviceName(serviceName)
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .globalMessage(message)
+                .build();
+        PersistenceException exception = new EntityExistsException(message);
+
+        ErrorResponse result = exceptionHandler.handleEntityExistsException(exception);
 
         assertEquals(correctResult, result);
     }
