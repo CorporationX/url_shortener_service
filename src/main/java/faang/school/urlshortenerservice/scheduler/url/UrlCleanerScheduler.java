@@ -12,6 +12,6 @@ public class UrlCleanerScheduler {
 
     @Scheduled(cron = "${app.scheduler.url_cleaner.cron}")
     public void execute() {
-
+        urlCleanerService.cleanExpiredUrls();
     }
 }

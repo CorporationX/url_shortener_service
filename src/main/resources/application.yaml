@@ -56,4 +56,6 @@ app:
       thread_name_prefix: HashCache-Async-
   scheduler:
     url_cleaner:
-      cron: '*/10 * * * * *'
+      cron: '0 0 0 * * *'
+#      cron: '*/10 * * * * *'
+      url_lifetime_days: 365

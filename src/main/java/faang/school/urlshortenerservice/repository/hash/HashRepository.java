@@ -28,5 +28,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
             RETURNING hash
             """)
-    List<String> getHashBatch(@Param("number") int number);
+    List<String> getDeleteHashesBatch(@Param("number") int number);
 }

@@ -21,7 +21,7 @@ public class HashService {
 
     @Transactional
     public List<String> getHashesByBatchSize(int batchSize) {
-        return hashRepository.getHashBatch(batchSize);
+        return hashRepository.getDeleteHashesBatch(batchSize);
     }
 
     @Transactional
