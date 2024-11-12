@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -27,4 +27,16 @@ logging:
 app:
   jdbc-template:
     batch-size:
-      save-hashes: 1_000
+      save-hashes: 500
+  encoder:
+    base_62:
+      characters: 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1032547698'
+      hash_length: 6
+  hash_generator:
+    get_unique_number_size: 500
+  async:
+    hash_generator:
+      core_pool_size: 10
+      max_pool_size: 20
+      queue_capacity: 1_000
+      thread_name_prefix: HashGenerator-Async-
