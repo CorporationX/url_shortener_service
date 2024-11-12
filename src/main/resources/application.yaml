@@ -21,6 +21,11 @@ spring:
   base62:
     number of characters in hashcode: 6
 
+  async:
+    core pool size: 4
+    max pool size: 10
+    queue capacity: 50
+
 server:
   port: 8080
 
