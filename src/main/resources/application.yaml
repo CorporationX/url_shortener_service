@@ -21,12 +21,20 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  async:
+    executor:
+      corePoolSize: 2
+      maxPoolSize: 5
+      queueCapacity: 500
+      threadNamePrefix: Async-
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
 hash:
   batch:
-    size: 5
+    size: 6

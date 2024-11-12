@@ -20,7 +20,7 @@ public interface HashRepository extends JpaRepository<Hash, Url> {
             nativeQuery = true)
     List<Hash> getHashBatch(@Param("size") int size);
 
-    default <S extends Hash> List<S> saveHashes(Iterable<S> entities) {
+    default <S extends Hash> List<S> saveHashes(List<Hash> entities) {
         return saveAll(entities);
     }
 }
