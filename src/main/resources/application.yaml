@@ -27,5 +27,8 @@ logging:
   level:
     root: info
 
-hash:
-  batch_size: 5
+thread-pool:
+  pool-size:
+    core: 10
+    max: 30
+  queue: 50
