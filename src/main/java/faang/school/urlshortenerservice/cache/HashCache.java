@@ -30,8 +30,8 @@ public class HashCache {
     @PostConstruct
     private void init() {
         freeCaches = new ArrayBlockingQueue<>(queueSize);
-        hashGenerator.generateBatch()
-                .thenRun(() -> freeCaches.addAll(hashRepository.getHashBatch()));
+        hashGenerator.generateBatch();
+        freeCaches.addAll(hashRepository.getHashBatch());
         log.info("HashCache initialized, queue is filled");
     }
 

@@ -21,12 +21,15 @@ public class HashGenerator {
     private int sequenceAmount;
 
     @Async("fixedThreadPool")
-    public CompletableFuture<Void> generateBatch() {
-        return CompletableFuture.runAsync(() -> {
+    public void generateBatch() {
+        try {
             List<Long> sequencesForHash = hashRepository.getUniqueNumbers(sequenceAmount);
             log.info("sequence numbers to be hashed: {}", sequencesForHash);
             List<String> encodedHashes = encoder.encode(sequencesForHash);
             hashRepository.save(encodedHashes);
-        });
+        } catch (Exception e) {
+            log.error("error during generating hashcodes: ", e);
+            throw new RuntimeException(e);
+        }
     }
 }
