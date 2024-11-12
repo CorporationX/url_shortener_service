@@ -21,6 +21,6 @@ public interface HashRepository extends JpaRepository<Hash, Url> {
     List<Hash> getHashBatch(@Param("size") int size);
 
     default <S extends Hash> List<S> saveHashes(List<Hash> entities) {
-        return saveAll(entities);
+        return (List<S>) saveAll(entities);
     }
 }
