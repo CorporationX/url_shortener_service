@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.exeption.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
-import faang.school.urlshortenerservice.exeption.DataValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,19 +21,6 @@ public class UrlExceptionHandler {
 
     @Value("${spring.application.name}")
     private String serviceName;
-
-    @ExceptionHandler(DataValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDataValidationException(DataValidationException ex) {
-        log.warn("Data validation error: {}", ex.getMessage());
-
-        return ErrorResponse.builder()
-                .serviceName(serviceName)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Data validation error")
-                .details(ex.getErrorDetails() != null ? ex.getErrorDetails() : Map.of())
-                .build();
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
