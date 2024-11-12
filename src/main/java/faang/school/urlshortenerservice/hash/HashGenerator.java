@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
