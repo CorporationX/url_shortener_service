@@ -39,11 +39,6 @@ public class HashCache {
         if (freeCaches.size() < queueSize * percentageMultiplier &&
                 isCaching.compareAndSet(false, true)) {
             try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            try {
                 queueTaskThreadPool.execute(() -> {
                     freeCaches.addAll(hashRepository.getHashBatch());
                     hashGenerator.generateBatch();
