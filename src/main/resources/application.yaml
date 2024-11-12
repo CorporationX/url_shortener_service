@@ -15,7 +15,14 @@ spring:
         format_sql: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog/changelog-master.xml
+    default-schema: url
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      urlTtl: 3600
 
 server:
   port: 8080
@@ -23,3 +30,23 @@ server:
 logging:
   level:
     root: info
+
+number-sequence:
+  range: 10
+
+hash-config:
+  selectRange: 7
+  insertBatch: 5
+
+thread-pool-config:
+  size: 4
+
+scheduler:
+  cron: "0 0 * * * ?" # every day at 00:00
+
+cache:
+  capacity: 100
+  fillWhenLess: 20.0
+
+url:
+  shortName: https://www.shourtUrl/

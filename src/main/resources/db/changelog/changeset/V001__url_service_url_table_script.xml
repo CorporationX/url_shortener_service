@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="v1.0_00_create_url_table" author="pgusev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="url"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="url">
+            <column name="hash" type="VARCHAR(6)">
+                <constraints primaryKey="true" primaryKeyName="url_hash_pk"/>
+            </column>
+            <column name="url" type="VARCHAR">
+                <constraints nullable ="false"/>
+            </column>
+            <column name="created_at" type="timestamptz"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,6 @@
+number-sequence:
+  range: 5
+
+hash-config:
+  selectRange: 5
+  insertBatch: 5
