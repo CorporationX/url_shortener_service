@@ -1,12 +1,11 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.service.hash.HashGenerator;
+import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import faang.school.urlshortenerservice.service.hash.HashCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class UrlService {
+    private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
-    private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
+    private final HashCache hashCache;
 
     @Transactional
-    public void method() {
-//        hashGenerator.generateBatch();
-        System.out.println(hashRepository.getHashBatch(10));
+    public String createHashUrl(String uri) {
+        String hash = hashCache.getHash();
+        Url url = Url.builder()
+                .hash(hash)
+                .url(uri)
+                .build();
+
+        urlCacheRepository.save(url);
+        urlRepository.save(url);
+
+        return hash;
     }
 }

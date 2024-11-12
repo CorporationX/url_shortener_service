@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5433/postgres
     username: user
     password: password
+  date:
+    redis:
+      port: 6379
+      host: localhost
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -31,12 +35,21 @@ app:
   encoder:
     base_62:
       characters: 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1032547698'
+      base: 62
       hash_length: 6
   hash_generator:
-    get_unique_number_size: 500
+    get_unique_number_size: 1_000
+  hash_cache:
+    hashes_max_size: 1_000
+    hashes_min_size: 200
   async:
     hash_generator:
       core_pool_size: 10
       max_pool_size: 20
       queue_capacity: 1_000
       thread_name_prefix: HashGenerator-Async-
+    hash_cache:
+      core_pool_size: 10
+      max_pool_size: 20
+      queue_capacity: 1_000
+      thread_name_prefix: HashCache-Async-

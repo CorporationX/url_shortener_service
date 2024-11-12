@@ -8,12 +8,13 @@ import java.util.List;
 @Component
 public class Base62Encoder {
     @Value("${app.encoder.base_62.characters}")
-    private String characters = "1032547698AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+    private String characters;
 
     @Value("${app.encoder.base_62.hash_length}")
     private int hashLength;
 
-    private final int base = characters.length();
+    @Value("${app.encoder.base_62.base}")
+    private int base;
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -27,10 +28,6 @@ public class Base62Encoder {
             int remainder = (int) (number % base);
             encoded.insert(0, characters.charAt(remainder));
             number /= base;
-        }
-
-        while (encoded.length() < hashLength) {
-            encoded.insert(0, "0");
         }
         lengthCheck(encoded);
         return encoded.length() > hashLength ? encoded.substring(0, hashLength) : encoded.toString();
