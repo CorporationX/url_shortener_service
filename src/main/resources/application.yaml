@@ -20,6 +20,9 @@ spring:
 server:
   port: 8080
 
+hash-repository:
+  batch-size: 10000
+
 logging:
   level:
     root: info
