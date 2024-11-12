@@ -15,7 +15,7 @@ public class UniqueNumberSequenceRepository {
     public List<Long> getUniqueNumbers(int count) {
         String query = """
                 SELECT nextval('unique_number_seq')
-                FROM generate_series(1, :count)
+                FROM generate_series(1, ?)
                 """;
         return jdbcTemplate.queryForList(query, Long.class, count);
     }
