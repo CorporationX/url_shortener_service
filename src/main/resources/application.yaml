@@ -9,6 +9,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+      jdbc:
+        batch_size: 50
+        order-inserts: true
+        order-updates: true
     show-sql: true
     properties:
       hibernate:
@@ -23,3 +27,6 @@ server:
 logging:
   level:
     root: info
+hash:
+  batch:
+    size: 5
