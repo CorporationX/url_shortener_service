@@ -1,6 +1,7 @@
-package faang.school.urlshortenerservice.service.hash;
+package faang.school.urlshortenerservice.service.hash.util;
 
-import faang.school.urlshortenerservice.util.Base62Encoder;
+import faang.school.urlshortenerservice.service.hash.HashService;
+import faang.school.urlshortenerservice.util.encode.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;

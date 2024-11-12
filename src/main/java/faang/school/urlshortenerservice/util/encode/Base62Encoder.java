@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.util;
+package faang.school.urlshortenerservice.util.encode;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
