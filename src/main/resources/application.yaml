@@ -23,13 +23,9 @@ server:
 logging:
   level:
     root: info
-    org:
-      springframework:
-        jdbc:
-          datasource: DEBUG
 
 hash:
-  range: 3000
+  range: 2000
 #  get_batch_size: 100000
 
 thread:

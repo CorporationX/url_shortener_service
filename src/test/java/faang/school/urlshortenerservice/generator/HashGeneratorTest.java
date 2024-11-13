@@ -2,9 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.model.dto.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,12 +48,6 @@ public class HashGeneratorTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testGenerateBatch_insertsHashesIntoDatabase() throws InterruptedException {

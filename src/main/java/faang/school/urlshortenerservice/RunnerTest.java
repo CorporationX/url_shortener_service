@@ -26,9 +26,11 @@ public class RunnerTest implements CommandLineRunner {
 //        hashGenerator.generateBatch();
 //        List<Hash> hashes = hashRepository.getHashBatch(batchSize);
 //        hashes.forEach(h -> System.out.println(h.getHash()));
-        while (true) {
-            Thread.sleep(10);
-            System.out.println("111111111111111111HashCacheGet: " + hashCache.getHash());
-        }
+
+
+//        while (true) {
+//            Thread.sleep(1);
+//            System.out.println("111111111111111111HashCacheGet: " + hashCache.getHash());
+//        }
     }
 }
