@@ -26,8 +26,4 @@ public class Url {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
-
-    @OneToOne
-    @JoinColumn(name = "hash", referencedColumnName = "hash", insertable = false, updatable = false)
-    private Hash hashEntity;
 }
