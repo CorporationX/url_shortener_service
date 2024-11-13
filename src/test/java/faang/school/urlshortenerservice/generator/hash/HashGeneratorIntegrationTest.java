@@ -5,20 +5,13 @@ import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.util.BaseContextTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
 @EnableAsync
 public class HashGeneratorIntegrationTest extends BaseContextTest {
