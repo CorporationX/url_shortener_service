@@ -45,15 +45,15 @@ public class HashCacheServiceImplTest {
 
     private int fetchHashesSize;
     private Queue<String> hashes;
-    private AtomicBoolean isReplenishing;
     private String hash;
 
     @BeforeEach
     void setUp() {
         fetchHashesSize = 100;
         hashes = new ConcurrentLinkedDeque<>();
-        isReplenishing = new AtomicBoolean(false);
         hash = "hash1";
+
+        AtomicBoolean isReplenishing = new AtomicBoolean(false);
 
         ReflectionTestUtils.setField(hashCacheService, "hashes", hashes);
         ReflectionTestUtils.setField(hashCacheService, "isReplenishing", isReplenishing);
