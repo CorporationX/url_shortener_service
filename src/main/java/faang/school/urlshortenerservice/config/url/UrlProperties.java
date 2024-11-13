@@ -10,5 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "url")
 public class UrlProperties {
+
     private String shortName;
 }

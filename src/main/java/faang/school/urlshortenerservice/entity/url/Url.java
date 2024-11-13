@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Table(name = "url")
 public class Url {
+
     @Id
     @Column(name = "hash", nullable = false, unique = true)
     private String hash;

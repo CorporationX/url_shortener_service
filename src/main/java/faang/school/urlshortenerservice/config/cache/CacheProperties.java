@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "cache")
 public class CacheProperties {
+
     private int capacity;
+
     private double fillWhenLess;
 }

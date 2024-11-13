@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseUrlBody {
+
     private String url;
+
     private String shortUrl;
 }

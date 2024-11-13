@@ -25,7 +25,7 @@ class Base62EncoderTest {
     @Test
     @DisplayName("When value passed on then return expected encoded in base 62 value")
     void whenValuePassedThenReturnEncodedValue() {
-        assertEquals(ENCODED_BASE_62_ONE, base62Encoder.encodeBase62(ONE_HUNDRED));
+        assertEquals(ENCODED_BASE_62_ONE, base62Encoder.encodeNumberInBase62(ONE_HUNDRED));
     }
 
     @Test
@@ -34,6 +34,6 @@ class Base62EncoderTest {
         List<Long> numbers = List.of(ONE_HUNDRED, TWO_HUNDRED);
         List<String> numbersInBase62 = List.of(ENCODED_BASE_62_ONE, ENCODED_BASE_62_TWO);
 
-        assertEquals(numbersInBase62, base62Encoder.encodeListNumbers(numbers));
+        assertEquals(numbersInBase62, base62Encoder.encodeNumberListInBase62(numbers));
     }
 }

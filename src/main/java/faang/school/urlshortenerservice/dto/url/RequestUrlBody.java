@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestUrlBody {
+
     @NotBlank(message = "URL must not be empty")
     @Pattern(
             regexp = "^(http?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/[^\\s]*)?$",

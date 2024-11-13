@@ -19,8 +19,8 @@ public class CleanerService {
     private final UrlService urlService;
     private final HashService hashService;
 
-    @Async("urlThreadPool")
     @Transactional
+    @Async("urlThreadPool")
     public void clearExpiredUrls() {
         List<Url> releasedUrls = urlService.findAndReturnExpiredUrls();
         List<String> releasedHashes = releasedUrls.stream()

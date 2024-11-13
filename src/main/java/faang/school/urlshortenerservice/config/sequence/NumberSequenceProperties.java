@@ -10,5 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "number-sequence")
 public class NumberSequenceProperties {
+
     private int range;
 }

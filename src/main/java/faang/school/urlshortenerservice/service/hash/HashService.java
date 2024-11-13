@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service.hash;
 
-import faang.school.urlshortenerservice.config.cache.HashCache;
 import faang.school.urlshortenerservice.config.hash.HashConfig;
 import faang.school.urlshortenerservice.repository.hash.FreeHashRepository;
 import faang.school.urlshortenerservice.service.sequence.UniqueNumberService;
@@ -46,7 +45,7 @@ public class HashService {
     @Async("urlThreadPool")
     public void generateBatchHash() {
         List<Long> numbers = uniqueNumberService.getUniqueNumbers();
-        List<String> base62Hashes = base62Encoder.encodeListNumbers(numbers);
+        List<String> base62Hashes = base62Encoder.encodeNumberListInBase62(numbers);
         saveRangeHashes(base62Hashes);
     }
 }
