@@ -28,7 +28,15 @@ logging:
     root: info
 
 thread-pool:
-  pool-size:
+  generator:
     core: 10
     max: 30
-  queue: 50
+    queue: 50
+  cache:
+    core: 10
+    max: 30
+    queue: 50
+    percentage: 20
+
+cache:
+  minimum-percentage-to-add:
