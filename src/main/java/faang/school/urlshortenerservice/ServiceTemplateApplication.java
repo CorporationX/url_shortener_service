@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableCaching
 @ConfigurationPropertiesScan(basePackages = "faang.school.urlshortenerservice.config")
-//@EnableFeignClients("school.faang.servicetemplate.client")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)
