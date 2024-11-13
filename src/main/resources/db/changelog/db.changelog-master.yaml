@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your_name
+      changes:
+        - createTable:
+            tableName: url
+            columns:
+              - column:
+                  name: hash
+                  type: varchar(6)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: original_url
+                  type: varchar(2048)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: hash
+            columns:
+              - column:
+                  name: hash
+                  type: varchar(6)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createSequence:
+            sequenceName: unique_number_seq
+            startValue: 1
+            incrementBy: 1
