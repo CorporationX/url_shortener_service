@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Data
 @Validated
-@ConfigurationProperties(prefix = "server.thread.pool")
+@ConfigurationProperties(prefix = "server.async.thread.pool")
 public class AsyncThreadPoolProperties {
     @Min(1)
     private int corePoolSize;
