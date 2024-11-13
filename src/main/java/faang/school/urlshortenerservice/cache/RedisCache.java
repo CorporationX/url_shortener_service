@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class CacheService {
+public class RedisCache {
 
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cache.CacheService;
+import faang.school.urlshortenerservice.cache.RedisCache;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class UrlServiceImplTest {
     private UrlRepository urlRepository;
 
     @Mock
-    private CacheService cache;
+    private RedisCache cache;
 
     @InjectMocks
     private UrlServiceImpl urlService;
