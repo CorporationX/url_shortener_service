@@ -21,6 +21,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public String createShortUrl(@Valid @RequestBody UrlDto urlDto) {
         return urlService.getShortUrl(urlDto);
     }

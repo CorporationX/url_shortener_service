@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -13,6 +14,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
+@Sql(scripts = "/scripts/data.sql")
 public abstract class IntegrationTestBase {
     private static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
             new PostgreSQLContainer<>("postgres:13.3");

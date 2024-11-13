@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.model.util.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,7 +21,7 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean isCaching = new AtomicBoolean(false);
-    private Queue<String> freeCaches;
+    private ArrayBlockingQueue<String> freeCaches;
     @Value("${hash.queue.size}")
     private int queueSize;
     @Value("${hash.queue.percentage-multiplier}")
@@ -49,6 +49,10 @@ public class HashCache {
             }
         }
 
-        return freeCaches.poll();
+        try {
+            return freeCaches.take();
+        } catch (InterruptedException e) {
+            throw new DataNotFoundException("Something gone wrong while waiting for hash");
+        }
     }
 }

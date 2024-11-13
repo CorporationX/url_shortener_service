@@ -30,7 +30,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDataNotFoundException(DataNotFoundException e) {
-        log.error("Error on getting url by hash: ", e);
+        log.error("Error while getting data: ", e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }
