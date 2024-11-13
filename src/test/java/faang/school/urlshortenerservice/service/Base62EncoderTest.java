@@ -24,11 +24,11 @@ public class Base62EncoderTest {
     @Test
     public void testBase62Encoder() {
         List<Long> numbers = new ArrayList<>();
-        LongStream.range(1, 100_000).forEach(numbers::add);
+        LongStream.range(20_000, 120_000).forEach(numbers::add);
 
         List<String> hashes = encoder.encode(numbers);
 
-        assertEquals(99999, hashes.size());
+        assertEquals(100_000, hashes.size());
         String hash = hashes.iterator().next();
         assertTrue(hash.length() <= 6);
     }

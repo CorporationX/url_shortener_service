@@ -15,7 +15,6 @@ public class ThreadPoolConfig {
     @Value("${thread.generate_batch_executor.size}")
     private int generateBatchExecutorSize;
 
-    //TODO sadfgsdfg
     @Value("${thread.generate_batch_executor.max_size}")
     private int generateBatchExecutorMaxSize;
 

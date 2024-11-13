@@ -25,11 +25,8 @@ public class HashGenerator {
 
     @Transactional
     @Async("generateBatchExecutor")
-    public void generateBatch() {
-        //TODO remove sout's
-        System.out.println("Start");
+    public void generateBatch() throws SQLException {
         List<String> hashes = base62Encoder.encode(hashRepository.getNextRange(range));
-        System.out.println("Continue");
 
         String sql = "INSERT INTO hash (hash) VALUES (?)";
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
