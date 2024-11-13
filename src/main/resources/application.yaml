@@ -29,8 +29,8 @@ logging:
           datasource: DEBUG
 
 hash:
-  range: 500000
-  get_batch_size: 1000
+  range: 3000
+#  get_batch_size: 100000
 
 thread:
   generate_batch_executor:
@@ -38,3 +38,9 @@ thread:
     max_size: 10
     task_queue:
       size: 10
+  executor_service:
+    size: 2
+
+hash_cache:
+  capacity: 1000
+  remainder_percent: 20
