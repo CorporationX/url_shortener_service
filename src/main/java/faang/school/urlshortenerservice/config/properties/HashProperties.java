@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "hash")
 public class HashProperties {
 
-    private BatchValues batchValues;
+    private Batch batchValues;
 
     @Getter
     @Setter
-    public static class BatchValues {
+    public static class Batch {
 
-        private int saveBatch;
-        private int getBatch;
+        private int save;
+        private int get;
     }
 }

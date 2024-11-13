@@ -30,6 +30,6 @@ logging:
     root: info
 
 hash:
-  batchValues:
-    saveBatch: 10_000
-    getBatch: 10_000
+  batch:
+    save: 10_000
+    get: 10_000
