@@ -14,7 +14,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query("SELECT h FROM hash h ORDER BY h.generatedAt DESC")
     List<Hash> findTopNHashes(int limit);
 
-    @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :count)", nativeQuery = true)
+    @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)", nativeQuery = true)
     List<Long> getUniqueNumbers(@Param("count") int count);
 
     @Query(value = """ 
