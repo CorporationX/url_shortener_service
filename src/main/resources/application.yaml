@@ -38,3 +38,7 @@ app:
 
 executor:
   thread-pool-size: 1
+
+scheduler:
+  clean-hashes:
+    cron: "0 0 0 * * *" # every day
