@@ -23,3 +23,17 @@ server:
 logging:
   level:
     root: info
+    org:
+      springframework:
+        jdbc:
+          datasource: DEBUG
+
+hash:
+  range: 500000
+
+thread:
+  generate_batch_executor:
+    size: 10
+    max_size: 10
+    task_queue:
+      size: 10
