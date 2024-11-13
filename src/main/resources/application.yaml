@@ -5,6 +5,11 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -20,10 +25,26 @@ spring:
 hash:
   repository:
     batch:
-      batch-size: 3
+      batch-size: 25
   generator:
     batch:
-      batch-size: 3
+      batch-size: 100
+  cache:
+    load-factor: 0.2
+    capacity: 50
+  encoder:
+    size: 6
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+scheduler:
+  cron: "0 0 0 * * *" #every day
+
+url:
+  host: http://localhost:8080/api/v1
+  cache:
+    ttl:
+      timeout: 1
+      time-unit: DAYS
 
 task-executor:
   core-pool-size: 10
