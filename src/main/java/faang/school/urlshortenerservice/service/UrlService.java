@@ -28,7 +28,7 @@ public class UrlService {
     public String generateShortUrl(String longUrl) {
         appUrlValidator.validate(longUrl);
 
-        String hash = hashCache.getHash(longUrl);
+        String hash = hashCache.getHash();
 
         urlRepository.save(build(hash, longUrl));
         urlCacheRepository.save(hash, longUrl);

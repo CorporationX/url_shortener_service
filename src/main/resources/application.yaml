@@ -41,3 +41,9 @@ app:
     maxPoolSize: 50
     queueCapacity: 100
     threadNamePrefix: "HashesGenerator-"
+  executor:
+    thread-pool-size: 1
+    queue-capacity: 100
+
+  hash-queue:
+    capacity: 100

@@ -50,7 +50,7 @@ class UrlServiceTest {
     @Test
     void testGenerateShortUrl_Success() {
         doNothing().when(appUrlValidator).validate(LONG_URL);
-        when(hashCache.getHash(LONG_URL)).thenReturn(HASH);
+        when(hashCache.getHash()).thenReturn(HASH);
         when(generalProperties.getAppUrl()).thenReturn(APP_URL);
 
         String result = urlService.generateShortUrl(LONG_URL);

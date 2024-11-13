@@ -22,10 +22,24 @@ public class HashGenerator {
     private final HashService hashService;
 
     @Async("hashesGeneratorThreadPool")
+    public void generateBatchAsync() {
+        generateBatch();
+    }
+
     @Transactional
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
         hashService.saveAll(hashes);
+    }
+
+    @Transactional
+    public List<String> getHashes(int amount) {
+        List<String> hashes = hashRepository.getBatchAndDelete(amount);
+        if (hashes.size() < amount) {
+            generateBatch();
+            hashes.addAll(hashRepository.getBatchAndDelete(amount - hashes.size()));
+        }
+        return hashes;
     }
 }
