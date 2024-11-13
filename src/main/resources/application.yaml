@@ -20,6 +20,17 @@ spring:
 server:
   port: 8080
 
+hash:
+  generate-size: 80
+  hash-batch-size: 8
+  cache-capacity: 10
+  low-threshold: 0.2
+
+thread-pool:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 50
+
 logging:
   level:
     root: info
