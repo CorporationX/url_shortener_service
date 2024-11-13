@@ -30,13 +30,18 @@ server:
     generator:
       batch:
         size: 10000
-        chunk-size: 1000
   async:
     thread:
       pool:
         size: 10
       queue:
         size: 50
+  thread:
+    pool:
+      corePoolSize: 4
+      maximumPoolSize: 10
+      keepAliveTime: 60
+      queueCapacity: 100
 
 logging:
   level:

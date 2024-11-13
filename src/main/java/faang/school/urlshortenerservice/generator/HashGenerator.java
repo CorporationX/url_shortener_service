@@ -22,21 +22,10 @@ public class HashGenerator {
     @Value("${server.hash.generate.batch.size}")
     private int generateBatchSize;
 
-    @Value("${server.hash.generator.batch.chunk-size}")
-    private int chunkSize;
-
-    @Transactional
-    @Async("customTaskExecutor1")
+    @Async("asyncThreadPoolExecutor")
     public void generateBatch() {
         List<Long> uniqueNumbers = uniqueIdRepository.getUniqueNumbers(generateBatchSize);
-//        List<Hash> hashes = processChunk(uniqueNumbers);
         List<Hash> hashes = encoder.encode(uniqueNumbers);
         hashRepository.saveAll(hashes);
-    }
-
-    @Async("customTaskExecutor2")
-    public List<Hash> processChunk(List<Long> uniqueNumbers) {
-        List<Hash> hashes = encoder.encode(uniqueNumbers);
-        return hashes;
     }
 }

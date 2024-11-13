@@ -1,14 +1,13 @@
 package faang.school.urlshortenerservice.util;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public abstract class Encoder<Long, String> {
-    public List<String> encode(List<Long> numbers) {
+public abstract class Encoder<T, H> {
+    public List<H> encode(List<T> numbers) {
         return numbers.stream()
                 .map(this::encode)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public abstract String encode(Long number);
+    public abstract H encode(T t);
 }
