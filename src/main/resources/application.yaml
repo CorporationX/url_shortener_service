@@ -14,11 +14,21 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl-days: 7
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
+
+url-shortener:
+  protocol: https
+  domain: sh.c
 
 hash:
   generate-size: 80

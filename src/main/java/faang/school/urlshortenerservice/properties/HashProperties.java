@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.hash;
+package faang.school.urlshortenerservice.properties;
 
 import lombok.Getter;
 import lombok.Setter;
