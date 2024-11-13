@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<HashRepository, String> {
+public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?1)")
     List<Long> getUniqueNumbers(long maxRange);
