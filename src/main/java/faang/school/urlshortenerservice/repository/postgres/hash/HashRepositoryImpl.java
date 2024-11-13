@@ -2,11 +2,13 @@ package faang.school.urlshortenerservice.repository.postgres.hash;
 
 import faang.school.urlshortenerservice.model.hash.Hash;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class HashRepositoryImpl implements IHashRepository {
