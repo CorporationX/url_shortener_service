@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
+import faang.school.urlshortenerservice.config.redis.ClearProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
@@ -20,11 +21,15 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,6 +52,9 @@ public class UrlServiceImplTest {
 
     @Spy
     private CacheProperties cacheProperties;
+
+    @Spy
+    private ClearProperties clearProperties;
 
     @Spy
     private UrlMapperImpl urlMapper;
@@ -78,6 +86,9 @@ public class UrlServiceImplTest {
 
         cacheProperties.setRequestThreshold(10L);
         cacheProperties.setTtlIncrementTimeMs(60_000L);
+
+        clearProperties.setBatchSize(2);
+        clearProperties.setDaysThreshold(30);
 
         lenient().when(cacheService.incrementAndGet(counterKey)).thenReturn(15L);
     }
@@ -184,5 +195,21 @@ public class UrlServiceImplTest {
         verify(entityManager, never()).persist(any());
         verify(outboxService, never()).saveOutbox(any(Url.class));
         assertEquals(correctMessage, exception.getMessage());
+    }
+
+    @Test
+    void clearOutdatedUrls() {
+        int batchSize = clearProperties.getBatchSize();
+        List<String> first = List.of("hash1", "hash2"), second = List.of("hash3");
+        when(urlRepository.deleteOutdatedUrlsAndGetHashes(any(LocalDateTime.class), eq(batchSize)))
+                .thenReturn(first)
+                .thenReturn(second)
+                .thenReturn(Collections.emptyList());
+
+        urlService.clearOutdatedUrls();
+
+        verify(hashCacheService).addHash(first);
+        verify(hashCacheService).addHash(second);
+        verify(hashCacheService).addHash(Collections.emptyList());
     }
 }

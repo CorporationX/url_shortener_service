@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.cache;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,5 +112,15 @@ public class HashCacheServiceImplTest {
         assertTrue(hashes.contains("hash2"));
         assertTrue(hashes.contains("hash3"));
         verify(executorService).execute(any(Runnable.class));
+    }
+
+    @Test
+    public void testAddHash() {
+        List<Hash> entities = List.of(new Hash("hash1"), new Hash("hash2"), new Hash("hash3"));
+        List<String> hashes = Arrays.asList("hash1", "hash2", "hash3");
+
+        hashCacheService.addHash(hashes);
+
+        verify(hashRepository).saveAll(entities);
     }
 }
