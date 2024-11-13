@@ -12,5 +12,13 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :maxRange)", nativeQuery = true)
-    List<Long> getNextRange(@Param("maxRange") int maxRange);
+    List<Long> getUniqueNumber(@Param("maxRange") int maxRange);
+
+    @Query(value = """
+            WITH deleted AS (DELETE FROM hash
+                WHERE ctid IN (SELECT ctid FROM hash LIMIT :batchSize)
+                RETURNING *
+            )
+            SELECT * FROM deleted;""", nativeQuery = true)
+    List<Hash> getHashBatch(@Param("batchSize") long batchSize);
 }

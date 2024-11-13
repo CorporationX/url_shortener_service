@@ -15,7 +15,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -59,7 +58,7 @@ public class HashGeneratorTest {
     }
 
     @Test
-    public void testGenerateBatch_insertsHashesIntoDatabase() throws InterruptedException, SQLException {
+    public void testGenerateBatch_insertsHashesIntoDatabase() throws InterruptedException {
         hashGenerator.generateBatch();
         Thread.sleep(2000);
 

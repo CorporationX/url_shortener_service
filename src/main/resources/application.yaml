@@ -30,6 +30,7 @@ logging:
 
 hash:
   range: 500000
+  get_batch_size: 1000
 
 thread:
   generate_batch_executor:
