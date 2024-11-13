@@ -25,7 +25,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        log.warn("Validation error: {}", ex.getMessage());
+        log.error("Validation error: {}", ex.getMessage());
 
         Map<String, String> details = ex.getBindingResult()
                 .getFieldErrors()
@@ -65,18 +65,6 @@ public class UrlExceptionHandler {
                 .serviceName(serviceName)
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message("Internal server error. Please try again later.")
-                .build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleAllOtherExceptions(Exception ex) {
-        log.error("Unhandled exception: {}", ex.getMessage(), ex);
-
-        return ErrorResponse.builder()
-                .serviceName(serviceName)
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("An error occurred. Please contact support.")
                 .build();
     }
 }

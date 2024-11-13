@@ -87,20 +87,4 @@ public class UrlExceptionHandlerTest {
 
         assertEquals(expectedResponse, actualResponse);
     }
-
-    @Test
-    void handleAllOtherExceptions_ShouldReturnInternalServerErrorStatus() {
-        String message = "An error occurred. Please contact support.";
-        ErrorResponse expectedResponse = ErrorResponse.builder()
-                .serviceName(SERVICE_NAME)
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(message)
-                .build();
-
-        Exception exception = new Exception("Unexpected error");
-
-        ErrorResponse actualResponse = urlExceptionHandler.handleAllOtherExceptions(exception);
-
-        assertEquals(expectedResponse, actualResponse);
-    }
 }
