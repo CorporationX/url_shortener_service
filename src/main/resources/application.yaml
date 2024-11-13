@@ -29,11 +29,12 @@ server:
       batch-size: 10000
       length: 6
     clear:
-      batch-size: 1
+      batch-size: 1000
       days-threshold: 365
       cron: "0 0 3 * * ?"              # Каждый день в 3 ночи
     fetch:
       batch-size: 9900
+      limit-on-replenishment: 2000
   thread:
     pool:
       corePoolSize: 4

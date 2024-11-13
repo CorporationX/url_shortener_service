@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
-import faang.school.urlshortenerservice.config.redis.ClearProperties;
+import faang.school.urlshortenerservice.config.ClearProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;

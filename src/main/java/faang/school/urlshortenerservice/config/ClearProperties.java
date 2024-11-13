@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.redis;
+package faang.school.urlshortenerservice.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
