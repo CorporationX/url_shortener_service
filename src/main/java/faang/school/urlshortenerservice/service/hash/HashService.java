@@ -15,13 +15,13 @@ public class HashService {
     private final HashRepository hashRepository;
 
     @Transactional
-    public void saveBatch(List<String> hashes) {
-        hashJdbcRepository.saveHashesByBatch(hashes);
+    public void saveAllBatch(List<String> hashes) {
+        hashJdbcRepository.saveAllBatch(hashes);
     }
 
     @Transactional
-    public List<String> getHashesByBatchSize(int batchSize) {
-        return hashRepository.getDeleteHashesBatch(batchSize);
+    public List<String> findAllByPackSize(int packSize) {
+        return hashRepository.findAllAndDeletePack(packSize);
     }
 
     @Transactional

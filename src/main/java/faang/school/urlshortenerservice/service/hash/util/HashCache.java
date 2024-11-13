@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 @Service
 public class HashCache {
-    private final AtomicBoolean isUpdating = new AtomicBoolean(false);
-    private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
     private final HashService hashService;
     private final HashGenerator hashGenerator;
     private final Executor hashCacheExecutorPool;
+    private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
+    private final AtomicBoolean isUpdating = new AtomicBoolean(false);
 
     @Value("${app.hash_cache.hashes_max_size}")
     private int hashesMax;
@@ -47,15 +47,15 @@ public class HashCache {
 
     private void updateHashes() {
         try {
+            hashGenerator.generate();
             executeUpdating();
-            hashGenerator.generateBatch();
         } finally {
             isUpdating.set(false);
         }
     }
 
     private void executeUpdating() {
-        List<String> newHashes = hashService.getHashesByBatchSize(hashesMax);
+        List<String> newHashes = hashService.findAllByPackSize(hashesMax);
         hashes.addAll(newHashes);
     }
 }

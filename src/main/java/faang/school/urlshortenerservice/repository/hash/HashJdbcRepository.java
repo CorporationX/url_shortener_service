@@ -21,7 +21,7 @@ public class HashJdbcRepository {
     @Value("${app.jdbc-template.batch-size.save-hashes}")
     private int batchSize;
 
-    public void saveHashesByBatch(List<String> hashes) {
+    public void saveAllBatch(List<String> hashes) {
         int totalBatches = (int) Math.ceil((double) hashes.size() / batchSize);
 
         IntStream.range(0, totalBatches).forEach(i -> {

@@ -22,9 +22,9 @@ public class UrlCleanerService {
     private int days;
 
     @Transactional
-    public void cleanExpiredUrls() {
-        List<String> hashes = urlRepository.getDeleteUrlsByDate(LocalDateTime.now().minusDays(days));
-        hashService.saveBatch(hashes);
+    public void removeExpiredUrls() {
+        List<String> hashes = urlRepository.getAndDeleteUrlsByDate(LocalDateTime.now().minusDays(days));
+        hashService.saveAllBatch(hashes);
         urlCacheRepository.deleteAll(hashes);
     }
 }

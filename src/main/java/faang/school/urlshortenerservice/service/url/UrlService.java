@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.annotation.logging.LogExecution;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.util.HashCache;
-import faang.school.urlshortenerservice.util.url.UriBuilder;
+import faang.school.urlshortenerservice.util.uri.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,20 +29,23 @@ public class UrlService {
                 .url(uri)
                 .build();
 
-        urlCacheRepository.save(url);
         urlRepository.save(url);
+        urlCacheRepository.save(url);
 
         return uriBuilder.response(hash);
     }
 
+    @LogExecution
     @Transactional(readOnly = true)
     public String getPrimalUri(String hash) {
         Url url = urlCacheRepository.findByHash(hash);
-        if (url == null) {
-            url = urlRepository.findById(hash).orElseThrow(() ->
-                    new RuntimeException("Url by hash: {} not found" + hash));
-            urlCacheRepository.save(url);
+        if (url != null) {
+            return url.getUrl();
         }
+        url = urlRepository.findById(hash).orElseThrow(() ->
+                new ResourceNotFoundException("Url by hash: %s not found", hash));
+        urlCacheRepository.save(url);
+
         return url.getUrl();
     }
 }

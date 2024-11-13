@@ -1,9 +1,13 @@
 package faang.school.urlshortenerservice.util.encode;
 
+import faang.school.urlshortenerservice.annotation.logging.LogExecution;
+import faang.school.urlshortenerservice.exception.ApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Component
 public class Base62Encoder {
@@ -33,8 +37,9 @@ public class Base62Encoder {
         return encoded.length() > hashLength ? encoded.substring(0, hashLength) : encoded.toString();
     }
 
+    @LogExecution
     private void lengthCheck(StringBuilder encoded) {
         if (encoded.length() > 6)
-            throw new RuntimeException("Hash length more than limit: " + encoded);
+            throw new ApiException("Hash: %s length more than limit: %s", INTERNAL_SERVER_ERROR, encoded, hashLength);
     }
 }

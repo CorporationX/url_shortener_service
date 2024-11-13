@@ -22,5 +22,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             )
             RETURNING u.hash
             """)
-    List<String> getDeleteUrlsByDate(@Param("date") LocalDateTime date);
+    List<String> getAndDeleteUrlsByDate(@Param("date") LocalDateTime date);
 }

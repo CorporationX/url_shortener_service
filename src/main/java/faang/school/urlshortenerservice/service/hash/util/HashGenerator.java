@@ -19,9 +19,9 @@ public class HashGenerator {
     private int numberSize;
 
     @Async("hashGeneratorExecutorPool")
-    public void generateBatch() {
+    public void generate() {
         List<Long> numbers = hashService.getUniqueNumber(numberSize);
         List<String> hashes = encoder.encode(numbers);
-        hashService.saveBatch(hashes);
+        hashService.saveAllBatch(hashes);
     }
 }

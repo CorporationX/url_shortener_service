@@ -23,6 +23,8 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    context-path: /sh.com
 
 logging:
   level:
@@ -39,7 +41,7 @@ app:
       base: 62
       hash_length: 6
   hash_generator:
-    get_unique_number_size: 1_000
+    get_unique_number_size: 2_000
   hash_cache:
     hashes_max_size: 1_000
     hashes_min_size: 200
