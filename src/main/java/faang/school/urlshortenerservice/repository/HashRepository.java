@@ -23,4 +23,7 @@ public interface HashRepository extends JpaRepository<Hash, Url> {
     default <S extends Hash> List<S> saveHashes(List<Hash> entities) {
         return (List<S>) saveAll(entities);
     }
+
+    @Query("SELECT h.url FROM Hash h WHERE h.hash = :hash")
+    Url getUrlByHash(@Param("hash") String hash);
 }

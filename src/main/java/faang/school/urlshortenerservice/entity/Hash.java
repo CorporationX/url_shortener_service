@@ -3,12 +3,14 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
 @Table(name = "hashes")
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Hash {
@@ -19,4 +21,8 @@ public class Hash {
 
     @Column(name = "hash", length = 6, unique = true)
     private String hash;
+
+    @ManyToOne
+    @JoinColumn(name = "url_id")
+    private Url url;
 }
