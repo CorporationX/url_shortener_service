@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.cache;
 
+import faang.school.urlshortenerservice.config.FetchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -40,6 +42,9 @@ public class HashCacheServiceImplTest {
     @Mock
     private ExecutorService executorService;
 
+    @Spy
+    private FetchProperties fetchProperties;
+
     @InjectMocks
     private HashCacheServiceImpl hashCacheService;
 
@@ -55,9 +60,11 @@ public class HashCacheServiceImplTest {
 
         AtomicBoolean isReplenishing = new AtomicBoolean(false);
 
+        fetchProperties.setBatchSize(fetchHashesSize);
+        fetchProperties.setLimitOnReplenishment(10);
+
         ReflectionTestUtils.setField(hashCacheService, "hashes", hashes);
         ReflectionTestUtils.setField(hashCacheService, "isReplenishing", isReplenishing);
-        ReflectionTestUtils.setField(hashCacheService, "fetchHashesSize", fetchHashesSize);
     }
 
     @Test
