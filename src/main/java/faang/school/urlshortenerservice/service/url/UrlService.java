@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.config.properties.GeneralProperties;
+import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
@@ -29,6 +30,16 @@ public class UrlService {
         urlCacheRepository.save(hash, longUrl);
 
         return generalProperties.getAppUrl() + GET_URL_PATH + hash;
+    }
+
+    public String getUrlByHash(String hash) {
+        String url = urlCacheRepository.get(hash);
+        if (url == null) {
+            url = urlRepository.findByHash(hash)
+                    .map(Url::getUrl)
+                    .orElseThrow(() -> new ResourceNotFoundException("Url", hash));
+        }
+        return url;
     }
 
     public Url build(String hash, String url) {
