@@ -24,3 +24,9 @@ server:
 app:
   hashes-generation:
     batch-size: 80
+  hash-cache:
+    size: 100
+    threshold: 20 # percents
+
+executor:
+  thread-pool-size: 1
