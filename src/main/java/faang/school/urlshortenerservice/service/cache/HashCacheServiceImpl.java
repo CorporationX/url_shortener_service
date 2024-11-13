@@ -54,9 +54,9 @@ public class HashCacheServiceImpl implements HashCacheService {
 
     private void fetchFreeHashes() {
         executorService.execute(() -> {
+            hashGeneratorService.generateBatch();
             List<String> newFreeHashes = hashRepository.getHashes(fetchHashesSize);
             hashes.addAll(newFreeHashes);
-            hashGeneratorService.generateBatch();
             isReplenishing.set(false);
         });
     }
