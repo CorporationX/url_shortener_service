@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.hash.HashProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,9 +13,7 @@ import java.util.List;
 @Slf4j
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
-
-    @Value("${hash.hash-batch-size}")
-    private int batchSize;
+    private final HashProperties hashProperties;
 
     public List<Long> getUniqueNumbers(int count) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
@@ -41,8 +39,7 @@ public class HashRepository {
                  )
                  RETURNING hash_value
                 """;
-
-        return jdbcTemplate.queryForList(sql, new Object[]{batchSize}, String.class);
+        return jdbcTemplate.queryForList(sql, new Object[]{hashProperties.getHashBatchSize()}, String.class);
     }
 }
 

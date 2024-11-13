@@ -2,8 +2,6 @@ package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,13 +11,10 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+    private final HashProperties hashProperties;
 
-    @Value("${hash.unique-num-count}")
-    private int uniqueNumCount;
-
-    @Async("threadPool")
     public void generate() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(uniqueNumCount);
+        List<Long> numbers = hashRepository.getUniqueNumbers(hashProperties.getGenerateSize());
         List<String> hashes = base62Encoder.encode(numbers);
         hashRepository.save(hashes);
     }
