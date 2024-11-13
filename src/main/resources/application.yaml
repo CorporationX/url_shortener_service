@@ -28,6 +28,10 @@ server:
     generate:
       batch-size: 10000
       length: 6
+    clear:
+      batch-size: 1
+      days-threshold: 365
+      cron: "0 0 3 * * ?"              # Каждый день в 3 ночи
     fetch:
       batch-size: 9900
   thread:

@@ -11,4 +11,6 @@ public interface UrlService {
     String getUrlFromDatabaseBy(String hash);
 
     String shortenUrl(UrlDto urlDto);
+
+    void clearOutdatedUrls();
 }

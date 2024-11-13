@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.CacheProperties;
+import faang.school.urlshortenerservice.config.redis.ClearProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class UrlServiceImpl implements UrlService {
     private final CacheService<String> cacheService;
     private final HashCacheService hashCacheService;
     private final CacheProperties cacheProperties;
+    private final ClearProperties clearProperties;
     private final UrlMapper urlMapper;
     private final EntityManager entityManager;
 
@@ -79,5 +83,17 @@ public class UrlServiceImpl implements UrlService {
         outboxService.saveOutbox(url);
 
         return url.getUrl();
+    }
+
+    @Override
+    public void clearOutdatedUrls() {
+        List<String> releasedHashes;
+        do {
+            releasedHashes = urlRepository.deleteOutdatedUrlsAndGetHashes(
+                    LocalDateTime.now().minusDays(clearProperties.getDaysThreshold()),
+                    clearProperties.getBatchSize()
+            );
+            hashCacheService.addHash(releasedHashes);
+        } while (!releasedHashes.isEmpty());
     }
 }

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.cache;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
 import jakarta.annotation.PostConstruct;
@@ -41,6 +42,14 @@ public class HashCacheServiceImpl implements HashCacheService {
         return Optional.ofNullable(hashes.poll())
                 .or(hashRepository::getHash)
                 .orElseThrow(() -> new RuntimeException("Free hash not found!"));
+    }
+
+    @Override
+    public void addHash(List<String> hashes) {
+        List<Hash> entityHashes = hashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashRepository.saveAll(entityHashes);
     }
 
     private void fetchFreeHashes() {
