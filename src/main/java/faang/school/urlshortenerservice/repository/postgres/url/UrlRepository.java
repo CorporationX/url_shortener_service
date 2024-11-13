@@ -8,11 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url, Long> {
+public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(nativeQuery = true, value = """
             DELETE FROM url WHERE created_at < :date RETURNING hash
             """)
     List<String> deleteAndReturnOldUrls(@Param("date") LocalDateTime date);
+
+    Optional<Url> findByHash(String hash);
 }

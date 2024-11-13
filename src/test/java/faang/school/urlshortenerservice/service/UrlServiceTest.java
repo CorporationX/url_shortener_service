@@ -3,6 +3,8 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.config.GeneralProperties;
 import faang.school.urlshortenerservice.config.cache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.entity.UrlBuilder;
+import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
 import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import faang.school.urlshortenerservice.validator.AppUrlValidator;
@@ -14,11 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +64,40 @@ class UrlServiceTest {
 
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).save(anyString(), anyString());
+    }
+
+    @Test
+    void testGetUrlByHash_UrlFoundInCache() {
+        when(urlCacheRepository.get(HASH)).thenReturn(LONG_URL);
+
+        String result = urlService.getUrlByHash(HASH);
+
+        assertEquals(LONG_URL, result);
+        verify(urlCacheRepository).get(HASH);
+        verify(urlRepository, never()).findByHash(anyString());
+    }
+
+    @Test
+    void testGetUrlByHash_UrlNotInCacheButFoundInDb() {
+        when(urlCacheRepository.get(HASH)).thenReturn(null);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.of(UrlBuilder.build(HASH, LONG_URL)));
+
+        String result = urlService.getUrlByHash(HASH);
+
+        assertEquals(LONG_URL, result);
+        verify(urlCacheRepository).get(HASH);
+        verify(urlRepository).findByHash(HASH);
+    }
+
+    @Test
+    void testGetUrlByHash_UrlNotFoundInCacheOrDb() {
+        when(urlCacheRepository.get(HASH)).thenReturn(null);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> urlService.getUrlByHash(HASH));
+
+        verify(urlCacheRepository).get(HASH);
+        verify(urlRepository).findByHash(HASH);
     }
 
     @Test
