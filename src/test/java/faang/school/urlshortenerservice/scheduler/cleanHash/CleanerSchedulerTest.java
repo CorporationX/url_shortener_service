@@ -36,5 +36,4 @@ class CleanerSchedulerTest {
 
         verify(urlRepository, times(1)).deleteOldUrlsAndReturnHashesAsHashEntities();
     }
-
 }
