@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "hash")
+@Entity
 public class Hash {
 
     @Id

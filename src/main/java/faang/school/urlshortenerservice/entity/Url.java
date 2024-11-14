@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "url")
+@Entity
 public class Url {
 
     @Id
@@ -28,7 +28,6 @@ public class Url {
     @Column(name = "url", nullable = false, length = 2048)
     private String url;
 
-    @NotNull(message = "Creation date cannot be null")
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
