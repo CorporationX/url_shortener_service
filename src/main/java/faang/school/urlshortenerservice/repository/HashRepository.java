@@ -19,6 +19,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                 WHERE ctid IN (SELECT ctid FROM hash LIMIT :batchSize)
                 RETURNING *
             )
-            SELECT * FROM deleted;""", nativeQuery = true)
-    List<Hash> getHashBatch(@Param("batchSize") long batchSize);
+            SELECT hash FROM deleted;""", nativeQuery = true)
+    List<String> getHashBatch(@Param("batchSize") long batchSize);
+
 }
