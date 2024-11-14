@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+generator:
+  hashes:
+    amount: 10_000
+
+localСache:
+  fill:
+    batch:
+      size: 10_000
