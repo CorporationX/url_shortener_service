@@ -22,16 +22,15 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToLongUrl(@PathVariable String hash) {
-        String longUrl = urlService.getLongUrlByHash(hash);
-
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(longUrl))
+                .location(URI.create(urlService.getLongUrlByHash(hash)))
                 .build();
     }
 
-    @PostMapping("/{urlDto}")
-    public ResponseEntity<Void> redirectToShortUrl(@Valid @RequestBody UrlDto urlDto) {
-
+    @PostMapping("/url")
+    public ResponseEntity<String> redirectToShortUrl(@Valid @RequestBody UrlDto urlDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(urlService.getShortUrlByHash(urlDto.getUrl()));
     }
 
 }
