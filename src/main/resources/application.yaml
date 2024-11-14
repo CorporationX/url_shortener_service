@@ -21,6 +21,8 @@ hash:
   encoder:
     hash-size: 6
     alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  repository:
+    batch-size: 100
 
 task-executor:
   core-pool-size: 10
