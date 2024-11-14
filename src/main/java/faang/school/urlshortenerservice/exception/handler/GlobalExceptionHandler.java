@@ -1,21 +1,25 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-//    @ExceptionHandler(ConstraintViolationException.class)
+    //TODO sdfsdfg
+
+    //    @ExceptionHandler(ConstraintViolationException.class)
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)
 //    public ErrorResponse handleConstraintViolationException(ConstraintViolationException ex) {
 //        log.error("Constraint Violation Exception", ex);
@@ -43,12 +47,12 @@ public class GlobalExceptionHandler {
 //        return new ErrorResponse("Runtime exception", ex.getMessage());
 //    }
 //
-//    @ExceptionHandler(EntityNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
-//        log.error("Entity Not Found Exception", ex);
-//        return new ErrorResponse("Entity Not Found Exception", ex.getMessage());
-//    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity Not Found Exception", ex);
+        return new ErrorResponse("Entity Not Found Exception", ex.getMessage());
+    }
 //
 //    @ExceptionHandler(IllegalArgumentException.class)
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)

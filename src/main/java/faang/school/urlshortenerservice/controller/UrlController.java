@@ -5,11 +5,11 @@ import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.Objects;
+import java.net.URI;
 
 @AllArgsConstructor
 @RestController
@@ -24,11 +24,10 @@ public class UrlController {
         return urlService.createShortUrl(urlDto);
     }
 
-    //TODO asdfasdf
     @Operation(summary = "Get original url")
     @GetMapping()
-    public RedirectView getOriginalUrl(@RequestParam String shortUrl) {
+    public ResponseEntity<Void> getOriginalUrl(@RequestParam String shortUrl) {
         String targetUrl = urlService.getOriginalUrl(shortUrl);
-        return new RedirectView(Objects.requireNonNullElse(targetUrl, "/error"));
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(targetUrl)).build();
     }
 }

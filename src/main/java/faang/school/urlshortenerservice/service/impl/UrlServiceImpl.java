@@ -34,8 +34,9 @@ public class UrlServiceImpl implements UrlService {
     @Cacheable(value = "url", key = "#shortUrl")
     @Override
     public String getOriginalUrl(String shortUrl) {
-        String[]arr = shortUrl.split("denart.info/");
-        Url url = urlRepository.findUrlByHash(arr[1]).orElseThrow(EntityNotFoundException::new);
+        String[] arr = shortUrl.split(shortUrlDomain);
+        Url url = urlRepository.findUrlByHash(arr[1])
+                .orElseThrow(() -> new EntityNotFoundException("Can't find url with hash: " + arr[1]));
         return url.getUrl();
     }
 }
