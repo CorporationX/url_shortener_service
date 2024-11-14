@@ -60,6 +60,7 @@ public class HashCache {
                     Thread.currentThread().interrupt();
                 }
             }
+
             return cacheQueue.poll();
         }
     }
