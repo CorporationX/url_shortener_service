@@ -25,6 +25,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                 FROM hash
                 ORDER BY random()
                 LIMIT :number
+                FOR UPDATE SKIP LOCKED
             )
             RETURNING hash
             """)
