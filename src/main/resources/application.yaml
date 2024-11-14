@@ -23,6 +23,8 @@ hash:
     alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   repository:
     batch-size: 100
+  generator:
+    batch-size: 100
 
 task-executor:
   core-pool-size: 10
