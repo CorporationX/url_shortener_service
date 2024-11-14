@@ -33,10 +33,10 @@ server:
   async:
     thread:
       pool:
-        corePoolSize: 4
+        corePoolSize: 3
         maximumPoolSize: 10
         keepAliveTime: 60
-        queueCapacity: 100
+        queueCapacity: 40
 
 logging:
   level:
