@@ -18,4 +18,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING *
             """)
     List<Url> deleteOldUrls();
+
+    boolean existsByUrl(String url);
 }
