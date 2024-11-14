@@ -14,7 +14,7 @@ public class AsyncConfig {
 
     private final AsyncProperty asyncProperty;
 
-    @Bean
+    @Bean(name = "executorForHashCache")
     public ThreadPoolTaskExecutor executorToGenerateHashes() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(asyncProperty.getCorePoolSize());

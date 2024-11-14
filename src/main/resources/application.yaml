@@ -14,7 +14,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    amount-hash: 100
+    amount-unique-numbers: 100
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -26,6 +26,11 @@ spring:
     core pool size: 4
     max pool size: 10
     queue capacity: 50
+
+  hash-cache:
+    maxQueueSize: 100
+    refillThresholdPercent: 20
+    amount-hash: 50
 
 server:
   port: 8080

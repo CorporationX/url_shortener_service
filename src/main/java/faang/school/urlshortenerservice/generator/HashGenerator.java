@@ -19,10 +19,9 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
 
-    @Value("${spring.jpa.amount-hash}")
+    @Value("${spring.jpa.amount-unique-numbers}")
     private int amountHash;
 
-    @Async
     @Transactional
     @Scheduled(initialDelay = 5000, fixedDelay = 5000)
     public void generateBatch() {
