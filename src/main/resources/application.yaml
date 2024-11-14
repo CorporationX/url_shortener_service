@@ -27,3 +27,9 @@ logging:
 hash:
   batch-size: 100
   count-to-returning: 5
+  generated-batch-size: 10
+
+thread-pool:
+  size: 10
+  max-size: 20
+  timeout: 120
