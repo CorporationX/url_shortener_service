@@ -18,8 +18,8 @@ import java.util.Map;
 public class HashRepository {
     @Value("${hash.batch-size}")
     private Integer batchSize;
-    @Value("${hash.count-to-returning}")
-    private Integer countToReturning;
+    @Value("${hash.count-of-numbers-from-the-sequence}")
+    private Integer countOfNumbersFromTheSequence;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -52,7 +52,7 @@ public class HashRepository {
     public List<String> getHashBatch() {
         String query = "delete from hash where hash IN (select hash from hash order by random() limit :limit) returning *;";
         return namedParameterJdbcTemplate.queryForList(query,
-                Collections.singletonMap("limit", countToReturning), String.class);
+                Collections.singletonMap("limit", countOfNumbersFromTheSequence), String.class);
     }
 
     private Map<String, String>[] getMapParams(List<String> hashes, int start, int end) {

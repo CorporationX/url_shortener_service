@@ -3,6 +3,8 @@ package faang.school.urlshortenerservice.cache;
 import faang.school.urlshortenerservice.hash.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,25 +12,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class HashCache {
-    @Value("${hash.cached-count}")
+    @Value("${hash.count-of-numbers-from-the-sequence}")
     private int cachedCount;
 
-    private final LinkedBlockingQueue<String> hashes;
+    private LinkedBlockingQueue<String> hashes;
     private final ExecutorService service;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
 
-    public HashCache(ExecutorService service, HashRepository hashRepository, HashGenerator hashGenerator) {
-        this.service = service;
-        this.hashRepository = hashRepository;
-        this.hashGenerator = hashGenerator;
-
-        this.hashes = new LinkedBlockingQueue<>(cachedCount);
-    }
-
     @PostConstruct
     public void initHashes() {
+        cachedCount = (int) (cachedCount / 0.8);
+        hashes = new LinkedBlockingQueue<>(cachedCount);
+
         hashGenerator.generateBatch();
         hashes.addAll(hashRepository.getHashBatch());
     }
