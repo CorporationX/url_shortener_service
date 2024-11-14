@@ -15,8 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final HashGenerator hashGenerator;
 
-    @Value("${cache.capacity:10000}")
+    @Value("${cache.capacity:100000}")
     private int capacity;
+
+    @Value("${cache.min_percent_hashes:20}")
+    private long minPercentHashes;
 
     private final AtomicBoolean generateIsProcessing = new AtomicBoolean(false);
 
@@ -30,15 +33,20 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashes.isEmpty() || hashes.size() / capacity * 100.0 < 20.0) {
+        checkAndGenerateHashes();
+        return hashes.poll();
+    }
+
+    private void checkAndGenerateHashes() {
+        double cacheFullPercentage = hashes.size() / capacity * 100.0;
+
+        if (hashes.isEmpty() || cacheFullPercentage < minPercentHashes) {
             if (generateIsProcessing.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> generateIsProcessing.set(false));
             }
         }
-
-        return hashes.poll();
     }
 
 }

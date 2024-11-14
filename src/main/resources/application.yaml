@@ -1,4 +1,8 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -20,7 +24,20 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+cache:
+  min_percent_hashes: 20
+  capacity: 10000
+
+generator:
+  batch:
+    size: 100000
+  async:
+    poolSize: 5
+    maxPoolSize: 10
+    queueCapacity: 100
+
 server:
+  url: 'http://localhost:8080'
   port: 8080
 
 logging:
