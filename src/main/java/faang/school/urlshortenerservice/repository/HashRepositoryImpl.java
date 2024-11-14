@@ -16,7 +16,7 @@ public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Setter
-    @Value("${hash.repository.batchSize}")
+    @Value("${hash.repository.batch-size}")
     private int batchSize;
 
     @Override
