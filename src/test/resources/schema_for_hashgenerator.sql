@@ -8,16 +8,25 @@ CREATE TABLE IF NOT EXISTS hash
 );
 
 INSERT into hash
-VALUES ('123qwe'),
-       ('sfdg45'),
-       ('56fgf4'),
-       ('67ghn7'),
-       ('kjh46f'),
-       ('kde889'),
-       ('90dd4f'),
-       ('09k890'),
-       ('0kf4hg'),
-       ('09fkj7');
+VALUES ('hash1'),
+       ('hash2'),
+       ('hash3'),
+       ('hash4'),
+       ('hash5'),
+       ('hash6'),
+       ('hash7'),
+       ('hash8'),
+       ('hash9'),
+       ('hash10'),
+       ('hash11'),
+       ('hash12'),
+       ('hash13'),
+       ('hash14'),
+       ('hash15'),
+       ('hash16'),
+       ('hash17'),
+       ('hash18'),
+       ('hash19');
 
 CREATE TABLE IF NOT EXISTS url
 (

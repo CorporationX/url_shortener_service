@@ -5,25 +5,30 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @SpringBootTest
 @Testcontainers
 @EnableAsync
 public class HashCacheTest {
-//TODO asdfasd
-    private static final long CAPACITY = 5L;
+    //TODO asdfasd
+    private static final long CAPACITY = 3L;
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:13.3")
@@ -32,7 +37,7 @@ public class HashCacheTest {
             .withPassword("admin")
             .withInitScript("schema_for_hashgenerator.sql");
 
-    @Autowired
+    @SpyBean
     private HashGenerator hashGenerator;
 
     @Autowired
@@ -54,34 +59,32 @@ public class HashCacheTest {
         registry.add("spring.liquibase.enabled", () -> false);
     }
 
+
+
+
     @Test
     public void testHashCacheGetHashCache_shouldReturnHash() {
         String resultHash = hashCache.getHash();
 
         assertNotNull(resultHash);
         assertEquals("sfdg45", resultHash);
-//        Mockito.verify(executorService,Mockito.never()).execute(Mockito.any());
     }
 
     @Test
-    public void testHashCacheGetHashCache_shouldRunExecutorService() {
-        // TODO
+    public void testHashCacheGetHashCache_shouldRunCacheAddAllWithoutHashGenerator() throws InterruptedException {
+        String resultHash = "111";
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(100);
+            resultHash = hashCache.getHash();
+            System.out.println("resultHash = " + resultHash);
+            System.out.println("---------------------");
+        }
+
+        Queue<String> cache = (Queue<String>) ReflectionTestUtils.getField(hashCache, "cache");
+//        assertThat(cache).isNotEmpty();
+        assertEquals(2,cache.size());
+        assertEquals("hash6", resultHash);
+        verify(hashGenerator, times(0)).generateBatch();
     }
 
-//    @Test
-//    public void testGenerateBatch_insertsHashesIntoDatabase() throws InterruptedException {
-//        hashGenerator.generateBatch();
-//        Thread.sleep(2000);
-//
-//        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Long.class);
-//        List<Hash> hashes = hashRepository.findAll();
-//
-//        assertAll(
-//                () -> assertEquals(HASH_RANGE, count),
-//                () -> assertEquals("5CfaC5", hashes.get(5).getHash()),
-//                () -> assertEquals("5Cc5Ca", hashes.get(2).getHash()),
-//                () -> assertEquals("5CjaC5", hashes.get(9).getHash())
-//        );
-//
-//    }
 }
