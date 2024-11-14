@@ -1,7 +1,6 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.exeption.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
-import faang.school.urlshortenerservice.exeption.handler.UrlExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,30 +29,30 @@ public class UrlExceptionHandlerTest {
         ReflectionTestUtils.setField(urlExceptionHandler, "serviceName", SERVICE_NAME);
     }
 
-    private MethodArgumentNotValidException getMethodArgumentNotValidException(String field, String message) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "objectName");
-        bindingResult.addError(new FieldError("objectName", field, message));
-        try {
-            Method method = this.getClass().getDeclaredMethod("dummyMethod", String.class);
-            return new MethodArgumentNotValidException(new MethodParameter(method, 0), bindingResult);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    public void dummyMethod(String param) {
+    private MethodArgumentNotValidException getMethodArgumentNotValidException(String message) throws NoSuchMethodException {
+        Method method = this.getClass().getDeclaredMethod("handleMethodArgumentNotValidException_ShouldReturnBadRequestStatusWithErrors");
+        MethodParameter methodParameter = new MethodParameter(method, -1);
+
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "objectName");
+        bindingResult.addError(new FieldError("objectName", "field", message));
+        return new MethodArgumentNotValidException(methodParameter, bindingResult);
     }
 
     @Test
-    void handleValidationException_ShouldReturnBadRequestStatus() {
-        MethodArgumentNotValidException exception = getMethodArgumentNotValidException("field1", "Invalid value");
+    void handleMethodArgumentNotValidException_ShouldReturnBadRequestStatusWithErrors() throws NoSuchMethodException {
+        String message = "must not be null";
+        ErrorResponse correctResult = ErrorResponse.builder()
+                .serviceName(SERVICE_NAME)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .details(Map.of("field", message))
+                .message("Validation error")
+                .build();
+        MethodArgumentNotValidException exception = getMethodArgumentNotValidException(message);
 
-        ErrorResponse response = urlExceptionHandler.handleValidationException(exception);
+        ErrorResponse result = urlExceptionHandler.handleValidationException(exception);
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
-        assertEquals("Validation error", response.getMessage());
-        assertEquals(SERVICE_NAME, response.getServiceName());
-        assertEquals(Map.of("field1", "Invalid value"), response.getDetails());
+        assertEquals(correctResult, result);
     }
 
     @Test
