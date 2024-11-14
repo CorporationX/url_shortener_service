@@ -17,9 +17,8 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @OneToOne()
-    @JoinColumn(name = "hash", referencedColumnName = "hash")
-    private Hash hash;
+    @Column(name = "hash", nullable = false)
+    private String hash;
 
     @Column(name = "url", updatable = false, nullable = false)
     private String url;
