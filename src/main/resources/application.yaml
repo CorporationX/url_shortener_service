@@ -41,6 +41,9 @@ spring:
   validation:
     url-regex: "^(https?://)(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
 
+  scheduler:
+    cron-for-cleaner: "0 0 * * *"
+
 server:
   port: 8080
 
