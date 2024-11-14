@@ -38,15 +38,15 @@ public class HashCache {
     public String getHash() {
         if (freeCaches.size() < queueSize * percentageMultiplier &&
                 isCaching.compareAndSet(false, true)) {
-            try {
-                queueTaskThreadPool.execute(() -> {
+            queueTaskThreadPool.execute(() -> {
+                try {
                     freeCaches.addAll(hashRepository.getHashBatch());
                     hashGenerator.generateBatch();
                     log.info("hash cache will be refilled by {}", Thread.currentThread().getName());
-                });
-            } finally {
-                isCaching.set(false);
-            }
+                } finally {
+                    isCaching.set(false);
+                }
+            });
         }
 
         try {
