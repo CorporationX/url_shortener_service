@@ -30,3 +30,9 @@ uniqueNumbers:
 hash:
   batch:
     size: 10_000
+    sublist:
+      length: 10
+
+executor:
+  threads:
+    count: 10
