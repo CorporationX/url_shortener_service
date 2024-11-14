@@ -25,12 +25,12 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashes = new ArrayBlockingQueue<>(capacity);
-        hashGenerator.getHashes(capacity).thenAccept(hashes::addAll);
+        hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
     }
 
     public String getHash() {
         if (hashes.size() / (capacity / 100) < FILLED_PERCENTAGE && isFilling.compareAndSet(false, true)) {
-            hashGenerator.getHashes(capacity)
+            hashGenerator.getHashesAsync(capacity)
                     .thenAccept(hashes::addAll)
                     .thenRun(() -> isFilling.set(false));
         }

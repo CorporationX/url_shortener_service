@@ -28,13 +28,18 @@ public class HashGenerator {
     }
 
     @Transactional
-    @Async("generatorThreadPool")
-    public CompletableFuture<List<String>> getHashes(long amount) {
+    public List<String> getHashes(long amount) {
         List<Hash> hashes = hashRepository.getHashBatch(amount);
         if (hashes.size() < amount) {
             generateBatch();
             hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
         }
-        return CompletableFuture.completedFuture(hashes.stream().map(Hash::getHash).toList());
+        return hashes.stream().map(Hash::getHash).toList();
+    }
+
+    @Async("generatorThreadPool")
+    @Transactional
+    public CompletableFuture<List<String>> getHashesAsync(long amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }
