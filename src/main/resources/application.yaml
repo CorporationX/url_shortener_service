@@ -17,6 +17,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash:
+  batch-size: 100
+  count-of-numbers-from-the-sequence: 16
+  generated-batch-size: 200
+
 server:
   port: 8080
 
@@ -24,12 +29,9 @@ logging:
   level:
     root: info
 
-hash:
-  batch-size: 100
-  count-to-returning: 5
-  generated-batch-size: 10
-
 thread-pool:
   size: 10
   max-size: 20
   timeout: 120
+
+
