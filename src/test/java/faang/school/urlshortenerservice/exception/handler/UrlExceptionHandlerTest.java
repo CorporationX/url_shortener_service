@@ -44,18 +44,15 @@ class UrlExceptionHandlerTest {
     void handleRuntimeException_shouldReturnInternalServerErrorResponse() {
         RuntimeException exception = new RuntimeException("Test runtime exception");
 
-        ResponseEntity<ErrorResponse> response = urlExceptionHandler.handleRuntimeException(exception);
+        ErrorResponse errorResponse = urlExceptionHandler.handleRuntimeException(exception);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-
-        ErrorResponse errorResponse = response.getBody();
-        assertEquals("An error occurred, please contact support", Objects.requireNonNull(errorResponse).getMessage());
-        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getStatus());
+        assertEquals("An error occurred, please contact support", errorResponse.getMessage());
+        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
     }
 
     @Test
-    void handleMethodArgumentNotValidException_shouldReturnBadRequestResponse() {
+    void handleMethodArgumentNotValidException_shouldReturnBadRequestResponse() throws NoSuchMethodException {
         List<FieldError> fieldErrors = new ArrayList<>();
         FieldError error1 = new FieldError("object", "field1", "Field1 is required");
         FieldError error2 = new FieldError("object", "field2", "Field2 cannot be empty");
@@ -64,59 +61,52 @@ class UrlExceptionHandlerTest {
 
         when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
 
-        MethodParameter methodParameter = mock(MethodParameter.class);
+        MethodParameter methodParameter = new MethodParameter(
+                getClass().getMethod("dummyMethod", String.class), 0);
 
         MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
 
-        ResponseEntity<ErrorResponse> response = urlExceptionHandler.handleMethodArgumentNotValidException(exception);
+        ErrorResponse errorResponse = urlExceptionHandler.handleMethodArgumentNotValidException(exception);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-        ErrorResponse errorResponse = response.getBody();
-        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
         assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatus());
-
-        Map<String, String> details = errorResponse.getDetails();
-        assertEquals(2, details.size());
-        assertEquals("Field1 is required", details.get("field1"));
-        assertEquals("Field2 cannot be empty", details.get("field2"));
+        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
+        assertEquals(2, errorResponse.getDetails().size());
+        assertEquals("Field1 is required", errorResponse.getDetails().get("field1"));
+        assertEquals("Field2 cannot be empty", errorResponse.getDetails().get("field2"));
     }
 
     @Test
-    void handleMethodArgumentNotValidException_shouldReturnDefaultMessageWhenNoMessageProvided() {
+    void handleMethodArgumentNotValidException_shouldReturnDefaultMessageWhenNoMessageProvided() throws NoSuchMethodException {
         List<FieldError> fieldErrors = new ArrayList<>();
         FieldError error = new FieldError("object", "field1", null);
         fieldErrors.add(error);
 
         when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
 
-        MethodParameter methodParameter = mock(MethodParameter.class);
+        MethodParameter methodParameter = new MethodParameter(
+                getClass().getMethod("dummyMethod", String.class), 0);
+
         MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
 
-        ResponseEntity<ErrorResponse> response = urlExceptionHandler.handleMethodArgumentNotValidException(exception);
+        ErrorResponse errorResponse = urlExceptionHandler.handleMethodArgumentNotValidException(exception);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-        ErrorResponse errorResponse = response.getBody();
-        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
         assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatus());
-
-        Map<String, String> details = errorResponse.getDetails();
-        assertEquals(1, details.size());
-        assertEquals("Invalid input for field field1", details.get("field1"));
+        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
+        assertEquals(1, errorResponse.getDetails().size());
+        assertEquals("Invalid input for field field1", errorResponse.getDetails().get("field1"));
     }
 
     @Test
     void handleException_shouldReturnInternalServerErrorResponse() {
         Exception exception = new Exception("Test general exception");
 
-        ResponseEntity<ErrorResponse> response = urlExceptionHandler.handleException(exception);
+        ErrorResponse errorResponse = urlExceptionHandler.handleException(exception);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-
-        ErrorResponse errorResponse = response.getBody();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getStatus());
         assertEquals("Error occurred", errorResponse.getMessage());
         assertEquals(SERVICE_NAME, errorResponse.getServiceName());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getStatus());
+    }
+
+    public void dummyMethod(String arg) {
     }
 }
