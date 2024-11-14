@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.hash;
+package faang.school.urlshortenerservice.hash.encoder;
 
 import io.seruco.encoding.base62.Base62;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class Base62Encoder {
+public class Base62Encoder implements Encoder {
     private final Base62 base62;
 
     public List<String> encode(List<Long> nums) {

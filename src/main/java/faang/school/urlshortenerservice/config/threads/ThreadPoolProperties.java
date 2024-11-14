@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.threadPool;
+package faang.school.urlshortenerservice.config.threads;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties("thread-pool")
 public class ThreadPoolProperties {
-    private Integer size;
-    private Integer maxSize;
-    private Integer timeout;
+    private int size;
+    private int maxSize;
+    private int timeout;
 }
