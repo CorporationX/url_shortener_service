@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/testing/hash/repository")
 public class HashRepoAndGeneratorTestController {
     private final HashRepository repository;
-    private final HashGenerator generator;
+    private final HashGenerator hashGenerator;
 
     @GetMapping("/unique/{n}")
     public List<Long> getUniqueNums(@PathVariable("n") int n) {
@@ -35,7 +35,7 @@ public class HashRepoAndGeneratorTestController {
     }
 
     @PutMapping("/generate")
-    public void generate() {
-        generator.generateBatch();
+    public void generateHash() {
+        hashGenerator.generateBatch();
     }
 }
