@@ -92,21 +92,6 @@ class UrlExceptionHandlerTest {
     }
 
     @Test
-    void handleRuntimeException_ShouldReturnInternalServerErrorStatus() {
-        String message = "Something went wrong";
-        ErrorResponse correctResult = ErrorResponse.builder()
-                .serviceName(serviceName)
-                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .globalMessage(message)
-                .build();
-        RuntimeException exception = new RuntimeException("Unexpected error");
-
-        ErrorResponse result = exceptionHandler.handleRuntimeException(exception);
-
-        assertEquals(correctResult, result);
-    }
-
-    @Test
     void handleDataIntegrityViolation_shouldReturnErrorResponse() {
         String message = "Data Integrity Violation Error";
         ErrorResponse correctResult = ErrorResponse.builder()

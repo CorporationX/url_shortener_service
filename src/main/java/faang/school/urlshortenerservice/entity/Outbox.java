@@ -41,11 +41,4 @@ public class Outbox {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private OutboxStatus status;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "processed_at")
-    private LocalDateTime processedAt;
 }
