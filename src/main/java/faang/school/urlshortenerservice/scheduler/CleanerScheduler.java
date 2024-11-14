@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -23,8 +22,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${url.cleaner.cron}")
     @Transactional
     public void removeOldUrls() {
-        LocalDateTime minusYear = LocalDateTime.now().minusYears(1);
-        List<Url> urls = urlRepository.deleteOldUrls(minusYear);
+        List<Url> urls = urlRepository.deleteOldUrls();
         if (!urls.isEmpty()) {
             List<Hash> hashes = urls.stream()
                     .map(url -> new Hash(url.getHash()))

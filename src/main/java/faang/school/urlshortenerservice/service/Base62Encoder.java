@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.generator;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.model.entity.Hash;
 import org.springframework.stereotype.Component;
