@@ -13,9 +13,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "hash")
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "hash")
 public class Hash {
 
     @Id

@@ -20,7 +20,7 @@ public class Base62Encoder {
         return numbers.stream()
                 .map(this::encodeNumber)
                 .map(Hash::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String encodeNumber(long number) {
