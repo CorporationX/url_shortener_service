@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 
 @Setter
 @Component
 @RequiredArgsConstructor
 public class Base62Encoder {
-    private final ExecutorService taskExecutor;
+    private final Executor taskExecutor;
 
     @Value("${hash.encoder.alphabet}")
     private String alphabet;
