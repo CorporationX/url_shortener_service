@@ -1,4 +1,4 @@
-package properties;
+package faang.school.urlshortenerservice.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "tread-pool")
+@ConfigurationProperties(prefix = "thread-pool")
 public class ThreadProperties {
-    private Generator generator;
-    private Cache cache;
+    private Generator generator = new Generator();
+    private Cache cache = new Cache();
 
     @Data
     public static class Generator {
@@ -23,5 +23,6 @@ public class ThreadProperties {
         private int core;
         private int max;
         private int queue;
+        private double percentage;
     }
 }

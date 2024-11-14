@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-
-    @Qualifier(value = "HashCachePool")
-    private final ThreadPoolTaskExecutor executorService;
+    private final ExecutorService executor;
     private final HashRepository hashRepository;
     private final ConcurrentLinkedQueue<Hash> queue = new ConcurrentLinkedQueue<>();
 
@@ -27,14 +27,16 @@ public class HashCache {
     private int batchSize;
     private int hashesQuantityToAdd = (int) (batchSize * ((percentageToAdd / 100) * percentageToAdd));
 
-    public synchronized Hash getHash() {
+    public Hash getHash() {
         if (queue.size() < hashesQuantityToAdd) {
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                List<Hash> hashes = hashRepository.getHashBatch(batchSize);
-                queue.addAll(hashes);
-            }, executorService);
-            if (queue.isEmpty()) {
-                future.join();
+            synchronized (queue) {
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    List<Hash> hashes = hashRepository.getHashBatch(batchSize);
+                    queue.addAll(hashes);
+                }, executor);
+                if (queue.isEmpty()) {
+                    future.join();
+                }
             }
         }
         return queue.poll();
