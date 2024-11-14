@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class UrlServiceImpl implements UrlService {
         return shortUrlDomain + url.getHash();
     }
 
+    @Cacheable(value = "url", key = "#shortUrl")
     @Override
     public String getOriginalUrl(String shortUrl) {
         String[]arr = shortUrl.split("denart.info/");

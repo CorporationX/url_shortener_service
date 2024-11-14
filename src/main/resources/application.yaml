@@ -45,3 +45,8 @@ cron:
 
 short_url:
   domain: "http://denart.info/"
+
+data:
+  redis:
+    host: localhost
+    port: 6379
