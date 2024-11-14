@@ -4,6 +4,6 @@ hash:
     maxPoolSize: 10
   queue:
     capacity: 50
-  batchValues:
-    saveBatch: 100
-    getBatch: 1000
+  batch:
+    save: 100
+    get: 1000

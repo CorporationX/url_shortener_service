@@ -25,7 +25,7 @@ public class HashGenerator {
     public void generateBatch() {
         try {
             String threadName = Thread.currentThread().getName();
-            int batchSize = hashProperties.getBatchValues().getGetBatch();
+            int batchSize = hashProperties.getBatch().getGet();
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
             log.debug("Thread {} , retrieved {} of unique numbers!", threadName, uniqueNumbers.size());
             List<Hash> hashes = base62Encoder.encode(uniqueNumbers);
