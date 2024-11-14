@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.redis;
+package faang.school.urlshortenerservice.config.redis;
 
 import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;

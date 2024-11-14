@@ -19,7 +19,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.range}")
+    @Value("${hash.unique-number-request-count}")
     private int uniqueNumberRequestCount;
 
     @Async("customThreadPoolForHashGenerator")
