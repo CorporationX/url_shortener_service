@@ -1,14 +1,14 @@
-package faang.school.urlshortenerservice.base;
+package faang.school.urlshortenerservice.utility.base62;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@UtilityClass
 public class Base62Encoder {
     private final String symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     public List<String> encode(List<Long> nums) {
         List<String> hashes = new ArrayList<>();
         for (Long num : nums) {
