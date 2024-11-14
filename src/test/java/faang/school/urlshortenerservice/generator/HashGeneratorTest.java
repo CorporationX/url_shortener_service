@@ -47,6 +47,6 @@ public class HashGeneratorTest {
 
         verify(uniqueIdRepository, times(1)).getUniqueNumbers(generateBatchSize);
         verify(encoder, times(1)).encode(uniqueNumbers);
-        verify(hashRepository, times(1)).saveAll(hashes);
+        verify(hashRepository, times(1)).saveBatch(hashes);
     }
 }
