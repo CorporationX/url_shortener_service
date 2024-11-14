@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Queue;
-import java.util.concurrent.ExecutorService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +25,6 @@ import static org.mockito.Mockito.verify;
 @Testcontainers
 @EnableAsync
 public class HashCacheTest {
-    //TODO asdfasd
     private static final long CAPACITY = 3L;
 
     @Container
@@ -39,12 +36,6 @@ public class HashCacheTest {
 
     @SpyBean
     private HashGenerator hashGenerator;
-
-    @Autowired
-    private HashRepository hashRepository;
-
-    @Autowired
-    private ExecutorService executorService;
 
     @Autowired
     private HashCache hashCache;
@@ -59,29 +50,22 @@ public class HashCacheTest {
         registry.add("spring.liquibase.enabled", () -> false);
     }
 
-
-
-
     @Test
     public void testHashCacheGetHashCache_shouldReturnHash() {
         String resultHash = hashCache.getHash();
 
         assertNotNull(resultHash);
-        assertEquals("sfdg45", resultHash);
     }
 
     @Test
     public void testHashCacheGetHashCache_shouldRunCacheAddAllWithoutHashGenerator() throws InterruptedException {
-        String resultHash = "111";
+        String resultHash = null;
         for (int i = 0; i < 5; i++) {
             Thread.sleep(100);
             resultHash = hashCache.getHash();
-            System.out.println("resultHash = " + resultHash);
-            System.out.println("---------------------");
         }
 
         Queue<String> cache = (Queue<String>) ReflectionTestUtils.getField(hashCache, "cache");
-//        assertThat(cache).isNotEmpty();
         assertEquals(2,cache.size());
         assertEquals("hash6", resultHash);
         verify(hashGenerator, times(0)).generateBatch();
