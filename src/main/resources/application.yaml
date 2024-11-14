@@ -35,6 +35,8 @@ hash:
   hash-batch-size: 8
   cache-capacity: 10
   low-threshold: 0.2
+  cleaning-cron: 0 * * * * *
+  days-to-keep: 365
 
 thread-pool:
   core-pool-size: 5

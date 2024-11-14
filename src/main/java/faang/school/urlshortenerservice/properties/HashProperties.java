@@ -14,4 +14,5 @@ public class HashProperties {
     private int hashBatchSize;
     private int cacheCapacity;
     private double lowThreshold;
+    private long daysToKeep;
 }

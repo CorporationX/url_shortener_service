@@ -28,6 +28,8 @@ public class HashRepository {
 
         jdbcTemplate.batchUpdate(sql, hashes, hashes.size(),
                 (ps, hashValue) -> ps.setString(1, hashValue));
+
+        log.info("Save hashes to database: {}", hashes);
     }
 
     public List<String> getHashBatch() {
