@@ -12,14 +12,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashCustomRepositoryImpl implements HashCustomRepository {
 
+    private static final String SQL = "INSERT INTO hashes (hash) VALUES (?)";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void saveAllHashesBatched(List<Hash> hashes) {
-        String sql = "INSERT INTO hashes (hash) VALUES (?)";
-
         try {
-            jdbcTemplate.batchUpdate(sql, hashes, hashes.size(),
+            jdbcTemplate.batchUpdate(SQL, hashes, hashes.size(),
                     (ps, hash) -> ps.setString(1, hash.getHash()));
         } catch (DataAccessException e) {
             log.error("Error occurred while batch save!", e);
