@@ -24,9 +24,11 @@ logging:
   level:
     root: info
 
-uniqueNumbers:
-  amount: 10_000
+generator:
+  hashes:
+    amount: 10_000
 
-hash:
-  batch:
-    size: 10_000
+localСache:
+  fill:
+    batch:
+      size: 10_000
