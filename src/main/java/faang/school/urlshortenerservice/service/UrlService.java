@@ -4,13 +4,13 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 
 public interface UrlService {
 
-    String redirectByHash(String hash);
+    String getUrl(String hash);
 
     String getUrlBy(String hash);
 
     String getUrlFromDatabaseBy(String hash);
 
-    String shortenUrl(UrlDto urlDto);
+    String generateHashForUrl(UrlDto urlDto);
 
     void clearOutdatedUrls();
 }

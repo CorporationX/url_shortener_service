@@ -29,12 +29,12 @@ public class UrlController {
     public void redirectByHash(@PathVariable
                          @Length(min = 6, max = 6, message = "Hash must be exactly 6 characters long")
                          String hash, HttpServletResponse response) throws IOException {
-        redirect(urlService.redirectByHash(hash), response);
+        redirect(urlService.getUrl(hash), response);
     }
 
     @PostMapping
     public void shortenUrl(@RequestBody @Validated UrlDto urlDto, HttpServletResponse response) throws IOException {
-        redirect(urlService.shortenUrl(urlDto), response);
+        redirect(urlService.generateHashForUrl(urlDto), response);
     }
 
     private void redirect(String redirectUrl, HttpServletResponse response) throws IOException {

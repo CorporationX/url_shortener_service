@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service.cache;
 
 import faang.school.urlshortenerservice.config.FetchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,8 +64,8 @@ public class HashCacheServiceImplTest {
         fetchProperties.setBatchSize(fetchHashesSize);
         fetchProperties.setLimitOnReplenishment(10);
 
-        ReflectionTestUtils.setField(hashCacheService, "hashes", hashes);
-        ReflectionTestUtils.setField(hashCacheService, "isReplenishing", isReplenishing);
+        ReflectionTestUtils.setField(hashCacheService, "freeHashes", hashes);
+        ReflectionTestUtils.setField(hashCacheService, "isQueueReplenishedHashes", isReplenishing);
     }
 
     @Test
@@ -90,7 +91,7 @@ public class HashCacheServiceImplTest {
     public void testGetHashWhenNoHashesAvailableAndRepositoryReturnsEmpty() {
         when(hashRepository.getHash()).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> hashCacheService.getHash());
+        RuntimeException exception = assertThrows(FreeHashNotFoundException.class, () -> hashCacheService.getHash());
 
         assertEquals("Free hash not found!", exception.getMessage());
     }
@@ -98,7 +99,7 @@ public class HashCacheServiceImplTest {
     @Test
     public void testFetchFreeHashesShouldReplenishCache() throws InterruptedException {
         List<String> fetchedHashes = Arrays.asList("hash2", "hash3");
-        when(hashRepository.getHashes(fetchHashesSize)).thenReturn(fetchedHashes);
+        when(hashRepository.getHash(fetchHashesSize)).thenReturn(fetchedHashes);
         CountDownLatch latch = new CountDownLatch(1);
         hashes.add(hash);
 

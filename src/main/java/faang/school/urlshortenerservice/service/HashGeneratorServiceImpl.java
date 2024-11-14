@@ -20,12 +20,12 @@ public class HashGeneratorServiceImpl implements HashGeneratorService {
     private final Encoder<Long, Hash> encoder;
 
     @Value("${server.hash.generate.batch-size}")
-    private int generateBatchSize;
+    private int batchSizeForGenerateFreeHashes;
 
     @Override
     @Async("mainThreadPoolExecutor")
-    public void generateBatch() {
-        List<Long> uniqueNumbers = numberSequenceRepository.getUniqueNumbers(generateBatchSize);
+    public void generateFreeHashes() {
+        List<Long> uniqueNumbers = numberSequenceRepository.getUniqueNumbers(batchSizeForGenerateFreeHashes);
         List<Hash> hashes = encoder.encode(uniqueNumbers);
         hashRepository.saveAll(hashes);
     }

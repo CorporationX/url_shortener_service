@@ -9,7 +9,6 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
 import faang.school.urlshortenerservice.service.cache.HashCacheService;
 import faang.school.urlshortenerservice.service.outbox.OutboxService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,10 +138,10 @@ public class UrlServiceImplTest {
     }
 
     @Test
-    public void testRedirectByHash_counterBelowThreshold() {
+    public void testGetUrl_counterBelowThreshold() {
         when(cacheService.getValue(hash, String.class)).thenReturn(Optional.of(url));
 
-        String result = urlService.redirectByHash(hash);
+        String result = urlService.getUrl(hash);
 
         assertEquals(url, result);
         verify(cacheService).incrementAndGet(counterKey);
@@ -150,10 +149,10 @@ public class UrlServiceImplTest {
     }
 
     @Test
-    public void testRedirectByHash_counterAboveThreshold_andUrlInCache() {
+    public void testGetUrl_counterAboveThreshold_andUrlInCache() {
         when(cacheService.getValue(hash, String.class)).thenReturn(Optional.of(url));
 
-        String result = urlService.redirectByHash(hash);
+        String result = urlService.getUrl(hash);
 
         assertEquals(url, result);
         verify(cacheService).addExpire(hash, Duration.ofMillis(60000L));
@@ -161,11 +160,11 @@ public class UrlServiceImplTest {
     }
 
     @Test
-    public void testRedirectByHash_counterAboveThreshold_andUrlNotInCache() {
+    public void testGetUrl_counterAboveThreshold_andUrlNotInCache() {
         when(cacheService.getValue(hash, String.class)).thenReturn(Optional.empty());
         when(urlRepository.findById(hash)).thenReturn(Optional.of(entityUrl));
 
-        String result = urlService.redirectByHash(hash);
+        String result = urlService.getUrl(hash);
 
         assertEquals(url, result);
         verify(cacheService).put(hash, url, Duration.ofMillis(60000L));
@@ -173,11 +172,11 @@ public class UrlServiceImplTest {
     }
 
     @Test
-    void shortenUrl_shouldSaveUrlAndReturnUrl() {
+    void generateHashForUrl_shouldSaveUrlAndReturnUrl() {
         when(urlRepository.existsByUrl(url)).thenReturn(false);
         when(hashCacheService.getHash()).thenReturn(hash);
 
-        String shortenedUrl = urlService.shortenUrl(urlDto);
+        String shortenedUrl = urlService.generateHashForUrl(urlDto);
 
         verify(entityManager).persist(entityUrl);
         verify(outboxService).saveOutbox(entityUrl);
@@ -185,23 +184,21 @@ public class UrlServiceImplTest {
     }
 
     @Test
-    void shortenUrl_entityExists() {
-        String correctMessage = "Url %s already exists".formatted(url);
+    void generateHashForUrl_entityExists() {
         when(urlRepository.existsByUrl(url)).thenReturn(true);
 
-        Exception exception = assertThrows(EntityExistsException.class,
-                () -> urlService.shortenUrl(urlDto));
+        String shortenedUrl = urlService.generateHashForUrl(urlDto);
 
         verify(entityManager, never()).persist(any());
         verify(outboxService, never()).saveOutbox(any(Url.class));
-        assertEquals(correctMessage, exception.getMessage());
+        assertEquals(url, shortenedUrl);
     }
 
     @Test
     void clearOutdatedUrls() {
         int batchSize = clearProperties.getBatchSize();
         List<String> first = List.of("hash1", "hash2"), second = List.of("hash3");
-        when(urlRepository.deleteOutdatedUrlsAndGetHashes(any(LocalDateTime.class), eq(batchSize)))
+        when(urlRepository.deleteOutdatedUrls(any(LocalDateTime.class), eq(batchSize)))
                 .thenReturn(first)
                 .thenReturn(second)
                 .thenReturn(Collections.emptyList());

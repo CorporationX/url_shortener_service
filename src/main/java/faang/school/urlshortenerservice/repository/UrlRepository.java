@@ -23,5 +23,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             WHERE url.hash = deleted.hash
             RETURNING url.hash;
             """)
-    List<String> deleteOutdatedUrlsAndGetHashes(LocalDateTime dateTime, int count);
+    List<String> deleteOutdatedUrls(LocalDateTime dateTime, int count);
 }

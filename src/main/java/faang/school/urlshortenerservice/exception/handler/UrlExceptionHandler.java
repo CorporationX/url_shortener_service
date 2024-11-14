@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.exception.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
@@ -29,8 +30,8 @@ public class UrlExceptionHandler {
     private String serviceName;
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ErrorResponse handleEntityNotFoundException(PersistenceException exception) {
+    @ExceptionHandler({EntityNotFoundException.class, FreeHashNotFoundException.class})
+    public ErrorResponse handleRuntimeException(RuntimeException exception) {
         String message = exception.getMessage();
         log.error(message, exception);
 

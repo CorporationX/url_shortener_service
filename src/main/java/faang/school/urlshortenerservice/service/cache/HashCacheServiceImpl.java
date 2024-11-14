@@ -2,11 +2,11 @@ package faang.school.urlshortenerservice.service.cache;
 
 import faang.school.urlshortenerservice.config.FetchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +25,8 @@ public class HashCacheServiceImpl implements HashCacheService {
     private final ExecutorService executorService;
     private final FetchProperties fetchProperties;
 
-    private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
-    private final AtomicBoolean isReplenishing = new AtomicBoolean(false);
+    private final Queue<String> freeHashes = new ConcurrentLinkedDeque<>();
+    private final AtomicBoolean isQueueReplenishedHashes = new AtomicBoolean(false);
 
     @PostConstruct
     public void initFreeHashes() {
@@ -35,13 +35,13 @@ public class HashCacheServiceImpl implements HashCacheService {
 
     @Override
     public String getHash() {
-        if (hashes.size() <= fetchProperties.getLimitOnReplenishment() &&
-                isReplenishing.compareAndSet(false, true)) {
+        if (freeHashes.size() <= fetchProperties.getLimitOnReplenishment() &&
+                isQueueReplenishedHashes.compareAndSet(false, true)) {
             fetchFreeHashes();
         }
-        return Optional.ofNullable(hashes.poll())
+        return Optional.ofNullable(freeHashes.poll())
                 .or(hashRepository::getHash)
-                .orElseThrow(() -> new RuntimeException("Free hash not found!"));
+                .orElseThrow(() -> new FreeHashNotFoundException("Free hash not found!"));
     }
 
     @Override
@@ -54,10 +54,10 @@ public class HashCacheServiceImpl implements HashCacheService {
 
     private void fetchFreeHashes() {
         executorService.execute(() -> {
-            hashGeneratorService.generateBatch();
-            List<String> newFreeHashes = hashRepository.getHashes(fetchProperties.getBatchSize());
-            hashes.addAll(newFreeHashes);
-            isReplenishing.set(false);
+            hashGeneratorService.generateFreeHashes();
+            List<String> newFreeHashes = hashRepository.getHash(fetchProperties.getBatchSize());
+            freeHashes.addAll(newFreeHashes);
+            isQueueReplenishedHashes.set(false);
         });
     }
 }

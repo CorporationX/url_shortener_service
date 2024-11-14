@@ -9,7 +9,6 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
 import faang.school.urlshortenerservice.service.cache.HashCacheService;
 import faang.school.urlshortenerservice.service.outbox.OutboxService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +33,11 @@ public class UrlServiceImpl implements UrlService {
     private final EntityManager entityManager;
 
     @Override
-    public String redirectByHash(String hash) {
+    public String getUrl(String hash) {
         String counterKey = hash + "::counter";
-        long count = cacheService.incrementAndGet(counterKey);
+        long counter = cacheService.incrementAndGet(counterKey);
 
-        if (count >= cacheProperties.getRequestThreshold()) {
+        if (counter >= cacheProperties.getRequestThreshold()) {
             Duration ttl = Duration.ofMillis(cacheProperties.getTtlIncrementTimeMs());
             String url = cacheService.getValue(hash, String.class)
                     .map(cachedUrl -> {
@@ -71,29 +70,35 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @Transactional
-    public String shortenUrl(UrlDto urlDto) {
-        if (urlRepository.existsByUrl(urlDto.getUrl())) {
-            throw new EntityExistsException("Url %s already exists".formatted(urlDto.getUrl()));
+    public String generateHashForUrl(UrlDto urlDto) {
+        String url = urlDto.getUrl();
+        if (urlRepository.existsByUrl(url)) {
+            return url;
         }
 
         String freeHash = hashCacheService.getHash();
-        Url url = urlMapper.toEntity(urlDto, freeHash);
+        Url entityUrl = urlMapper.toEntity(urlDto, freeHash);
 
-        entityManager.persist(url);
-        outboxService.saveOutbox(url);
+        entityManager.persist(entityUrl);
+        outboxService.saveOutbox(entityUrl);
 
-        return url.getUrl();
+        return url;
     }
 
     @Override
     public void clearOutdatedUrls() {
-        List<String> releasedHashes;
-        do {
-            releasedHashes = urlRepository.deleteOutdatedUrlsAndGetHashes(
-                    LocalDateTime.now().minusDays(clearProperties.getDaysThreshold()),
-                    clearProperties.getBatchSize()
-            );
-            hashCacheService.addHash(releasedHashes);
-        } while (!releasedHashes.isEmpty());
+        List<String> releasedHashes = releaseOutdatedUrls();
+        while (!releasedHashes.isEmpty()) {
+            releasedHashes = releaseOutdatedUrls();
+        }
+    }
+
+    private List<String> releaseOutdatedUrls() {
+        List<String> releasedHashes = urlRepository.deleteOutdatedUrls(
+                LocalDateTime.now().minusDays(clearProperties.getDaysThreshold()),
+                clearProperties.getBatchSize()
+        );
+        hashCacheService.addHash(releasedHashes);
+        return releasedHashes;
     }
 }

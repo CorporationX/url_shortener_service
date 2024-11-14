@@ -41,14 +41,14 @@ public class HashGeneratorServiceImplTest {
     }
 
     @Test
-    void testGenerateBatch() {
+    void testGenerateFreeHashes() {
         List<Long> sequenceValues = List.of(1L, 2L, 3L);
         List<Hash> encodedHashes = List.of(new Hash("hash1"), new Hash("hash2"), new Hash("hash3"));
 
         when(numberSequenceRepository.getUniqueNumbers(generateBatchSize)).thenReturn(sequenceValues);
         when(encoder.encode(sequenceValues)).thenReturn(encodedHashes);
 
-        hashGeneratorService.generateBatch();
+        hashGeneratorService.generateFreeHashes();
 
         verify(numberSequenceRepository).getUniqueNumbers(generateBatchSize);
         verify(encoder).encode(sequenceValues);

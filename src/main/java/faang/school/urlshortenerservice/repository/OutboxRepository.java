@@ -30,7 +30,7 @@ public interface OutboxRepository extends JpaRepository<Outbox, Long> {
     @Modifying
     @Query("""
             UPDATE Outbox o
-            SET o.status = :status, o.processedAt = CURRENT_TIMESTAMP
+            SET o.status = :status
             WHERE o.id = :id
             """)
     void progressToEnd(Long id, OutboxStatus status);
