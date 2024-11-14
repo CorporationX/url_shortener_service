@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository.postgres.hash;
 
-import faang.school.urlshortenerservice.model.hash.Hash;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,12 +16,12 @@ public class HashRepositoryImpl implements IHashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void saveBatch(List<Hash> hashes) {
+    public void saveBatch(List<String> hashes) {
         jdbcTemplate.batchUpdate(
                 SAVE_BATCH_QUERY,
                 hashes,
                 hashes.size(),
-                (ps, hash) -> ps.setString(1, hash.getHash())
+                (ps, hash) -> ps.setString(1, hash)
         );
     }
 }

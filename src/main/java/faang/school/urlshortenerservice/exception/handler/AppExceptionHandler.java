@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @ControllerAdvice
 public class AppExceptionHandler {
+    @ExceptionHandler(UrlExpiredException.class)
+    public ResponseEntity<?> handleValidationException(UrlExpiredException e) {
+        return handleException(e, NOT_FOUND);
+    }
+
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<?> handleValidationException(ValidationException e) {
         return handleException(e, BAD_REQUEST);

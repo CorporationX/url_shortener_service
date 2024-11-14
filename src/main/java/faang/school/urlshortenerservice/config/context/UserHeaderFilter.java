@@ -7,10 +7,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class UserHeaderFilter implements Filter {
@@ -24,7 +26,7 @@ public class UserHeaderFilter implements Filter {
         if (userId != null) {
             userContext.setUserId(Long.parseLong(userId));
         } else {
-            throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+            log.warn("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
         }
 
         try {

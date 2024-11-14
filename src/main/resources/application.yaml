@@ -31,10 +31,19 @@ app:
   host: localhost
 
   hashes-generation:
-    batch-size: 80
+    batch-size: 800
   hash-cache:
-    size: 100
-    threshold: 20 # percents
+    size: 1000
+    threshold: 200
+
+thread-pool:
+  fill-up-cache:
+    size: 1
+  hashes-generator:
+    corePoolSize: 2
+    maxPoolSize: 2
+    queueCapacity: 2
+    threadNamePrefix: "HashesGenerator-"
 
 executor:
   thread-pool-size: 1

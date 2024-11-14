@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.config.properties.GeneralProperties;
-import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
+import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
@@ -33,7 +33,7 @@ public class UrlService {
         urlRepository.save(build(hash, longUrl));
         urlCacheRepository.save(hash, longUrl);
 
-        return generalProperties.getAppUrl() + GET_URL_PATH + hash;
+        return buildRedirectUrl(hash);
     }
 
     public String getUrlByHash(String hash) {
@@ -41,7 +41,7 @@ public class UrlService {
         if (url == null) {
             url = urlRepository.findByHash(hash)
                     .map(Url::getUrl)
-                    .orElseThrow(() -> new ResourceNotFoundException("Url", hash));
+                    .orElseThrow(() -> new UrlExpiredException(buildRedirectUrl(hash)));
         }
         return url;
     }
@@ -50,6 +50,10 @@ public class UrlService {
     public List<String> cleanHashes() {
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
         return urlRepository.getOldUrlsAndDelete(oneYearAgo);
+    }
+
+    private String buildRedirectUrl(String hash) {
+        return generalProperties.getAppUrl() + GET_URL_PATH + hash;
     }
 
     private Url build(String hash, String url) {

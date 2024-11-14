@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.util;
 import faang.school.urlshortenerservice.repository.postgres.hash.HashRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,11 @@ public class HashGenerator {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
         hashService.saveAll(hashes);
+    }
+
+    @Async("hashesGeneratorTaskExecutor")
+    public void generateBatchOfHashesAsync(int batchSize) {
+        generateBatchOfHashes(batchSize);
     }
 
     @Transactional

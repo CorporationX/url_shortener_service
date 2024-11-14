@@ -14,17 +14,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 @Component
 public class HashCache {
-    @Value("${app.hash-cache.size:100}")
+    @Value("${app.hash-cache.size:1000}")
     private int cacheCapacity;
 
-    @Value("${app.hash-cache.threshold:20}")
+    @Value("${app.hash-cache.threshold:200}")
     private int threshold;
 
-    @Value("${app.hashes-generation.batch-size:80}")
+    @Value("${app.hashes-generation.batch-size:800}")
     private int batchSize;
 
     private final HashGenerator hashGenerator;
-    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+    private final AtomicBoolean isFillingUp = new AtomicBoolean(false);
     private final ExecutorService fillUpCacheExecutorService;
 
     private Queue<String> cache;
@@ -32,7 +32,9 @@ public class HashCache {
     @PostConstruct
     public void init() {
         cache = new ArrayBlockingQueue<>(cacheCapacity);
-        fillUpCache(cacheCapacity);
+        hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
+        List<String> hashesFromDb = hashGenerator.getHashes(cacheCapacity);
+        cache.addAll(hashesFromDb);
     }
 
     public String getHash() {
@@ -41,24 +43,20 @@ public class HashCache {
     }
 
     private void fillUpCacheIfNeeded() {
-        if (cacheSizeLessThanThreshold() && isGenerating.compareAndSet(false, true)) {
+        if (isFillingUp.compareAndSet(false, true) && cache.size() < threshold) {
             fillUpCacheExecutorService.execute(() -> {
                 try {
                     fillUpCache(batchSize);
                 } finally {
-                    isGenerating.set(false);
+                    isFillingUp.set(false);
                 }
             });
         }
     }
 
-    private boolean cacheSizeLessThanThreshold() {
-        return (100 / cacheCapacity) * cache.size() < threshold;
-    }
-
     private void fillUpCache(int batchSize) {
-        hashGenerator.generateBatchOfHashes(batchSize);
         List<String> hashesFromDb = hashGenerator.getHashes(batchSize);
         cache.addAll(hashesFromDb);
+        hashGenerator.generateBatchOfHashesAsync(cacheCapacity);
     }
 }
