@@ -1,6 +1,6 @@
-package faang.school.urlshortenerservice.threadpool;
+package faang.school.urlshortenerservice.config.threadpool;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -10,23 +10,17 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
+@RequiredArgsConstructor
 public class AsyncConfigToHashGenerator {
 
-    @Value("${executor.corePoolSize}")
-    private int corePool;
-
-    @Value("${executor.maxPoolSize}")
-    private int maxPool;
-
-    @Value("${executor.queueCapacity}")
-    private int queueCapacity;
+   private final ExecutorProperties executorProperties;
 
     @Bean
     public Executor customThreadPoolForHashGenerator() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(100);
+        executor.setCorePoolSize(executorProperties.getCorePoolSize());
+        executor.setMaxPoolSize(executorProperties.getMaxPoolSize());
+        executor.setQueueCapacity(executorProperties.getQueueCapacity());
         executor.setThreadNamePrefix("PoolForGenerateHash");
         executor.initialize();
         return executor;

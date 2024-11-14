@@ -1,6 +1,6 @@
-package faang.school.urlshortenerservice.threadpool;
+package faang.school.urlshortenerservice.config.threadpool;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,24 +10,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@RequiredArgsConstructor
 public class ExecutorServiceConfig {
 
-    @Value("${executor.corePoolSize}")
-    private int corePoolSize;
-
-    @Value("${executor.maxPoolSize}")
-    private int maxPoolSize;
-
-    @Value("${executor.queueCapacity}")
-    private int queueSize;
+    private final ExecutorProperties executorProperties;
 
     @Bean
     public ExecutorService executorService() {
         return new ThreadPoolExecutor(
-                corePoolSize,
-                maxPoolSize,
+                executorProperties.getCorePoolSize(),
+                executorProperties.getMaxPoolSize(),
                 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(queueSize),
+                new LinkedBlockingQueue<>(executorProperties.getQueueCapacity()),
                 new ThreadPoolExecutor.AbortPolicy());
     }
 

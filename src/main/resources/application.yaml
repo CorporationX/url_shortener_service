@@ -32,7 +32,7 @@ logging:
     root: info
 
 hash:
-  range: 200
+  unique-number-request-count: 200
   cache:
     size: 100
     percent: 20
