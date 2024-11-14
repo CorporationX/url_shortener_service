@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.Objects;
 
 @AllArgsConstructor
 @RestController
@@ -17,8 +20,15 @@ public class UrlController {
     @Operation(summary = "Create short url", description = "Creating short url and save in db")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public UrlDto openSavingAccount(@RequestBody @Validated(UrlDto.Create.class) UrlDto urlDto) {
-        System.out.println(urlDto);
-        return urlService.createUrlDto(urlDto);
+    public String createShortUrl(@RequestBody @Validated(UrlDto.Create.class) UrlDto urlDto) {
+        return urlService.createShortUrl(urlDto);
+    }
+
+    //TODO asdfasdf
+    @Operation(summary = "Get original url")
+    @GetMapping()
+    public RedirectView getOriginalUrl(@RequestParam String shortUrl) {
+        String targetUrl = urlService.getOriginalUrl(shortUrl);
+        return new RedirectView(Objects.requireNonNullElse(targetUrl, "/error"));
     }
 }

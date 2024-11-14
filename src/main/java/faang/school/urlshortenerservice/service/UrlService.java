@@ -3,5 +3,6 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.model.dto.UrlDto;
 
 public interface UrlService {
-    UrlDto createUrlDto(UrlDto urlDto);
+    String createShortUrl(UrlDto urlDto);
+    String getOriginalUrl(String shortUrl);
 }

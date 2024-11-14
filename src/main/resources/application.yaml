@@ -42,3 +42,6 @@ hash_cache:
 
 cron:
   url_cleaner: "0 0 0 * * *"
+
+short_url:
+  domain: "http://denart.info/"
