@@ -1,4 +1,19 @@
 package faang.school.urlshortenerservice.service.cache;
 
-public class CacheService {
+import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+public interface CacheService<T> {
+    void put(String key, T value, Duration time);
+
+    Optional<T> getValue(String key, Class<T> clazz);
+
+    long getExpire(String key, TimeUnit timeUnit);
+
+    boolean delete(String key);
+
+    long incrementAndGet(String key);
+
+    long addExpire(String key, Duration duration);
 }
