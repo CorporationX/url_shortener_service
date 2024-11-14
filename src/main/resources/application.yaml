@@ -14,7 +14,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    amount-hash: 100
+    amount-unique-numbers: 100
 
   data:
     redis:
@@ -32,6 +32,11 @@ spring:
     core pool size: 4
     max pool size: 10
     queue capacity: 50
+
+  hash-cache:
+    maxQueueSize: 100
+    refillThresholdPercent: 20
+    amount-hash: 50
 
   validation:
     url-regex: "^(https?://)(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
