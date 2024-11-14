@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.cache.HashCache;
+import faang.school.urlshortenerservice.scheduler.CleanerScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ public class RunnerTest implements CommandLineRunner {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
     private final HashCache hashCache;
+    private final CleanerScheduler cleanerScheduler;
 
 //    @Value("${hash.get_batch_size}")
 //    private long batchSize;
@@ -32,5 +34,7 @@ public class RunnerTest implements CommandLineRunner {
 //            Thread.sleep(1);
 //            System.out.println("111111111111111111HashCacheGet: " + hashCache.getHash());
 //        }
+
+//        cleanerScheduler.removeOldUrl();
     }
 }

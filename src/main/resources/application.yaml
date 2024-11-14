@@ -39,3 +39,6 @@ thread:
 hash_cache:
   capacity: 1000
   remainder_percent: 20
+
+cron:
+  url_cleaner: "0 0 0 * * *"
