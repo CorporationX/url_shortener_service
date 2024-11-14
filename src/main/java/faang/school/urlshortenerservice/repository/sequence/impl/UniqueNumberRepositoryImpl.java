@@ -2,32 +2,31 @@ package faang.school.urlshortenerservice.repository.sequence.impl;
 
 import faang.school.urlshortenerservice.config.sequence.NumberSequenceProperties;
 import faang.school.urlshortenerservice.repository.sequence.UniqueNumberRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class UniqueNumberRepositoryImpl implements UniqueNumberRepository {
 
     private final NumberSequenceProperties numberSequenceProperties;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Long> getUniqueNumbers() {
-        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, :range)";
+        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
 
-        @SuppressWarnings("unchecked")
-        List<Long> result = entityManager
-                .createNativeQuery(sql)
-                .setParameter("range", numberSequenceProperties.getRange())
-                .getResultList();
-
-        return result;
+        try {
+            return jdbcTemplate.queryForList(sql, Long.class, numberSequenceProperties.getGenerationBatch());
+        } catch (DataAccessException dae) {
+            log.error("While getUniqueNumbers() some error occurred");
+            throw new RuntimeException("Error " + dae.getMessage() + " ", dae);
+        }
     }
 }

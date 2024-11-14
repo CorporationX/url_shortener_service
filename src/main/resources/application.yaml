@@ -22,7 +22,7 @@ spring:
     redis:
       port: 6379
       host: localhost
-      urlTtl: 3600
+      urlTtl: 3600 # in seconds
 
 server:
   port: 8080
@@ -32,10 +32,10 @@ logging:
     root: info
 
 number-sequence:
-  range: 10
+  generationBatch: 10
 
 hash-config:
-  selectRange: 7
+  selectBatch: 7
   insertBatch: 5
 
 thread-pool-config:
@@ -46,7 +46,8 @@ scheduler:
 
 cache:
   capacity: 100
-  fillWhenLess: 20.0
+  minLimitCapacity: 20
+  expirationUrl: 1 # in years
 
 url:
-  shortName: https://www.shourtUrl/
+  shortName: localhost:8080/v1/urls/

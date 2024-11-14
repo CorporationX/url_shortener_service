@@ -55,7 +55,7 @@ class HashServiceTest {
         verify(uniqueNumberService)
                 .getUniqueNumbers();
         verify(base62Encoder)
-                .encodeNumberListInBase62(anyList());
+                .encodeNumbersInBase62(anyList());
         verify(hashService)
                 .saveRangeHashes(anyList());
     }

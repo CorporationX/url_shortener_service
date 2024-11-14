@@ -12,15 +12,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
 
-    private final RedisTemplate<String, Url> redisUrlTemplate;
+    private final RedisTemplate<String, String> redisStringTemplate;
 
     @Override
     public void save(Url url) {
-        redisUrlTemplate.opsForValue().set(url.getHash(), url);
+        redisStringTemplate.opsForValue().set(url.getHash(), url.getUrl());
     }
 
     @Override
-    public Optional<Url> findUrlInCacheByHash(String hash) {
-        return Optional.ofNullable(redisUrlTemplate.opsForValue().get(hash));
+    public String findUrlInCacheByHash(String hash) {
+        return redisStringTemplate.opsForValue().get(hash);
     }
 }

@@ -20,7 +20,9 @@
             <column name="url" type="VARCHAR">
                 <constraints nullable ="false"/>
             </column>
-            <column name="created_at" type="timestamptz"/>
+            <column name="created_at" type="timestamptz" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable ="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

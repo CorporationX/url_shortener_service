@@ -34,6 +34,6 @@ class Base62EncoderTest {
         List<Long> numbers = List.of(ONE_HUNDRED, TWO_HUNDRED);
         List<String> numbersInBase62 = List.of(ENCODED_BASE_62_ONE, ENCODED_BASE_62_TWO);
 
-        assertEquals(numbersInBase62, base62Encoder.encodeNumberListInBase62(numbers));
+        assertEquals(numbersInBase62, base62Encoder.encodeNumbersInBase62(numbers));
     }
 }

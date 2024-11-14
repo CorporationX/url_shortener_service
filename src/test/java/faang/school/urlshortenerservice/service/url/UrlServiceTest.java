@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,9 +23,9 @@ class UrlServiceTest {
     @Test
     @DisplayName("When method called then return List values")
     void whenMethodCalledThenNoThrownException() {
-        urlService.findAndReturnExpiredUrls();
+        urlService.findAndReturnExpiredUrls(anyInt());
 
         verify(urlRepository)
-                .findAndReturnExpiredUrls();
+                .deleteAndReturnExpiredUrls(anyInt());
     }
 }

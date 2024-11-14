@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
-import faang.school.urlshortenerservice.config.cache.HashCache;
-import faang.school.urlshortenerservice.config.url.UrlProperties;
+import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.dto.url.RequestUrlBody;
 import faang.school.urlshortenerservice.dto.url.ResponseUrlBody;
 import faang.school.urlshortenerservice.entity.url.Url;
@@ -11,6 +10,7 @@ import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +22,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlService {
 
+    @Value("${url.shortName}")
+    private String urlShortPrefix;
+
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
     private final UrlRepository urlRepository;
-    private final UrlProperties urlProperties;
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
-    public List<Url> findAndReturnExpiredUrls() {
-        return urlRepository.findAndReturnExpiredUrls();
+    public List<Url> findAndReturnExpiredUrls(int years) {
+        return urlRepository.deleteAndReturnExpiredUrls(years);
     }
 
     @Transactional
@@ -41,7 +43,7 @@ public class UrlService {
         Url url = findUrlInDatabaseByFullUrl(fullLink)
                 .orElseGet(() -> createNewUrlByFullLink(fullLink));
 
-        ResponseUrlBody response = urlMapper.toResponseBody(url, urlProperties.getShortName());
+        ResponseUrlBody response = urlMapper.toResponseBody(url, urlShortPrefix);
         log.info("convertUrlToShort finish, response - {}", response);
         return response;
     }
@@ -50,12 +52,16 @@ public class UrlService {
     public String getFullRedirectionLink(String hash) {
         log.info("convertShortLinkToFullLink start, hash - {}", hash);
 
-        Url url = findUrlInCacheByHash(hash)
-                .or(() -> findUrlInDatabaseByHash(hash))
-                .orElseThrow(() -> new EntityNotFoundException("Url with hash " + hash + " not found"));
+        String fullLink = findUrlInCacheByHash(hash);
 
-        log.info("convertShortLinkToFullLink finish, link - {}", url.getUrl());
-        return url.getUrl();
+        if (fullLink == null || fullLink.isBlank()) {
+            Url url = findUrlInDatabaseByHash(hash)
+                    .orElseThrow(() -> new EntityNotFoundException("Url with hash " + hash + " not found"));
+            fullLink = url.getUrl();
+        }
+
+        log.info("convertShortLinkToFullLink finish, link - {}", fullLink);
+        return fullLink;
     }
 
     @Transactional
@@ -85,7 +91,7 @@ public class UrlService {
         return urlRepository.findByHashIgnoreCase(hash);
     }
 
-    public Optional<Url> findUrlInCacheByHash(String hash) {
+    public String findUrlInCacheByHash(String hash) {
         log.debug("Trying to get url from cache by hash - {}", hash);
         return urlCacheRepository.findUrlInCacheByHash(hash);
     }

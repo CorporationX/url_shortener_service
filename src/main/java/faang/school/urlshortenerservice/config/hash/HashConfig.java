@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "hash-config")
 public class HashConfig {
 
-    private int selectRange;
-
+    private int selectBatch;
     private int insertBatch;
 }

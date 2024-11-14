@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.cleaner;
 
+import faang.school.urlshortenerservice.config.cache.CacheProperties;
 import faang.school.urlshortenerservice.entity.url.Url;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.url.UrlService;
@@ -18,15 +19,16 @@ public class CleanerService {
 
     private final UrlService urlService;
     private final HashService hashService;
+    private final CacheProperties cacheProperties;
 
     @Transactional
     @Async("urlThreadPool")
     public void clearExpiredUrls() {
-        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls();
+        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getExpirationUrl());
         List<String> releasedHashes = releasedUrls.stream()
                 .map(Url::getHash)
                 .toList();
         hashService.saveRangeHashes(releasedHashes);
-        log.debug("clearExpiredUrls - finish, released hashes - {}", releasedHashes);
+        log.info("clearExpiredUrls - finish, released hashes size - {}", releasedHashes.size());
     }
 }

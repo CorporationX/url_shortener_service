@@ -50,10 +50,9 @@ class UniqueNumberRepositoryImplTest {
 
     @Test
     @DisplayName("When method is called, then should return list of String less or equals range")
-    void whenMethodIsCalledThenReturnListOfStringsLessOrEqualsRange() {
+    void whenMethodIsCalledThenReturnListOfStringsLessOrEqualsRange() {/*
 
-
-        /*List<String> freeHashesInDataBase = hashService.getHashBatch();
+        List<String> freeHashesInDataBase = hashService.getHashBatch();
 
         System.out.println(freeHashesInDataBase.size());
 

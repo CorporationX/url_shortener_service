@@ -28,10 +28,10 @@ public class HashService {
 
     @Transactional
     public List<String> getHashes() {
-        List<String> hashes = freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectRange());
-        if (hashes.size() < hashConfig.getSelectRange()) {
+        List<String> hashes = freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectBatch());
+        if (hashes.size() < hashConfig.getSelectBatch()) {
             generateBatchHash();
-            hashes.addAll(freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectRange() - hashes.size()));
+            hashes.addAll(freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectBatch() - hashes.size()));
         }
         return hashes;
     }
@@ -45,7 +45,7 @@ public class HashService {
     @Async("urlThreadPool")
     public void generateBatchHash() {
         List<Long> numbers = uniqueNumberService.getUniqueNumbers();
-        List<String> base62Hashes = base62Encoder.encodeNumberListInBase62(numbers);
+        List<String> base62Hashes = base62Encoder.encodeNumbersInBase62(numbers);
         saveRangeHashes(base62Hashes);
     }
 }

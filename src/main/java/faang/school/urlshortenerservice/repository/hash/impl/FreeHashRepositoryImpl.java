@@ -2,8 +2,6 @@ package faang.school.urlshortenerservice.repository.hash.impl;
 
 import faang.school.urlshortenerservice.config.hash.HashConfig;
 import faang.school.urlshortenerservice.repository.hash.FreeHashRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -19,10 +17,6 @@ import java.util.List;
 public class FreeHashRepositoryImpl implements FreeHashRepository {
 
     private final HashConfig hashConfig;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -41,7 +35,7 @@ public class FreeHashRepositoryImpl implements FreeHashRepository {
                         });
                 log.debug("Batch {} processed, containing {} hashes", i / hashConfig.getInsertBatch() + 1, batch.size());
             } catch (DataAccessException dae) {
-                log.error("While insert new hashes some error occurred");
+                log.error("While saveHashes() some error occurred");
                 throw new RuntimeException("Error " + dae.getMessage() + " ", dae);
             }
         }
@@ -50,15 +44,14 @@ public class FreeHashRepositoryImpl implements FreeHashRepository {
     @Override
     public List<String> findAndDeleteFreeHashes(int amount) {
         String sql = "DELETE FROM hash " +
-                "WHERE hash IN (SELECT hash FROM hash LIMIT :range) " +
+                "WHERE hash IN (SELECT hash FROM hash LIMIT ?) " +
                 "RETURNING hash";
 
-        @SuppressWarnings("unchecked")
-        List<String> result = entityManager
-                .createNativeQuery(sql)
-                .setParameter("range", amount)
-                .getResultList();
-
-        return result;
+        try {
+            return jdbcTemplate.queryForList(sql, String.class, amount);
+        } catch (DataAccessException dae) {
+            log.error("While findAndDeleteFreeHashes() some error occurred");
+            throw new RuntimeException("Error " + dae.getMessage() + " ", dae);
+        }
     }
 }

@@ -17,6 +17,6 @@ public class CleanerScheduler {
     public void clearExpiredUrls() {
         log.info("clearExpiredUrls() - start");
         cleanerService.clearExpiredUrls();
-        log.info("clearExpiredUrls() - finish");
+        log.debug("clearExpiredUrls() - finish");
     }
 }

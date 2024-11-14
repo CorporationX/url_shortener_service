@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class CacheProperties {
 
     private int capacity;
-
-    private double fillWhenLess;
+    private int minLimitCapacity;
+    private int expirationUrl;
 }

@@ -10,5 +10,5 @@ public interface UrlCacheRepository {
 
     void save(Url url);
 
-    Optional<Url> findUrlInCacheByHash(String hash);
+    String findUrlInCacheByHash(String hash);
 }

@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.entity.url.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -32,8 +33,8 @@ public class RedisConfiguration {
                 .disableCachingNullValues()
                 .entryTtl(Duration.ofSeconds(redisProperties.getUrlTtl()))
                 .serializeValuesWith(RedisSerializationContext
-                        .SerializationPair.
-                        fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
+                        .SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
     }
 
     @Bean
@@ -44,26 +45,13 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String, Url> redisUrlTemplate(JedisConnectionFactory jedisConnectionFactory) {
-        RedisTemplate<String, Url> template = new RedisTemplate<>();
+    @Primary
+    public RedisTemplate<String, String> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory);
 
-        Jackson2JsonRedisSerializer<Url> serializer = new Jackson2JsonRedisSerializer<>(Url.class);
-        template.setValueSerializer(serializer);
         template.setKeySerializer(new StringRedisSerializer());
-
+        template.setValueSerializer(new StringRedisSerializer());
         return template;
-    }
-
-    @Bean
-    public RedisCacheManager redisCacheManager(RedisConnectionFactory factory) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().disableCachingNullValues()
-                .entryTtl(Duration.ofMinutes(1))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()));
-
-        redisCacheConfiguration.usePrefix();
-
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(factory)
-                .cacheDefaults(redisCacheConfiguration).build();
     }
 }

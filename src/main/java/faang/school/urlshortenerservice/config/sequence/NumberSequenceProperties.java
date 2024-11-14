@@ -11,5 +11,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "number-sequence")
 public class NumberSequenceProperties {
 
-    private int range;
+    private int generationBatch;
 }
