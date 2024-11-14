@@ -28,3 +28,8 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  batch:
+    save: 10_000
+    get: 10_000
