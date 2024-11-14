@@ -86,18 +86,6 @@ public class UrlExceptionHandler {
                 .build();
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorResponse handleRuntimeException(RuntimeException exception) {
-        log.error(exception.getMessage(), exception);
-
-        return ErrorResponse.builder()
-                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .serviceName(serviceName)
-                .globalMessage(SOMETHING_MESSAGE_ERROR)
-                .build();
-    }
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponse handleDataIntegrityViolation(DataIntegrityViolationException exception) {
