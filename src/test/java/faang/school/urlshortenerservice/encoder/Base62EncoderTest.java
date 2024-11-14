@@ -19,8 +19,7 @@ public class Base62EncoderTest {
     private static final String FIRST_RESULT = "KY8U4k";
     private static final String SECOND_RESULT = "BK6xFK";
 
-    @InjectMocks
-    private Base62Encoder base62Encoder;
+    private final Base62Encoder base62Encoder = new Base62Encoder();
 
     @Test
     @DisplayName("When list of numbers passed encode it using Base62 algorithm and return back list of Hashes")

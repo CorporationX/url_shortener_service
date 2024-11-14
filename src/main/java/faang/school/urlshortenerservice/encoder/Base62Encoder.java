@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.model.hash.Hash;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class Base62Encoder {
@@ -15,7 +14,7 @@ public class Base62Encoder {
         return numbers.stream()
                 .map(this::encodeNumber)
                 .map(Hash::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String encodeNumber(long number) {
