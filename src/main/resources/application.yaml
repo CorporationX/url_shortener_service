@@ -14,8 +14,20 @@ spring:
       hibernate:
         format_sql: true
 
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      caches:
+        url-cache: url-cache
+      port: 6379
+      host: localhost
+
+api:
+  validation:
+    url-regex: ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$
 
 hash:
   batch-size: 100
@@ -28,6 +40,9 @@ server:
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        type: trace
 
 thread-pool:
   size: 10
