@@ -1,13 +1,13 @@
-name: CI pipeline for url_shortener
+name: CI/CD pipeline for url_shortener
 
 on:
   pull_request:
     branches:
-      - feature-urlshortener-mktlamer
+      - feature-BJS2-42770-mktlamer
 
   push:
     branches:
-      - feature-urlshortener-mktlamer
+      - feature-BJS2-42770-mktlamer
 
 jobs:
   job_unit_tests:
@@ -74,7 +74,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: job_unit_tests
-    if: startsWith(github.ref, 'refs/heads/feature-urlshortener-mktlamer')
+    if: startsWith(github.ref, 'refs/heads/feature-BJS2-42770-mktlamer')
     steps:
       - name: Download jar file
         uses: actions/download-artifact@v4
