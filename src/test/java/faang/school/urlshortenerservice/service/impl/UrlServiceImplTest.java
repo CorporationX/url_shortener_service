@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.dto.UrlDto;
 import faang.school.urlshortenerservice.model.dto.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.cache.HashCache;
+import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -26,13 +25,16 @@ class UrlServiceImplTest {
     private UrlRepository urlRepository;
 
     @Mock
+    private UrlCacheRepository urlCacheRepository;
+
+    @Mock
     private HashCache hashCache;
 
     @InjectMocks
     private UrlServiceImpl urlService;
 
-    private String shortUrlDomain = "http://denart.info/";
-    private String hash = "987";
+    private final String shortUrlDomain = "http://denart.info/";
+    private final String hash = "987";
 
     @Test
     public void testCreateShortUrlSuccess() {
@@ -48,16 +50,15 @@ class UrlServiceImplTest {
     }
 
     @Test
-    public void testGetOriginalUrlSuccess() throws InterruptedException {
-        String shortUrl = "http://denart.info/" + hash;
+    public void testGetOriginalUrlSuccess() {
         Url url = Url.builder()
                 .url("https://google.com").build();
         ReflectionTestUtils.setField(urlService, "shortUrlDomain", shortUrlDomain);
-        when(urlRepository.findUrlByHash(hash)).thenReturn(Optional.of(url));
+        when(urlCacheRepository.get(hash)).thenReturn(url.getUrl());
 
-        String result = urlService.getOriginalUrl(shortUrl);
+        String result = urlService.getOriginalUrl(hash);
 
-        verify(urlRepository, times(1)).findUrlByHash(Mockito.anyString());
+        verify(urlCacheRepository, times(1)).get(hash);
         assertEquals(url.getUrl(), result);
     }
 }
