@@ -43,7 +43,7 @@ public class HashCache {
             lowCachePublisher.publishEvent();
         }
 
-        log.info("Get hash: {} | cache_size = {} | counter = {}", hash, hashCache.size(), remaining);
+        log.debug("Get hash: {} | cache_size = {}", hash, remaining);
         return hash;
     }
 
