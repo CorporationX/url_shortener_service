@@ -17,7 +17,7 @@ import java.net.URI;
 public class UrlController {
     private final UrlService urlService;
 
-    @Operation(summary = "Create short url!!!", description = "Creating short url and save in db")
+    @Operation(summary = "Create short url!", description = "Creating short url and save in db")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public String createShortUrl(@RequestBody @Validated(UrlDto.Create.class) UrlDto urlDto) {
