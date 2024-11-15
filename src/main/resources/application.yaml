@@ -14,6 +14,10 @@ spring:
       hibernate:
         format_sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -23,3 +27,32 @@ server:
 logging:
   level:
     root: info
+
+
+params:
+  url-pattern: "https://sh.c/"
+  base62:
+    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  count: 100
+  batch-size: 1000
+  cache:
+    capacity: 10000
+    percentage: 0.2
+
+cleaner:
+  scheduler:
+    cron: "0 0 0 * * ?" # every day
+
+
+executor:
+  verify-task-executor:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: "verify-task-executor-"
+
+  verify-task-executor-service:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: "verify-task-executor-service"

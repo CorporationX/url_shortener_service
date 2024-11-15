@@ -1,0 +1,3 @@
+databaseChangelog:
+  - include:
+      file: db/changelog/changeset/url_shortener_VOO1_url_and_hash.sql
