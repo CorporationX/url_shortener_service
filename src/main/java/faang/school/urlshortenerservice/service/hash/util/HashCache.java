@@ -40,7 +40,7 @@ public class HashCache {
     }
 
     private void checkHashesSize() {
-        if (hashes.size() < hashesMin && isUpdating.compareAndSet(false, true)) {
+        if (isUpdating.compareAndSet(false, true) && hashes.size() < hashesMin) {
             hashCacheExecutorPool.execute(this::updateHashes);
         }
     }
