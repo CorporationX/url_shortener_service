@@ -23,6 +23,5 @@ public class ThreadProperties {
         private int core;
         private int max;
         private int queue;
-        private double percentage;
     }
 }

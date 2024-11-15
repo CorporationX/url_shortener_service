@@ -11,9 +11,9 @@ import java.util.concurrent.*;
 @Configuration
 @RequiredArgsConstructor
 public class ThreadPoolConfig {
-    private final ThreadProperties tp = new ThreadProperties();
+    private final ThreadProperties tp;
 
-    @Bean
+    @Bean()
     public Executor hashGeneratorPool() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(tp.getGenerator().getCore());
@@ -23,7 +23,7 @@ public class ThreadPoolConfig {
         return threadPoolTaskExecutor;
     }
 
-    @Bean
+    @Bean(name = "hashCachePool")
     public ExecutorService hashCachePool() {
         return new ThreadPoolExecutor(
                 tp.getCache().getCore(),

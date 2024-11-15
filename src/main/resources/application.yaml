@@ -36,7 +36,7 @@ thread-pool:
     core: 10
     max: 30
     queue: 50
-    percentage: 20
 
-cache:
-  minimum-percentage-to-add:
+hash-cache:
+  minimum-percentage-to-add: 0.2
+  size: 1500

@@ -1,44 +1,59 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.properties.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-@RequiredArgsConstructor
 public class HashCache {
-    private final ExecutorService executor;
+    private final int queueSize;
+    private final int hashesQuantityToAdd;
+    private final ExecutorService threadPoolExecutor;
     private final HashRepository hashRepository;
-    private final ConcurrentLinkedQueue<Hash> queue = new ConcurrentLinkedQueue<>();
+    private final HashGenerator hashGenerator;
+    private final LinkedBlockingQueue<Hash> queue;
+    private AtomicBoolean availableToRefil;
 
-    @Value("${thread-pool.cache.percentage}")
-    private double percentageToAdd;
-    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
-    private int batchSize;
-    private int hashesQuantityToAdd = (int) (batchSize * ((percentageToAdd / 100) * percentageToAdd));
+    @Autowired
+    public HashCache(@Qualifier("hashCachePool") ExecutorService threadPoolExecutor, HashRepository hashRepository,
+                     HashGenerator hashGenerator, HashCacheProperties hashCacheProperties) {
+        this.threadPoolExecutor = threadPoolExecutor;
+        this.hashRepository = hashRepository;
+        this.hashGenerator = hashGenerator;
+
+        this.queueSize = hashCacheProperties.getSize();
+        double percentageToAdd = hashCacheProperties.getMinimumPercentageToAdd();
+        hashesQuantityToAdd = (int) Math.round((double) queueSize * percentageToAdd);
+        queue = new LinkedBlockingQueue<>(queueSize);
+        availableToRefil = new AtomicBoolean(true);
+
+        hashGenerator.generateBatch();
+    }
 
     public Hash getHash() {
-        if (queue.size() < hashesQuantityToAdd) {
-            synchronized (queue) {
-                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    List<Hash> hashes = hashRepository.getHashBatch(batchSize);
-                    queue.addAll(hashes);
-                }, executor);
-                if (queue.isEmpty()) {
-                    future.join();
-                }
-            }
+        if (queue.size() < hashesQuantityToAdd && availableToRefil.get()) {
+            availableToRefil.set(false);
+
+            CompletableFuture future = CompletableFuture.runAsync(() -> {
+                int batchSize = queueSize - queue.size();
+                queue.addAll(hashRepository.getHashBatch(batchSize));
+                availableToRefil.set(true);
+            }, threadPoolExecutor);
+            future.thenRunAsync(hashGenerator::generateBatch, threadPoolExecutor);
         }
-        return queue.poll();
+
+        try {
+            return queue.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
