@@ -9,9 +9,11 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UrlServiceImpl implements UrlService {
@@ -28,14 +30,24 @@ public class UrlServiceImpl implements UrlService {
         Url url = Url.builder()
                 .url(urlDto.getOriginalUrl())
                 .hash(hashCache.getHash()).build();
-        urlCacheRepository.save(url.getHash(), urlDto.getOriginalUrl());
+        try {
+            urlCacheRepository.save(url.getHash(), urlDto.getOriginalUrl());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
         urlRepository.save(url);
         return shortUrlDomain + url.getHash();
     }
 
     @Override
     public String getOriginalUrl(String hash) {
-        String originalUrl = (String) urlCacheRepository.get(hash);
+        String originalUrl = null;
+        try {
+            originalUrl = (String) urlCacheRepository.get(hash);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         if (originalUrl != null) {
             return originalUrl;
         }

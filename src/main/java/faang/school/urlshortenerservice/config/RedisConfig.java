@@ -14,12 +14,13 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.Objects;
 
 @Configuration
 @EnableCaching
 public class RedisConfig {
 
-    @Value("${data.redis.ttl_hours}")
+    @Value("${spring.data.redis.ttl_hours}")
     private int ttl;
 
     @Bean
@@ -37,7 +38,7 @@ public class RedisConfig {
                 .entryTtl(Duration.ofHours(ttl))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer()));
-        return RedisCacheManager.builder(redisTemplate.getConnectionFactory())
+        return RedisCacheManager.builder(Objects.requireNonNull(redisTemplate.getConnectionFactory()))
                 .cacheDefaults(cacheConfig)
                 .build();
     }
