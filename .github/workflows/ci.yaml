@@ -59,6 +59,18 @@ jobs:
           name: URL Shortener service tests reports
           path: build/reports/tests/test/
 
+      - name: Upload jar file
+        uses: actions/upload-artifact@v4
+        with:
+          name: url_shortener_service
+          path: build/libs/service.jar
+
+      - name: Upload Dockerfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dockerfile
+          path: Dockerfile
+
   deploy:
     runs-on: ubuntu-latest
     needs: job_unit_tests
