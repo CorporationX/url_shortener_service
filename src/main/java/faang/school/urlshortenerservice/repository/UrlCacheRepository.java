@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Repository
@@ -18,5 +20,9 @@ public class UrlCacheRepository {
 
     public String findByHash(String hash) {
         return urlRedisTemplate.opsForValue().get(hash);
+    }
+
+    public void deleteHashes(List<String> hashes) {
+        urlRedisTemplate.delete(hashes);
     }
 }

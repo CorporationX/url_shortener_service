@@ -28,6 +28,10 @@ cache:
   min_percent_hashes: 20
   capacity: 10000
 
+scheduler:
+  cron: '0 0 0 * * *'
+  lifetime_days: 365
+
 generator:
   batch:
     size: 100000

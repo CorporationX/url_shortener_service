@@ -2,7 +2,7 @@ CREATE TABLE url
 (
     hash           VARCHAR(6) PRIMARY KEY,
     url            VARCHAR(255) NOT NULL,
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 );
 
 CREATE TABLE hash

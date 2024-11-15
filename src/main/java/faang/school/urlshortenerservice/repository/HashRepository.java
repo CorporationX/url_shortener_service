@@ -17,7 +17,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE hash IN (
-                SELECT hash FROM hash LIMIT :batchSize
+                SELECT hash FROM hash LIMIT :batchSize FOR UPDATE SKIP LOCKED
             ) RETURNING *
             """)
     List<Hash> getHashBatch(@Param("batchSize") int batchSize);
