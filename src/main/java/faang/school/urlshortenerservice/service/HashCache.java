@@ -42,7 +42,7 @@ public class HashCache {
         if (queue.size() < hashesQuantityToAdd && availableToRefil.get()) {
             availableToRefil.set(false);
 
-            CompletableFuture future = CompletableFuture.runAsync(() -> {
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 int batchSize = queueSize - queue.size();
                 queue.addAll(hashRepository.getHashBatch(batchSize));
                 availableToRefil.set(true);

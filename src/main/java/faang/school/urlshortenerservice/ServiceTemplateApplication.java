@@ -13,9 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ServiceTemplateApplication.class)
+       new SpringApplicationBuilder(ServiceTemplateApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
-
     }
 }
