@@ -13,6 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static faang.school.urlshortenerservice.test.utils.TestData.HASHES;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,15 +57,27 @@ class HashCacheTest {
         assertThat(hashes.size()).isEqualTo(HASHES.size());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testGetHash_hashesEnough() {
         Queue<String> hashes = new ConcurrentLinkedDeque<>(HASHES);
         ReflectionTestUtils.setField(hashCache, "hashes", hashes);
+        ReflectionTestUtils.setField(hashCache, "hashesSize", new AtomicInteger(hashes.size()));
 
         assertThat(hashCache.getHash())
                 .isEqualTo(HASHES.get(0));
 
         verify(executor, never()).execute(any(Runnable.class));
+
+        AtomicInteger hashSizeResult = (AtomicInteger) ReflectionTestUtils.getField(hashCache, "hashesSize");
+        assert hashSizeResult != null;
+        assertThat(hashSizeResult.get())
+                .isEqualTo(HASHES.size() - 1);
+
+        Queue<String> hashesResult = (Queue<String>) ReflectionTestUtils.getField(hashCache, "hashes");
+        assert hashesResult != null;
+        assertThat(hashesResult.size())
+                .isEqualTo(HASHES.size() -1);
     }
 
     @Test
@@ -99,5 +112,10 @@ class HashCacheTest {
         Queue<String> hashes = (Queue<String>) ReflectionTestUtils.getField(hashCache, "hashes");
         assert hashes != null;
         assertThat(hashes.size()).isEqualTo(HASHES.size());
+
+        AtomicInteger hashSizeResult = (AtomicInteger) ReflectionTestUtils.getField(hashCache, "hashesSize");
+        assert hashSizeResult != null;
+        assertThat(hashSizeResult.get())
+                .isEqualTo(HASHES.size());
     }
 }

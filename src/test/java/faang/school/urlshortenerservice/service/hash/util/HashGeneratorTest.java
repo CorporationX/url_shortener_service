@@ -16,6 +16,9 @@ import java.util.List;
 import static faang.school.urlshortenerservice.test.utils.TestData.HASHES;
 import static faang.school.urlshortenerservice.test.utils.TestData.NUMBERS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +43,7 @@ class HashGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     void testGenerate_successful() {
+        when(hashService.getHashesSize()).thenReturn((long) NUMBER_SIZE);
         when(hashService.getUniqueNumbers(NUMBER_SIZE)).thenReturn(NUMBERS);
         when(encoder.encode(NUMBERS)).thenReturn(HASHES);
 
@@ -49,5 +53,16 @@ class HashGeneratorTest {
 
         verify(hashService).saveAllBatch(hashesCaptor.capture());
         assertThat(hashesCaptor.getValue()).isEqualTo(HASHES);
+    }
+
+    @Test
+    void testGenerate_enoughHashSizeInDb() {
+        when(hashService.getHashesSize()).thenReturn((long) NUMBER_SIZE * 3);
+
+        hashGenerator.generate();
+
+        verify(hashService, never()).getUniqueNumbers(anyInt());
+        verify(encoder, never()).encode(anyList());
+        verify(hashService, never()).saveAllBatch(anyList());
     }
 }

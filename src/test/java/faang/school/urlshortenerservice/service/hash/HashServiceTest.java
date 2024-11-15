@@ -69,4 +69,11 @@ class HashServiceTest {
 
         assertThat(sizeCaptor.getValue()).isEqualTo(HASHES.size());
     }
+
+    @Test
+    void testGetHashesSize() {
+        when(hashRepository.getHashesSize()).thenReturn(1L);
+        assertThat(hashService.getHashesSize())
+                .isEqualTo(1L);
+    }
 }

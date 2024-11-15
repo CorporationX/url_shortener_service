@@ -22,8 +22,11 @@ public class HashGenerator {
 
     @Async("hashGeneratorExecutorPool")
     public void generate() {
-        List<Long> numbers = hashService.getUniqueNumbers(numberSize);
-        List<String> hashes = encoder.encode(numbers);
-        hashService.saveAllBatch(hashes);
+        Long dbHashesSeize = hashService.getHashesSize();
+        if (dbHashesSeize < numberSize * 2L) {
+            List<Long> numbers = hashService.getUniqueNumbers(numberSize);
+            List<String> hashes = encoder.encode(numbers);
+            hashService.saveAllBatch(hashes);
+        }
     }
 }

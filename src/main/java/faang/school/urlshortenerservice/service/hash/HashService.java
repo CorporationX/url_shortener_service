@@ -28,4 +28,9 @@ public class HashService {
     public List<Long> getUniqueNumbers(int size) {
         return hashRepository.getUniqueNumbers(size);
     }
+
+    @Transactional(readOnly = true)
+    public Long getHashesSize() {
+        return hashRepository.getHashesSize();
+    }
 }
