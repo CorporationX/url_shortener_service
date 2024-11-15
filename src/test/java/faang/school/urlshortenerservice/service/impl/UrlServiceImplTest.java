@@ -5,6 +5,8 @@ import faang.school.urlshortenerservice.model.dto.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.cache.HashCache;
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,8 +20,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceImplTest {
-
-    // TODO asdfasd
 
     @Mock
     private UrlRepository urlRepository;
@@ -60,5 +60,17 @@ class UrlServiceImplTest {
 
         verify(urlCacheRepository, times(1)).get(hash);
         assertEquals(url.getUrl(), result);
+    }
+
+    @Test
+    public void testGetOriginalUrl_notFoundUrl() {
+        ReflectionTestUtils.setField(urlService, "shortUrlDomain", shortUrlDomain);
+        when(urlCacheRepository.get(hash)).thenReturn(null);
+
+        EntityNotFoundException exception = Assertions.assertThrows(EntityNotFoundException.class,
+                () -> urlService.getOriginalUrl(hash));
+
+        verify(urlRepository, times(1)).findUrlByHash(hash);
+        assertEquals("Can't find url with hash: " + hash, exception.getMessage());
     }
 }

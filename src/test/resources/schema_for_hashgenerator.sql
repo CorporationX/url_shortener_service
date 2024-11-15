@@ -32,7 +32,12 @@ CREATE TABLE IF NOT EXISTS url
 (
     hash       VARCHAR(6) PRIMARY KEY NOT NULL,
     url        VARCHAR(255)           NOT NULL,
-    created_at timestamptz DEFAULT current_timestamp,
+    created_at timestamptz DEFAULT current_timestamp
 
-    CONSTRAINT fk_hash_id FOREIGN KEY (hash) REFERENCES hash (hash)
+--     CONSTRAINT fk_hash_id FOREIGN KEY (hash) REFERENCES hash (hash)
 );
+
+INSERT into url (hash, url)
+VALUES ('uh78df', 'http://google.com'),
+       ('455ded', 'http://fatum.ru'),
+       ('kfo3df', 'http://lenta.ru');

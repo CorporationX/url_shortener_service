@@ -2,8 +2,6 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.model.dto.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.PostgreSQLTestContainer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
@@ -28,13 +27,15 @@ public class HashGeneratorTest {
     @Autowired
     private HashRepository hashRepository;
 
-    private static PostgreSQLContainer<?> postgresContainer;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @BeforeAll
-    public static void setup() {
-        postgresContainer = PostgreSQLTestContainer.getPostgresContainer();
-    }
-
+    @Container
+    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:13.3")
+            .withDatabaseName("testdb")
+            .withUsername("admin")
+            .withPassword("admin")
+            .withInitScript("schema_for_hashgenerator.sql");
 
     @DynamicPropertySource
     static void overrideSourceProperties(DynamicPropertyRegistry registry) {
@@ -49,8 +50,6 @@ public class HashGeneratorTest {
     @Autowired
     private HashGenerator hashGenerator;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     public void testGenerateBatch_insertsHashesIntoDatabase() throws InterruptedException {
