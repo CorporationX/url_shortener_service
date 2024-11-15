@@ -28,11 +28,15 @@ public class HashService {
 
     @Transactional
     public List<String> getHashes() {
-        List<String> hashes = freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectBatch());
-        if (hashes.size() < hashConfig.getSelectBatch()) {
-            generateBatchHash();
-            hashes.addAll(freeHashRepository.findAndDeleteFreeHashes(hashConfig.getSelectBatch() - hashes.size()));
+        int batchHashesSelect = hashConfig.getSelectBatch();
+
+        List<String> hashes = freeHashRepository.findAndDeleteFreeHashes(batchHashesSelect);
+
+        if (hashes.size() < batchHashesSelect) {
+            generateBatchHash(batchHashesSelect - hashes.size())
+                    .thenAccept(hashes::addAll);
         }
+
         return hashes;
     }
 
@@ -43,9 +47,15 @@ public class HashService {
 
     @Transactional
     @Async("urlThreadPool")
-    public void generateBatchHash() {
+    public CompletableFuture<List<String>> generateBatchHash(int necessary) {
         List<Long> numbers = uniqueNumberService.getUniqueNumbers();
         List<String> base62Hashes = base62Encoder.encodeNumbersInBase62(numbers);
-        saveRangeHashes(base62Hashes);
+
+        List<String> response = base62Hashes.subList(0, Math.min(necessary, base62Hashes.size()));
+        List<String> remainingHashes = base62Hashes
+                .subList(Math.min(necessary, base62Hashes.size()), base62Hashes.size());
+
+        saveRangeHashes(remainingHashes);
+        return CompletableFuture.completedFuture(response);
     }
 }

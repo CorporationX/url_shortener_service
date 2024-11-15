@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.cleaner;
 
+import faang.school.urlshortenerservice.config.cache.CacheProperties;
 import faang.school.urlshortenerservice.entity.url.Url;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.url.UrlService;
@@ -12,12 +13,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CleanerServiceTest {
+
+    private static final int EXPIRATION_URL = 1;
 
     private static final String HASH = "HASH";
 
@@ -30,6 +34,9 @@ class CleanerServiceTest {
     @Mock
     private HashService hashService;
 
+    @Mock
+    private CacheProperties cacheProperties;
+
     @Test
     @DisplayName("When method called then should get list of expired urls and save their hashes")
     void whenMethodCalledThenGetListEntitiesAndSaveTheirHashes() {
@@ -37,13 +44,15 @@ class CleanerServiceTest {
                 .hash(HASH)
                 .build();
 
-        when(urlService.findAndReturnExpiredUrls())
+        when(cacheProperties.getExpirationUrl())
+                .thenReturn(EXPIRATION_URL);
+        when(urlService.findAndReturnExpiredUrls(anyInt()))
                 .thenReturn(List.of(url));
 
         cleanerService.clearExpiredUrls();
 
         verify(urlService)
-                .findAndReturnExpiredUrls();
+                .findAndReturnExpiredUrls(anyInt());
         verify(hashService)
                 .saveRangeHashes(anyList());
     }

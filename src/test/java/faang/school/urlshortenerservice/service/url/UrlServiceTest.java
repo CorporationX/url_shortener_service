@@ -1,5 +1,8 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.cache.hash.HashCache;
+import faang.school.urlshortenerservice.mapper.url.UrlMapper;
+import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +21,16 @@ class UrlServiceTest {
     private UrlService urlService;
 
     @Mock
+    private HashCache hashCache;
+
+    @Mock
+    private UrlMapper urlMapper;
+
+    @Mock
     private UrlRepository urlRepository;
+
+    @Mock
+    private UrlCacheRepository urlCacheRepository;
 
     @Test
     @DisplayName("When method called then return List values")

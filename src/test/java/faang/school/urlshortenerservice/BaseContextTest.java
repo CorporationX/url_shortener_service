@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service.util;
+package faang.school.urlshortenerservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
