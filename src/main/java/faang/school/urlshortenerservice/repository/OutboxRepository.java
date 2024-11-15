@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Outbox;
-import faang.school.urlshortenerservice.entity.OutboxStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,13 +11,11 @@ import java.util.List;
 @Repository
 public interface OutboxRepository extends JpaRepository<Outbox, Long> {
 
-    @Query(nativeQuery = true, value = """
-            UPDATE outbox o
-            SET status = :#{#newStatus.ordinal}
-            WHERE o.event_type = :eventType AND o.status = :#{#status.ordinal}
-            RETURNING o.*
+    @Query("""
+            SELECT o FROM Outbox o
+            WHERE o.eventType = :eventType
             """)
-    List<Outbox> updateStatusByTypeAndByStatus(int eventType, OutboxStatus status, OutboxStatus newStatus);
+    List<Outbox> findByEventType(int eventType);
 
     @Modifying
     @Query(nativeQuery = true, value = """
@@ -26,12 +23,4 @@ public interface OutboxRepository extends JpaRepository<Outbox, Long> {
             VALUES (:entityId, :eventType, :payload)
             """)
     void createOutbox(String entityId, int eventType, String payload);
-
-    @Modifying
-    @Query("""
-            UPDATE Outbox o
-            SET o.status = :status
-            WHERE o.id = :id
-            """)
-    void progressToEnd(Long id, OutboxStatus status);
 }

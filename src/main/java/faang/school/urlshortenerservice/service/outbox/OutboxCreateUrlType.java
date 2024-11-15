@@ -39,7 +39,7 @@ public class OutboxCreateUrlType extends OutboxType {
                     outbox.getPayload(),
                     Duration.ofSeconds(initialTtlSeconds)
             );
-            outboxService.progressToSuccess(outbox.getId());
+            outboxService.deleteOutboxBy(outbox.getId());
             return null;
         }));
     }

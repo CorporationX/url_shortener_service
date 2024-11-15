@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service.outbox;
 
 import faang.school.urlshortenerservice.entity.Outbox;
-import faang.school.urlshortenerservice.entity.OutboxStatus;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +16,16 @@ public class OutboxServiceImpl implements OutboxService {
 
     @Override
     public List<Outbox> getForProgressing(int typeId) {
-        return outboxRepository.updateStatusByTypeAndByStatus(typeId, OutboxStatus.PENDING, OutboxStatus.IN_PROGRESS);
+        return outboxRepository.findByEventType(typeId);
     }
 
     @Override
-    public void saveOutbox(Url url) {
-        outboxRepository.createOutbox(url.getHash(), OutboxCreateUrlType.OUTBOX_TYPE_ID, url.getUrl());
+    public void saveOutbox(Url url, int outboxTypeId) {
+        outboxRepository.createOutbox(url.getHash(), outboxTypeId, url.getUrl());
     }
 
     @Override
-    public void progressToSuccess(long id) {
-        outboxRepository.progressToEnd(id, OutboxStatus.SUCCESS);
+    public void deleteOutboxBy(long id) {
+        outboxRepository.deleteById(id);
     }
 }

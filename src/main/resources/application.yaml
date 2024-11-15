@@ -26,7 +26,9 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  cluster-id: 0
   name: url-shortener-service
+  id: 0
   port: 8080
   hash:
     generate:
@@ -53,7 +55,7 @@ server:
     url: '^(https?|ftp):\/\/([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(:\d+)?(\/[^\s]*)?$'
   outbox:
     scheduled:
-      create-url-time-ms: 120000
+      create-url-time-ms: 20000
 
 logging:
   level:

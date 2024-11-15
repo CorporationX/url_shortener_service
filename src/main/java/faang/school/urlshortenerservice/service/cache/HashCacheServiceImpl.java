@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service.cache;
 
-import faang.school.urlshortenerservice.config.FetchProperties;
+import faang.school.urlshortenerservice.config.properties.FetchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;

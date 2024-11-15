@@ -1,6 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
-public interface HashGeneratorService {
+import org.springframework.beans.factory.annotation.Value;
 
-    void generateFreeHashes();
+public abstract class HashGeneratorService {
+
+    @Value("${server.hash.generate.batch-size}")
+    protected int batchSizeForGenerateFreeHashes;
+
+    public abstract void generateFreeHashes();
 }

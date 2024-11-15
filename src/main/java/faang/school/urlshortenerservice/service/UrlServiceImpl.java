@@ -1,13 +1,14 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.CacheProperties;
-import faang.school.urlshortenerservice.config.ClearProperties;
+import faang.school.urlshortenerservice.config.properties.CacheProperties;
+import faang.school.urlshortenerservice.config.properties.ClearProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
 import faang.school.urlshortenerservice.service.cache.HashCacheService;
+import faang.school.urlshortenerservice.service.outbox.OutboxCreateUrlType;
 import faang.school.urlshortenerservice.service.outbox.OutboxService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -80,7 +81,7 @@ public class UrlServiceImpl implements UrlService {
         Url entityUrl = urlMapper.toEntity(urlDto, freeHash);
 
         entityManager.persist(entityUrl);
-        outboxService.saveOutbox(entityUrl);
+        outboxService.saveOutbox(entityUrl, OutboxCreateUrlType.OUTBOX_TYPE_ID);
 
         return url;
     }
