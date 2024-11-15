@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,9 +17,33 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+domain-name: https://urlshrinker.com
+
+hash:
+  at-least-amount: 10000
+  min-percent: 20
+  max-local-cache: 7500
+  batch-size: 1000
+  filling:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 16
+  generator:
+    core-pool-size: 8
+    max-pool-size: 16
+    queue-capacity: 32
+  cleaner:
+    cron: "0 30 3 * * *"
+    days-before-obsolete: 365
