@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 
 import java.util.List;
 
-public interface Base62Encoder {
+public interface Encoder {
 
     Hash encodeSingle(long number);
 

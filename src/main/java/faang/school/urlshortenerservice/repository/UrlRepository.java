@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,15 +16,14 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
 
-    @Query("SELECT u.url FROM url u WHERE u.hash = :hash")
+    @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
     Optional<String> findUrlByHash(@Param("hash") String hash);
 
-    @Transactional
     @Modifying
     @Query(value = """
-            DELETE FROM url 
-            WHERE created_at < NOW() - INTERVAL '1 year' 
-            RETURNING hash AS hash, created_at AS generatedAt
-            """, nativeQuery = true)
-    List<Hash> deleteOldUrlsAndReturnHashesAsHashEntities();
+        DELETE FROM url 
+        WHERE created_at < :dateTime
+        RETURNING hash, created_at
+        """, nativeQuery = true)
+    List<Hash> deleteOldUrlsAndReturnHashesAsHashEntities(LocalDateTime dateTime);
 }

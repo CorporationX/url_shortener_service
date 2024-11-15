@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.config.cache.redis;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

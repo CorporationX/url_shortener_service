@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,20 +8,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +38,7 @@ public class HashCacheTest {
     private HashGenerator generator;
 
     @InjectMocks
-    private HashCache hashCache;
+    private HashCacheImpl hashCache;
 
     private ConcurrentLinkedQueue<String> hashQueue;
 
@@ -80,15 +75,16 @@ public class HashCacheTest {
     }
 
     @Test
-    public void testRefillingCacheWithHashes() throws Exception {
+    public void testCacheRefillDirectly() throws Exception {
         ReflectionTestUtils.setField(hashCache, "hashQueue", new ConcurrentLinkedQueue<>());
 
         List<String> hashes = List.of("newHash1", "newHash2");
         when(hashRepository.findTopNHashes(anyInt())).thenReturn(hashes);
 
-        Method method = HashCache.class.getDeclaredMethod("refillingCacheWithHashes", int.class);
-        method.setAccessible(true);
-        method.invoke(hashCache, 2);
+        Method refillingCacheWithHashesMethod = HashCacheImpl.class.getDeclaredMethod("refillingCacheWithHashes", int.class);
+        refillingCacheWithHashesMethod.setAccessible(true);
+
+        refillingCacheWithHashesMethod.invoke(hashCache, 2);
 
         assertEquals(2, hashCache.getHashQueue().size());
         assertTrue(hashCache.getHashQueue().contains("newHash1"));

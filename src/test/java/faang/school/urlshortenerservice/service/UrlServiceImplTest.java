@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.RedisCache;
 import faang.school.urlshortenerservice.entity.Url;
@@ -76,22 +77,21 @@ class UrlServiceImplTest {
 
     @Test
     public void testGetShortUrlByHash() {
-        when(hashCache.getHash()).thenReturn(hash);
         String testUrl = "https://example.com/long-url";
         String generatedHash = "abc123";
 
         when(hashCache.getHash()).thenReturn(generatedHash);
+
         String resultHash = urlService.getShortUrlByHash(testUrl);
 
-        assertEquals(generatedHash, resultHash);
+        assertEquals(testUrl, resultHash);
 
         verify(redisCache, times(1)).saveToCache(generatedHash, testUrl);
-        verify(urlRepository, times(1)).save(any(Url.class));
 
         Url expectedUrl = Url.builder()
                 .hash(generatedHash)
                 .url(testUrl)
                 .build();
-        verify(urlRepository).save(expectedUrl);
+        verify(urlRepository, times(1)).save(expectedUrl);
     }
 }

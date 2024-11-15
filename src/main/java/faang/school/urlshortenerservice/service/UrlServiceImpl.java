@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.RedisCache;
 import faang.school.urlshortenerservice.entity.Url;
@@ -34,6 +35,6 @@ public class UrlServiceImpl implements UrlService {
                 .url(url)
                 .build());
 
-        return hashFromCache;
+        return url;
     }
 }

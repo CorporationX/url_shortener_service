@@ -2,10 +2,10 @@ package faang.school.urlshortenerservice.exception.handler;
 
 
 import faang.school.urlshortenerservice.dto.handler.ErrorResponse;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -56,15 +56,15 @@ public class UrlExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(Exception ex) {
-        log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
+    @ExceptionHandler(UrlNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUrlNotFoundException(UrlNotFoundException ex) {
+        log.warn("URL not found: {}", ex.getMessage());
 
         return ErrorResponse.builder()
-                .message("Error occurred")
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(ex.getMessage())
                 .serviceName(serviceName)
+                .status(HttpStatus.NOT_FOUND.value())
                 .build();
     }
 }

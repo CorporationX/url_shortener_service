@@ -10,30 +10,30 @@ import java.util.List;
 
 @Data
 @Component
-public class Base62EncoderImpl implements Base62Encoder {
+public class Base62EncoderImpl implements Encoder {
 
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = ALPHABET.length();
+    private static final int ALPHABET_SIZE = ALPHABET.length();
 
     @Value("${spring.base62.number of characters in hashcode}")
     private int numberOfCharacters;
 
     @Override
     public Hash encodeSingle(long number) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         while (number > 0) {
-            int remainder = (int) (number % BASE);
-            sb.append(ALPHABET.charAt(remainder));
-            number /= BASE;
+            int remainder = (int) (number % ALPHABET_SIZE);
+            stringBuilder.append(ALPHABET.charAt(remainder));
+            number /= ALPHABET_SIZE;
         }
 
-        sb.reverse();
+        stringBuilder.reverse();
 
-        while (sb.length() < numberOfCharacters) {
-            sb.insert(0, '0');
+        while (stringBuilder.length() < numberOfCharacters) {
+            stringBuilder.insert(0, '0');
         }
         return Hash.builder()
-                .hash(String.valueOf(sb))
+                .hash(String.valueOf(stringBuilder))
                 .build();
     }
 

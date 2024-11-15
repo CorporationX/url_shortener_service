@@ -24,7 +24,7 @@ public class Hash {
     private String hash;
 
     @CreationTimestamp
-    @Column(name = "generated_at", nullable = false)
-    private LocalDateTime generatedAt;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 }
 

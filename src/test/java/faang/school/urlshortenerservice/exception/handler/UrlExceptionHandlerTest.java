@@ -96,17 +96,6 @@ class UrlExceptionHandlerTest {
         assertEquals("Invalid input for field field1", errorResponse.getDetails().get("field1"));
     }
 
-    @Test
-    void handleException_shouldReturnInternalServerErrorResponse() {
-        Exception exception = new Exception("Test general exception");
-
-        ErrorResponse errorResponse = urlExceptionHandler.handleException(exception);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getStatus());
-        assertEquals("Error occurred", errorResponse.getMessage());
-        assertEquals(SERVICE_NAME, errorResponse.getServiceName());
-    }
-
     public void dummyMethod(String arg) {
     }
 }

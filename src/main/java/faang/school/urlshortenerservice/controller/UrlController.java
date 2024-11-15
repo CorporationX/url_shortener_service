@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/url-shortener/")
 @Validated
 public class UrlController {
 
@@ -28,9 +27,9 @@ public class UrlController {
     }
 
     @PostMapping("/url")
-    public ResponseEntity<String> redirectToShortUrl(@Valid @RequestBody UrlDto urlDto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(urlService.getShortUrlByHash(urlDto.getUrl()));
+    public ResponseEntity<Void> redirectToShortUrl(@RequestBody UrlDto urlDto) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(urlService.getShortUrlByHash(urlDto.getUrl())))
+                .build();
     }
-
 }

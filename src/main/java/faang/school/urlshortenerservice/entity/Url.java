@@ -4,7 +4,6 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +23,6 @@ public class Url {
     @Column(length = 6, nullable = false, unique = true)
     private String hash;
 
-    @NotNull(message = "URL cannot be null")
     @Column(name = "url", nullable = false, length = 2048)
     private String url;
 
