@@ -3,8 +3,8 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
@@ -28,13 +28,13 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public UrlDto createShortLink(@RequestBody UrlDto urlDto) {
+    public UrlDto createShortLink(@Valid @RequestBody UrlDto urlDto) {
         isValidUrl(urlDto.getUrl());
         return urlService.shortenUrl(urlDto);
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<String> getUrl(@PathVariable String hash) throws UrlNotFoundException {
+    public ResponseEntity<String> getUrl(@PathVariable String hash){
         Optional<Url> url = urlService.getUrl(hash);
         return new ResponseEntity<>(url.get().getUrl(), HttpStatusCode.valueOf(302));
     }
