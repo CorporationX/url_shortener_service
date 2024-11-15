@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class CleanerScheduler {
     private final UrlService urlService;
 
-    @Scheduled(cron = "${hash.cleaning-cron}")
+    @Scheduled(cron = "${url-shortener.cleaning-cron}")
     public void cleanHashes() {
         urlService.cleanHashes();
     }

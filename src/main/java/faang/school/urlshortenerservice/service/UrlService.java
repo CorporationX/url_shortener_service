@@ -27,7 +27,6 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlShortenerProperties urlShortenerProperties;
     private final URLCacheRepository urlCacheRepository;
-    private final HashProperties hashProperties;
     private final HashRepository hashRepository;
 
     @Transactional
@@ -42,8 +41,10 @@ public class UrlService {
         urlRepository.save(entity);
 
         urlCacheRepository.put(hash, longUrl);
+        String shortUrl = createShortUrl(hash);
 
-        return createShortUrl(hash);
+        log.info("Create shortened url {} <- {}", shortUrl, longUrl);
+        return shortUrl;
     }
 
     @Transactional(readOnly = true)
@@ -53,16 +54,21 @@ public class UrlService {
            return longUrl;
        }
        UrlEntity currentUrl = urlRepository.findById(hash).orElseThrow();
-       return currentUrl.getUrlValue();
+       String currentLongUrl = currentUrl.getUrlValue();
+
+       log.info("Get original url {} <- {}", currentLongUrl, createShortUrl(hash));
+       return currentLongUrl;
     }
 
     @Transactional
     public void cleanHashes() {
-        long dayToKeep = hashProperties.getDaysToKeep();
+        long dayToKeep = urlShortenerProperties.getDaysToKeep();
         LocalDateTime before = LocalDateTime.now().minusDays(dayToKeep);
         List<String> cleanedHash = urlRepository.deleteByCreatedAtBefore(before).stream()
                 .map(UrlEntity::getHashValue)
                 .toList();
+
+        log.info("Cleaned old hashes: {}", cleanedHash.size());
         hashRepository.save(cleanedHash);
 
     }
@@ -71,6 +77,7 @@ public class UrlService {
         try {
             new URL(longUrl);
         } catch (MalformedURLException e) {
+            log.error("Incorrect URL: {}", longUrl);
             throw new IncorrectUrl("Incorrect URL: " + longUrl);
         }
     }

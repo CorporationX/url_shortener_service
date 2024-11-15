@@ -12,4 +12,5 @@ import org.springframework.stereotype.Component;
 public class UrlShortenerProperties {
     private String protocol;
     private String domain;
+    private long daysToKeep;
 }

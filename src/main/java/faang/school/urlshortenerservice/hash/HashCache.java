@@ -1,71 +1,61 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.properties.HashProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import faang.school.urlshortenerservice.publisher.LowCachePublisher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@Slf4j
 public class HashCache {
-    private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
-    private final ThreadPoolTaskExecutor threadPool;
-    private final HashProperties hashProperties;
+    private final LowCachePublisher lowCachePublisher;
     private final Queue<String> hashCache;
     private final AtomicBoolean isUpdating;
+    private final AtomicInteger pollCounter;
+    private final HashProperties hashProperties;
 
-    public HashCache(HashGenerator hashGenerator,
-                     HashRepository hashRepository,
-                     ThreadPoolTaskExecutor threadPool,
+    public HashCache(LowCachePublisher lowCachePublisher,
                      HashProperties hashProperties) {
-        this.hashGenerator = hashGenerator;
-        this.hashRepository = hashRepository;
-        this.threadPool = threadPool;
+        this.lowCachePublisher = lowCachePublisher;
         this.hashProperties = hashProperties;
         this.hashCache = new ArrayBlockingQueue<>(hashProperties.getCacheCapacity(), true);
         this.isUpdating = new AtomicBoolean(false);
-
-        initializeCache();
+        this.pollCounter = new AtomicInteger(hashProperties.getCacheCapacity());
     }
 
     public String getHash() {
         String hash = hashCache.poll();
-        updateCacheIfNeeded();
         if (Objects.isNull(hash)) {
-            throw new IllegalStateException("Cache is empty");
+            log.error("Hash cache is empty");
+            throw new IllegalStateException("Hash cache is empty");
         }
+
+        log.debug("Get hash: {} | cache_size = {}", hash, hashCache.size());
+
+        int lowThreshold = getLowThreshold();
+        int remaining = pollCounter.decrementAndGet();
+        if (remaining < lowThreshold && isUpdating.compareAndSet(false, true)) {
+            lowCachePublisher.publishEvent();
+        }
+
         return hash;
     }
 
-    private void updateCacheIfNeeded() {
-        if (isCacheLow() && isUpdating.compareAndSet(false, true)) {
-            CompletableFuture.runAsync(this::getNewHashes, threadPool)
-                    .thenRun(hashGenerator::generate)
-                    .thenRun(() -> isUpdating.set(false));
-        }
+    public void setHashBatch(List<String> hashes) {
+        hashCache.addAll(hashes);
+        pollCounter.set(hashes.size());
+        isUpdating.set(false);
     }
 
-    private boolean isCacheLow() {
-        int lowThreshold = (int) (hashProperties.getCacheCapacity() * hashProperties.getLowThreshold());
-        return hashCache.size() < lowThreshold;
-    }
-
-    private void getNewHashes() {
-        List<String> hashBatch = hashRepository.getHashBatch();
-        hashCache.addAll(hashBatch);
-    }
-
-    private void initializeCache() {
-        hashGenerator.generate();
-        List<String> initialBatch = hashRepository.getHashBatch();
-        hashCache.addAll(initialBatch);
+    private int getLowThreshold() {
+        return (int) (hashProperties.getCacheCapacity() * hashProperties.getLowThresholdFactor());
     }
 }
 

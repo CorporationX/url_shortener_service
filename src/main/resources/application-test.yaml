@@ -1,0 +1,14 @@
+url-shortener:
+  protocol: https
+  domain: sh.c
+
+hash:
+  generate-size: 80
+  hash-batch-size: 8
+  cache-capacity: 10
+  low-threshold: 0.2
+
+thread-pool:
+  core-pool-size: 6
+  max-pool-size: 12
+  queue-capacity: 10

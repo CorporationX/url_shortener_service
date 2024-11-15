@@ -13,6 +13,5 @@ public class HashProperties {
     private int generateSize;
     private int hashBatchSize;
     private int cacheCapacity;
-    private double lowThreshold;
-    private long daysToKeep;
+    private double lowThresholdFactor;
 }

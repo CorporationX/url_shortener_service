@@ -29,14 +29,15 @@ server:
 url-shortener:
   protocol: https
   domain: sh.c
+  days-to-keep: 365
+  cleaning-cron: 0 0 0 * * *
 
 hash:
-  generate-size: 80000
+  generate-size: 12000
   hash-batch-size: 8000
   cache-capacity: 10000
   low-threshold: 0.2
-  cleaning-cron: 0 0 0 * * *
-  days-to-keep: 365
+
 
 thread-pool:
   core-pool-size: 6

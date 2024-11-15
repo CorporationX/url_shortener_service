@@ -54,12 +54,14 @@ class UrlServiceTest {
     private final String validUrl = "https://example.com";
     private final String invalidUrl = "htp://bad-url";
     private final String hash = "123abc";
+    private final String protocol = "https";
+    private final String domain = "sh.c";
 
 
     @Test
     void testShorten_ValidUrl() {
-        when(urlShortenerProperties.getProtocol()).thenReturn("https");
-        when(urlShortenerProperties.getDomain()).thenReturn("sh.c");
+        when(urlShortenerProperties.getProtocol()).thenReturn(protocol);
+        when(urlShortenerProperties.getDomain()).thenReturn(domain);
         when(hashCache.getHash()).thenReturn(hash);
 
         String expectedShortUrl = "https://sh.c/" + hash;
@@ -97,6 +99,8 @@ class UrlServiceTest {
         urlEntity.setHashValue(hash);
 
         when(urlRepository.findById(hash)).thenReturn(Optional.of(urlEntity));
+        when(urlShortenerProperties.getProtocol()).thenReturn(protocol);
+        when(urlShortenerProperties.getDomain()).thenReturn(domain);
 
         String result = urlService.getUrl(hash);
 
@@ -118,7 +122,7 @@ class UrlServiceTest {
     @Test
     void testCleanHashes() {
         long daysToKeep = 365L;
-        when(hashProperties.getDaysToKeep()).thenReturn(daysToKeep);
+        when(urlShortenerProperties.getDaysToKeep()).thenReturn(daysToKeep);
 
         UrlEntity urlEntity1 = new UrlEntity();
         urlEntity1.setHashValue("aaaaaa");
@@ -130,7 +134,7 @@ class UrlServiceTest {
 
         urlService.cleanHashes();
 
-        verify(hashProperties, times(1)).getDaysToKeep();
+        verify(urlShortenerProperties, times(1)).getDaysToKeep();
         verify(urlRepository, times(1)).deleteByCreatedAtBefore(any(LocalDateTime.class));
         verify(hashRepository, times(1)).save(List.of("aaaaaa", "bbbbbb"));
     }

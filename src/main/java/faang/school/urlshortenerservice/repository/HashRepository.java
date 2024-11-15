@@ -13,7 +13,6 @@ import java.util.List;
 @Slf4j
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final HashProperties hashProperties;
 
     public List<Long> getUniqueNumbers(int count) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
@@ -29,10 +28,10 @@ public class HashRepository {
         jdbcTemplate.batchUpdate(sql, hashes, hashes.size(),
                 (ps, hashValue) -> ps.setString(1, hashValue));
 
-        log.info("Save hashes to database: {}", hashes);
+        log.info("Save hashes to database: size = {}", hashes.size());
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(int batchSize) {
         String sql = """
                  DELETE FROM free_hash_set
                  WHERE hash_value IN (
@@ -41,7 +40,7 @@ public class HashRepository {
                  )
                  RETURNING hash_value
                 """;
-        return jdbcTemplate.queryForList(sql, new Object[]{hashProperties.getHashBatchSize()}, String.class);
+        return jdbcTemplate.queryForList(sql, new Object[]{batchSize}, String.class);
     }
 }
 
