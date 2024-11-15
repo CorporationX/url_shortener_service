@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class HashGeneratorServiceImplTest {
+public class HashBase62GeneratorServiceTest {
 
     @Mock
     private HashRepository hashRepository;
@@ -30,14 +30,14 @@ public class HashGeneratorServiceImplTest {
     private Encoder<Long, Hash> encoder;
 
     @InjectMocks
-    private HashGeneratorServiceImpl hashGeneratorService;
+    private HashBase62GeneratorService hashGeneratorService;
 
     private int generateBatchSize;
 
     @BeforeEach
     void setUp() {
         generateBatchSize = 10;
-        ReflectionTestUtils.setField(hashGeneratorService, "generateBatchSize", generateBatchSize);
+        ReflectionTestUtils.setField(hashGeneratorService, "batchSizeForGenerateFreeHashes", generateBatchSize);
     }
 
     @Test

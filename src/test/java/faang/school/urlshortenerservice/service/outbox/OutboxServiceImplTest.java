@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service.outbox;
 
 import faang.school.urlshortenerservice.entity.Outbox;
-import faang.school.urlshortenerservice.entity.OutboxStatus;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.OutboxRepository;
 import org.junit.jupiter.api.Test;
@@ -29,16 +28,12 @@ class OutboxServiceImplTest {
     void testGetForProgressing() {
         int typeId = 1;
         List<Outbox> mockOutboxList = List.of(new Outbox(), new Outbox());
-        when(outboxRepository.updateStatusByTypeAndByStatus(
-                typeId,
-                OutboxStatus.PENDING,
-                OutboxStatus.IN_PROGRESS
-        )).thenReturn(mockOutboxList);
+        when(outboxRepository.findByEventType(typeId)).thenReturn(mockOutboxList);
 
         List<Outbox> result = outboxService.getForProgressing(typeId);
 
         assertEquals(mockOutboxList, result);
-        verify(outboxRepository).updateStatusByTypeAndByStatus(typeId, OutboxStatus.PENDING, OutboxStatus.IN_PROGRESS);
+        verify(outboxRepository).findByEventType(typeId);
     }
 
     @Test
@@ -48,17 +43,17 @@ class OutboxServiceImplTest {
                 .url("https://example.com")
                 .build();
 
-        outboxService.saveOutbox(url);
+        outboxService.saveOutbox(url, OutboxCreateUrlType.OUTBOX_TYPE_ID);
 
         verify(outboxRepository).createOutbox("someHash", OutboxCreateUrlType.OUTBOX_TYPE_ID, "https://example.com");
     }
 
     @Test
-    void testProgressToSuccess() {
+    void testDeleteOutboxBy() {
         long id = 123L;
 
-        outboxService.progressToSuccess(id);
+        outboxService.deleteOutboxBy(id);
 
-        verify(outboxRepository).progressToEnd(id, OutboxStatus.SUCCESS);
+        verify(outboxRepository).deleteById(id);
     }
 }

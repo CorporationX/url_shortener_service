@@ -1,13 +1,14 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.CacheProperties;
-import faang.school.urlshortenerservice.config.ClearProperties;
+import faang.school.urlshortenerservice.config.properties.CacheProperties;
+import faang.school.urlshortenerservice.config.properties.ClearProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.CacheService;
 import faang.school.urlshortenerservice.service.cache.HashCacheService;
+import faang.school.urlshortenerservice.service.outbox.OutboxCreateUrlType;
 import faang.school.urlshortenerservice.service.outbox.OutboxService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -179,7 +181,7 @@ public class UrlServiceImplTest {
         String shortenedUrl = urlService.generateHashForUrl(urlDto);
 
         verify(entityManager).persist(entityUrl);
-        verify(outboxService).saveOutbox(entityUrl);
+        verify(outboxService).saveOutbox(entityUrl, OutboxCreateUrlType.OUTBOX_TYPE_ID);
         assertEquals(url, shortenedUrl);
     }
 
@@ -190,7 +192,7 @@ public class UrlServiceImplTest {
         String shortenedUrl = urlService.generateHashForUrl(urlDto);
 
         verify(entityManager, never()).persist(any());
-        verify(outboxService, never()).saveOutbox(any(Url.class));
+        verify(outboxService, never()).saveOutbox(any(Url.class), anyInt());
         assertEquals(url, shortenedUrl);
     }
 
