@@ -25,9 +25,9 @@ public class UrlController {
     }
 
     @Operation(summary = "Get original url")
-    @GetMapping()
-    public ResponseEntity<Void> getOriginalUrl(@RequestParam String shortUrl) {
-        String targetUrl = urlService.getOriginalUrl(shortUrl);
+    @GetMapping("/{hash}")
+    public ResponseEntity<Void> getOriginalUrl(@PathVariable String hash) {
+        String targetUrl = urlService.getOriginalUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(targetUrl)).build();
     }
 }
