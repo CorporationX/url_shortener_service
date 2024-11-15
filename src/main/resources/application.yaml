@@ -5,6 +5,7 @@ spring:
     username: user
     password: password
 
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -42,3 +43,12 @@ hash_cache:
 
 cron:
   url_cleaner: "0 0 0 * * *"
+
+short_url:
+  domain: "http://denart.info/"
+
+data:
+  redis:
+    host: localhost
+    port: 6379
+    ttl_hours: 3

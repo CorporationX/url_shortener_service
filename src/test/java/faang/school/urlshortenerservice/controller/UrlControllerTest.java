@@ -45,17 +45,17 @@ class UrlControllerTest {
         urlDto.setOriginalUrl("https://www.example.com/fj2nfi2f?ff=ae82hvnsdf");
         createdUrlDto.setShortUrl("http://short.com/48fdj3");
         String json = objectMapper.writeValueAsString(urlDto);
-        when(urlService.createUrlDto(urlDto)).thenReturn(createdUrlDto);
+        when(urlService.createShortUrl(urlDto)).thenReturn(createdUrlDto.getShortUrl());
 
         mockMvc.perform(post("/api/v1/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.shortUrl").value("http://short.com/48fdj3"));
+                .andExpect(content().contentType("text/plain;charset=UTF-8"))
+                .andExpect(content().string("http://short.com/48fdj3"));
 
-        verify(urlService, times(1)).createUrlDto(urlDto);
+        verify(urlService, times(1)).createShortUrl(urlDto);
     }
 
     @Test
@@ -69,6 +69,6 @@ class UrlControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType("application/json"));
 
-        verify(urlService, never()).createUrlDto(any(UrlDto.class));
+        verify(urlService, never()).createShortUrl(any(UrlDto.class));
     }
 }
