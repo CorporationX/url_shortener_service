@@ -37,7 +37,7 @@ public class HashCache {
             throw new IllegalStateException("Hash cache is empty");
         }
 
-        log.debug("Get hash: {} | cache_size = {}", hash, hashCache.size());
+
 
         int lowThreshold = getLowThreshold();
         int remaining = pollCounter.decrementAndGet();
@@ -45,6 +45,7 @@ public class HashCache {
             lowCachePublisher.publishEvent();
         }
 
+        log.info("Get hash: {} | cache_size = {} | counter = {}", hash, hashCache.size(), remaining);
         return hash;
     }
 

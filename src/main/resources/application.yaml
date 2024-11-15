@@ -36,7 +36,7 @@ hash:
   generate-size: 12000
   hash-batch-size: 8000
   cache-capacity: 10000
-  low-threshold: 0.2
+  low-threshold-factor: 0.2
 
 
 thread-pool:
