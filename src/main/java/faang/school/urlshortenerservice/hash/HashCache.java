@@ -37,8 +37,6 @@ public class HashCache {
             throw new IllegalStateException("Hash cache is empty");
         }
 
-
-
         int lowThreshold = getLowThreshold();
         int remaining = pollCounter.decrementAndGet();
         if (remaining < lowThreshold && isUpdating.compareAndSet(false, true)) {
