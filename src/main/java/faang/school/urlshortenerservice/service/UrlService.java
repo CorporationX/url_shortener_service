@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.builder.UrlBuilder;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
 import faang.school.urlshortenerservice.repository.HashJdbcRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -50,5 +51,17 @@ public class UrlService {
         List<String> hashes = urlRepository.getAndDeleteUrlsByDate(expireDate);
         hashJdbcRepository.batchInsert(hashes);
         urlCacheRepository.deleteHashes(hashes);
+    }
+
+    public String getOriginalUrl(String hash) {
+        String originalUrl = urlCacheRepository.findByHash(hash);
+
+        if (originalUrl != null) {
+            return originalUrl;
+        }
+
+        Url url = urlRepository.findById(hash).orElseThrow(() -> new ResourceNotFoundException(hash));
+
+        return url.getUrl();
     }
 }
