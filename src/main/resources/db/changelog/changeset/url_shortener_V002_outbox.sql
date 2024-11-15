@@ -5,8 +5,6 @@ CREATE TABLE outbox
     event_type   SMALLINT     NOT NULL,
     payload      TEXT,
     status       SMALLINT     NOT NULL DEFAULT 0,
-    created_at   TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    processed_at TIMESTAMPTZ,
     UNIQUE (entity_id, event_type)
 );
 

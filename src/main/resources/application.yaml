@@ -17,19 +17,30 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 200
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  cluster-id: 0
   name: url-shortener-service
+  id: 0
   port: 8080
   hash:
     generate:
       batch-size: 10000
       length: 6
+    clear:
+      batch-size: 1000
+      days-threshold: 365
+      cron: "0 0 3 * * ?"              # Каждый день в 3 ночи
     fetch:
       batch-size: 9900
+      limit-on-replenishment: 2000
   thread:
     pool:
       corePoolSize: 4
@@ -44,7 +55,7 @@ server:
     url: '^(https?|ftp):\/\/([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(:\d+)?(\/[^\s]*)?$'
   outbox:
     scheduled:
-      create-url-time-ms: 120000
+      create-url-time-ms: 20000
 
 logging:
   level:

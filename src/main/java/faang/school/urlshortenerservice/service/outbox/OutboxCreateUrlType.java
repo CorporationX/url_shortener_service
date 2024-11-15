@@ -32,14 +32,14 @@ public class OutboxCreateUrlType extends OutboxType {
     @Override
     @Scheduled(fixedRateString = "${server.outbox.scheduled.create-url-time-ms}")
     public void progressOutbox() {
-        List<Outbox> outboxes = outboxService.getForProgressing(getId());
-        outboxes.forEach(outbox -> transactionTemplate.execute(status -> {
+        List<Outbox> outboxesForProgressing = outboxService.getForProgressing(getId());
+        outboxesForProgressing.forEach(outbox -> transactionTemplate.execute(status -> {
             cacheService.put(
                     outbox.getEntityId(),
                     outbox.getPayload(),
                     Duration.ofSeconds(initialTtlSeconds)
             );
-            outboxService.progressToSuccess(outbox.getId());
+            outboxService.deleteOutboxBy(outbox.getId());
             return null;
         }));
     }

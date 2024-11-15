@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.service.cache;
 
+import faang.school.urlshortenerservice.config.properties.FetchProperties;
+import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGeneratorService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +23,10 @@ public class HashCacheServiceImpl implements HashCacheService {
     private final HashRepository hashRepository;
     private final HashGeneratorService hashGeneratorService;
     private final ExecutorService executorService;
+    private final FetchProperties fetchProperties;
 
-    private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
-    private final AtomicBoolean isReplenishing = new AtomicBoolean(false);
-
-    @Value("${server.hash.fetch.batch-size}")
-    private int fetchHashesSize ;
+    private final Queue<String> freeHashes = new ConcurrentLinkedDeque<>();
+    private final AtomicBoolean isQueueReplenishedHashes = new AtomicBoolean(false);
 
     @PostConstruct
     public void initFreeHashes() {
@@ -35,20 +35,29 @@ public class HashCacheServiceImpl implements HashCacheService {
 
     @Override
     public String getHash() {
-        if (hashes.size() <= 10 && isReplenishing.compareAndSet(false, true)) {
+        if (freeHashes.size() <= fetchProperties.getLimitOnReplenishment() &&
+                isQueueReplenishedHashes.compareAndSet(false, true)) {
             fetchFreeHashes();
         }
-        return Optional.ofNullable(hashes.poll())
+        return Optional.ofNullable(freeHashes.poll())
                 .or(hashRepository::getHash)
-                .orElseThrow(() -> new RuntimeException("Free hash not found!"));
+                .orElseThrow(() -> new FreeHashNotFoundException("Free hash not found!"));
+    }
+
+    @Override
+    public void addHash(List<String> hashes) {
+        List<Hash> entityHashes = hashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashRepository.saveAll(entityHashes);
     }
 
     private void fetchFreeHashes() {
         executorService.execute(() -> {
-            List<String> newFreeHashes = hashRepository.getHashes(fetchHashesSize);
-            hashes.addAll(newFreeHashes);
-            hashGeneratorService.generateBatch();
-            isReplenishing.set(false);
+            hashGeneratorService.generateFreeHashes();
+            List<String> newFreeHashes = hashRepository.getHash(fetchProperties.getBatchSize());
+            freeHashes.addAll(newFreeHashes);
+            isQueueReplenishedHashes.set(false);
         });
     }
 }

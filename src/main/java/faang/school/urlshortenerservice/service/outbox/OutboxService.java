@@ -9,7 +9,7 @@ public interface OutboxService {
 
     List<Outbox> getForProgressing(int typeId);
 
-    void saveOutbox(Url url);
+    void saveOutbox(Url url, int outboxTypeId);
 
-    void progressToSuccess(long id);
+    void deleteOutboxBy(long id);
 }

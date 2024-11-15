@@ -32,20 +32,9 @@ public class Outbox {
     @Column(name = "entity_id", nullable = false, length = 256)
     private String entityId;
 
-    @Column(name = "event_type", nullable = false, length = 256)
+    @Column(name = "event_type", nullable = false)
     private Integer eventType;
 
     @Column(name = "payload")
     private String payload;
-
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "status", nullable = false)
-    private OutboxStatus status;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "processed_at")
-    private LocalDateTime processedAt;
 }

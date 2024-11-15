@@ -19,7 +19,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
             RETURNING h1.hash;
             """)
-    List<String> getHashes(int count);
+    List<String> getHash(int count);
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash h1

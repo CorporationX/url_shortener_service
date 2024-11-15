@@ -63,7 +63,7 @@ class OutboxCreateUrlTypeTest {
 
         verify(outboxService).getForProgressing(outboxCreateUrlType.getId());
         verify(cacheService).put(entityId, payload, Duration.ofSeconds(initialTtlSeconds));
-        verify(outboxService).progressToSuccess(outbox.getId());
+        verify(outboxService).deleteOutboxBy(outbox.getId());
     }
 
     @Test

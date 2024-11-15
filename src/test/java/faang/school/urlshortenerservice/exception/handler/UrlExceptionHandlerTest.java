@@ -2,11 +2,15 @@ package faang.school.urlshortenerservice.exception.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.exception.FreeHashNotFoundException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,17 +36,16 @@ class UrlExceptionHandlerTest {
         ReflectionTestUtils.setField(exceptionHandler, "serviceName", serviceName);
     }
 
-    @Test
-    void handleEntityNotFoundException_ShouldReturnNotFoundStatus() {
-        String message = "Entity not found";
+    @ParameterizedTest
+    @MethodSource("exceptionProvider")
+    void handleRuntimeExceptionNotFound(String message, RuntimeException exception) {
         ErrorResponse correctResult = ErrorResponse.builder()
                 .serviceName(serviceName)
                 .errorCode(HttpStatus.NOT_FOUND.value())
                 .globalMessage(message)
                 .build();
-        PersistenceException exception = new EntityNotFoundException(message);
 
-        ErrorResponse result = exceptionHandler.handleEntityNotFoundException(exception);
+        ErrorResponse result = exceptionHandler.handleRuntimeException(exception);
 
         assertEquals(correctResult, result);
     }
@@ -92,21 +96,6 @@ class UrlExceptionHandlerTest {
     }
 
     @Test
-    void handleRuntimeException_ShouldReturnInternalServerErrorStatus() {
-        String message = "Something went wrong";
-        ErrorResponse correctResult = ErrorResponse.builder()
-                .serviceName(serviceName)
-                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .globalMessage(message)
-                .build();
-        RuntimeException exception = new RuntimeException("Unexpected error");
-
-        ErrorResponse result = exceptionHandler.handleRuntimeException(exception);
-
-        assertEquals(correctResult, result);
-    }
-
-    @Test
     void handleDataIntegrityViolation_shouldReturnErrorResponse() {
         String message = "Data Integrity Violation Error";
         ErrorResponse correctResult = ErrorResponse.builder()
@@ -125,5 +114,12 @@ class UrlExceptionHandlerTest {
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "objectName");
         bindingResult.addError(new FieldError("objectName", "field", message));
         return new MethodArgumentNotValidException((MethodParameter) null, bindingResult);
+    }
+
+    static Stream<Arguments> exceptionProvider() {
+        return Stream.of(
+                Arguments.of("Entity not found", new EntityNotFoundException("Entity not found")),
+                Arguments.of("Free hash not found", new FreeHashNotFoundException("Free hash not found"))
+        );
     }
 }
