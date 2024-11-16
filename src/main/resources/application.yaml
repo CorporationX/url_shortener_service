@@ -24,6 +24,11 @@ server:
     alphabet: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
     length: 62
 
+  hash:
+    batch-size:
+      isert: 1000
+      get: 10000
+
 logging:
   level:
     root: info
