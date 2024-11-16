@@ -20,12 +20,16 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public void saveAssociation(UrlDto dto) {
-        Url url = new Url();
-        url.setUrl(dto.getUrl());
-        url.setHash(cache.getHash());
+        if (!urlRepository.existsByUrl(dto.getUrl())) {
+            Url url = new Url();
+            url.setUrl(dto.getUrl());
+            url.setHash(cache.getHash());
 
-        urlRepository.save(url);
-        log.info("url {} saved to database", url);
-        cacheRepository.saveUrl(url);
+            urlRepository.save(url);
+            log.info("url {} saved to database", url);
+            cacheRepository.saveUrl(url);
+        } else {
+            log.info("url {} already exist in database", dto);
+        }
     }
 }
