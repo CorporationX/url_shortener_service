@@ -25,6 +25,7 @@ logging:
     root: info
 
 hash-cache:
+  ttl-days: 1
   max-cache-size: 10000
   threshold-fraction-size: 0.2 # доля от максимального размера коллекции, от 0 до 1
   amount-numbers: 8000

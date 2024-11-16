@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.cache;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class HashCache {
     @Value("${hash-cache.max-cache-size}")
@@ -32,6 +34,7 @@ public class HashCache {
 
     public String getHash() {
         executor.execute(this::checkAndFillHashCache);
+
         try {
             String hash = queueHash.poll(5, TimeUnit.SECONDS);
             if (hash == null) {
@@ -46,6 +49,7 @@ public class HashCache {
     private synchronized void checkAndFillHashCache() {
         if (queueHash.size() < maxCacheSize * thresholdFractionSize) {
             int batchSize = maxCacheSize - queueHash.size();
+            log.info("Starting adding {} hashes to the queue", batchSize);
             fillHashCache(batchSize);
         }
     }
@@ -61,5 +65,7 @@ public class HashCache {
         hashRepository.deleteByIds(hashes);
         queueHash.addAll(hashes);
         hashGenerator.generateBatch();
+
+        log.info("{} hashes added to the queue", hashes.size());
     }
 }

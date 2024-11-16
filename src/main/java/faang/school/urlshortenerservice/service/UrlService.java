@@ -5,17 +5,19 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UrlService {
 
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
-    // private final UrlCacheRepository  urlCacheRepository;
 
     public String generateShortUrl(UrlDto url) {
         String shorUrl = hashCache.getHash();
@@ -26,15 +28,17 @@ public class UrlService {
             .build();
         urlRepository.save(modelUrl);
 
+        log.info("Url been generated: {}", modelUrl);
         return shorUrl;
     }
 
+    @Cacheable("hash")
     public String getUrl(String shortUrl) {
-        //urlCacheRepository.findUrl(shortUrl);
-        Url modelUrl = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> {
+        String url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> {
             String message = "short link not found for url: %s".formatted(shortUrl);
             return new RuntimeException(message);
         });
-        return modelUrl.getUrl();
+        log.info("Link {} was issued for hash {}", url, shortUrl);
+        return url;
     }
 }

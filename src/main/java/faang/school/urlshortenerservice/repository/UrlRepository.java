@@ -16,11 +16,11 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
         select
-            *
-        from url
-        where hash = ?1
+            u.url
+        from url u
+        where u.hash = ?1
         """)
-    Optional<Url> findByShortUrl(String shortUrl);
+    Optional<String> findByShortUrl(String shortUrl);
 
     @Query(nativeQuery = true, value = """
         delete from url
