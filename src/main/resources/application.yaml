@@ -26,9 +26,6 @@ spring:
 server:
   port: 8080
   hash:
-    encoder:
-      hash-size: 6
-      alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     generate:
       batch:
         size: 100
