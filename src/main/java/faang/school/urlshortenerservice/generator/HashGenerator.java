@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.crypto.BaseEncoder;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +15,13 @@ import java.util.List;
 public class HashGenerator {
 
     private final BaseEncoder baseEncoder;
-    private final HashRepository hashRepository;
-
-    @Value("${hash.constants.batch-size}")
-    private Long hashBatch;
+    private final HashService hashService;
 
     @Async("taskExecutor")
-    public void generateBatch() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(hashBatch);
+    public void generateBatch(int hashBatch) {
+        List<Long> numbers = hashService.getUniqueNumbers(hashBatch);
         List<String> hashes = baseEncoder.encode(numbers);
-        hashRepository.saveBatch(hashes);
+        hashService.saveBatch(hashes);
         log.info("Generated {} hashes", hashes.size());
     }
 }

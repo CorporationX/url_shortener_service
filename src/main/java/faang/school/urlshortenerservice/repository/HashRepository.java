@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface HashRepository {
 
-    List<Long> getUniqueNumbers(Long size);
+    List<Long> getUniqueNumbers(int number);
 
     void saveBatch(List<String> hashes);
 
-    List<String> getHashBatch(Long size);
+    List<String> getHashBatch(int number);
 }

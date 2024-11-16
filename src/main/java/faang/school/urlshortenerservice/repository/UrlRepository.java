@@ -12,8 +12,8 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, Long> {
 
     @Query(value = """
-            DELETE FROM url u 
-                   WHERE u.cache_date <= :date 
+            DELETE FROM url u
+                   WHERE u.cache_date <= :date
                    RETURNING u.hash
             """, nativeQuery = true)
     List<String> releaseUnusedHashesFrom(LocalDate date);

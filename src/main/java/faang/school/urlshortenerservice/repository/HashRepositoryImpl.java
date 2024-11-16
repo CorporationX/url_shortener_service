@@ -25,8 +25,8 @@ public class HashRepositoryImpl implements HashRepository {
                     """;
 
     @Override
-    public List<Long> getUniqueNumbers(Long size) {
-        return jdbcTemplate.queryForList(GET_UNIQUE_NUMBER_QUERY, Long.class, size);
+    public List<Long> getUniqueNumbers(int number) {
+        return jdbcTemplate.queryForList(GET_UNIQUE_NUMBER_QUERY, Long.class, number);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class HashRepositoryImpl implements HashRepository {
     }
 
     @Override
-    public List<String> getHashBatch(Long size) {
-        return jdbcTemplate.queryForList(GET_HASH_BATCH_QUERY, String.class, size);
+    public List<String> getHashBatch(int number) {
+        return jdbcTemplate.queryForList(GET_HASH_BATCH_QUERY, String.class, number);
     }
 }

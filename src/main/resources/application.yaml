@@ -27,8 +27,10 @@ logging:
 hash:
   constants:
     batch-size: 1000
-    capacity: 100
-    capacity-usage: 20
+
+local-cache:
+  capacity: 100
+  capacity-usage: 20
 
 url:
   constants:
