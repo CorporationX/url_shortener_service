@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UrlDto {
     private String hash;
-    @NotBlank
     private String url;
     private LocalDateTime createdAt;
 }
