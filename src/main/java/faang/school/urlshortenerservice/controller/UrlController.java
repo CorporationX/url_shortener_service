@@ -6,11 +6,10 @@ import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +25,10 @@ public class UrlController {
            throw new UrlNotExistException("Url not exist: " + urlDto.getUrl());
        }
        return urlService.createUrlHash(urlDto);
+    }
+
+    @GetMapping("/{hash}")
+    public RedirectView getShortUrl(@PathVariable String hash) {
+        return new RedirectView(urlService.getUrl(hash));
     }
 }

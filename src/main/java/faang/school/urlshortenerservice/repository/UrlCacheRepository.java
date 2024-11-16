@@ -14,4 +14,8 @@ public class UrlCacheRepository {
     public void saveUrlForTime(String hash, String url, int time, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(hash, url, time, timeUnit);
     }
+
+    public String getUrl(String hash) {
+        return (String) redisTemplate.opsForValue().get(hash);
+    }
 }
