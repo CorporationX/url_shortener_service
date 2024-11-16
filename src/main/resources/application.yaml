@@ -27,6 +27,14 @@ logging:
 hash:
   constants:
     batch-size: 1000
+    capacity: 100
+    capacity-usage: 20
+
+url:
+  constants:
+    days-to-remove: 365
+  schedule:
+    cron: "0 0 * * * ?" # every day
 
 task-executor:
   core-pool-size: 20
