@@ -17,6 +17,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+schedule:
+  url_cleaner_interval: "0 0 * * *"
+
 server:
   port: 8080
 
