@@ -21,7 +21,7 @@ public class CleanerScheduler {
     @Transactional
     public void clearHashes() {
         List<String> deletedHashes = urlRepository.getExpiredHashes();
-        hashRepository.save(deletedHashes);
+        hashRepository.saveBatch(deletedHashes);
         log.info("Cleared and resaved {} hashes", deletedHashes.size());
     }
 }

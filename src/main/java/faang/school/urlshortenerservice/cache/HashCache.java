@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @Slf4j
@@ -17,24 +18,29 @@ public class HashCache {
 
     private final ArrayBlockingQueue<String> cache;
     private final ExecutorService executorService;
+    private final AtomicBoolean isFilling =  new AtomicBoolean(false);
 
     public HashCache(ExecutorService executorService,
-                     HashRepository hashRepository,
                      @Value("${hash.cache.load-factor}") double loadFactor,
                      @Value("${hash.cache.capacity}") int capacity) {
         this.executorService = executorService;
         cache = new ArrayBlockingQueue<>(capacity);
         threshold = (int) Math.ceil(loadFactor * capacity);
-        List<String> hashes = hashRepository.getHashBatch();
-        cache.addAll(hashes);
-        log.info("Added {} initial hashes to cache", hashes.size());
+        fillCache();
     }
 
     public String getHash() {
-        String hash = cache.poll();
         if (cache.size() <= threshold) {
-            executorService.fillCache(cache);
+            fillCache();
         }
-        return hash;
+        return cache.poll();
+    }
+
+    private void fillCache() {
+        if (isFilling.compareAndSet(false, true)) {
+            executorService.fillCache()
+                    .thenAccept(cache::addAll)
+                    .thenRun(() -> isFilling.set(false));
+        }
     }
 }

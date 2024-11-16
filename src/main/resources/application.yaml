@@ -25,16 +25,16 @@ spring:
 hash:
   repository:
     batch:
-      batch-size: 25
+      size: 25
+    limit: 500
   generator:
     batch:
-      batch-size: 100
+      size: 100
   cache:
     load-factor: 0.2
     capacity: 50
   encoder:
     size: 6
-    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 scheduler:
   cron: "0 0 0 * * *" #every day

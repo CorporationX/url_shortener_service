@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.response.UrlResponse;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ public class UrlController {
     @GetMapping("/{hash}")
     public ResponseEntity<?> getUrl(@PathVariable String hash) {
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", urlService.getUrl(hash))
+                .header(HttpHeaders.LOCATION, urlService.getUrl(hash))
                 .build();
     }
 

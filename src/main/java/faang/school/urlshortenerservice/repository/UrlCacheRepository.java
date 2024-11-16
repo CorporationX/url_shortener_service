@@ -25,7 +25,7 @@ public class UrlCacheRepository {
 
     public void save(Url url) {
         redisTemplate.opsForValue().set(url.getHash(), url.getUrl(), timeout, TimeUnit.valueOf(timeUnit));
-        log.info("saved url {} with hash {} to cache", url.getUrl(), url.getHash());
+        log.debug("saved url: {}", url);
     }
 
     public Optional<String> findUrlByHash(String hash) {

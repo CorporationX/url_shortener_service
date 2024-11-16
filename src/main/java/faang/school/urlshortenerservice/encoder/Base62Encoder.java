@@ -7,9 +7,7 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-
-    @Value("${hash.encoder.alphabet}")
-    private String alphabet;
+    private final static String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Value("${hash.encoder.size}")
     private int hashSize;

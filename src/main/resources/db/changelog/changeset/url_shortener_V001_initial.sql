@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS url(
-  hash varchar(6) PRIMARY KEY CHECK (length(hash) = 6),
+  hash varchar(6) PRIMARY KEY,
   url varchar(2048) not null,
   created_at timestamp not null DEFAULT current_timestamp
 );

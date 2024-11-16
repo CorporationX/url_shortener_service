@@ -6,7 +6,9 @@ public interface HashRepository {
 
     List<Long> getUniqueNumbers(int n);
 
-    void save(List<String> hashes);
+    void saveBatch(List<String> hashes);
 
     List<String> getHashBatch();
+
+    Long getHashCount();
 }
