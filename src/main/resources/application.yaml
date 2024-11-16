@@ -25,11 +25,18 @@ spring:
 
 server:
   port: 8080
+  hash:
+    generate:
+      batch:
+        size: 100
+  async:
+    thread:
+      pool:
+        corePoolSize: 3
+        maximumPoolSize: 10
+        keepAliveTime: 60
+        queueCapacity: 40
 
 logging:
   level:
     root: info
-
-hash:
-  batch:
-    size: 100
