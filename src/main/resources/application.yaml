@@ -23,3 +23,24 @@ server:
 logging:
   level:
     root: info
+
+hash-cache:
+  max-cache-size: 10000
+  threshold-fraction-size: 0.2 # доля от максимального размера коллекции, от 0 до 1
+  amount-numbers: 8000
+  executor:
+    core-pool-size: 1
+    max-pool-size: 3
+    queue-capacity: 100
+    thread-name-prefix: HashCacheThread-
+
+hash-generator:
+  batch-size: 3 # размер батча для генерации хэшей в бд
+  executor:
+    core-pool-size: 1
+    max-pool-size: 3
+    queue-capacity: 100
+    thread-name-prefix: HashGeneratorThread-
+
+cleaner:
+  cron: 0 1 0 * * * # ежедневно в 00:01
