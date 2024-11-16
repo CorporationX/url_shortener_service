@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<?> handleApiException(ApiException exception) {
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException exception) {
         log.error("{}", exception.getMessage(), exception);
         return ResponseEntity
                 .status(exception.getHttpStatus())
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException exception) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
         log.error("{}", exception.getMessage(), exception);
         return ResponseEntity
                 .badRequest()
