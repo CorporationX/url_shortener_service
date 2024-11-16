@@ -31,16 +31,16 @@ public class HashGenerator {
     @Value("${hash.threshold}")
     private int ParallelProcessingThreshold;
 
-    @Async(value = "asyncExecutor")
-    public void generateBatch() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
+    /* @Async(value = "asyncExecutor")*/
+    public List<Hash> generateBatch(List<Long> numbers) {
+
         List<Hash> hashes;
         if (maxRange < ParallelProcessingThreshold) {
             hashes = getHashes(numbers);
         } else {
             hashes = getHashes(numbers, numberOfParts);
         }
-        hashRepository.saveAll(hashes);
+        return hashes;
     }
 
     private List<Hash> getHashes(List<Long> numbers, int numberOfParts) {
