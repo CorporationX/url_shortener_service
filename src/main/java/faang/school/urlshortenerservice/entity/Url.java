@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @RedisHash("url")
 public class Url {
 
+    @org.springframework.data.annotation.Id
     @Id
     @Max(value = 6)
     private String hash;
