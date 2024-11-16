@@ -4,10 +4,12 @@ import faang.school.urlshortenerservice.config.redis.RedisCacheProperties;
 import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -22,10 +24,14 @@ public class UrlCacheRepository {
         log.info("url {} saved to cache", url);
     }
 
-    public Url getUrl(String hash) {
-        Url url = (Url) Objects.requireNonNull(cacheManager.getCache(properties.getCaches().get("url-cache")))
-                .get(hash);
-        log.info("get url {} from cache", url);
-        return url;
+    public Optional<Url> getUrl(String hash) {
+        Cache.ValueWrapper valueWrapper = Objects.requireNonNull(cacheManager.
+                getCache(properties.getCaches().get("url-cache"))).get(hash);
+
+        if (valueWrapper != null) {
+            return Optional.ofNullable((Url) valueWrapper.get());
+        } else {
+            return Optional.empty();
+        }
     }
 }
