@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.util.encoder;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Component
+@Setter
 @RequiredArgsConstructor
 public class Base62Encoder {
 
