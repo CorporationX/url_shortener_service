@@ -38,3 +38,6 @@ hash:
   batch:
     save: 10_000
     get: 10_000
+  cache:
+    capacity: 1000
+    fillPercent: 0.2

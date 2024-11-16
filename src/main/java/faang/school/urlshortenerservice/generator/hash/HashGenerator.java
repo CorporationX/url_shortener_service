@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -36,5 +37,19 @@ public class HashGenerator {
             log.error("Error while generating batch! :", dae);
             throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);
         }
+    }
+
+    @Async("hashCacheGeneratorExecutor")
+    public CompletableFuture<List<Hash>> generateBatchForCache(int capacity) {
+        log.debug("Start generating batch for cache");
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(capacity);
+                return base62Encoder.encode(uniqueNumbers);
+            } catch (DataAccessException dae) {
+                log.error("Error while generating batch! :", dae);
+                throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);
+            }
+        });
     }
 }

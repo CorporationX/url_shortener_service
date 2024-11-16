@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Configuration
 @RequiredArgsConstructor
 public class HashThreadPoolConfig {
@@ -27,5 +30,10 @@ public class HashThreadPoolConfig {
         taskExecutor.initialize();
         taskExecutor.setRejectedExecutionHandler(new CustomCallerRunsPolicy());
         return taskExecutor;
+    }
+
+    @Bean(name = "hashCacheGeneratorExecutor")
+    public ExecutorService hashCacheExecutor() {
+        return Executors.newSingleThreadExecutor();
     }
 }
