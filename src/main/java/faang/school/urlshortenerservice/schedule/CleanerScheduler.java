@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.schedule;
 
-import faang.school.urlshortenerservice.repository.jpa.HashRepository;
+import faang.school.urlshortenerservice.service.HashService;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,13 @@ import java.util.List;
 public class CleanerScheduler {
 
     private final UrlService urlService;
-    private final HashRepository hashRepository;
+    private final HashService hashService;
 
     @Scheduled(cron = "${url.schedule.cron}")
     @Transactional
     public void releaseHashes() {
         List<String> hashes = urlService.deleteUnusedHashes();
-        hashRepository.saveBatch(hashes);
+        hashService.saveBatch(hashes);
         log.info("{} hashes have been released and saved", hashes.size());
     }
 }

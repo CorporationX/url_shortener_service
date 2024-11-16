@@ -50,7 +50,6 @@ url:
     days-to-remove: 365
   schedule:
     cron: "0 0 * * * ?" # every day
-  domain: http:localhost/
 
 task-executor:
   core-pool-size: 20

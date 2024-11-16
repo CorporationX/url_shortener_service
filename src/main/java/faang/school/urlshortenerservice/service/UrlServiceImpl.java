@@ -5,9 +5,11 @@ import faang.school.urlshortenerservice.dto.request.UrlRequest;
 import faang.school.urlshortenerservice.dto.response.UrlResponse;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.model.UrlCache;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +33,6 @@ public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
 
-    @Value("${url.domain}")
-    private String domain;
-
     @Value("${url.constants.days-to-remove}")
     private int daysToRemove;
 
@@ -41,7 +40,9 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     public List<String> deleteUnusedHashes() {
         LocalDate today = LocalDate.now();
-        return urlRepository.releaseUnusedHashesFrom(today.minusDays(daysToRemove));
+        List<String> urls = urlRepository.releaseUnusedHashesFrom(today.minusDays(daysToRemove));
+        log.info("Deleted {} unused urls", urls.size());
+        return urls;
     }
 
     @Override
@@ -50,6 +51,7 @@ public class UrlServiceImpl implements UrlService {
         List<Url> urls = urlRepository.findAllById(hashes);
         urls.forEach(url -> url.setCacheDate(LocalDate.now()));
         urlRepository.saveAll(urls);
+        log.info("Updated {} urls", urls.size());
     }
 
     @Retryable(retryFor = DataIntegrityViolationException.class,
@@ -62,7 +64,7 @@ public class UrlServiceImpl implements UrlService {
         if (savedUrl.isPresent()) {
             Url url = savedUrl.get();
             throw new EntityExistsException("Url already exists url: %s, hash: %s"
-                    .formatted(url.getUrl(), fullUrl(url.getHash())));
+                    .formatted(url.getUrl(), url.getHash()));
         }
         Url url = Url.builder()
                 .url(request.url())
@@ -71,10 +73,19 @@ public class UrlServiceImpl implements UrlService {
         url = urlRepository.save(url);
         urlCacheRepository.save(urlMapper.toUrlCache(url));
         log.debug("Saved url: {}", url);
-        return new UrlResponse(fullUrl(url.getHash()));
+        return new UrlResponse(url.getHash());
     }
 
-    private String fullUrl(String hash) {
-        return domain + hash;
+    @Override
+    public String getUrl(String hash) {
+        Optional<UrlCache> urlCache = urlCacheRepository.findById(hash);
+        if (urlCache.isPresent()) {
+            return urlCache.get().getUrl();
+        }
+        Url url = urlRepository.findById(hash)
+                .orElseThrow(() -> new EntityNotFoundException("Url not found with hash: %s"
+                        .formatted(hash)));
+
+        return url.getUrl();
     }
 }
