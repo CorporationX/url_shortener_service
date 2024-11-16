@@ -10,6 +10,16 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "urls")
 public class Url {
+
+    public Url() {
+
+    }
+
+    public Url(String hash, String longUrl) {
+        this.hash = hash;
+        this.url = longUrl;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "url_seq")
     @SequenceGenerator(name = "url_seq", sequenceName = "url_sequence", allocationSize = 1)
@@ -24,4 +34,5 @@ public class Url {
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
 }
