@@ -41,3 +41,4 @@ logging:
 hash:
   batch:
     size: 6
+    maxSize: 100
