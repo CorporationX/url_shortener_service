@@ -27,6 +27,7 @@ spring:
       time-to-live: 6000
       cache-null-values: false
       use-key-prefix: true
+    type: redis
 
 server:
   port: 8080
