@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.service.url;
 import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.mapper.url.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
@@ -15,8 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -60,8 +64,6 @@ class UrlServiceTest {
                 .hash(TEST_HASH)
                 .url(TEST_URL)
                 .build();
-
-        when(hashCache.getHash()).thenReturn(TEST_HASH);
     }
 
     @Nested
@@ -71,13 +73,13 @@ class UrlServiceTest {
         @Test
         @DisplayName("Should successfully create and return a short URL")
         void whenCreatingShortUrlThenShouldReturnSuccessfully() {
+            when(hashCache.getHash()).thenReturn(TEST_HASH);
             when(urlMapper.toEntity(any(UrlDto.class))).thenReturn(urlEntity);
             when(urlRepository.save(any(Url.class))).thenReturn(urlEntity);
 
-            UrlDto result = urlService.createShortUrl(urlRequestDto);
+            UrlResponseDto result = urlService.createShortUrl(urlRequestDto);
 
-            assertEquals(TEST_URL, result.getUrl());
-            assertEquals(TEST_HASH, result.getHash());
+            assert(result.getUrl().contains(TEST_HASH));
             verify(urlRepository).save(any(Url.class));
             verify(urlCacheRepository).save(TEST_HASH, TEST_URL);
         }
@@ -85,6 +87,7 @@ class UrlServiceTest {
         @Test
         @DisplayName("Should save URL with correct hash and URL in repository and cache")
         void whenSavingUrlThenShouldSaveInRepositoryAndCache() {
+            when(hashCache.getHash()).thenReturn(TEST_HASH);
             when(urlMapper.toEntity(any(UrlDto.class))).thenReturn(urlEntity);
             when(urlRepository.save(any(Url.class))).thenReturn(urlEntity);
 
@@ -94,4 +97,50 @@ class UrlServiceTest {
             verify(urlCacheRepository).save(TEST_HASH, TEST_URL);
         }
     }
+
+    @Nested
+    @DisplayName("Tests for retrieving a URL")
+    class GetUrlTests {
+
+        @Test
+        @DisplayName("Should return URL from cache if available")
+        void whenUrlIsCachedThenShouldReturnCachedUrl() {
+            when(urlCacheRepository.getUrl(TEST_HASH)).thenReturn(TEST_URL);
+
+            UrlDto result = urlService.getUrl(TEST_HASH);
+
+            assertEquals(TEST_URL, result.getUrl());
+            assertEquals(TEST_HASH, result.getHash());
+            verify(urlCacheRepository).getUrl(TEST_HASH);
+            verifyNoInteractions(urlRepository);
+        }
+
+        @Test
+        @DisplayName("Should return URL from repository if not in cache")
+        void whenUrlIsNotCachedThenShouldReturnFromRepository() {
+            when(urlCacheRepository.getUrl(TEST_HASH)).thenReturn(null);
+            when(urlRepository.findById(TEST_HASH)).thenReturn(Optional.of(urlEntity));
+
+            UrlDto result = urlService.getUrl(TEST_HASH);
+
+            assertEquals(TEST_URL, result.getUrl());
+            assertEquals(TEST_HASH, result.getHash());
+            verify(urlCacheRepository).getUrl(TEST_HASH);
+            verify(urlRepository).findById(TEST_HASH);
+        }
+
+        @Test
+        @DisplayName("Should throw exception if URL not found in both cache and repository")
+        void whenUrlIsNotFoundThenShouldThrowException() {
+            when(urlCacheRepository.getUrl(TEST_HASH)).thenReturn(null);
+            when(urlRepository.findById(TEST_HASH)).thenReturn(Optional.empty());
+
+            DataValidationException exception = assertThrows(DataValidationException.class, () -> urlService.getUrl(TEST_HASH));
+
+            assertEquals("URL not found for hash: " + TEST_HASH, exception.getMessage());
+            verify(urlCacheRepository).getUrl(TEST_HASH);
+            verify(urlRepository).findById(TEST_HASH);
+        }
+    }
 }
+

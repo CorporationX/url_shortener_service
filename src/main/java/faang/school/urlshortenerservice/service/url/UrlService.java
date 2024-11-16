@@ -3,16 +3,19 @@ package faang.school.urlshortenerservice.service.url;
 import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.mapper.url.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UrlService {
 
     private final UrlRepository urlRepository;
@@ -20,17 +23,44 @@ public class UrlService {
     private final UrlMapper urlMapper;
     private final HashCache hashCache;
 
+    @Value("${server.domain}")
+    private String domain;
+
     @Transactional
-    public UrlDto createShortUrl(UrlRequestDto urlRequestDto) {
-        UrlDto urlDto = buildUrlDto(generateHash(), urlRequestDto.getUrl());
+    public UrlResponseDto createShortUrl(UrlRequestDto urlRequestDto) {
+        String hash = getHash();
+        UrlDto urlDto = buildUrlDto(hash, urlRequestDto.getUrl());
 
         saveUrlDto(urlDto);
         cacheUrlDto(urlDto);
 
-        return urlDto;
+        return UrlResponseDto.builder()
+                .url(domain + "/" + hash)
+                .build();
     }
 
-    private String generateHash() {
+    public UrlDto getUrl(String hash) {
+        String url = getCachedOrPersistedUrl(hash);
+
+        return UrlDto.builder()
+                .hash(hash)
+                .url(url)
+                .build();
+    }
+
+    private String getCachedOrPersistedUrl(String hash) {
+        String cachedUrl = urlCacheRepository.getUrl(hash);
+
+        if (cachedUrl != null) {
+            return cachedUrl;
+        } else {
+            return urlRepository.findById(hash)
+                    .map(Url::getUrl)
+                    .orElseThrow(() -> new DataValidationException("URL not found for hash: " + hash));
+        }
+    }
+
+    private String getHash() {
         return hashCache.getHash();
     }
 
