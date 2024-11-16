@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Setter
 @Getter
-@RedisHash("url")
+@RedisHash(value = "url")
 public class UrlCache implements Serializable {
 
     @Id

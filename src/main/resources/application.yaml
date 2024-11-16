@@ -21,13 +21,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-
-  cache:
-    redis:
-      time-to-live: 6000
-      cache-null-values: false
-      use-key-prefix: true
-    type: redis
+      time-to-live: 60000
 
 server:
   port: 8080
