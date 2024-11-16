@@ -29,6 +29,17 @@ server:
       isert: 1000
       get: 10000
 
+  hash-encoder:
+    hash-batch-size: 8000
+    cache-capacity: 10000
+    generate-size: 12000
+    low-threshold-factor: 0.2
+
+  thread-pool:
+    core-pool-size: 6
+    max-pool-size: 12
+    queue-capacity: 10
+
 logging:
   level:
     root: info

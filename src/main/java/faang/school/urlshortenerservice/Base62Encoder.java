@@ -7,6 +7,7 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
+
     @Value("${base62.alphabet}")
     private String BASE62_ALPHABET;
     @Value("${base62.length}")

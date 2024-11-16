@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
+
     private JdbcTemplate jdbcTemplate;
 
     @Value("${hash.batch-size.insert}")
