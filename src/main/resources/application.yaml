@@ -26,6 +26,7 @@ hash:
   range : 10000
   numberOfParts: 3
   threshold: 100000
+  percent: 0.2
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
