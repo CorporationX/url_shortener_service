@@ -15,6 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
+
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final HashMapper hashMapper;
