@@ -18,7 +18,7 @@ spring:
       hibernate:
         format_sql: true
         jdbc:
-          batch_size: 10000
+          batch_size: 1000
           order_inserts: true
 
   liquibase:
@@ -36,9 +36,8 @@ generator:
   batch:
     size: 100000
   async:
-    poolSize: 5
-    maxPoolSize: 10
-    queueCapacity: 100
+    poolSize: 1
+    maxPoolSize: 1
 
 server:
   url: 'http://localhost:8080'

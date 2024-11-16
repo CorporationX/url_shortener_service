@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashJdbcRepository;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    private final HashJdbcRepository hashJdbcRepository;
     private final Base62Encoder encoder;
 
     @Value("${generator.batch.size:100000}")
@@ -26,8 +24,11 @@ public class HashGenerator {
     @Transactional
     public void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(batchSize);
-        List<String> hashes = encoder.encode(range);
-        hashJdbcRepository.batchInsert(hashes);
+        List<Hash> hashes = encoder.encode(range).stream()
+                .map(Hash::new)
+                .toList();
+
+        hashRepository.saveAll(hashes);
     }
 
     @Async("hashAsyncExecutor")

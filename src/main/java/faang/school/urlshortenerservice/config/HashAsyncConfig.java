@@ -15,15 +15,11 @@ public class HashAsyncConfig {
     @Value("${generator.async.maxPoolSize:10}")
     private int maxPoolSize;
 
-    @Value("${generator.async.queueCapacity:100}")
-    private int queueCapacity;
-
     @Bean(name = "hashAsyncExecutor")
     public Executor hashAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(poolSize);
         executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix("HashAsync-");
         executor.initialize();
 
