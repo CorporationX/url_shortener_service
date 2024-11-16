@@ -30,6 +30,29 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
+    @Transactional
+    public List<Hash> getHashesForCache(int count) {
+        log.info("start generateHashesForCache - count: {}", amount);
+        List<Long> numbers = hashRepository.getUniqueNumbers(amount);
+
+        List<Hash> hashes = base62Encoder.encode(numbers);
+        hashRepository.saveAllHashesBatched(hashes);
+
+        List<Hash> existingHashes = hashRepository.getHashBatch(count);
+        log.info("finish generateHashesForCache with {} hashes", existingHashes);
+
+        return existingHashes;
+    }
+
+    public List<Hash> getHashesBatch(int amount) {
+        log.info("start getHashesBatch with amount: {}", amount);
+
+        List<Hash> hashes = hashRepository.getHashBatch(amount);
+        log.info("finish getHashesBatch with {} hashes", hashes.size());
+
+        return hashes;
+    }
+
     @Async("executor")
     @Transactional
     public void generateBatch() {
@@ -56,27 +79,6 @@ public class HashGenerator {
             hashRepository.saveAllHashesBatched(hashes);
             log.info("finished generating batch with {} hashes.", hashes.size());
         });
-    }
-
-    public List<Hash> getHashesForCache(int count) {
-        log.info("start generateHashesForCache - count: {}", amount);
-        List<Long> numbers = hashRepository.getUniqueNumbers(amount);
-
-        hashRepository.saveAllHashesBatched(base62Encoder.encode(numbers));
-
-        List<Hash> hashes = hashRepository.getHashBatch(count);
-        log.info("finish generateHashesForCache with {} hashes", hashes);
-
-        return hashes;
-    }
-
-    public List<Hash> getHashesBatch(int amount) {
-        log.info("start getHashesBatch with amount: {}", amount);
-
-        List<Hash> hashes = hashRepository.getHashBatch(amount);
-        log.info("finish getHashesBatch with {} hashes", hashes.size());
-
-        return hashes;
     }
 
     @Transactional

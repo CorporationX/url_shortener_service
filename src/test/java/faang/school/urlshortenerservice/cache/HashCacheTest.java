@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.config.cache.CacheProperties;
 import faang.school.urlshortenerservice.config.executor.ExecutorServiceConfig;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
@@ -19,8 +20,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashCacheTest {
@@ -34,16 +33,11 @@ class HashCacheTest {
     @Mock
     private HashGenerator hashGenerator;
 
-    @Mock
-    private Queue<Hash> hashesCache;
-
-    @Mock
-    private AtomicBoolean filling;
-
     private static final int COUNT = 3;
     private static final int FILL_PERCENT = 50;
-//    private Queue<Hash> hashesCache;
-//    private AtomicBoolean filling;
+    private Queue<Hash> hashesCache = new ArrayBlockingQueue<>(COUNT);
+    private AtomicBoolean filling =  new AtomicBoolean(false);
+    private CacheProperties cacheProperties = new CacheProperties();
     private List<Hash> hashes;
     private Hash hashA;
     private Hash hashB;
@@ -52,29 +46,24 @@ class HashCacheTest {
 
     @BeforeEach
     public void init() {
-        ReflectionTestUtils.setField(hashCache, "capacity", COUNT);
-        ReflectionTestUtils.setField(hashCache, "fillPercent", FILL_PERCENT);
-        ReflectionTestUtils.setField(hashesCache, "hashesCache", new ArrayBlockingQueue<>(COUNT));
-        ReflectionTestUtils.setField(filling, "filling", false);
-
-//        hashesCache = new ArrayBlockingQueue<>(COUNT);
-//        filling = new AtomicBoolean(false);
         hashA = new Hash("a");
         hashB = new Hash("b");
         hashC = new Hash("c");
         hashes = Arrays.asList(hashA, hashB, hashC);
+        hashesCache.addAll(hashes);
+        cacheProperties.setCapacity(COUNT);
+        cacheProperties.setFillPercent(FILL_PERCENT);
+
+        ReflectionTestUtils.setField(hashCache, "cacheProperties", cacheProperties);
+        ReflectionTestUtils.setField(hashCache, "hashesCache", hashesCache);
+        ReflectionTestUtils.setField(hashCache, "filling", filling);
     }
 
     @Test
-    @DisplayName("Success when init hashesCache")
-    public void whenInitHashesCacheThenSuccess() {
-//        when(hashGenerator.getHashesForCache(COUNT)).thenReturn(hashes);
-//
-//        hashCache.initHashesCache();
-//
-//        assertTrue(hashesCache.contains(hashA));
-//        assertTrue(hashesCache.contains(hashB));
-//        assertTrue(hashesCache.contains(hashC));
-//        verify(hashGenerator).getHashesForCache(COUNT);
+    @DisplayName("Success when get hash with full hashesCache")
+    public void whenGetHashWithFullHashesCacheThenReturnHash() {
+        String result = hashCache.getHash();
+
+        assertNotNull(result);
     }
 }

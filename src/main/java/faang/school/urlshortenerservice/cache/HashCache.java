@@ -4,11 +4,9 @@ import faang.school.urlshortenerservice.config.cache.CacheProperties;
 import faang.school.urlshortenerservice.config.executor.ExecutorServiceConfig;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-//    @Value("${hash.cache.capacity}")
-//    private int capacity;
-//
-//    @Value("${hash.cache.fill.percent}")
-//    private int fillPercent;
+    private static final int ONE_HUNDRED = 100;
 
     private final AtomicBoolean filling;
     private final Queue<Hash> hashesCache;
@@ -47,11 +41,6 @@ public class HashCache {
 
         hashesCache.addAll(hashGenerator.getHashesForCache(cacheProperties.getCapacity()));
     }
-
-//    @PostConstruct
-//    public void initHashesCache() {
-//        hashesCache.addAll(hashGenerator.getHashesForCache(capacity));
-//    }
 
     @Async("executor")
     @Transactional
@@ -81,6 +70,6 @@ public class HashCache {
     }
 
     private int getFullnessCache() {
-        return hashesCache.size() * 100 / cacheProperties.getCapacity();
+        return hashesCache.size() * ONE_HUNDRED / cacheProperties.getCapacity();
     }
 }
