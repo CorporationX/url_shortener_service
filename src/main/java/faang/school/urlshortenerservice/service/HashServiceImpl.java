@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.jpa.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

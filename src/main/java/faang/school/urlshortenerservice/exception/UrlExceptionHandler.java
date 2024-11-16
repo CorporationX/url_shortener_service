@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.exception;
 
 import faang.school.urlshortenerservice.dto.response.ConstraintErrorResponse;
 import faang.school.urlshortenerservice.dto.response.ErrorResponse;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,13 @@ public class UrlExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(EntityNotFoundException e) {
+        log.error(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(EntityExistsException e) {
         log.error(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

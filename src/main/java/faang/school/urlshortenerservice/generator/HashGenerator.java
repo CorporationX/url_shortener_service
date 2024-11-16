@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -18,10 +18,12 @@ public class HashGenerator {
     private final HashService hashService;
 
     @Async("taskExecutor")
-    public void generateBatch(int hashBatch) {
-        List<Long> numbers = hashService.getUniqueNumbers(hashBatch);
-        List<String> hashes = baseEncoder.encode(numbers);
-        hashService.saveBatch(hashes);
-        log.info("Generated {} hashes", hashes.size());
+    public CompletableFuture<Void> generateBatch(int hashBatch) {
+        return CompletableFuture.supplyAsync(() -> hashService.getUniqueNumbers(hashBatch))
+                .thenApply(baseEncoder::encode)
+                .thenAccept(hashes -> {
+                    hashService.saveBatch(hashes);
+                    log.info("Generated {} hashes", hashes.size());
+                });
     }
 }

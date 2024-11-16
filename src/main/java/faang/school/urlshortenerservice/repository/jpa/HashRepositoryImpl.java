@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.jpa;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

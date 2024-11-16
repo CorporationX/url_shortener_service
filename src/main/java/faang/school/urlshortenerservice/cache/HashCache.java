@@ -2,10 +2,11 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,31 +20,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Value("${local-cache.capacity}")
+    @Value("${local.cache.capacity}")
     private int capacity;
 
-    @Value("${local-cache.capacity-usage}")
+    @Value("${local.cache.capacity-usage}")
     private int capacityUsage;
 
-    @Value("${hash.constants.batch-size}")
+    @Value("${hash.constants.batch.size}")
     private int batchSize;
 
     private final HashGenerator hashGenerator;
     private final HashService hashService;
-    private final Queue<String> hashesCache = new ArrayBlockingQueue<>(capacity);
-    private final AtomicBoolean isFillingRequired = new AtomicBoolean(false);
+    private Queue<String> hashesCache;
+    private AtomicBoolean isFillingRequired;
 
-    @PostConstruct
-    public void warmCache() {
-        hashGenerator.generateBatch(batchSize);
+    @EventListener(ApplicationReadyEvent.class)
+    public void init() {
+        hashesCache = new ArrayBlockingQueue<>(capacity);
+        isFillingRequired = new AtomicBoolean(false);
+        warmCache();
+    }
+
+    private void warmCache() {
+        hashGenerator.generateBatch(batchSize).join();
         CompletableFuture<List<String>> future = hashService.getHashes(capacity);
         List<String> hashes = future.join();
         hashesCache.addAll(hashes);
+        log.info("Warming up cache for {} hashes", hashes.size());
     }
 
     public String getHash() {
         double currentCapacity = (hashesCache.size() / (double) capacity) * 100.0;
-        if (currentCapacity > capacityUsage) {
+        if (currentCapacity < capacityUsage) {
             isFillingRequired.set(true);
             if (isFillingRequired.get()) {
                 hashGenerator.generateBatch(capacity - hashesCache.size());
