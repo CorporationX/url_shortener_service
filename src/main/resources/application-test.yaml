@@ -10,3 +10,5 @@ hash:
   cache:
     capacity: 10
     fillPercent: 0.7
+  cleaner:
+    cron: "* * * * * *" #For test immediately

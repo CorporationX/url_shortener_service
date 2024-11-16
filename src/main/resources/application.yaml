@@ -41,3 +41,5 @@ hash:
   cache:
     capacity: 1000
     fillPercent: 0.2
+  cleaner:
+    cron: "0 0 0 * * *" #One time a day at midnight
