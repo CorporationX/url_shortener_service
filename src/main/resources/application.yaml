@@ -38,6 +38,12 @@ server:
         queueCapacity: 40
   domain: https://urlshortener.com
 
+scheduler:
+  cleaning:
+    url:
+      cron: 0 0 0 * * *
+      expiration-interval: 1
+
 logging:
   level:
     root: info
