@@ -1,0 +1,17 @@
+spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 0 # 60 секунд для тестов
+  datasource:
+    username: test
+    password: test
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+logging:
+  level:
+    org.springframework.data.redis: DEBUG
+    org.springframework.cache: DEBUG

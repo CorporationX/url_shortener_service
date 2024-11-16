@@ -1,13 +1,12 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.entity.Hash;
-
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
