@@ -56,6 +56,7 @@ public class UrlService {
         urlCacheRepository.deleteHashes(hashes);
     }
 
+    @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
         String originalUrl = urlCacheRepository.findByHash(hash);
 

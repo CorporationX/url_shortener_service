@@ -20,9 +20,8 @@ public class HashGenerator {
     @Value("${generator.batch.size:100000}")
     private int batchSize;
 
-    @Async("hashAsyncExecutor")
     @Transactional
-    public void generateBatch() {
+    private void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = encoder.encode(range).stream()
                 .map(Hash::new)
