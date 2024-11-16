@@ -3,12 +3,10 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 
-import java.util.Optional;
-
 public interface UrlService {
 
-    UrlDto shortenUrl(UrlDto urlDto);
+    UrlDto convertShortUrl(UrlDto urlDto);
 
-    Optional<Url> getUrl(String hash);
+    Url getUrl(String hash);
 
 }

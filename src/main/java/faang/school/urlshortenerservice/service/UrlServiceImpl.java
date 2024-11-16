@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
@@ -21,22 +19,27 @@ public class UrlServiceImpl implements UrlService{
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
-    public UrlDto shortenUrl(UrlDto urlDto) {
+    @Override
+    public UrlDto convertShortUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
-        Url url = Url.builder()
+        Url urlEntity = Url.builder()
                 .hash(hash)
                 .url(urlDto.getUrl())
                 .build();
-        urlRepository.save(url);
-        urlCacheRepository.save(hash, url);
+        urlRepository.save(urlEntity);
+        urlCacheRepository.save(hash, urlEntity);
         urlDto.setUrl(String.format("https://urlshortener/%s", hash));
         return urlDto;
     }
 
-    public Optional<Url> getUrl(String hash) {
-        return Optional.ofNullable(urlCacheRepository.getUrl(hash)
-                .or(() -> urlRepository.findById(hash))
-                .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash)));
+    @Override
+    public Url getUrl(String hash) {
+        Url urlEntity = urlCacheRepository.getUrl(hash);
+        if (urlEntity == null) {
+            urlEntity = urlRepository.findById(hash)
+                    .orElseThrow(() -> new UrlNotFoundException("Url not found for hash: " + hash));
+        }
+        return urlEntity;
     }
 
 }

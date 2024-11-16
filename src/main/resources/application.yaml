@@ -35,7 +35,7 @@ hash:
   unique-number-request-count: 200
   cache:
     size: 100
-    percent: 20
+    percent-of-size: 20
 
 executor:
   corePoolSize: 5
@@ -46,3 +46,4 @@ scheduler:
   cleaning:
     url:
       cron: 0 0 0 * * *
+      expiration-interval: 1

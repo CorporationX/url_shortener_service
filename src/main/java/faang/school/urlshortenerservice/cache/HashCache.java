@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,15 +16,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Value("${hash.cache.size}")
-    private int cacheSize;
-
-    @Value("${hash.cache.percent}")
-    private int percent;
-
     private final ExecutorService executorService;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
+    private final CacheProperties cacheProperties;
 
     private BlockingQueue<String> cacheQueue;
     private final AtomicBoolean isFilled = new AtomicBoolean(false);
@@ -33,7 +27,9 @@ public class HashCache {
 
     @PostConstruct
     private void init() {
-        hasPercent = (double) (cacheSize * percent) / 100;
+        int cacheSize = cacheProperties.getSize();
+        int percentOfSize = cacheProperties.getPercentOfSize();
+        hasPercent = (double) (cacheSize * percentOfSize) / 100;
         cacheQueue = new LinkedBlockingQueue<>(cacheSize);
     }
 
@@ -42,23 +38,13 @@ public class HashCache {
             return cacheQueue.poll();
         } else {
             if (isFilled.compareAndSet(false, true)) {
-                synchronized (cacheQueue) {
-                    executorService.execute(() -> {
-                        int batchSize = cacheSize - cacheQueue.size();
-                        List<String> hashes = hashRepository.getHashBatch(batchSize);
-                        hashes.forEach(cacheQueue::add);
-                        hashGenerator.generateBatch();
-                        isFilled.set(false);
-                    });
-                }
-            }
-
-            while (cacheQueue.isEmpty()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                executorService.execute(() -> {
+                    int batchSize = cacheProperties.getSize() - cacheQueue.size();
+                    List<String> hashes = hashRepository.getHashBatch(batchSize);
+                    hashes.forEach(cacheQueue::add);
+                    hashGenerator.generateBatch();
+                    isFilled.set(false);
+                });
             }
 
             return cacheQueue.poll();
