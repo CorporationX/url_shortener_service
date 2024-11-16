@@ -47,3 +47,6 @@ thread-pool:
 hash-cache:
   minimum-percentage-to-add: 0.2
   size: 1500
+
+scheduler:
+  cron: 0 0 * * *
