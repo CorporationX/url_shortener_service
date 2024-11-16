@@ -1,14 +1,15 @@
 package faang.school.urlshortenerservice.util.uri;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Component
 public class UriBuilder {
-    @Value("${app.uri}")
-    private String appUri;
-
     public String response(String hash) {
-        return appUri + hash;
+        return ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/{hash}")
+                .buildAndExpand(hash)
+                .toUriString();
     }
 }

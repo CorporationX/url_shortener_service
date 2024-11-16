@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.hash.util;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.util.encode.Base62Encoder;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashGeneratorTest {
-    private static final int NUMBER_SIZE = 2_000;
+    private static final int NUMBER_SIZE = 1_000;
+    private static final long MAX_DB_HASHES_SIZE = 2_000;
 
     @Mock
     private HashService hashService;
@@ -38,21 +40,25 @@ class HashGeneratorTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(hashGenerator, "numberSize", NUMBER_SIZE);
+        ReflectionTestUtils.setField(hashGenerator, "maxDbHashesSize", MAX_DB_HASHES_SIZE);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void testGenerate_successful() {
+    void testGenerate_notEnoughHashSizeInDb() {
+        List<Hash> hashes = HASHES.stream()
+                .map(Hash::new)
+                .toList();
         when(hashService.getHashesSize()).thenReturn((long) NUMBER_SIZE);
         when(hashService.getUniqueNumbers(NUMBER_SIZE)).thenReturn(NUMBERS);
         when(encoder.encode(NUMBERS)).thenReturn(HASHES);
 
         hashGenerator.generate();
 
-        ArgumentCaptor<List<String>> hashesCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Hash>> hashesCaptor = ArgumentCaptor.forClass(List.class);
 
         verify(hashService).saveAllBatch(hashesCaptor.capture());
-        assertThat(hashesCaptor.getValue()).isEqualTo(HASHES);
+        assertThat(hashesCaptor.getValue()).isEqualTo(hashes);
     }
 
     @Test

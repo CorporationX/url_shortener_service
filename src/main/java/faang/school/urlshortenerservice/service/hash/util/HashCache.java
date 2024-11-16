@@ -33,6 +33,7 @@ public class HashCache {
 
     @PostConstruct
     public void loadHashes() {
+        isUpdating.set(true);
         updateHashes();
     }
 
@@ -60,6 +61,6 @@ public class HashCache {
     private void executeUpdating() {
         List<String> newHashes = hashService.findAllByPackSize(hashesMax);
         hashes.addAll(newHashes);
-        hashesSize.set(newHashes.size());
+        hashesSize.set(newHashes.size() + hashesSize.get());
     }
 }

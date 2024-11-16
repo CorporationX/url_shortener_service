@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service.hash;
 
-import faang.school.urlshortenerservice.repository.hash.HashJdbcRepository;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,12 +11,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class HashService {
-    private final HashJdbcRepository hashJdbcRepository;
     private final HashRepository hashRepository;
 
     @Transactional
-    public void saveAllBatch(List<String> hashes) {
-        hashJdbcRepository.saveAllBatch(hashes);
+    public void saveAllBatch(List<Hash> hashes) {
+        hashRepository.saveAll(hashes);
     }
 
     @Transactional

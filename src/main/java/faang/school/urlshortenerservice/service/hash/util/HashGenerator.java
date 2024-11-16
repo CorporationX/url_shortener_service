@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.hash.util;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.util.encode.Base62Encoder;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,19 @@ public class HashGenerator {
     @Value("${app.hash_generator.get_unique_number_size}")
     private int numberSize;
 
+    @Value("${app.hash_generator.max_db_hashes_size}")
+    private long maxDbHashesSize;
+
     @Async("hashGeneratorExecutorPool")
     public void generate() {
-        Long dbHashesSeize = hashService.getHashesSize();
-        if (dbHashesSeize < numberSize * 2L) {
+        Long dbHashesSize = hashService.getHashesSize();
+        if (dbHashesSize < maxDbHashesSize) {
             List<Long> numbers = hashService.getUniqueNumbers(numberSize);
             List<String> hashes = encoder.encode(numbers);
-            hashService.saveAllBatch(hashes);
+            List<Hash> hashesEntity = hashes.stream()
+                    .map(Hash::new)
+                    .toList();
+            hashService.saveAllBatch(hashesEntity);
         }
     }
 }

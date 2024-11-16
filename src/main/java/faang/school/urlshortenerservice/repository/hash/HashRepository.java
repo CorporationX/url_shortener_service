@@ -17,6 +17,12 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             """)
     List<Long> getUniqueNumbers(@Param("number") int number);
 
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(h.hash)
+            FROM hash h
+            """)
+    Long getHashesSize();
+
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM hash
@@ -30,10 +36,4 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             RETURNING hash
             """)
     List<String> findAllAndDeletePack(@Param("number") int number);
-
-    @Query(nativeQuery = true, value = """
-            SELECT COUNT(h.hash)
-            FROM hash h
-            """)
-    Long getHashesSize();
 }

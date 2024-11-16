@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
@@ -45,19 +46,23 @@ class UrlCleanerServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     void testRemoveExpiredUrls_successful() {
+        List<Hash> hashes = HASHES.stream()
+                .map(Hash::new)
+                .toList();
         when(urlRepository.getAndDeleteUrlsByDate(any(LocalDateTime.class))).thenReturn(HASHES);
 
-        urlCleanerService.removeExpiredUrls();
+        urlCleanerService.removeExpiredUrlsAndResaveHashes();
 
         ArgumentCaptor<LocalDateTime> dateCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         ArgumentCaptor<List<String>> hashesCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Hash>> hashesEntityCaptor = ArgumentCaptor.forClass(List.class);
 
         verify(urlRepository).getAndDeleteUrlsByDate(dateCaptor.capture());
-        verify(hashService).saveAllBatch(hashesCaptor.capture());
+        verify(hashService).saveAllBatch(hashesEntityCaptor.capture());
         verify(urlCacheRepository).deleteAll(hashesCaptor.capture());
 
         assertThat(dateCaptor.getValue().toLocalDate()).isEqualTo(LocalDateTime.now().minusDays(DAYS).toLocalDate());
-        assertThat(hashesCaptor.getAllValues().get(0)).isEqualTo(HASHES);
-        assertThat(hashesCaptor.getAllValues().get(1)).isEqualTo(HASHES);
+        assertThat(hashesCaptor.getValue()).isEqualTo(HASHES);
+        assertThat(hashesEntityCaptor.getValue()).isEqualTo(hashes);
     }
 }

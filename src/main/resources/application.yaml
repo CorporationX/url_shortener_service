@@ -34,19 +34,12 @@ logging:
     root: info
 
 app:
-  uri: 'http://localhost:8080/sh.com/'
-  jdbc-template:
-    batch-size:
-      save-hashes: 500
-  encoder:
-    base_62:
-      characters: 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1032547698'
-      base: 62
   hash_generator:
-    get_unique_number_size: 1_000
+    get_unique_number_size: 1_0
+    max_db_hashes_size: 2_0
   hash_cache:
-    hashes_max_size: 1_000
-    hashes_min_size: 200
+    hashes_max_size: 1_0
+    hashes_min_size: 2
   async:
     hash_generator:
       core_pool_size: 10

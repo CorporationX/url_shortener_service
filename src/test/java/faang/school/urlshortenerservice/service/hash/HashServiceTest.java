@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service.hash;
 
-import faang.school.urlshortenerservice.repository.hash.HashJdbcRepository;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +20,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class HashServiceTest {
     @Mock
-    private HashJdbcRepository hashJdbcRepository;
-
-    @Mock
     private HashRepository hashRepository;
 
     @InjectMocks
@@ -31,13 +28,16 @@ class HashServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     void testSaveAllBatch_successful() {
-        hashService.saveAllBatch(HASHES);
+        List<Hash> hashes = HASHES.stream()
+                .map(Hash::new)
+                .toList();
+        hashService.saveAllBatch(hashes);
 
-        ArgumentCaptor<List<String>> hashesCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Hash>> hashesCaptor = ArgumentCaptor.forClass(List.class);
 
-        verify(hashJdbcRepository).saveAllBatch(hashesCaptor.capture());
+        verify(hashRepository).saveAll(hashesCaptor.capture());
 
-        assertThat(hashesCaptor.getValue()).isEqualTo(HASHES);
+        assertThat(hashesCaptor.getValue()).isEqualTo(hashes);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service.url;
 
-import faang.school.urlshortenerservice.annotation.logging.LogExecution;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
@@ -39,7 +38,6 @@ public class UrlService {
         return uriBuilder.response(hash);
     }
 
-    @LogExecution
     @Transactional(readOnly = true)
     public String getPrimalUri(String hash) {
         Url url = urlCacheRepository.findByHash(hash);

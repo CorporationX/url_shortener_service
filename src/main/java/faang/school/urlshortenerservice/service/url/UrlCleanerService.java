@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
@@ -22,9 +23,12 @@ public class UrlCleanerService {
     private int days;
 
     @Transactional
-    public void removeExpiredUrls() {
+    public void removeExpiredUrlsAndResaveHashes() {
         List<String> hashes = urlRepository.getAndDeleteUrlsByDate(LocalDateTime.now().minusDays(days));
-        hashService.saveAllBatch(hashes);
+        List<Hash> hashesEntity = hashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashService.saveAllBatch(hashesEntity);
         urlCacheRepository.deleteAll(hashes);
     }
 }

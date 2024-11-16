@@ -20,6 +20,6 @@ class UrlCleanerSchedulerTest {
     @Test
     void testExecute_successful() {
         urlCleanerScheduler.execute();
-        verify(urlCleanerService).removeExpiredUrls();
+        verify(urlCleanerService).removeExpiredUrlsAndResaveHashes();
     }
 }

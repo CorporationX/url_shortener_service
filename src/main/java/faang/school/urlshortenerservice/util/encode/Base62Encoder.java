@@ -1,17 +1,14 @@
 package faang.school.urlshortenerservice.util.encode;
 
-import org.springframework.beans.factory.annotation.Value;
+import io.seruco.encoding.base62.Base62;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Component
 public class Base62Encoder {
-    @Value("${app.encoder.base_62.characters}")
-    private String characters;
-
-    @Value("${app.encoder.base_62.base}")
-    private int base;
+    private final Base62 base62 = Base62.createInstance();
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -19,13 +16,17 @@ public class Base62Encoder {
                 .toList();
     }
 
-    private String encodeToBase62(long number) {
-        StringBuilder encoded = new StringBuilder();
-        while (number > 0) {
-            int remainder = (int) (number % base);
-            encoded.append(characters.charAt(remainder));
-            number /= base;
+    private String encodeToBase62(Long number) {
+        byte[] bytes = compactLongToBytes(number);
+        return new String(base62.encode(bytes));
+    }
+
+    private byte[] compactLongToBytes(long number) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        while (number != 0) {
+            bos.write((byte) (number & 0xFF));
+            number >>>= 8;
         }
-        return encoded.reverse().toString();
+        return bos.toByteArray();
     }
 }

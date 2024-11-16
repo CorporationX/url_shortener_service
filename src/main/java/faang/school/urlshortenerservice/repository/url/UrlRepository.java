@@ -14,13 +14,9 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(nativeQuery = true, value = """
-            DELETE FROM url u
-            WHERE u.url IN (
-                SELECT url.url
-                FROM url
-                WHERE url.created_at < :date
-            )
-            RETURNING u.hash
+            DELETE FROM url
+            WHERE created_at < :date
+            RETURNING hash
             """)
     List<String> getAndDeleteUrlsByDate(@Param("date") LocalDateTime date);
 }
