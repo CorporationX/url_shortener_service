@@ -1,13 +1,18 @@
 package faang.school.urlshortenerservice.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import jakarta.validation.constraints.Null;
+import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
-@Builder
-public record UrlDto(
-        @NotNull(message = "Url can't be null or empty!")
-        @URL(message = "Invalid URL format!")
-        String url
-) {
+@Data
+public class UrlDto {
+    @NotNull(message = "Url can't be null or empty!")
+    @URL(message = "Invalid URL format!")
+    private String url;
+
+    @Null
+    @JsonIgnore
+    private String hash;
 }

@@ -15,6 +15,10 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 1000
+  cache:
+    type: redis
+    redis:
+      time-to-live: 604800000
 
   data:
     redis:
