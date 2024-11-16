@@ -16,6 +16,7 @@ import java.util.List;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
     private final AsyncProperties asyncProperties;
 
     @Value("${hash.batch.size}")
@@ -25,9 +26,10 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(n);
 
-        List<Hash> hashes = uniqueNumbers.stream()
-                .map(uniqueNumber -> Hash.builder()
-                        .hash(Base62Encoder.encode(uniqueNumber))
+        List<String> encodedHashes = base62Encoder.encode(uniqueNumbers);
+
+        List<Hash> hashes = encodedHashes.stream().map(encodedHash -> Hash.builder()
+                        .hash(encodedHash)
                         .build())
                 .toList();
 
