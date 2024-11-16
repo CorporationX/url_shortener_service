@@ -23,3 +23,13 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  constants:
+    batch-size: 1000
+
+task-executor:
+  core-pool-size: 20
+  max-pool-size: 50
+  queue-capacity: 1000
+  thread-name-prefix: taskExecutor-
