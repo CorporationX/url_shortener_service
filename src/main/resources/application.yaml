@@ -25,7 +25,7 @@ task-executor:
 
 hash:
   encoder:
-    characterBase62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    character-base-62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     hash-size: 6
   repository:
     batch-size: 1000

@@ -19,7 +19,7 @@ public class Base62Encoder {
     @Value("${hash.encoder.hash-size}")
     private int hashSize;
 
-    @Value("${hash.encoder.characterBase62}")
+    @Value("${hash.encoder.character-base-62}")
     private String characterBase62;
 
     public List<String> encodeBatch(List<Long> sequence) {
