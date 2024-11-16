@@ -85,7 +85,7 @@ public class UrlServiceImpl implements UrlService {
         Url url = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Url not found with hash: %s"
                         .formatted(hash)));
-
+        urlCacheRepository.save(urlMapper.toUrlCache(url));
         return url.getUrl();
     }
 }

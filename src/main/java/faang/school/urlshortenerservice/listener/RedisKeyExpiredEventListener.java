@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.listener;
 
 import faang.school.urlshortenerservice.model.UrlCache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisKeyExpiredEvent;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 public class RedisKeyExpiredEventListener {
 
@@ -20,6 +22,7 @@ public class RedisKeyExpiredEventListener {
         UrlCache urlCache = (UrlCache) event.getValue();
         if (urlCache != null) {
             hashesSet.add(urlCache.getHash());
+            log.debug("Expired hash: {}", urlCache.getHash());
         }
     }
 
