@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.validator;
 
 import jakarta.validation.ValidationException;
-import lombok.RequiredArgsConstructor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
