@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.cache.RedisCache;
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.util.cache.HashCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
     private final RedisCache redisCache;
+    private final HashCache hashCache;
 
     @Override
     public String getLongUrl(String hash) {
@@ -21,7 +24,15 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String getShortUrl(String hash) {
-        return "";
+    public String getShortUrl(String url) {
+        String hashFromCache = hashCache.getHash();
+
+        redisCache.saveToCache(hashFromCache, url);
+        urlRepository.save(Url.builder()
+                .hash(hashFromCache)
+                .url(url)
+                .build());
+
+        return url;
     }
 }
