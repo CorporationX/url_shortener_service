@@ -18,7 +18,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public String getLongUrl(String hash) {
         return urlCacheRepository.get(hash)
-                .or(() -> urlRepository.findById(hash).map(Url::getUrl))
+                .or(() -> urlRepository.findByHash(hash))
                 .map(url -> {
                     urlCacheRepository.save(hash, url);
                     return url;

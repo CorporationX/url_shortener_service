@@ -5,16 +5,16 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -34,70 +34,61 @@ class UrlServiceImplTest {
     @InjectMocks
     private UrlServiceImpl urlService;
 
-    @BeforeEach
-    void setUp() {
-    }
+    private final String hash = "exampleHash";
+    private final String longUrl = "https://example.com";
 
     @Test
     void testGetLongUrl_FoundInCache() {
-        String hash = "abc123";
-        String longUrl = "https://example.com";
-
         when(urlCacheRepository.get(hash)).thenReturn(Optional.of(longUrl));
 
         String result = urlService.getLongUrl(hash);
 
-        assertEquals(longUrl, result);
-        verify(urlCacheRepository, times(1)).get(hash);
-        verify(urlRepository, never()).findById(hash);
-        verify(urlCacheRepository, never()).save(anyString(), anyString());
+        assertThat(result).isEqualTo(longUrl);
+        verify(urlCacheRepository).get(hash);
+        verify(urlRepository, never()).findByHash(hash);
     }
 
     @Test
     void testGetLongUrl_FoundInDatabase() {
-        String hash = "abc123";
-        String longUrl = "https://example.com";
-        Url urlEntity = Url.builder().hash(hash).url(longUrl).build();
-
         when(urlCacheRepository.get(hash)).thenReturn(Optional.empty());
-        when(urlRepository.findById(hash)).thenReturn(Optional.of(urlEntity));
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.of(longUrl));
 
         String result = urlService.getLongUrl(hash);
 
-        assertEquals(longUrl, result);
-        verify(urlCacheRepository, times(1)).get(hash);
-        verify(urlRepository, times(1)).findById(hash);
-        verify(urlCacheRepository, times(1)).save(hash, longUrl);
+        assertThat(result).isEqualTo(longUrl);
+        verify(urlCacheRepository).get(hash);
+        verify(urlRepository).findByHash(hash);
+        verify(urlCacheRepository).save(hash, longUrl);
     }
 
     @Test
     void testGetLongUrl_NotFound() {
-        String hash = "abc123";
-
         when(urlCacheRepository.get(hash)).thenReturn(Optional.empty());
-        when(urlRepository.findById(hash)).thenReturn(Optional.empty());
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> urlService.getLongUrl(hash));
 
-        assertEquals("URL not found for hash: " + hash, exception.getMessage());
-        verify(urlCacheRepository, times(1)).get(hash);
-        verify(urlRepository, times(1)).findById(hash);
-        verify(urlCacheRepository, never()).save(anyString(), anyString());
+        assertThat(exception.getMessage()).isEqualTo("URL not found for hash: " + hash);
+        verify(urlCacheRepository).get(hash);
+        verify(urlRepository).findByHash(hash);
     }
 
     @Test
     void testGetShortUrl() {
-        String longUrl = "https://example.com";
-        String hash = "abc123";
+        String generatedHash = "abc123";
+        when(hashCache.getHash()).thenReturn(generatedHash);
 
-        when(hashCache.getHash()).thenReturn(hash);
+        String resultHash = urlService.getShortUrl(longUrl);
 
-        String result = urlService.getShortUrl(longUrl);
+        assertEquals(generatedHash, resultHash);
 
-        assertEquals(hash, result);
-        verify(hashCache, times(1)).getHash();
-        verify(urlCacheRepository, times(1)).save(hash, longUrl);
-        verify(urlRepository, times(1)).save(argThat(url ->
-                url.getHash().equals(hash) && url.getUrl().equals(longUrl)));
+        verify(urlCacheRepository).save(generatedHash, longUrl);
+
+        ArgumentCaptor<Url> captor = ArgumentCaptor.forClass(Url.class);
+        verify(urlRepository).save(captor.capture());
+
+        Url capturedUrl = captor.getValue();
+        assertEquals(generatedHash, capturedUrl.getHash());
+        assertEquals(longUrl, capturedUrl.getUrl());
     }
 }
