@@ -24,10 +24,6 @@ public class UrlService {
     @Transactional
     public String createShortUrl(Link link) {
         String hash = hashCache.getHash();
-
-        System.out.println("createShortUrl hash: " + hash);
-
-
         urlRepository.save(new Url(hash, link.getLink(), LocalDateTime.now()));
         urlCacheRepository.save(hash, link.getLink());
         log.info("Converted url added: {}", link.getLink());
@@ -36,18 +32,9 @@ public class UrlService {
 
     @Transactional(readOnly = true)
     public String getShortUrl(String hash) {
-
-        System.out.println("getShortUrl : " + hash);
-
         String cachedUrl = urlCacheRepository.get(hash);
-
-        System.out.println("cachedUrl: " + cachedUrl);
-
         if (cachedUrl == null) {
             Url url = urlRepository.findByHash(hash);
-
-            System.out.println("Url url: " + url);
-
             if (url != null) {
                 cachedUrl = url.getUrl();
             } else {
