@@ -4,11 +4,9 @@ import faang.school.urlshortenerservice.annotation.Url;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
-@Component
 public class UrlValidator implements ConstraintValidator<Url, String> {
 
     private Pattern pattern;
