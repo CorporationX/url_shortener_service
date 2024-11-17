@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.local.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.service.HashGeneratorTransactionalService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class LocalCache {
     private int fillPercent;
 
     private final HashGenerator hashGenerator;
+    private final HashGeneratorTransactionalService hashGeneratorTransactionalService;
     private Queue<String> hashQueue;
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
@@ -38,7 +40,7 @@ public class LocalCache {
         if (filling.compareAndSet(false, true)) {
             try {
                 log.debug("Synchronous cache population with the first batch");
-                hashQueue.addAll(hashGenerator.generateInitBatch(batchSize));
+                hashQueue.addAll(hashGeneratorTransactionalService.generateInitBatch(batchSize));
                 log.debug("Start of asynchronous cache replenish");
                 replenishHashQueueAsync();
             } catch (Exception exception) {
