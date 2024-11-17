@@ -1,25 +1,39 @@
 spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/postgres
+        username: user
+        password: password
 
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+            ddl-auto: none
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    liquibase:
+        change-log: classpath:db/changelog/db.changelog-master.yaml
+
+    redis:
+    host: localhost
+    port: 6379
+    jedis:
+        pool:
+            max-idle: 10
+            min-idle: 1
+            max-active: 10
+            max-wait: -1ms
 
 server:
-  port: 8080
+    port: 8080
 
 logging:
-  level:
-    root: info
+    level:
+        root: info
+
+scheduler:
+    cron:
+        cleaner: "0 0 1 * * ?"

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @Column(name = "hash", nullable = false)
+    @Column(name = "hash", nullable = false, length = 6)
     private String hash;
 
     @Column(name = "original_url", nullable = false, length = 2048)

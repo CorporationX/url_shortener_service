@@ -36,7 +36,6 @@ public class CleanerScheduler {
             }
 
             urlRepository.deleteUrlsOlderThan(oneYearAgo);
-
             log.info("The old associations have been deleted, and the hashes have been moved to the hash table.");
         } catch (Exception e) {
             log.error("Error while deleting old records and saving hashes.", e);
