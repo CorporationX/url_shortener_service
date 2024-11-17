@@ -20,5 +20,4 @@ public class ThreadPoolProperties {
     public ExecutorService urlThreadPool() {
         return Executors.newFixedThreadPool(size);
     }
-
 }

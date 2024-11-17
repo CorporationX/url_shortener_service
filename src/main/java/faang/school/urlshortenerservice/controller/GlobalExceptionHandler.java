@@ -1,9 +1,9 @@
 package faang.school.urlshortenerservice.controller;
 
 
+import faang.school.urlshortenerservice.exception.ErrorResponse;
 import faang.school.urlshortenerservice.exception.ValidationErrorResponse;
 import faang.school.urlshortenerservice.exception.Violation;
-import faang.school.urlshortenerservice.exception.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

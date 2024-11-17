@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.hash;
+package faang.school.urlshortenerservice.config.сache;
 
 
 import lombok.Getter;
@@ -10,10 +10,9 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "cache")
-public class HashProperties {
+public class CacheProperties {
 
     private int capacity;
-    private int fillPercent;
+    private int minLimitCapacity;
     private int expirationUrl;
-
 }

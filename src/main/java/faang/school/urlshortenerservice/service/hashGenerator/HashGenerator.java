@@ -19,7 +19,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final JdbcTemplate jdbcTemplate;
 
     @Value("${unique_numbers.batchSize:1000}")
     private int batchSize;

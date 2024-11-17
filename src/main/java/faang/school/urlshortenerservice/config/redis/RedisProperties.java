@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties()
 public class RedisProperties {
+
     private String host;
     private int port;
     private int urlTtl;
