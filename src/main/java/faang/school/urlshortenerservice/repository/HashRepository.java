@@ -16,22 +16,13 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') AS id FROM generate_series(1, :n)")
     List<Long> getUniqueNumbers(@Param("n") int n);
 
-    @Modifying
-    @Query(nativeQuery = true,value = "INSERT INTO hash(hash) VALUES (:hash)")
-    void save(@Param("hash") String hash);
-
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value = """
-    DELETE FROM hash 
-    WHERE hash IN (
-        SELECT hash 
-        FROM hash 
-        ORDER BY RANDOM() 
-        LIMIT :batchSize
-    ) 
-    RETURNING hash
-""")
+                DELETE FROM hash 
+                WHERE hash IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT :batchSize) 
+                RETURNING hash
+            """)
     List<String> getHashBatch(@Param("batchSize") int batchSize);
 
 }

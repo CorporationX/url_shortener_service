@@ -25,7 +25,7 @@ class AsyncExecutorToHashGeneratorConfig {
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("Async-");
+        executor.setThreadNamePrefix("Generator-");
         executor.initialize();
         return executor;
     }

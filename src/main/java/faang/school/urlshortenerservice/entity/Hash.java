@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "hash")
 public class Hash {
+
     @Id
     @Column(name = "hash")
-    @JoinColumn(name = "hash")
     private String hash;
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,46 +22,43 @@ public class HashCache {
     @Value("${executor.queueCapacity}")
     private int cacheSize;
 
+    @Value("${hashCache.percent-minimal-value}")
+    private double percentToMinValueQueue;
+
     private final ExecutorService executorService;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private BlockingQueue<String> hashQueue;
 
-    double howTo20Percent;
-
     @PostConstruct
-    private void init() {
+    private void init() throws ExecutionException, InterruptedException {
         this.hashQueue = new LinkedBlockingQueue<>(cacheSize);
-        this.howTo20Percent = cacheSize * 0.2;
+        List<String> hashes = hashRepository.getHashBatch(cacheSize);
+        hashes.forEach(hashQueue::offer);
+        hashGenerator.generateBatch();
     }
 
     public String getHash() {
-        if (hashQueue.size() > howTo20Percent) {
+        double minQueueSize = cacheSize * percentToMinValueQueue;
+        if (hashQueue.size() > minQueueSize) {
             return hashQueue.poll();
         } else {
             if (isRefilling.compareAndSet(false, true)) {
-                synchronized (hashQueue) {
-                    executorService.execute(() -> {
-                        int batchSize = cacheSize - hashQueue.size();
-                        List<String> hashes = hashRepository.getHashBatch(batchSize);
-                        hashes.forEach(System.out::println);
-                        log.info("Before adding to queue: " + hashQueue);
-                        hashes.forEach(hashQueue::offer);
-                        log.info("After adding to queue: " + hashQueue);
+                executorService.execute(() -> {
+                    int batchSize = cacheSize - hashQueue.size();
+                    List<String> hashes = hashRepository.getHashBatch(batchSize);
+                    hashes.forEach(hashQueue::offer);
+                    try {
                         hashGenerator.generateBatch();
-                        isRefilling.set(false);
-                    });
-                }
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    isRefilling.set(false);
+                });
             }
-            while (hashQueue.isEmpty()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            return hashQueue.poll();
         }
+        return hashQueue.poll();
     }
 }
+

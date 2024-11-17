@@ -35,12 +35,15 @@ logging:
     root: info
 
 hash:
-  n: 10
+  batchSize: 10
 
 scheduler:
-  cron: "0 0 0 * * ?"
+  cron-to-clean-old-url: "0 0 0 * * ?"
+
+hashCache:
+  percent-minimal-value: 0.2
 
 executor:
-  corePoolSize: 1
+  corePoolSize: 10
   maxPoolSize: 10
   queueCapacity: 10

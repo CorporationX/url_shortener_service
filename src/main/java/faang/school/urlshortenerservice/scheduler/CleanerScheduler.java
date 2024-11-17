@@ -15,13 +15,14 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
+
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
-    LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
 
-    @Scheduled(cron = "${scheduler.cron}")
+    @Scheduled(cron = "${scheduler.cron-to-clean-old-url}")
     @Transactional
     public void clean() {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
         List<Url> urlList = urlRepository.findUrlsOlderThanOneYear(oneYearAgo);
         List<String> hashStringList = urlList.stream().map(Url::getHash).toList();
         urlRepository.deleteAll(urlList);

@@ -40,7 +40,7 @@ class UrlServiceImplTest {
         when(hashCache.getHash()).thenReturn("1v2b3n");
 
         UrlDto result = urlService.shortenUrl(urlDto);
-        assertEquals("http://faang.school/1v2b3n", result.getUrl());
+        assertEquals("https://faang.school/1v2b3n", result.getUrl());
     }
 
     @Test

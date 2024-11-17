@@ -13,7 +13,7 @@ import java.util.Optional;
 @Slf4j
 public class UrlRedisRepository {
 
-    private final RedisTemplate<String, Url> redisTemplate; // RedisTemplate для UrlEntity
+    private final RedisTemplate<String, Url> redisTemplate;
 
     public void save(String hash, Url url) {
         redisTemplate.opsForValue().set(hash, url);
@@ -25,9 +25,5 @@ public class UrlRedisRepository {
             log.warn("No url found for hash {}", hash);
         }
         return Optional.ofNullable(url);
-    }
-
-    public void delete(String hash) {
-        redisTemplate.delete(hash);
     }
 }

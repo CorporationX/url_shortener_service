@@ -15,6 +15,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
+
+    private static final String URL_KEY = "https://faang.school/";
+
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlRedisRepository urlRedisRepository;
@@ -22,14 +25,12 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     @Override
     public UrlDto shortenUrl(UrlDto urlDto) {
-        String normalizedUrl = urlDto.getUrl();
         String hash = hashCache.getHash();
-        Url url = new Url(hash, normalizedUrl, LocalDateTime.now());
+        Url url = new Url(hash, urlDto.getUrl(), LocalDateTime.now());
         urlRepository.save(url);
         urlRedisRepository.save(hash, url);
-        UrlDto urlDto1 = new UrlDto();
-        urlDto1.setUrl(String.format("https://faang.school/%s", hash));
-        return urlDto1;
+        String shortUrl = URL_KEY + hash;
+        return new UrlDto(shortUrl);
     }
 
     @Transactional(readOnly = true)
@@ -39,8 +40,9 @@ public class UrlServiceImpl implements UrlService {
         if (urlFromRedis.isPresent()) {
             return new UrlDto(urlFromRedis.get().getUrl());
         } else {
-            Url urlFromDB = urlRepository.findByHash(hash).orElseThrow(() -> new EntityNotFoundException("Hash not found"));
-            return new UrlDto(urlFromDB.getUrl());
+            return urlRepository.findByHash(hash)
+                    .map(url -> new UrlDto(url.getUrl()))
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("Url with %s hash not found", hash)));
         }
     }
 }

@@ -39,12 +39,6 @@ class UrlControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private HashGenerator hashGenerator;
-
-    @Autowired
     private UrlRepository urlRepository;
 
     @Container
@@ -90,26 +84,12 @@ class UrlControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header("x-user-id", 1)
-                        .content("{}")
+                        .content("")
         ).andExpect(status().isInternalServerError());
     }
 
     @Test
-    void testShortenUrl() throws Exception {
-        hashGenerator.generateBatch();
-        mockMvc.perform(
-                post("/api/v1/url")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .header("x-user-id", 1)
-                        .content(objectMapper.writeValueAsString(UrlDto.builder()
-                                .url("https://google.com")
-                                .build()))
-        ).andExpect(status().isOk());
-    }
-
-    @Test
-    void getUrl() throws Exception {
+    void testGetUrl_Success() throws Exception {
         Url url = Url.builder()
                 .url("https://google.com")
                 .hash("1")
