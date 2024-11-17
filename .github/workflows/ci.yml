@@ -12,6 +12,13 @@ on:
 
 jobs:
   build:
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379  # Открываем порт Redis
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

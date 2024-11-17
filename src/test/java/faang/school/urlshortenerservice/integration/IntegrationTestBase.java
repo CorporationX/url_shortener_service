@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.integration;
 import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -15,6 +16,7 @@ import org.testcontainers.utility.DockerImageName;
 @Transactional
 @ActiveProfiles("test")
 @Sql(value = "classpath:sql/data.sql")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class IntegrationTestBase {
     private static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:13.3");
     private static final RedisContainer REDIS_CONTAINER = new RedisContainer(DockerImageName.parse("redis/redis-stack:latest"));

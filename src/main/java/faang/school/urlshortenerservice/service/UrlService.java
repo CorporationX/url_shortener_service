@@ -29,8 +29,7 @@ public class UrlService {
                 .hash(hash)
                 .build();
         urlDto.setHash(hash);
-        var r = urlRepository.save(url);
-        return r.getUrl();
+        return urlRepository.save(url).getUrl();
     }
 
     @Cacheable(key = "#hash", value = "urls")
