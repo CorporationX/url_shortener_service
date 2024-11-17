@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
@@ -29,6 +31,10 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlResponse save(UrlDto urlDto) {
+        Optional<Url> urlOptional = urlRepository.findByUrl(urlDto.getUrl());
+        if (urlOptional.isPresent()) {
+            return new UrlResponse(getShortUrl(urlOptional.get().getHash()));
+        }
         String hash = hashCache.getHash();
         Url url = Url.builder()
                 .hash(hash)

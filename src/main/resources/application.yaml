@@ -26,10 +26,10 @@ hash:
   repository:
     batch:
       size: 25
-    limit: 500
   generator:
     batch:
       size: 100
+    generation-limit: 500
   cache:
     load-factor: 0.2
     capacity: 50

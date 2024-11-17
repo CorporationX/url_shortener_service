@@ -24,12 +24,12 @@ public class ExecutorService {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
 
-    @Value("${hash.repository.limit}")
-    private long limit;
+    @Value("${hash.generator.generation-limit}")
+    private long generationLimit;
 
     @Async("taskExecutor")
     public CompletableFuture<List<String>> fillCache() {
-        if (hashRepository.getHashCount() < limit) {
+        if (hashRepository.getHashCount() < generationLimit) {
             hashGenerator.generateBatch();
         }
         List<String> hashBatch = hashRepository.getHashBatch();

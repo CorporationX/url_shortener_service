@@ -7,7 +7,7 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private final static String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final static String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Value("${hash.encoder.size}")
     private int hashSize;
@@ -20,9 +20,9 @@ public class Base62Encoder {
 
     private String encode(Long number) {
         StringBuilder result = new StringBuilder();
-        int alphabetSize = alphabet.length();
+        int alphabetSize = ALPHABET.length();
         for (int i = 0; i < hashSize; i++) {
-            result.append(alphabet.charAt((int) (number % alphabetSize)));
+            result.append(ALPHABET.charAt((int) (number % alphabetSize)));
             number /= alphabetSize;
         }
         return result.toString();

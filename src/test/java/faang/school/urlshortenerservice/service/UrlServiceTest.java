@@ -81,6 +81,7 @@ public class UrlServiceTest {
 
     @Test
     public void testSaveUrl() {
+        when(urlRepository.findByUrl(TEST_URL)).thenReturn(Optional.empty());
         when(hashCache.getHash()).thenReturn(HASH);
         UrlDto urlDto = new UrlDto(TEST_URL);
 
@@ -89,6 +90,7 @@ public class UrlServiceTest {
 
         assertEquals(shortUrl, result.shortUrl());
 
+        verify(urlRepository).findByUrl(TEST_URL);
         verify(urlCacheRepository).save(any(Url.class));
         verify(urlRepository).save(any(Url.class));
     }
@@ -98,5 +100,19 @@ public class UrlServiceTest {
         when(urlCacheRepository.findUrlByHash(HASH)).thenReturn(Optional.empty());
         when(urlRepository.findById(HASH)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> urlService.getUrl(HASH));
+    }
+
+    @Test
+    public void testSaveExistingUrl() {
+        when(urlRepository.findByUrl(TEST_URL)).thenReturn(Optional.of(url));
+        UrlDto urlDto = new UrlDto(TEST_URL);
+
+        UrlResponse result = urlService.save(urlDto);
+        String shortUrl = "%s/%s".formatted(this.host, HASH);
+
+        assertEquals(shortUrl, result.shortUrl());
+
+        verify(urlRepository).findByUrl(TEST_URL);
+        verifyNoInteractions(urlCacheRepository);
     }
 }

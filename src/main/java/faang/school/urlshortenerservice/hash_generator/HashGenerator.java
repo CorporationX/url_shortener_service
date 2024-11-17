@@ -19,15 +19,15 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final HashRepository hashRepository;
 
+    @Value("${hash.generator.batch.size}")
+    private int batchSize;
+
     @PostConstruct
     public void init() {
         if (hashRepository.getHashCount() == 0) {
             generateBatch();
         }
     }
-
-    @Value("${hash.generator.batch.size}")
-    private int batchSize;
 
     @Async("taskExecutor")
     public void generateBatch() {
