@@ -2,18 +2,20 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.UrlNotExistException;
+import faang.school.urlshortenerservice.exception.UrlNotValid;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.properties.RedisProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UrlService {
     private final HashCache hashCache;
@@ -24,26 +26,24 @@ public class UrlService {
 
     @Transactional
     public UrlDto createUrlHash(UrlDto urlDto) {
-        String hash = hashCache.getHash().toString();
+        String hash = hashCache.getHash();
 
-        Url url = new Url();
-        url.setUrl(urlDto.getUrl());
-        url.setHash(hash);
-        url.setCreatedAt(LocalDateTime.now());
-        url = urlRepository.save(url);
-        urlCacheRepository.saveUrlForTime(hash, url.getUrl(), redisProperties.getTime(), redisProperties.getTimeUnit());
+        Url urlEntity = new Url();
+        urlEntity.setUrl(urlDto.getUrl());
+        urlEntity.setHash(hash);
+        urlEntity.setCreatedAt(LocalDateTime.now());
+        urlEntity = urlRepository.save(urlEntity);
+        urlCacheRepository.saveUrlForTime(hash, urlEntity, redisProperties.getTime(), redisProperties.getTimeUnit());
+        log.info("Create url hash: " + urlDto.getUrl() + " hash: " + hash);
 
-        return urlMapper.toDto(url);
+        return urlMapper.toDto(urlEntity);
     }
 
     @Transactional
     public String getUrl(String hash) {
-        String url = urlCacheRepository.getUrl(hash);
-        if (url == null) {
-            url = urlRepository.findByHash(hash)
-                    .map(Url::getUrl)
-                    .orElseThrow(() -> new UrlNotExistException("not url exists with hash: " + hash));
-        }
-        return url;
+        return urlCacheRepository.getUrl(hash)
+                .or(() -> urlRepository.findByHash(hash))
+                .map(Url::getUrl)
+                .orElseThrow(() -> new UrlNotValid("not url exists with hash: " + hash));
     }
 }

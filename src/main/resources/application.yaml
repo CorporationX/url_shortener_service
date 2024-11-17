@@ -12,10 +12,10 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format-sql: true
         jdbc:
-          batch_size: 512
-        order_inserts: true
+          batch-size: 512
+        order-inserts: true
 
   data:
     redis:
@@ -44,9 +44,15 @@ thread-pool:
     max: 30
     queue: 50
 
+generator:
+  batch-size: 512
+
 hash-cache:
   minimum-percentage-to-add: 0.2
   size: 1500
 
 scheduler:
-  cron: 0 0 * * *
+  cron:
+    clean-url: 0 0 0 * * *
+  interval:
+    url: '1 YEAR'

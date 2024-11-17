@@ -7,7 +7,7 @@ import java.util.List;
 
 @UtilityClass
 public class Base62Encoder {
-    private final String symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String BASE62_SYMBOLS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public List<String> encode(List<Long> nums) {
         List<String> hashes = new ArrayList<>();
@@ -17,7 +17,7 @@ public class Base62Encoder {
             while (num > 0) {
                 long remaining = num % 62;
                 num /= 62;
-                hash.append(symbols.charAt((int) remaining));
+                hash.append(BASE62_SYMBOLS.charAt((int) remaining));
             }
             hashes.add(hash.reverse().toString());
         }

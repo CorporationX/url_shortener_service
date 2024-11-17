@@ -6,16 +6,16 @@ import faang.school.urlshortenerservice.utility.base62.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
 
-    @Value(value = "${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    @Value(value = "${generator.batch-size}")
     private long batchSize;
 
     @Async("HashGeneratorPool")
