@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("api/v1/url")
+@RequestMapping("api/v1")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
