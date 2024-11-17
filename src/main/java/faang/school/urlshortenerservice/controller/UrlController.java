@@ -49,7 +49,8 @@ public class UrlController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UrlResponse createShortUrl(@Validated @RequestBody UrlDto urlDto) {
-        String baseUrl = URI.create(urlService.createShortUrl(urlDto)).getHost();
+        URI uri = URI.create(urlService.createShortUrl(urlDto));
+        String baseUrl = uri.getScheme() + "://" + uri.getHost();
         return new UrlResponse(baseUrl + "/" + urlDto.getHash());
     }
 
@@ -58,7 +59,7 @@ public class UrlController {
             @ApiResponse(responseCode = "302", description = "Successful redirect to original link"),
             @ApiResponse(responseCode = "404", description = "Hash not found")
     })
-    @Parameter(in = ParameterIn.PATH, description = "The hash of the shortened URL", example = "abc123")
+    @Parameter(name = "hash",in = ParameterIn.PATH, description = "The hash of the shortened URL", example = "abc123")
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
     public RedirectView getOriginalUrl(@PathVariable("hash") String hash) {

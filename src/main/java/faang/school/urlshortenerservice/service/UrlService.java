@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
+    @Transactional
     @CachePut(key = "#urlDto.hash", value = "urls")
     public String createShortUrl(UrlDto urlDto) {
         if (urlRepository.existsByUrl(urlDto.getUrl()))
@@ -31,6 +33,7 @@ public class UrlService {
     }
 
     @Cacheable(key = "#hash", value = "urls")
+    @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
             return urlRepository.findById(hash).orElseThrow(() ->
                     new EntityNotFoundException("URL with hash %s not found".formatted(hash)))
