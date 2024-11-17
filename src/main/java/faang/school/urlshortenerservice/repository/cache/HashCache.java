@@ -20,17 +20,6 @@ public class HashCache {
     @Value("${hash.maxSize}")
     private int maxSize;
 
-    public synchronized void put(String shortUrl, String longUrl) {
-        if (urlMap.size() >= maxSize) {
-            removeOldestUrl();
-        }
-        urlMap.put(shortUrl, longUrl);
-    }
-
-    public String get(String shortUrl) {
-        return urlMap.get(shortUrl);
-    }
-
     private void removeOldestUrl() {
         if (!urlMap.isEmpty()) {
             String oldestKey = urlMap.firstKey();
