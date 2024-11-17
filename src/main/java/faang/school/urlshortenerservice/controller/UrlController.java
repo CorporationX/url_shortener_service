@@ -1,13 +1,17 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("api/v1/url")
@@ -20,17 +24,17 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
-    public RedirectView redirectToOriginalUrl(
-            @PathVariable @Length(min = 6, max = 6, message = "Hash must be exactly 6 characters long") String hash) {
+    public ResponseEntity<Void> redirectToLongUrl(
+            @PathVariable @Length(min = 6, max = 6, message = "Hash must be exactly 6 characters long")
+            String hash) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(urlService.getLongUrl(hash)))
+                .build();
+    }
 
-        log.info("Redirect request for hash: {}", hash);
-
-        String originalUrl = urlService.getOriginalUrl(hash);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(originalUrl);
-
-        log.info("Redirecting to: {}", originalUrl);
-        return redirectView;
+    @PostMapping("/url")
+    public ResponseEntity<String> redirectToShortUrl(@Valid @RequestBody UrlDto urlDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(urlService.getShortUrl(urlDto.getUrl()));
     }
 }
