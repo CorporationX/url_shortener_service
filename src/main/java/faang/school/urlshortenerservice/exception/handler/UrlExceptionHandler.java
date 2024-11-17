@@ -17,11 +17,6 @@ public class UrlExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
-    protected ResponseEntity<String> runtimeExceptionHandler(RuntimeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-    }
-
     @ExceptionHandler(value = OriginalUrlNotFoundException.class)
     protected ResponseEntity<String> originalUrlNotFoundExceptionHandler(OriginalUrlNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
