@@ -1,6 +1,6 @@
 CREATE TABLE url(
     hash varchar(6) PRIMARY KEY,
-    url varchar(64),
+    url varchar(128) NOT NULL,
     created_at timestamp default CURRENT_DATE
 );
 

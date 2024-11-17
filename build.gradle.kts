@@ -30,6 +30,9 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:4.3.2")
     runtimeOnly("org.postgresql:postgresql")
+    implementation("org.hibernate:hibernate-jcache:6.6.2.Final")
+    implementation("net.sf.ehcache:ehcache:2.10.9.2")
+
 
     /**
      * Utils & Logging
