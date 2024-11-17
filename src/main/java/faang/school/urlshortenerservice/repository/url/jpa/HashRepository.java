@@ -15,13 +15,13 @@ public interface HashRepository extends JpaRepository<String, String> {
 
     @Query(
             value = """
-                    DELETE FROM my_table
-                    WHERE id IN (
-                        SELECT id
-                        FROM my_table
-                        ORDER BY id
+                    DELETE FROM hash h
+                        WHERE h.hash IN (
+                        SELECT h.hash
+                        FROM hash h
+                        ORDER BY h.hash
                         LIMIT ?1
-                    )
+                        )
                     RETURNING *;
                     """,
             nativeQuery = true
