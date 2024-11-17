@@ -23,7 +23,7 @@ public class HashGenerator {
     @Value("${server.hash.generate.batch.size}")
     private int generateBatchSize;
 
-    @Async("asyncThreadPoolExecutor")
+    @Async("executorService")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(generateBatchSize);
         List<HashDto> hashDtoList = base62Encoder.encodeList(uniqueNumbers);

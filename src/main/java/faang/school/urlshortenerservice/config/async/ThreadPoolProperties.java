@@ -4,8 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "server.async.thread.pool")
-public class AsyncThreadPoolProperties {
+@ConfigurationProperties(prefix = "server.thread.pool")
+public class ThreadPoolProperties {
 
     private int corePoolSize;
     private int maximumPoolSize;

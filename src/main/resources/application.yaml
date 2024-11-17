@@ -29,13 +29,15 @@ server:
     generate:
       batch:
         size: 100
-  async:
-    thread:
-      pool:
-        corePoolSize: 3
-        maximumPoolSize: 10
-        keepAliveTime: 60
-        queueCapacity: 40
+    cache:
+      initial:
+        size: 16
+  thread:
+    pool:
+      corePoolSize: 3
+      maximumPoolSize: 10
+      keepAliveTime: 60
+      queueCapacity: 40
   domain: https://urlshortener.com
 
 scheduler:
