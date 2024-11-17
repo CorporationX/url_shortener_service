@@ -57,15 +57,14 @@ public class HashCacheIntegrationTest {
         Thread.sleep(1000);
 
         String resultHashB = hashCache.getOneHash();
-        String resultHashC = hashCache.getOneHash();
-        String resultHashD = hashCache.getOneHash();
-        String resultHashE = hashCache.getOneHash();
-        String resultHashF = hashCache.getOneHash();
-
         assertEquals("b", resultHashB);
+        String resultHashC = hashCache.getOneHash();
         assertEquals("c", resultHashC);
+        String resultHashD = hashCache.getOneHash();
         assertEquals("d", resultHashD);
+        String resultHashE = hashCache.getOneHash();
         assertEquals("e", resultHashE);
+        String resultHashF = hashCache.getOneHash();
         assertEquals("f", resultHashF);
 
         Thread.sleep(1000);

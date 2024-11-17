@@ -59,7 +59,7 @@ public class HashGeneratorIntegrationTest extends BaseContextTest {
         private HashRepository hashRepository;
 
         /**
-         * This mock is needed for isolation from @PostConstruct method
+         * This mock is needed for isolation from @PostConstruct method.
          */
         @MockBean
         private HashCache hashCache;
