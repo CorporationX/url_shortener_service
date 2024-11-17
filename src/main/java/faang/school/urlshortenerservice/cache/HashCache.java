@@ -29,6 +29,8 @@ public class HashCache {
     @Value("${hash.constants.batch.size}")
     private int batchSize;
 
+    private int threshold;
+
     private final HashGenerator hashGenerator;
     private final HashService hashService;
     private Queue<String> hashesCache;
@@ -38,6 +40,7 @@ public class HashCache {
     public void init() {
         hashesCache = new ArrayBlockingQueue<>(capacity);
         isFillingRequired = new AtomicBoolean(false);
+        threshold = (int) ((capacity * capacityUsage) / 100.0);
         warmCache();
     }
 
@@ -50,8 +53,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        double currentCapacity = (hashesCache.size() / (double) capacity) * 100.0;
-        if (currentCapacity < capacityUsage) {
+        if (hashesCache.size() < threshold) {
             isFillingRequired.set(true);
             if (isFillingRequired.get()) {
                 hashGenerator.generateBatch(capacity - hashesCache.size());
