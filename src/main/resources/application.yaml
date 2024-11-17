@@ -33,10 +33,14 @@ server:
   async:
     thread:
       pool:
-        corePoolSize: 3
-        maximumPoolSize: 10
+        corePoolSize: 4
+        maximumPoolSize: 8
         keepAliveTime: 60
         queueCapacity: 40
+
+cache:
+  redis:
+    ttl-time-hours: 1
 
 logging:
   level:
