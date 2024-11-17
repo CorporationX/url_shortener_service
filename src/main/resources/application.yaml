@@ -49,4 +49,8 @@ thread-pool:
   max-size: 20
   timeout: 120
 
+schedulers:
+  crons:
+    cron-for-clean-urls: 0 0 0 * * *
+
 
