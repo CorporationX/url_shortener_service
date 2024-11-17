@@ -8,9 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +25,7 @@ public class UrlController {
 
     @PostMapping("/shorten")
     public UrlDto createShortLink(@Valid @RequestBody UrlDto urlDto) {
-        return urlService.convertShortUrl(urlDto);
+        return urlService.toShortUrl(urlDto);
     }
 
     @GetMapping("/get/{hash}")

@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.entity.Url;
 
 public interface UrlService {
 
-    UrlDto convertShortUrl(UrlDto urlDto);
+    UrlDto toShortUrl(UrlDto urlDto);
 
     Url getUrl(String hash);
 

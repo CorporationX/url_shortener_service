@@ -8,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -28,12 +26,8 @@ public class CleanerScheduler {
     @Scheduled(cron = "${scheduler.cleaning.url.cron}")
     public void removingExpiredUrlsAndSavingHashes() {
         log.info("Started job removingExpiredUrlsAndSavingHashes in " + CleanerScheduler.class);
-        realizationJob();
-    }
 
-    @Transactional
-    private void realizationJob() {
-        LocalDateTime cutoffDate = LocalDateTime.now().minus(expirationInterval, ChronoUnit.YEARS);
+        LocalDateTime cutoffDate = LocalDateTime.now().minusYears(expirationInterval);
         List<String> stringHashes = urlRepository.findExpiredUrls(cutoffDate);
         List<Hash> hashes = stringHashes.stream()
                 .map(Hash::new)

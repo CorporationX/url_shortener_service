@@ -22,7 +22,7 @@ public class UrlServiceImpl implements UrlService{
 
     @Transactional
     @Override
-    public UrlDto convertShortUrl(UrlDto urlDto) {
+    public UrlDto toShortUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
         Url urlEntity = Url.builder()
                 .hash(hash)
