@@ -9,4 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class HashProperties {
     private int batchSize;
+    private int maxSize;
+    private int percentThreshold;
 }

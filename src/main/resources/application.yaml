@@ -42,3 +42,4 @@ hash:
   batch:
     size: 6
     maxSize: 100
+    percentThreshold: 20
