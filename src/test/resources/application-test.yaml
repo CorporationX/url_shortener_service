@@ -1,0 +1,4 @@
+spring:
+  liquibase:
+    change-log: classpath:/db/db.changelog-master.yaml
+    enabled: true
