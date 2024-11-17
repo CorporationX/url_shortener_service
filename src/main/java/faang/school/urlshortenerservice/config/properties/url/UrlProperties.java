@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "url")
 public class UrlProperties {
 
-    private TimeLimit timeLimit;
+    private UrlShort urlShort;
 
     @Getter
     @Setter
-    public static class TimeLimit {
+    public static class UrlShort {
 
-        private int year;
+        private String baseUrl;
     }
 }
