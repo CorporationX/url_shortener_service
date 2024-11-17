@@ -5,8 +5,6 @@ import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.validator.annotaiton.ValidParams;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,13 +27,13 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<String> getUrl(@PathVariable("hash") String hash, HttpServletResponse response) {
+    public void getUrl(@PathVariable("hash") String hash, HttpServletResponse response) {
         String originalUrl = urlService.getOriginalUrl(hash);
         try {
+            response.setStatus(302);
             response.sendRedirect(originalUrl);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new ResponseEntity<>(originalUrl, HttpStatusCode.valueOf(302));
     }
 }
