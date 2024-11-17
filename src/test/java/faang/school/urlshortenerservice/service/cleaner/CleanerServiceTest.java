@@ -44,7 +44,7 @@ class CleanerServiceTest {
                 .hash(HASH)
                 .build();
 
-        when(cacheProperties.getExpirationUrl())
+        when(cacheProperties.getYearsToUrlExpiration())
                 .thenReturn(EXPIRATION_URL);
         when(urlService.findAndReturnExpiredUrls(anyInt()))
                 .thenReturn(List.of(url));
@@ -54,6 +54,6 @@ class CleanerServiceTest {
         verify(urlService)
                 .findAndReturnExpiredUrls(anyInt());
         verify(hashService)
-                .saveRangeHashes(anyList());
+                .saveHashes(anyList());
     }
 }

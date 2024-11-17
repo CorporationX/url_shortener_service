@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +21,12 @@ public class CleanerService {
     private final CacheProperties cacheProperties;
 
     @Transactional
-    @Async("urlThreadPool")
     public void clearExpiredUrls() {
-        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getExpirationUrl());
+        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getYearsToUrlExpiration());
         List<String> releasedHashes = releasedUrls.stream()
                 .map(Url::getHash)
                 .toList();
-        hashService.saveRangeHashes(releasedHashes);
+        hashService.saveHashes(releasedHashes);
         log.info("clearExpiredUrls - finish, released hashes size - {}", releasedHashes.size());
     }
 }

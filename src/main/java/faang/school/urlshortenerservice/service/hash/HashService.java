@@ -22,7 +22,7 @@ public class HashService {
     private final UniqueNumberService uniqueNumberService;
 
     @Transactional
-    public void saveRangeHashes(List<String> hashes) {
+    public void saveHashes(List<String> hashes) {
         freeHashRepository.saveHashes(hashes);
     }
 
@@ -47,15 +47,15 @@ public class HashService {
 
     @Transactional
     @Async("urlThreadPool")
-    public CompletableFuture<List<String>> generateBatchHash(int necessary) {
+    public CompletableFuture<List<String>> generateBatchHash(int needHashes) {
         List<Long> numbers = uniqueNumberService.getUniqueNumbers();
         List<String> base62Hashes = base62Encoder.encodeNumbersInBase62(numbers);
 
-        List<String> response = base62Hashes.subList(0, Math.min(necessary, base62Hashes.size()));
+        List<String> response = base62Hashes.subList(0, Math.min(needHashes, base62Hashes.size()));
         List<String> remainingHashes = base62Hashes
-                .subList(Math.min(necessary, base62Hashes.size()), base62Hashes.size());
+                .subList(Math.min(needHashes, base62Hashes.size()), base62Hashes.size());
 
-        saveRangeHashes(remainingHashes);
+        saveHashes(remainingHashes);
         return CompletableFuture.completedFuture(response);
     }
 }

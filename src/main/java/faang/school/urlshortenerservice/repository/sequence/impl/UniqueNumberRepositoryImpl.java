@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Slf4j
-@Repository
+@Component
 @RequiredArgsConstructor
 public class UniqueNumberRepositoryImpl implements UniqueNumberRepository {
 

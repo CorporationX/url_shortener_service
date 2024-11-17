@@ -43,7 +43,7 @@ class HashServiceTest {
     @Test
     @DisplayName("When method is called, then should save list of hashes")
     void whenMethodIsCalledThenCallsSaveMethod() {
-        hashService.saveRangeHashes(anyList());
+        hashService.saveHashes(anyList());
 
         verify(freeHashRepository)
                 .saveHashes(anyList());

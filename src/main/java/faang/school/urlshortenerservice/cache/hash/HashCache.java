@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private static final double ONE_HUNDRED = 100.0;
-    private final double COMMON_CAPACITY_PERCENTAGE;
+    private final double commonCapacityPercentage;
 
     private final CacheProperties cacheProperties;
     private final HashService hashService;
@@ -29,11 +29,11 @@ public class HashCache {
         this.hashes = new ArrayBlockingQueue<>(cacheProperties.getCapacity());
 
         hashes.addAll(hashService.getHashes());
-        this.COMMON_CAPACITY_PERCENTAGE = cacheProperties.getCapacity() / ONE_HUNDRED;
+        this.commonCapacityPercentage = cacheProperties.getCapacity() / ONE_HUNDRED;
     }
 
     public String getHash() {
-        double currentCapacity = hashes.size() / COMMON_CAPACITY_PERCENTAGE;
+        double currentCapacity = hashes.size() / commonCapacityPercentage;
 
         if (currentCapacity <= cacheProperties.getMinLimitCapacity()
                 && filling.compareAndSet(false, true)) {
