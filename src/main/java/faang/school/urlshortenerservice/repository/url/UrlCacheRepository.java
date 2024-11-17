@@ -25,9 +25,4 @@ public class UrlCacheRepository {
         log.info("Retrieving URL for hash {} from cache", hash);
         return redisTemplate.opsForValue().get(hash);
     }
-
-    public void removeFromCache(String hash) {
-        log.info("Removing hash {} from cache", hash);
-        redisTemplate.delete(hash);
-    }
 }

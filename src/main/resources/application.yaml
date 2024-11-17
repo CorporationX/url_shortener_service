@@ -3,7 +3,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      ttl: 24
+      ttlInHours: 24
 
   datasource:
     driver-class-name: org.postgresql.Driver

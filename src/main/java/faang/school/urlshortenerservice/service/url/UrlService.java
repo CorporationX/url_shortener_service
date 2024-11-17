@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.url.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import faang.school.urlshortenerservice.validator.url.UrlValidator;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlMapper urlMapper;
+    private final UrlValidator urlValidator;
     private final HashCache hashCache;
 
     @Transactional
     public UrlDto createShortUrl(UrlRequestDto urlRequestDto) {
-        UrlDto urlDto = buildUrlDto(generateHash(), urlRequestDto.getUrl());
+        urlValidator.validateUrlDoesNotExist(urlRequestDto.getUrl());
+
+        UrlDto urlDto = buildUrlDto(getHash(), urlRequestDto.getUrl());
 
         saveUrlDto(urlDto);
         cacheUrlDto(urlDto);
@@ -30,7 +34,7 @@ public class UrlService {
         return urlDto;
     }
 
-    private String generateHash() {
+    private String getHash() {
         return hashCache.getHash();
     }
 
