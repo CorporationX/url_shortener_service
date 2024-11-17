@@ -70,6 +70,19 @@ public class UrlService {
         }
     }
 
+    @Transactional
+    public void cleanHashes() {
+        long dayToKeep = urlShortenerProperties.getDaysToKeep();
+        LocalDateTime before = LocalDateTime.now().minusDays(dayToKeep);
+        List<String> cleanedHash = urlRepository.deleteByCreatedAtBefore(before).stream()
+                .map(UrlEntity::getHash)
+                .toList();
+
+        log.info("Cleaned hashes: {}", cleanedHash.size());
+
+        hashRepository.save(cleanedHash);
+    }
+
     private String createShortUrl(String hash) {
         String protocol = urlShortenerProperties.getProtocol();
         String domain = urlShortenerProperties.getDomain();
