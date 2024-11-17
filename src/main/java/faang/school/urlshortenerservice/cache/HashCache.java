@@ -23,14 +23,13 @@ public class HashCache {
 
     @Value("${hash-cache.threshold-fraction-size}")
     private final double thresholdFractionSize;
-    private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
     private final BlockingQueue<String> queueHash;
 
     @Qualifier("hashCacheExecutor")
     private final ThreadPoolTaskExecutor executor;
 
-
+    @Transactional(rollbackFor = {Exception.class})
     public String getHash() {
         executor.execute(this::checkAndFillHashCache);
 
@@ -53,7 +52,6 @@ public class HashCache {
         }
     }
 
-    @Transactional(rollbackFor = {RuntimeException.class})
     public void fillHashCache(int batchSize) {
         List<String> hashes = hashRepository.getHashBatch(batchSize).stream()
             .map(Hash::getHash)

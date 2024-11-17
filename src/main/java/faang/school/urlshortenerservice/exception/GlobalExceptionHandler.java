@@ -20,6 +20,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(RuntimeException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(RuntimeException e) {

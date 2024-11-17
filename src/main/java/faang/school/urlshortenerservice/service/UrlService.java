@@ -36,7 +36,7 @@ public class UrlService {
     public String getUrl(String shortUrl) {
         String url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> {
             String message = "short link not found for url: %s".formatted(shortUrl);
-            return new RuntimeException(message);
+            return new IllegalArgumentException(message);
         });
         log.info("Link {} was issued for hash {}", url, shortUrl);
         return url;
