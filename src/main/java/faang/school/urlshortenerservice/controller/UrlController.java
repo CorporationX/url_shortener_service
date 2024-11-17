@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.exception.OriginalUrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.validator.annotaiton.ValidParams;
 import jakarta.servlet.http.HttpServletResponse;
