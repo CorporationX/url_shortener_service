@@ -40,7 +40,7 @@ server:
 
 cache:
   redis:
-    ttl-time-hours: 3600000
+    ttl-time-hours: 1
 
 logging:
   level:
