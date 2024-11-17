@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      url_ttl: 10
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -18,8 +24,28 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  host: localhost
+  port: 8089
 
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    capacity: 100
+    low-size-percentage: 20
+  batch_size:
+    get_batch: 20
+    save_batch: 10
+    generation_batch: 40
+
+url:
+  days-to-live: 90
+
+thread-pool:
+  size: 4
+  queue_capacity: 20
+
+cleaner-scheduler:
+  cron: "0 0 6 1 * *"
