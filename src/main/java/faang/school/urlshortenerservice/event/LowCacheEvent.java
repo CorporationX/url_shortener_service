@@ -4,9 +4,9 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class LowChacheEvent extends ApplicationEvent {
+public class LowCacheEvent extends ApplicationEvent {
 
-    public LowChacheEvent(Object source) {
+    public LowCacheEvent(Object source) {
         super(source);
     }
 }

@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 @Setter
 @ConfigurationProperties(prefix = "hash-encoder")
 public class HashProperties {
-
-    private int hasBatchSize;
-    private int cacheCapacity;
     private int generateSize;
+    private int hashBatchSize;
+    private int cacheCapacity;
     private double lowThresholdFactor;
 }

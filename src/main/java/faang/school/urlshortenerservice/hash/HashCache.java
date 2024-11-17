@@ -58,4 +58,3 @@ public class HashCache {
         return (int) (hashProperties.getCacheCapacity() * hashProperties.getLowThresholdFactor());
     }
 }
-

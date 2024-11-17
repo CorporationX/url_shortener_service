@@ -32,7 +32,7 @@ public class HashCacheFilter {
     @Async("thread-pool")
     public void fillCache() {
         hashGenerator.generateHashes();
-        int batchSize = hashProperties.getHasBatchSize();
+        int batchSize = hashProperties.getHashBatchSize();
         List<String> hashes = hashRepository.getHashBatch(batchSize);
         hashCache.setHashBatch(hashes);
         log.info("Hash cache filled. Filling size: {}", hashes.size());

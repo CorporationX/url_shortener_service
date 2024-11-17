@@ -61,15 +61,6 @@ public class UrlService {
         return currentLongUrl;
     }
 
-    private void validateUrl(String longUrl) {
-        try{
-            new URL(longUrl);
-        }catch (MalformedURLException e) {
-            log.error("Invalid url: {}", longUrl);
-            throw new WrongUrl("Invalid url: " + longUrl);
-        }
-    }
-
     @Transactional
     public void cleanHashes() {
         long dayToKeep = urlShortenerProperties.getDaysToKeep();
@@ -81,6 +72,15 @@ public class UrlService {
         log.info("Cleaned hashes: {}", cleanedHash.size());
 
         hashRepository.save(cleanedHash);
+    }
+
+    private void validateUrl(String longUrl) {
+        try{
+            new URL(longUrl);
+        }catch (MalformedURLException e) {
+            log.error("Invalid url: {}", longUrl);
+            throw new WrongUrl("Invalid url: " + longUrl);
+        }
     }
 
     private String createShortUrl(String hash) {

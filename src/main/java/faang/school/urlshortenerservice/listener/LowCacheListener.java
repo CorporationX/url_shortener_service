@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.listener;
 
-import faang.school.urlshortenerservice.event.LowChacheEvent;
+import faang.school.urlshortenerservice.event.LowCacheEvent;
 import faang.school.urlshortenerservice.hash.HashCacheFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -13,7 +13,7 @@ public class LowCacheListener {
     private final HashCacheFilter hashCacheFilter;
 
     @EventListener
-    public void handleLowCacheEvent(LowChacheEvent event) {
+    public void handleLowCacheEvent(LowCacheEvent event) {
         hashCacheFilter.fillCache();
     }
 }
