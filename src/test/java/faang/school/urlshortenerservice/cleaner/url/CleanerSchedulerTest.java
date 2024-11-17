@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.cleaner.url;
 
 
-import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
 
