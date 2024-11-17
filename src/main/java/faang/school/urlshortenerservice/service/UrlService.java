@@ -1,13 +1,18 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exeption.url.UrlNotFoundException;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -17,6 +22,8 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final StringRedisTemplate redisTemplate;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+    private final HashCache hashCache;
 
 
     public Url getOriginalUrl(String hash) {
@@ -37,17 +44,26 @@ public class UrlService {
     }
 
     public Url convertLongUrl(Url longUrl) {
-        // Реализация метода для конвертации длинного URL в хэш
-        // Пример: хэшируем длинный URL и сохраняем в кэше
-        // String hash = getHash(longUrl.getUrl()); // метода пока нет (увы)
-        // longUrl.setHash(hash);
-
-        // Сохраняем в Redis
-        // redisTemplate.opsForValue().set(hash, longUrl.getUrl());
-
-        // Сохраняем в UrlCacheRepository
-        // urlCacheRepository.save(longUrl);
-
+        longUrl.setHash(hashCache.getHash());
+        redisTemplate.opsForValue().set(longUrl.getHash(), longUrl.getUrl());
+        urlCacheRepository.save(longUrl);
+        urlRepository.save(longUrl);
         return longUrl;
+    }
+
+    @Transactional
+    public List<String> cleanOldUrls() {
+        List<String> deletedHashes = urlRepository.deleteOldUrlsAndReturnHashes();
+        log.info("Удалены хэши старых URL: {}", deletedHashes);
+
+        for (String hash : deletedHashes) {
+            Hash hashEntity = hashRepository.findByHash(hash);
+            if (hashEntity != null) {
+                hashEntity.setUrl(null);
+                hashRepository.save(hashEntity);
+            }
+        }
+
+        return deletedHashes;
     }
 }

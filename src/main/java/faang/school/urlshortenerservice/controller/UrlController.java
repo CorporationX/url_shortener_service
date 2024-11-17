@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.service.UrlService;
@@ -33,12 +32,12 @@ public class UrlController {
     }
 
     @PostMapping("/short/{longUrl}")
-    public String receiveLongUrl(@PathVariable UrlDto longUrl) {
-        return processResponse(longUrl);
+    public String convertLongUrl(@PathVariable UrlDto longUrl) {
+        return urlService.convertLongUrl(processResponse(longUrl)).getUrl();
     }
 
-    private String processResponse(UrlDto urlDto) {
+    private Url processResponse(UrlDto urlDto) {
         urlValidator.isValidUrl(urlDto.getUrl());
-        return urlMapper.toEntity(urlDto).getUrl();
+        return urlMapper.toEntity(urlDto);
     }
 }

@@ -43,3 +43,6 @@ hash:
     size: 6
     maxSize: 100
     percentThreshold: 20
+
+scheduler:
+  daily: 0 0 2 * * ?

@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public interface UrlRepository extends JpaRepository<Long,Url> {
+public interface UrlRepository extends JpaRepository<Url, Long> {
     @Query("SELECT h.url FROM Hash h WHERE h.hash = :hash")
     Url getUrlByHash(@Param("hash") String hash);
+    @Query(value = "DELETE FROM url WHERE created_at < NOW() - INTERVAL '1 year' RETURNING hash", nativeQuery = true)
+    List<String> deleteOldUrlsAndReturnHashes();
 }

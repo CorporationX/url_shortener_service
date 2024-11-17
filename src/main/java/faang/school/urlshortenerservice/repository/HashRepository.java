@@ -23,4 +23,5 @@ public interface HashRepository extends JpaRepository<Hash, Url> {
     default <S extends Hash> List<S> saveHashes(List<Hash> entities) {
         return (List<S>) saveAll(entities);
     }
+    Hash findByHash(String hash);
 }
