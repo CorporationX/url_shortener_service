@@ -25,10 +25,6 @@ spring:
       port: 6379
       host: localhost
 
-api:
-  validation:
-    url-regex: ^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$
-
 hash:
   batch-size: 100
   count-of-numbers-from-the-sequence: 16
