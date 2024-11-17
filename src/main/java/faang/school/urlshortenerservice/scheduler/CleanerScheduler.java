@@ -40,7 +40,7 @@ public class CleanerScheduler {
                 .toList();
 
         hashRepository.saveAll(hashes);
-        urlRepository.deleteExpiredUrls();
+        urlRepository.deleteExpiredUrls(cutoffDate);
     }
 
 }

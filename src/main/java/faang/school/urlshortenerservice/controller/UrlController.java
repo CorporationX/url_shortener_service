@@ -7,6 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +32,16 @@ public class UrlController {
     }
 
     @GetMapping("/get/{hash}")
-    public void getUrl(@PathVariable String hash, HttpServletResponse response) {
+    public ResponseEntity<Void> getUrl(@PathVariable String hash, HttpServletResponse response) {
         Url url = urlService.getUrl(hash);
 
-        response.setHeader(HttpHeaders.LOCATION, url.getUrl());
-        response.setStatus(302);
+//        response.setHeader(HttpHeaders.LOCATION, url.getUrl());
+//        response.setStatus(302);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.LOCATION, url.getUrl());
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
 }
