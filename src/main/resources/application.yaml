@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        max_fetch_depth: 100
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -29,13 +30,15 @@ server:
     generate:
       batch:
         size: 100
-  async:
-    thread:
-      pool:
-        corePoolSize: 3
-        maximumPoolSize: 10
-        keepAliveTime: 60
-        queueCapacity: 40
+    cache:
+      initial:
+        size: 16
+  thread:
+    pool:
+      corePoolSize: 3
+      maximumPoolSize: 10
+      keepAliveTime: 60
+      queueCapacity: 40
   domain: https://urlshortener.com
 
 scheduler:
