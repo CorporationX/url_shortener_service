@@ -17,11 +17,15 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-    data:
-      redis:
-        host: localhost
-        port: 6379
-        ttl: 24
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 24
+
+  validation:
+    regex:
+      url: "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
 
 task-executor:
   thread-name-prefix: taskExecutor-
