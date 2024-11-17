@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
 
+    private static final String SHORT_URL = "https://urlshortener/";
+
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
@@ -28,7 +30,7 @@ public class UrlServiceImpl implements UrlService{
                 .build();
         urlRepository.save(urlEntity);
         urlCacheRepository.save(hash, urlEntity);
-        urlDto.setUrl(String.format("https://urlshortener/%s", hash));
+        urlDto.setUrl(String.format(SHORT_URL + hash));
         return urlDto;
     }
 

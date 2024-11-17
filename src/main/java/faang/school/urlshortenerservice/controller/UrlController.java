@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,8 @@ public class UrlController {
     @GetMapping("/get/{hash}")
     public void getUrl(@PathVariable String hash, HttpServletResponse response) {
         Url url = urlService.getUrl(hash);
-        response.setHeader("Location", url.getUrl());
+
+        response.setHeader(HttpHeaders.LOCATION, url.getUrl());
         response.setStatus(302);
     }
 
