@@ -35,7 +35,7 @@ public class HashRepository {
         }
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(int initBatchSize) {
         String sql = """
                 DELETE FROM hash
                 WHERE hash IN (
