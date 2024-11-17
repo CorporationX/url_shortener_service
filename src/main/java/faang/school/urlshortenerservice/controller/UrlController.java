@@ -28,13 +28,10 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public void getUrl(@PathVariable("hash") @Length(max = 6) String hash, HttpServletResponse response) {
+    public void getUrl(@PathVariable("hash") @Length(max = 6) String hash,
+                       HttpServletResponse response) throws IOException {
         String originalUrl = urlService.getOriginalUrl(hash);
-        try {
-            response.setStatus(302);
-            response.sendRedirect(originalUrl);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        response.setStatus(302);
+        response.sendRedirect(originalUrl);
     }
 }
