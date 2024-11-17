@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.model.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -23,13 +20,13 @@ public class HashCache {
 
     @Value("${hash-cache.threshold-fraction-size}")
     private final double thresholdFractionSize;
-    private final HashRepository hashRepository;
     private final BlockingQueue<String> queueHash;
 
     @Qualifier("hashCacheExecutor")
     private final ThreadPoolTaskExecutor executor;
+    private final HashGenerator hashGenerator;
 
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional
     public String getHash() {
         executor.execute(this::checkAndFillHashCache);
 
@@ -44,25 +41,11 @@ public class HashCache {
         }
     }
 
-    public synchronized void checkAndFillHashCache() {
+    private synchronized void checkAndFillHashCache() {
         if (queueHash.size() < maxCacheSize * thresholdFractionSize) {
             int batchSize = maxCacheSize - queueHash.size();
             log.info("Starting adding {} hashes to the queue", batchSize);
-            fillHashCache(batchSize);
+            hashGenerator.fillHashCache(queueHash, batchSize);
         }
-    }
-
-    public void fillHashCache(int batchSize) {
-        List<String> hashes = hashRepository.getHashBatch(batchSize).stream()
-            .map(Hash::getHash)
-            .toList();
-        if (hashes.isEmpty()) {
-            throw new RuntimeException("There are no hashes in the database");
-        }
-        hashRepository.deleteByIds(hashes);
-        throw new RuntimeException();
-        //hashGenerator.generateBatch();
-        //queueHash.addAll(hashes);
-        //log.info("{} hashes added to the queue", hashes);
     }
 }

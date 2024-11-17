@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +22,21 @@ public class HashGenerator {
 
     @Value("${hash-generator.batch-size}")
     private final int batchSize;
+
+    @Transactional
+    public void fillHashCache(BlockingQueue<String> queueHash, int batchSize) {
+        List<String> hashes = hashRepository.getHashBatch(batchSize).stream()
+            .map(Hash::getHash)
+            .toList();
+        if (hashes.isEmpty()) {
+            throw new RuntimeException("There are no hashes in the database");
+        }
+        hashRepository.deleteByIds(hashes);
+        generateBatch();
+        queueHash.addAll(hashes);
+        log.info("{} hashes added to the queue", hashes);
+    }
+
     @Async("hashGeneratorExecutor")
     @PostConstruct
     public void generateBatch() {
