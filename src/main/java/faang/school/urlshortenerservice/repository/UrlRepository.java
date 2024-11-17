@@ -22,10 +22,10 @@ public interface UrlRepository extends JpaRepository<Url, UUID> {
     Optional<List<String>> getHashAndDeleteURL(@Param("period") String period);
 
     @Query(nativeQuery = true, value = """
-            SELECT u.url FROM url u
+            SELECT * FROM url u
             WHERE u.hash = :hash
             """)
-    Optional<String> findUrlByHash(@Param("hash") String hash);
+    Optional<Url> findUrlByHash(@Param("hash") String hash);
 
     @Query(nativeQuery = true, value = """
             SELECT u.hash FROM url u

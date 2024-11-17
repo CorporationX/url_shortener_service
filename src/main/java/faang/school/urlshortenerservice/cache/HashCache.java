@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-    @Value("${hash.cache.capacity}")
+    @Value("${generator.hash.cache.capacity}")
     private int capacity;
-    @Value("${hash.cache.min.percent}")
+    @Value("${generator.hash.cache.minPercent}")
     private double minPercent;
 
     private Queue<String> hashQueue;

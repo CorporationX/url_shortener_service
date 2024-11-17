@@ -31,7 +31,7 @@ public class Url {
     UUID id;
 
     @Column(name = "hash", unique = true, length = 6, nullable = false )
-    String string;
+    String hash;
 
     @Column(name = "url", unique = true, nullable = false)
     String url;
