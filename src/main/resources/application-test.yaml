@@ -12,3 +12,8 @@ hash:
     fillPercent: 0.7
   cleaner:
     cron: "0 * * * * ?" #For test immediately
+
+url:
+  urlShort:
+    baseUrl: "https://ushort.com/"
+    urlRegex: "^(https?://)?(www\\.)?[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}(/[a-zA-Z0-9-._~:/?#@!$&'()*+,;=]*)?$"

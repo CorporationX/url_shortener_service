@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
@@ -18,4 +19,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Transactional
     @Query(value = "DELETE FROM url WHERE created_at < :oneYearAgo RETURNING hash", nativeQuery = true)
     List<String> deleteOldUrlsAndReturnHashes(@Param("oneYearAgo") LocalDateTime oneYearAgo);
+
+    @Transactional(readOnly = true)
+    Optional<String> findUrlByHash(String hash);
 }

@@ -18,5 +18,6 @@ public class UrlProperties {
     public static class UrlShort {
 
         private String baseUrl;
+        private String urlRegex;
     }
 }
