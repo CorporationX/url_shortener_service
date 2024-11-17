@@ -1,10 +1,10 @@
 package faang.school.urlshortenerservice.dto;
 
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public record UrlDto(
-    @NotBlank
+    @Pattern(regexp = "^http.+", message = "Incorrect link format")
     String url
 ) {
 }

@@ -24,7 +24,7 @@ public class UrlService {
         Url modelUrl = Url.builder()
             .hash(shorUrl)
             .url(url.url())
-            .createdAt(LocalDateTime.now()) // сам spring значение не подставляет почему-то
+            .createdAt(LocalDateTime.now())
             .build();
         urlRepository.save(modelUrl);
 

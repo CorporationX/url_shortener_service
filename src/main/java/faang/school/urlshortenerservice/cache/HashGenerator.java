@@ -20,7 +20,6 @@ public class HashGenerator {
 
     @Value("${hash-generator.batch-size}")
     private final int batchSize;
-
     @Async("hashGeneratorExecutor")
     @PostConstruct
     public void generateBatch() {

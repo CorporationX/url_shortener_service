@@ -25,7 +25,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public String generateShorUrl(@Validated @RequestBody UrlDto url) {
+    public String generateShortUrl(@Validated @RequestBody UrlDto url) {
         return urlService.generateShortUrl(url);
     }
 

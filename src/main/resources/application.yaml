@@ -45,3 +45,4 @@ hash-generator:
 
 cleaner:
   cron: 0 1 0 * * * # ежедневно в 00:01
+  deletion-period-days: 365 # 1 год

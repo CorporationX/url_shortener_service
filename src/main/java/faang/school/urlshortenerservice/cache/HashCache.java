@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +45,7 @@ public class HashCache {
         }
     }
 
-    private synchronized void checkAndFillHashCache() {
+    public synchronized void checkAndFillHashCache() {
         if (queueHash.size() < maxCacheSize * thresholdFractionSize) {
             int batchSize = maxCacheSize - queueHash.size();
             log.info("Starting adding {} hashes to the queue", batchSize);
@@ -54,8 +53,8 @@ public class HashCache {
         }
     }
 
-    @Transactional
-    private void fillHashCache(int batchSize) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public void fillHashCache(int batchSize) {
         List<String> hashes = hashRepository.getHashBatch(batchSize).stream()
             .map(Hash::getHash)
             .toList();
@@ -63,9 +62,9 @@ public class HashCache {
             throw new RuntimeException("There are no hashes in the database");
         }
         hashRepository.deleteByIds(hashes);
-        queueHash.addAll(hashes);
-        hashGenerator.generateBatch();
-
-        log.info("{} hashes added to the queue", hashes.size());
+        throw new RuntimeException();
+        //hashGenerator.generateBatch();
+        //queueHash.addAll(hashes);
+        //log.info("{} hashes added to the queue", hashes);
     }
 }
