@@ -13,6 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      url_ttl: 7
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +28,20 @@ server:
 logging:
   level:
     root: info
+
+scheduler:
+  clean: 0 0 0 * * *
+  urls_life_time_years: 1
+hash:
+  cache:
+    capacity: 1000
+    min_load_factor: 20
+  generator:
+    batch_size: 100000
+    executor:
+      core_pool_size: 20
+      max_pool_size: 10
+      name_prefix: Hash-Generator-Executor
+
+
+static_address: "http://sh.c/"
