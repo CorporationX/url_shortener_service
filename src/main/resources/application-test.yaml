@@ -11,4 +11,4 @@ hash:
     capacity: 10
     fillPercent: 0.7
   cleaner:
-    cron: "* * * * * *" #For test immediately
+    cron: "0 * * * * ?" #For test immediately

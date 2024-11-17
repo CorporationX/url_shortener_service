@@ -1,20 +1,21 @@
 package faang.school.urlshortenerservice.cleaner.url;
 
 
+import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.util.BaseContextTest;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnableScheduling
 public class CleanerSchedulerTest extends BaseContextTest {
 
     @Autowired
@@ -54,7 +55,8 @@ public class CleanerSchedulerTest extends BaseContextTest {
     }
 
     @Test
-    public void whenThen() throws InterruptedException {
+    @DisplayName("Checks that scheduler cleaner runs and retrieve old url that more than one year from now")
+    public void whenMethodRunsCleanOldUrlAndThenSaveReleasedHashesInDb() throws InterruptedException {
         Thread.sleep(1000);
         cleanerScheduler.clean();
         Thread.sleep(1000);
