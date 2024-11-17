@@ -32,16 +32,11 @@ public class UrlController {
     }
 
     @GetMapping("/get/{hash}")
-    public ResponseEntity<Void> getUrl(@PathVariable String hash, HttpServletResponse response) {
+    public void getUrl(@PathVariable String hash, HttpServletResponse response) {
         Url url = urlService.getUrl(hash);
 
-//        response.setHeader(HttpHeaders.LOCATION, url.getUrl());
-//        response.setStatus(302);
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add(HttpHeaders.LOCATION, url.getUrl());
-
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        response.setHeader(HttpHeaders.LOCATION, url.getUrl());
+        response.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
     }
 
 }
