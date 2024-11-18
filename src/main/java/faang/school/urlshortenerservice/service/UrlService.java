@@ -9,4 +9,6 @@ public interface UrlService {
 
     Url getUrl(String hash);
 
+    void jobForCleanerScheduler();
+
 }

@@ -2,21 +2,31 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
 
+    @Value("${scheduler.cleaning.url.expiration-interval}")
+    private int expirationInterval;
+
     private static final String SHORT_URL = "https://urlshortener/";
 
     private final HashCache hashCache;
+    private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
 
@@ -44,4 +54,16 @@ public class UrlServiceImpl implements UrlService{
         return urlEntity;
     }
 
+    @Transactional
+    @Override
+    public void jobForCleanerScheduler() {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusYears(expirationInterval);
+        List<String> stringHashes = urlRepository.findExpiredUrls(cutoffDate);
+        List<Hash> hashes = stringHashes.stream()
+                .map(Hash::new)
+                .toList();
+
+        hashRepository.saveAll(hashes);
+        urlRepository.deleteExpiredUrls(cutoffDate);
+    }
 }
