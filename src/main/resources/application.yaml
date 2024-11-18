@@ -36,6 +36,7 @@ generator:
 
 schedule:
   url_cleaner_interval: "0 0 0 * * *"
+  removedPeriod: 1 year
 
 server:
   port: 8080

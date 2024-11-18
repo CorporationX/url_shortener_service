@@ -1,14 +1,13 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +18,20 @@ public class UrlShortenerService {
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final UrlMapper urlMapper;
     private final HashCache hashCache;
 
     @Transactional
-    public void cleanOldUrls() {
+    public void cleanOldUrls(String removedPeriod) {
+        urlRepository.getHashAndDeleteURL(removedPeriod).ifPresent(hashes -> {
+            hashRepository.saveAll(hashes.stream()
+                    .map(Hash::new)
+                    .toList());
+            log.info("Removed {} hashes.", hashes.size());
 
-//        // Получение URL-адресов старше года
-//        Список<Url> oldUrls = urlRepository.findOldUrls(); // Реализуй этот метод в URLRepository
-//
-//// Сохрани освобожденные хэши обратно в хэш-таблицу
-//        for (Url url : oldUrls) {
-//            hashRepository.save(url.getHash()); // Настроить в соответствии с твоей логикой получения хэшей
-//            urlRepository.delete(url); // Удали старую ассоциацию URL.
-//        }
+        });
     }
 
+    @Transactional
     public String getUrl(String hash) {
         String cachedUrl = urlCacheRepository.getUrlByHash(hash);
         if (cachedUrl != null) {
@@ -42,7 +39,7 @@ public class UrlShortenerService {
         }
 
         Url url = urlRepository.findUrlByHash(hash).orElseThrow(() -> {
-            String message = String.format("Cannot find url by %s", hash);
+            String message = String.format("Cannot find url by hash = %s", hash);
             log.info(message);
             return new RuntimeException(message);
         });
@@ -59,7 +56,6 @@ public class UrlShortenerService {
         }
 
         if (cachedHash == null) {
-
             String newHash = hashCache.getHash();
 
             Url newUrl = Url.builder()
