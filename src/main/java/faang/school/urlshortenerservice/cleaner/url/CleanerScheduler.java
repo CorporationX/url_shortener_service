@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cleaner.url;
 
+import faang.school.urlshortenerservice.config.properties.url.UrlProperties;
 import faang.school.urlshortenerservice.model.hash.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
@@ -19,11 +20,13 @@ public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final UrlProperties urlProperties;
 
     @Scheduled(cron = "${hash.cleaner.cron}")
     @Transactional
     public void clean() {
-        List<String> hashesStrings = urlRepository.deleteOldUrlsAndReturnHashes(LocalDateTime.now().minusYears(1));
+        List<String> hashesStrings = urlRepository
+                .deleteOldUrlsAndReturnHashes(LocalDateTime.now().minusYears(urlProperties.getTimeLimit().getYear()));
         List<Hash> hashes = hashesStrings.stream()
                 .map(Hash::new)
                 .toList();

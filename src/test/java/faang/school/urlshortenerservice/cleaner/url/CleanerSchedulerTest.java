@@ -33,19 +33,19 @@ public class CleanerSchedulerTest extends BaseContextTest {
         url1 = Url.builder()
                 .hash("Boot")
                 .url("www.google.com")
-                .createdAt(LocalDateTime.of(2023,10,10,10,10))
+                .createdAt(LocalDateTime.of(2023, 10, 10, 10, 10))
                 .build();
 
         url2 = Url.builder()
                 .hash("Camp")
                 .url("www.youtube.com")
-                .createdAt(LocalDateTime.of(2023,6,10,10,10))
+                .createdAt(LocalDateTime.of(2023, 6, 10, 10, 10))
                 .build();
 
         url3 = Url.builder()
                 .hash("Best")
                 .url("www.gmail.com")
-                .createdAt(LocalDateTime.of(2024,11,11,11,11))
+                .createdAt(LocalDateTime.of(2024, 11, 11, 11, 11))
                 .build();
 
         urlRepository.save(url1);
