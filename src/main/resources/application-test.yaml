@@ -1,0 +1,14 @@
+spring:
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/test_db
+    username: test
+    password: test
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update

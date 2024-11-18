@@ -1,46 +1,50 @@
 package faang.school.urlshortenerservice.generate;
 
-import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.exception.ServiceException;
 import faang.school.urlshortenerservice.model.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final Executor asyncExecutor;
+    private final ThreadPoolTaskExecutor asyncExecutor;
 
     @Value("${hash.range}")
-    private int maxRange;
+    private long maxRange;
 
     @Value("${hash.numberOfParts}")
     private int numberOfParts;
 
     @Value("${hash.threshold}")
-    private int ParallelProcessingThreshold;
+    private int threshold;
 
-    /* @Async(value = "asyncExecutor")*/
-    public List<Hash> generateBatch(List<Long> numbers) {
-
+    @Transactional
+    public void generateBatch() {
+        List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
+        log.info("The list is unique and has been received.List size: {}", numbers.size());
         List<Hash> hashes;
-        if (maxRange < ParallelProcessingThreshold) {
+        if (maxRange < threshold) {
             hashes = getHashes(numbers);
         } else {
             hashes = getHashes(numbers, numberOfParts);
         }
-        return hashes;
+        hashRepository.saveAll(hashes);
+        log.info("Saving a list of hashes in the database: {}", hashes.size());
     }
 
     private List<Hash> getHashes(List<Long> numbers, int numberOfParts) {
@@ -50,7 +54,7 @@ public class HashGenerator {
                                 asyncExecutor)
                         .handle((result, ex) -> {
                             if (ex != null) {
-                                throw new DataValidationException("Error receiving hashes " + ex.getMessage());
+                                throw new ServiceException("Error receiving hashes " + ex.getMessage(), ex.getCause());
                             }
                             return result;
                         })
