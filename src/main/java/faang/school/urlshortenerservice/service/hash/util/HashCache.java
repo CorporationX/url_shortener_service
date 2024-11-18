@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final HashService hashService;
     private final HashGenerator hashGenerator;
-    private final Executor hashCacheExecutorPool;
+    private final Executor executor = Executors.newSingleThreadExecutor();
     private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean isUpdating = new AtomicBoolean(false);
 
@@ -43,7 +44,7 @@ public class HashCache {
     private void checkHashesSize() {
         if (isUpdating.compareAndSet(false, true)) {
             if (hashes.size() < hashesMin) {
-                hashCacheExecutorPool.execute(this::updateHashes);
+                executor.execute(this::updateHashes);
             } else {
                 isUpdating.set(false);
             }

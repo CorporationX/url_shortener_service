@@ -43,17 +43,6 @@ app:
   hash_cache:
     hashes_max_size: 1_000
     hashes_min_size: 200
-  async:
-    hash_generator:
-      core_pool_size: 10
-      max_pool_size: 20
-      queue_capacity: 1_000
-      thread_name_prefix: HashGenerator-Async-
-    hash_cache:
-      core_pool_size: 10
-      max_pool_size: 20
-      queue_capacity: 1_000
-      thread_name_prefix: HashCache-Async-
   scheduler:
     url_cleaner:
       cron: '0 0 0 * * *'

@@ -24,7 +24,7 @@ public class HashGenerator {
     @Value("${app.hash_generator.db_hashes_limit}")
     private long dbHashesLimit;
 
-    @Async("hashGeneratorExecutorPool")
+    @Async
     public void generate() {
         Long dbHashesSize = hashService.getHashesSize();
         if (dbHashesSize < dbHashesLimit) {

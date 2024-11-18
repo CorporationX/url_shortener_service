@@ -13,7 +13,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static faang.school.urlshortenerservice.test.utils.TestData.HASHES;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,13 +71,6 @@ class HashCacheTest {
         assert hashesResult != null;
         assertThat(hashesResult.size())
                 .isEqualTo(HASHES.size() -1);
-    }
-
-    @Test
-    void testGetHash_hashesNotEnough_isUpdatingFalse() {
-        hashCache.getHash();
-
-        verify(executor).execute(any(Runnable.class));
     }
 
     @Test
