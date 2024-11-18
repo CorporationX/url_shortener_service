@@ -23,15 +23,15 @@ public class HashCacheImpl implements HashCache {
     private final HashGenerator generator;
 
     private final Queue<String> hashQueue = new ConcurrentLinkedQueue<>();
-    private final AtomicBoolean isRefilling = new AtomicBoolean(false);
+    private final AtomicBoolean isCacheRefilling = new AtomicBoolean(false);
 
-    private int thresholdLaunchPercentage;
+    private int cacheRefillThreshold;
 
     @PostConstruct
     void initialize() {
         synchronized (this) {
             generator.generateBatch();
-            thresholdLaunchPercentage = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillPercent() / 100.0));
+            cacheRefillThreshold = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillPercent() / 100.0));
             refillCacheAsync();
         }
     }
@@ -40,7 +40,7 @@ public class HashCacheImpl implements HashCache {
     public String getHash() {
         int currentSize = hashQueue.size();
 
-        if (currentSize < thresholdLaunchPercentage && isRefilling.compareAndSet(false, true)) {
+        if (currentSize < cacheRefillThreshold && isCacheRefilling.compareAndSet(false, true)) {
             refillCacheAsync();
         }
 
@@ -57,7 +57,7 @@ public class HashCacheImpl implements HashCache {
                     }
                 }
             } finally {
-                isRefilling.set(false);
+                isCacheRefilling.set(false);
             }
         });
     }
