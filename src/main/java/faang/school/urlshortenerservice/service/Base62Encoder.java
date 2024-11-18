@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import io.seruco.encoding.base62.Base62;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class Base62Encoder {
