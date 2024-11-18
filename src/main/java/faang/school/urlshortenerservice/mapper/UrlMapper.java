@@ -12,7 +12,5 @@ public interface UrlMapper {
     @Mapping(target = "url", source = "hash")
     UrlDto toDto(Url url);
 
-//    @Mapping(target = "hash", source = "hash")
-//    @Mapping(target = "url", source = )
     Url toEntity(UrlDto urlDto, String hash);
 }
