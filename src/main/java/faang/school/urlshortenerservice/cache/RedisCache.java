@@ -24,8 +24,4 @@ public class RedisCache {
     public void saveToCache(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url, ttl, TimeUnit.HOURS);
     }
-
-    public void deleteFromCache(String hash) {
-        redisTemplate.delete(hash);
-    }
 }
