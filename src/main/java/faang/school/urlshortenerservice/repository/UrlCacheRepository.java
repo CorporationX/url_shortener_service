@@ -22,9 +22,4 @@ public class UrlCacheRepository {
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url, Duration.ofHours(redisCacheConfigProperties.getTtlTimeHours()));
     }
-
-    public boolean delete(String hash) {
-        Boolean deleted = redisTemplate.delete(hash);
-        return Boolean.TRUE.equals(deleted);
-    }
 }

@@ -18,10 +18,10 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${server.scheduler.cleaner.days-threshold}")
+    @Value("${server.hash.scheduler.cleaner.days-threshold}")
     private int daysThreshold;
 
-    @Scheduled(cron = "${server.scheduler.cleaner.cron}")
+    @Scheduled(cron = "${server.hash.scheduler.cleaner.cron}")
     @Transactional
     public void clearUnusedUrls() {
         LocalDate oneYearAgo = LocalDate.now().minusDays(daysThreshold);
