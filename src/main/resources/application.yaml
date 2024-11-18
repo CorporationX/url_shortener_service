@@ -39,6 +39,11 @@ server:
       batch:
         size: 10000
 
+    scheduler:
+      cleaner:
+        days-threshold: 365
+        cron: "0 0 0 * * ?"
+
 
   async:
     thread:
