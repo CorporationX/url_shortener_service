@@ -25,5 +25,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
         WHERE created_at < :dateTime
         RETURNING hash, created_at
         """, nativeQuery = true)
-    List<Hash> deleteOldUrlsAndReturnHashesAsHashEntities(LocalDateTime dateTime);
+    List<Hash> deleteOldUrlsAndReturnHashes(LocalDateTime dateTime);
 }

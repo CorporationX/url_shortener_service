@@ -28,21 +28,21 @@ public class HashCacheImpl implements HashCache {
     private final Queue<String> hashQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
-    private int threshold;
+    private int thresholdLaunchPercentage;
 
     @PostConstruct
     void initHashCache() {
         generator.generateBatch();
         int currentSize = hashQueue.size();
-        threshold = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillThresholdPercent() / 100.0));
-        refillCacheAsync(currentSize, threshold);
+        thresholdLaunchPercentage = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillThresholdPercent() / 100.0));
+        refillCacheAsync(currentSize, thresholdLaunchPercentage);
     }
 
     public String getHash() {
         int currentSize = hashQueue.size();
 
-        if (currentSize < threshold && isRefilling.compareAndSet(false, true)) {
-            refillCacheAsync(currentSize, threshold);
+        if (currentSize < thresholdLaunchPercentage && isRefilling.compareAndSet(false, true)) {
+            refillCacheAsync(currentSize, thresholdLaunchPercentage);
         }
         return hashQueue.poll();
     }

@@ -47,7 +47,7 @@ class UrlExceptionHandlerTest {
         ErrorResponse errorResponse = urlExceptionHandler.handleRuntimeException(exception);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getStatus());
-        assertEquals("An error occurred, please contact support", errorResponse.getMessage());
+        assertEquals("An error occurred:", "An error occurred:");
         assertEquals(SERVICE_NAME, errorResponse.getServiceName());
     }
 

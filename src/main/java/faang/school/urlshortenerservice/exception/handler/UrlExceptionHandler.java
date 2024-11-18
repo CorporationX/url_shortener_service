@@ -29,7 +29,7 @@ public class UrlExceptionHandler {
         log.error("A system error has occurred: {}", ex.getMessage(), ex);
 
         return ErrorResponse.builder()
-                .message("An error occurred, please contact support")
+                .message("An error occurred: " + ex.getMessage())
                 .serviceName(serviceName)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build();

@@ -47,7 +47,7 @@ public class HashCacheTest {
         hashQueue = new ConcurrentLinkedQueue<>(List.of("hash1", "hash2"));
         ReflectionTestUtils.setField(hashCache, "hashQueue", hashQueue);
 
-        ReflectionTestUtils.setField(hashCache, "threshold", 20);
+        ReflectionTestUtils.setField(hashCache, "thresholdLaunchPercentage", 20);
     }
 
     @Test
