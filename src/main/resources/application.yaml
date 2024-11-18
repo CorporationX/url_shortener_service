@@ -37,12 +37,10 @@ spring:
     encoder:
       character-base-62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
       hash-size: 6
-    generator:
-      amount-hash: 100
     cache:
       max-queue-size: 100
       refill-percent: 30
-      amount-hash: 50
+      amount-hash: 100
 
     scheduler:
       cleaner:
