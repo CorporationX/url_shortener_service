@@ -27,20 +27,23 @@ spring:
     regex:
       url: "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
 
-task-executor:
-  thread-name-prefix: taskExecutor-
-  queue-capacity: 100
-  core-pool-size: 10
-  max-pool-size: 20
+  async-config:
+    core-pool-size: 4
+    max-pool-size: 10
+    queue-capacity: 50
+    thread-name-prefix: Async-Executor-
 
-hash:
-  encoder:
-    character-base-62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-    hash-size: 6
-  repository:
-    batch-size: 1000
-  generator:
-    batch-size: 1000
+  hash:
+    encoder:
+      character-base-62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+      hash-size: 6
+    generator:
+      amount-hash: 100
+    scheduler:
+      cleaner:
+        cron: "0 0 1 * * ?"
+        batch-size: 100
+        life-time-days: 100
 
 server:
   port: 8080

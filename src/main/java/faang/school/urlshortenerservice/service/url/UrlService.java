@@ -2,7 +2,9 @@ package faang.school.urlshortenerservice.service.url;
 
 public interface UrlService {
 
-    String getLongUrl(String hash);
+    String getLongUrlByHash(String hash);
 
-    String getShortUrl(String hash);
+    String generateHashForUrl(String url);
+
+    void cleaningOldHashes();
 }

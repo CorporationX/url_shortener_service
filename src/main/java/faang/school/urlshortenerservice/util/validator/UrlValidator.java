@@ -1,27 +1,22 @@
-package faang.school.urlshortenerservice.validation.url;
+package faang.school.urlshortenerservice.util.validator;
 
+import faang.school.urlshortenerservice.annotation.Url;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
-@Component
 public class UrlValidator implements ConstraintValidator<Url, String> {
 
-    private Pattern pattern;
-
     @Value("${spring.validation.regex.url}")
-    private String urlRegex;
-
-    @Override
-    public void initialize(Url constraintAnnotation) {
-        pattern = Pattern.compile(urlRegex);
-    }
+    private String urlPattern;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return value != null && pattern.matcher(value).matches();
+        if (value == null) {
+            return false;
+        }
+        return Pattern.matches(urlPattern, value);
     }
 }

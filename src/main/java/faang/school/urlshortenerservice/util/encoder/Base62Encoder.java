@@ -1,43 +1,55 @@
 package faang.school.urlshortenerservice.util.encoder;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Component
 @Setter
 @RequiredArgsConstructor
-public class Base62Encoder {
+public class Base62Encoder implements Encoder {
 
-    private final Executor taskExecutor;
-
-    @Value("${hash.encoder.hash-size}")
+    @Value("${spring.hash.encoder.hash-size}")
     private int hashSize;
 
-    @Value("${hash.encoder.character-base-62}")
+    @Value("${spring.hash.encoder.character-base-62}")
     private String characterBase62;
 
-    public List<String> encodeBatch(List<Long> sequence) {
-        List<CompletableFuture<String>> futures = sequence.stream()
-                .map(num -> CompletableFuture.supplyAsync(() -> encode(num), taskExecutor))
-                .toList();
+    @Override
+    public Hash encode(long number) {
+        StringBuilder encodedHash = new StringBuilder();
 
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .toList();
-    }
-
-    private String encode(Long number) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < hashSize; i++) {
-            result.append(characterBase62.charAt((int) (number % characterBase62.length())));
+        while (number > 0) {
+            int currentIndex = (int) (number % characterBase62.length());
+            encodedHash.append(characterBase62.charAt(currentIndex));
             number /= characterBase62.length();
         }
-        return result.toString();
+
+        encodedHash.reverse();
+
+        while (encodedHash.length() < hashSize) {
+            encodedHash.insert(0, '0');
+        }
+
+        return Hash.builder()
+                .hash(encodedHash.toString())
+                .build();
+    }
+
+
+    @Override
+    public List<Hash> encodeBatch(List<Long> numbers) {
+        List<Hash> encodedList = new ArrayList<>();
+
+        for (Long number : numbers) {
+            encodedList.add(encode(number));
+        }
+
+        return encodedList;
     }
 }

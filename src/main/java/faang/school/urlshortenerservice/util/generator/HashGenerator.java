@@ -1,35 +1,29 @@
 package faang.school.urlshortenerservice.util.generator;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.encoder.Base62Encoder;
+import faang.school.urlshortenerservice.util.encoder.Encoder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private final Base62Encoder encoder;
     private final HashRepository hashRepository;
+    private final Encoder encoder;
 
-    @Value("${hash.generator.batch-size}")
-    private int batchSize;
+    @Value("${spring.hash.generator.amount-hash}")
+    private int amountHash;
 
-    @Async("taskExecutor")
+    @Transactional
     public void generateBatch() {
-        log.info("Start generate hashes");
-
-        List<Long> sequence = hashRepository.getUniqueNumbers(batchSize);
-        log.info("Generated sequence: {}", sequence.size());
-
-        List<String> hashes = encoder.encodeBatch(sequence);
-        hashRepository.save(hashes);
-        log.info("Generated and saved {} hashes", hashes.size());
+        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(amountHash);
+        List<Hash> hashes = encoder.encodeBatch(uniqueNumbers);
+        hashRepository.saveAll(hashes);
     }
 }
