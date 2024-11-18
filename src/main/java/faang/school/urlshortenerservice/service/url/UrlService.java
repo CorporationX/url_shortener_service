@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.mapper.url.UrlMapper;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +57,7 @@ public class UrlService {
         } else {
             return urlRepository.findById(hash)
                     .map(Url::getUrl)
-                    .orElseThrow(() -> new DataValidationException("URL not found for hash: " + hash));
+                    .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash));
         }
     }
 
