@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service.url;
 
-import faang.school.urlshortenerservice.config.properties.GeneralProperties;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
@@ -8,6 +7,7 @@ import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import faang.school.urlshortenerservice.util.HashCache;
 import faang.school.urlshortenerservice.validator.AppUrlValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UrlService {
-    private static final String GET_URL_PATH = "/url/";
+    @Value("${app.get-hash-url}")
+    private String getHashUrl;
 
     private final AppUrlValidator appUrlValidator;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final GeneralProperties generalProperties;
 
     public String generateShortUrl(String longUrl) {
         appUrlValidator.validate(longUrl);
@@ -53,7 +53,7 @@ public class UrlService {
     }
 
     private String buildRedirectUrl(String hash) {
-        return generalProperties.getAppUrl() + GET_URL_PATH + hash;
+        return getHashUrl + hash;
     }
 
     private Url build(String hash, String url) {

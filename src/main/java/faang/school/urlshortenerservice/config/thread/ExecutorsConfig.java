@@ -8,6 +8,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,19 +16,11 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Configuration
 public class ExecutorsConfig {
-    @Value("${thread-pool.fill-up-cache.size:1}")
-    private int threadPoolSize;
-
     private final TaskExecutorProperties taskExecutorProperties;
 
     @Bean
     public ExecutorService fillUpCacheExecutorService() {
-        return new ThreadPoolExecutor(
-                threadPoolSize,
-                threadPoolSize,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(threadPoolSize));
+        return Executors.newSingleThreadExecutor();
     }
 
     @Bean

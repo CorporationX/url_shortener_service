@@ -25,8 +25,8 @@ public class AppExceptionHandler {
         return handleException(e, BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleRuntimeException(Exception e) {
         return handleException(e, INTERNAL_SERVER_ERROR);
     }
 

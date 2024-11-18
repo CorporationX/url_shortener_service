@@ -1,37 +1,38 @@
 package faang.school.urlshortenerservice.util;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@RequiredArgsConstructor
 @Component
 public class HashCache {
-    @Value("${app.hash-cache.size:1000}")
-    private int cacheCapacity;
-
-    @Value("${app.hash-cache.threshold:200}")
-    private int threshold;
-
-    @Value("${app.hashes-generation.batch-size:800}")
-    private int batchSize;
+    private final int cacheCapacity;
+    private final int threshold;
+    private final int batchSize;
 
     private final HashGenerator hashGenerator;
-    private final AtomicBoolean isFillingUp = new AtomicBoolean(false);
     private final ExecutorService fillUpCacheExecutorService;
+    private final AtomicBoolean isFillingUp = new AtomicBoolean(false);
+    private final Queue<String> cache;
 
-    private Queue<String> cache;
+    public HashCache(
+            @Value("${app.hash-cache.size:1000}") int cacheCapacity,
+            @Value("${app.hash-cache.threshold:200}") int threshold,
+            @Value("${app.hashes-generation.batch-size:800}") int batchSize,
+            HashGenerator hashGenerator,
+            ExecutorService fillUpCacheExecutorService) {
+        this.cacheCapacity = cacheCapacity;
+        this.threshold = threshold;
+        this.batchSize = batchSize;
+        this.hashGenerator = hashGenerator;
+        this.fillUpCacheExecutorService = fillUpCacheExecutorService;
+        this.cache = new ConcurrentLinkedDeque<>();
 
-    @PostConstruct
-    public void init() {
-        cache = new ArrayBlockingQueue<>(cacheCapacity);
         hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
         List<String> hashesFromDb = hashGenerator.getHashes(cacheCapacity);
         cache.addAll(hashesFromDb);
@@ -43,7 +44,7 @@ public class HashCache {
     }
 
     private void fillUpCacheIfNeeded() {
-        if (isFillingUp.compareAndSet(false, true) && cache.size() < threshold) {
+        if (cache.size() < threshold && isFillingUp.compareAndSet(false, true)) {
             fillUpCacheExecutorService.execute(() -> {
                 try {
                     fillUpCache(batchSize);

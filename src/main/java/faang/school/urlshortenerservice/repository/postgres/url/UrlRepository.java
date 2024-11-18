@@ -15,7 +15,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<Url> findByHash(String hash);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM url WHERE created_at < :date RETURNING hash
+            DELETE FROM url 
+            WHERE hash IN (SELECT hash FROM url WHERE created_at < :date FOR UPDATE) 
+            RETURNING hash
             """)
     List<String> getOldUrlsAndDelete(@Param("date") LocalDateTime date);
 }

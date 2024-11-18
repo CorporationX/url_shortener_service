@@ -13,9 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      jdbc:
+        batch_size: 100
 
   liquibase:
-    enabled: false
+    enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   data:
@@ -27,8 +29,8 @@ server:
   port: 8088
 
 app:
-  protocol: http
-  host: localhost
+  base-url: http://localhost:8080
+  get-hash-url: ${app.base-url}/url/
 
   hashes-generation:
     batch-size: 800
@@ -37,8 +39,6 @@ app:
     threshold: 200
 
 thread-pool:
-  fill-up-cache:
-    size: 1
   hashes-generator:
     corePoolSize: 2
     maxPoolSize: 2

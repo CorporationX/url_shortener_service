@@ -1,14 +1,12 @@
 package faang.school.urlshortenerservice.util;
 
 import org.springframework.stereotype.Component;
+import org.unbrokendome.base62.Base62;
 
 import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int BASE = ALPHABET.length();
-
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
                 .map(this::encode)
@@ -16,14 +14,7 @@ public class Base62Encoder {
     }
 
     private String encode(long number) {
-        StringBuilder result = new StringBuilder();
-
-        while (number > 0) {
-            int remainder = (int) (number % BASE);
-            result.append(ALPHABET.charAt(remainder));
-            number /= BASE;
-        }
-
-        return result.reverse().toString();
+        String encoded = Base62.encode(number);
+        return encoded.substring(5, 11);
     }
 }

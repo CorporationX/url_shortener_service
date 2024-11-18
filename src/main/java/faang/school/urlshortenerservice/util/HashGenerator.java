@@ -16,7 +16,6 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final HashService hashService;
 
-    @Transactional
     public void generateBatchOfHashes(int batchSize) {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
