@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class UrlServiceImpl implements UrlService {
+
     private final UrlRepository urlRepository;
     private final HashCache hashCache;
     private final UrlCacheRepository cacheRepository;
