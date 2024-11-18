@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -27,11 +28,18 @@ public class HashGenerator {
             String threadName = Thread.currentThread().getName();
             int batchSize = hashProperties.getBatch().getGet();
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-            log.debug("Thread {} , retrieved {} of unique numbers!", threadName, uniqueNumbers.size());
-            List<Hash> hashes = base62Encoder.encode(uniqueNumbers);
-            log.debug("Thread {} , encoded {} hashes! Starting to batch save!", threadName, hashes.size());
-            hashRepository.saveAllCustom(hashes);
-            log.debug("Thread {} , successfully saved hashes in DB!", threadName);
+            log.debug("Thread {} , retrieved {} unique numbers!", threadName, uniqueNumbers.size());
+            CompletableFuture<List<Hash>> encodedFuture = CompletableFuture.supplyAsync(() ->
+                    base62Encoder.encode(uniqueNumbers, hashProperties.getThreadPool().getInitialPoolSize())
+            ).thenCompose(innerFuture -> innerFuture);
+            encodedFuture.thenAccept(hashes -> {
+                hashRepository.saveAllCustom(hashes);
+                log.debug("Thread {} , successfully saved hashes in DB!", threadName);
+            }).exceptionally(ex -> {
+                log.error("Error while encoding hashes! :", ex);
+                return null;
+            });
+
         } catch (DataAccessException dae) {
             log.error("Error while generating batch! :", dae);
             throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);

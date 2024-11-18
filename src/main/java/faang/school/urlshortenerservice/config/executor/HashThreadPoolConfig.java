@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.config.properties.hash.HashProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -15,6 +16,7 @@ public class HashThreadPoolConfig {
     private final HashProperties hashProperties;
 
     @Bean(name = "hashGeneratorExecutor")
+    @Primary
     public TaskExecutor taskExecutor() {
         int initialPoolSize = hashProperties.getThreadPool().getInitialPoolSize();
         int maxPoolSize = hashProperties.getThreadPool().getMaxPoolSize();
