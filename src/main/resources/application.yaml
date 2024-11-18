@@ -39,7 +39,7 @@ logging:
 app:
   hash_generator:
     get_unique_number_size: 1_000
-    max_db_hashes_size: 2_000
+    db_hashes_limit: 2_000
   hash_cache:
     hashes_max_size: 1_000
     hashes_min_size: 200

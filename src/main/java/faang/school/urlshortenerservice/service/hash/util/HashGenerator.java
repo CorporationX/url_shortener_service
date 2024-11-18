@@ -21,13 +21,13 @@ public class HashGenerator {
     @Value("${app.hash_generator.get_unique_number_size}")
     private int numberSize;
 
-    @Value("${app.hash_generator.max_db_hashes_size}")
-    private long maxDbHashesSize;
+    @Value("${app.hash_generator.db_hashes_limit}")
+    private long dbHashesLimit;
 
     @Async("hashGeneratorExecutorPool")
     public void generate() {
         Long dbHashesSize = hashService.getHashesSize();
-        if (dbHashesSize < maxDbHashesSize) {
+        if (dbHashesSize < dbHashesLimit) {
             List<Long> numbers = hashService.getUniqueNumbers(numberSize);
             List<String> hashes = encoder.encode(numbers);
             List<Hash> hashesEntity = hashes.stream()

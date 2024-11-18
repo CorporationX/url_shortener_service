@@ -4,7 +4,9 @@ import io.seruco.encoding.base62.Base62;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.stream.LongStream;
 
 @Component
 public class Base62Encoder {
@@ -17,16 +19,14 @@ public class Base62Encoder {
     }
 
     private String encodeToBase62(Long number) {
-        byte[] bytes = compactLongToBytes(number);
-        return new String(base62.encode(bytes));
+        byte[] bytes = longToBytes(number);
+        String hash = new String(base62.encode(bytes));
+        return hash.replaceFirst("^0+", "");
     }
 
-    private byte[] compactLongToBytes(long number) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        while (number != 0) {
-            bos.write((byte) (number & 0xFF));
-            number >>>= 8;
-        }
-        return bos.toByteArray();
+    private byte[] longToBytes(long number) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(number);
+        return buffer.array();
     }
 }

@@ -12,7 +12,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final Executor hashCacheExecutorPool;
     private final Queue<String> hashes = new ConcurrentLinkedDeque<>();
-    private final AtomicInteger hashesSize = new AtomicInteger(0);
     private final AtomicBoolean isUpdating = new AtomicBoolean(false);
 
     @Value("${app.hash_cache.hashes_max_size}")
@@ -39,28 +37,26 @@ public class HashCache {
 
     public String getHash() {
         checkHashesSize();
-        hashesSize.decrementAndGet();
         return hashes.poll();
     }
 
     private void checkHashesSize() {
-        if (hashesSize.get() < hashesMin && isUpdating.compareAndSet(false, true)) {
-            hashCacheExecutorPool.execute(this::updateHashes);
+        if (isUpdating.compareAndSet(false, true)) {
+            if (hashes.size() < hashesMin) {
+                hashCacheExecutorPool.execute(this::updateHashes);
+            } else {
+                isUpdating.set(false);
+            }
         }
     }
 
     private void updateHashes() {
         try {
             hashGenerator.generate();
-            executeUpdating();
+            List<String> newHashes = hashService.findAllByPackSize(hashesMax);
+            hashes.addAll(newHashes);
         } finally {
             isUpdating.set(false);
         }
-    }
-
-    private void executeUpdating() {
-        List<String> newHashes = hashService.findAllByPackSize(hashesMax);
-        hashes.addAll(newHashes);
-        hashesSize.set(newHashes.size() + hashesSize.get());
     }
 }
