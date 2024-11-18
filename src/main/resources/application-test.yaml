@@ -1,0 +1,8 @@
+hash:
+  at-least-amount: 10
+  min-percent: 20
+  max-local-cache: 7
+  batch-size: 2
+  cleaner:
+    cron: "0 30 3 * * *"
+    days-before-obsolete: 10
