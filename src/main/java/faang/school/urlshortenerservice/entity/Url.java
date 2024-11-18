@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash("url")
+@RedisHash(value = "url", timeToLive = 10L)
 public class Url {
 
     @org.springframework.data.annotation.Id
