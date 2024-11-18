@@ -1,0 +1,14 @@
+CREATE SEQUENCE unique_hash_number_seq
+    INCREMENT BY 1
+    START WITH 1
+    CACHE 1000;
+
+CREATE TABLE hash (
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE url (
+    hash VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
