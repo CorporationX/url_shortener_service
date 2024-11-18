@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties("spring.hash-cache")
+@ConfigurationProperties("spring.hash.cache")
 public class HashCacheProperty {
 
     private int maxQueueSize;
