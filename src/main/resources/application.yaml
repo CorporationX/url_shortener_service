@@ -35,6 +35,10 @@ generator:
   hashes-batch-size: 100
   min-cache-fill-ratio: 0.2
 
+scheduler:
+  cron:
+    expression: "0 0 0 * * *"
+
 async:
   core-pool-size: 2
   max-pool-size: 2

@@ -3,15 +3,16 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exceptions.RedisOperationException;
 import faang.school.urlshortenerservice.generator.LocalCache;
 import faang.school.urlshortenerservice.repository.url.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.jpa.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
@@ -37,12 +38,21 @@ public class UrlServiceImpl implements UrlService {
         return new ShortUrlDto(buildShortUrl(hash));
     }
 
+    @Override
+    public String getOriginalUrl(String hash) {
+        return urlCacheRepository.findById(hash)
+                .map(Url::getUrl)
+                .orElseGet(() ->
+                        urlRepository.findById(hash)
+                                .map(Url::getUrl)
+                                .orElseThrow(() -> new IllegalArgumentException("URL not found for hash: " + hash)));
+    }
+
     private void cacheUrl(Url url) {
         try {
             urlCacheRepository.save(url);
         } catch (Exception e) {
-            throw new RedisOperationException(
-                    String.format("Unable to cache url %s in cache", url.getUrl()), e);
+            log.warn("Unable to cache URL {} in Redis. Continuing without cache.", url.getUrl(), e);
         }
     }
 

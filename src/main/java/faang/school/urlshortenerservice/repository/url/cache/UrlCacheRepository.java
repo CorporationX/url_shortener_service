@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UrlCacheRepository extends CrudRepository<Url, Long> {
+public interface UrlCacheRepository extends CrudRepository<Url, String> {
 }
