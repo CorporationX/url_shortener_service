@@ -35,9 +35,4 @@ public class CleanerScheduler {
         List<String> hashes = urlRepository.releaseHashes();
         hashRepository.saveAll(hashes, hashes.size());
     }
-
-    @Async
-    public void cleanCache() {
-
-    }
 }
