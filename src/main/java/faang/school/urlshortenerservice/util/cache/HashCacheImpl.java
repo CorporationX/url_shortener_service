@@ -22,10 +22,9 @@ public class HashCacheImpl implements HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator generator;
 
+    private int cacheRefillThreshold;
     private final Queue<String> hashQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isCacheRefilling = new AtomicBoolean(false);
-
-    private int cacheRefillThreshold;
 
     @PostConstruct
     void initialize() {
