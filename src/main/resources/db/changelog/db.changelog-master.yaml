@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/url_shortener_V001_init.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V002_outbox.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V003_add_unique_url.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V004_add_index_created_at.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_V005_refactor.sql

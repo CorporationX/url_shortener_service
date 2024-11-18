@@ -1,0 +1,1 @@
+CREATE INDEX ON url (created_at);
