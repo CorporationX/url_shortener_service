@@ -9,7 +9,6 @@ import lombok.ToString;
 
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlDto {

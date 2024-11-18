@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -24,6 +23,7 @@ public class UrlService {
     private final RedisTemplate redisTemplate;
     private final UrlCacheRepository urlCacheRepository;
 
+    @Transactional
     public UrlDto createShortUrl(UrlDto urlDto) {
         log.info("start createShortUrl with urlDto: {}", urlDto);
 
@@ -41,7 +41,7 @@ public class UrlService {
 
     private void saveUrlInRedisCache(Url url) {
         urlCacheRepository.save(url);
-        redisTemplate.expire(url.getHash(), 1, TimeUnit.DAYS);
-        log.info("save Url in Redis cache: {}", url);
+        redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
+        log.info("save Url in Redis cache: {}", redisTemplate.opsForValue().get(url.getHash()));
     }
 }

@@ -14,8 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,9 +46,9 @@ class UrlServiceTest {
     private static final String URL = "url";
     private static final String HASH = "hash";
     private Url url;
-    private UrlDto urlDto;
     private UrlDto longUrlDto;
     private UrlDto shortUrlDto;
+    private ValueOperations<String, String> valueOperations;
 
     @BeforeEach
     public void init() {
@@ -56,12 +59,10 @@ class UrlServiceTest {
                 .hash(HASH)
                 .url(URL)
                 .build();
-        urlDto = UrlDto.builder()
-                .url(HASH)
-                .build();
         shortUrlDto = UrlDto.builder()
                 .url(HASH)
                 .build();
+        valueOperations = mock(ValueOperations.class);
     }
 
     @Test
@@ -70,6 +71,8 @@ class UrlServiceTest {
         when(hashCache.getHash()).thenReturn(HASH);
         when(urlMapper.toEntity(longUrlDto, HASH)).thenReturn(url);
         when(urlRepository.save(url)).thenReturn(url);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        doNothing().when(valueOperations).set(url.getHash(), url.getUrl());
         when(urlCacheRepository.save(url)).thenReturn(url);
         when(urlMapper.toDto(url)).thenReturn(shortUrlDto);
 

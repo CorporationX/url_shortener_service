@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @ToString
-@RedisHash("Url")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "urls")
