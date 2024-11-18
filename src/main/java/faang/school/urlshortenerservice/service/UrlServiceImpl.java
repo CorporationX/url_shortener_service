@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.service.cache.HashCacheImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UrlServiceImpl implements UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
-    private final HashCache hashCache;
+    private final HashCacheImpl hashCache;
 
     @Override
     public String getLongUrl(String hash) {
@@ -30,11 +30,12 @@ public class UrlServiceImpl implements UrlService {
     public String getShortUrl(String url) {
         String hash = hashCache.getHash();
 
-        urlCacheRepository.save(hash, url);
         urlRepository.save(Url.builder()
                 .hash(hash)
                 .url(url)
                 .build());
+
+        urlCacheRepository.save(hash, url);
 
         return hash;
     }
