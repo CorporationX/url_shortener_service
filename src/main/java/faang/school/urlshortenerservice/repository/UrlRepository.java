@@ -22,7 +22,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<String> findByHash(String hash);
 
     @Modifying
-    @Query("""
+    @Query(nativeQuery = true, value = """
             DELETE FROM Url u
             WHERE u.createdAt < :date
             RETURNING u.hash
