@@ -1,0 +1,38 @@
+name: URL Shortener CI
+on:
+  push:
+    branches:
+      - cerberus-master-stream6-ostermal7 # start while pushing into this branch
+  pull_request:
+    branches:
+      - cerberus-master-stream6-ostermal7 # start while PR into this branch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache Gradle dependencies  #Caching gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+      - name: Run tests
+        run: ./gradlew test --no-daemon
+      - name: Publish Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/test-results/test
