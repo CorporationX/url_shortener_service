@@ -12,7 +12,10 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 100
         format_sql: true
+        order_updates: true
 
 
   liquibase:
