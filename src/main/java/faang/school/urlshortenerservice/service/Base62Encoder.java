@@ -21,7 +21,6 @@ public class Base62Encoder {
     }
 
     private String encodeNumber(long number) {
-        log.info("start encodeNumber with number - {}", number);
         StringBuilder sb = new StringBuilder();
 
         while (number > 0) {
@@ -29,7 +28,6 @@ public class Base62Encoder {
             number /= BASE_62_CHARACTERS.length();
         }
 
-        log.info("finish encodeNumber with hash: {} for number - {}", sb, number);
         return sb.toString();
     }
 }
