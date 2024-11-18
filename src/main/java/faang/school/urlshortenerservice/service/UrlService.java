@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.hash.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,11 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     public String generateShortUrl(UrlDto url) {
+        Optional<String> savedShortUrl = urlRepository.findByUrl(url.url());
+        if (savedShortUrl.isPresent()) {
+            return savedShortUrl.get();
+        }
+
         String shorUrl = hashCache.getHash();
         Url modelUrl = Url.builder()
             .hash(shorUrl)
@@ -35,7 +41,7 @@ public class UrlService {
     @Cacheable("hash")
     public String getUrl(String shortUrl) {
         String url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> {
-            String message = "short link not found for url: %s".formatted(shortUrl);
+            String message = "Url not found for short link: %s".formatted(shortUrl);
             return new IllegalArgumentException(message);
         });
         log.info("Link {} was issued for hash {}", url, shortUrl);

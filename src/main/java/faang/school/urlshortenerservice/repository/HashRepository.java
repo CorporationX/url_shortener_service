@@ -14,22 +14,20 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
-        select
-            *
-        from hash
-        limit ?1
-        """)
-    List<Hash> getHashBatch(int batchSize);
-
-    @Query(nativeQuery = true, value = """
         select nextval('public.unique_number_seq') from generate_series(1, ?1)
         """)
     List<Long> getUniqueNumbers(int n);
 
     @Query(nativeQuery = true, value = """
-        delete from hash where hash in (:hashes)
+        delete from hash d
+        where d.hash in (
+            select
+                h.hash
+            from hash h
+            limit ?1
+        )
+        returning *
         """)
     @Modifying
-    @Transactional
-    void deleteByIds(@Param("hashes") List<String> hashes);
+    List<Hash> deleteByIdsAndGet(int batchSize);
 }

@@ -1,5 +1,6 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.hash;
 
+import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 @Component
 @RequiredArgsConstructor
@@ -23,22 +23,9 @@ public class HashGenerator {
     @Value("${hash-generator.batch-size}")
     private final int batchSize;
 
-    @Transactional
-    public void fillHashCache(BlockingQueue<String> queueHash, int batchSize) {
-        List<String> hashes = hashRepository.getHashBatch(batchSize).stream()
-            .map(Hash::getHash)
-            .toList();
-        if (hashes.isEmpty()) {
-            throw new RuntimeException("There are no hashes in the database");
-        }
-        hashRepository.deleteByIds(hashes);
-        generateBatch();
-        queueHash.addAll(hashes);
-        log.info("{} hashes added to the queue", hashes);
-    }
-
-    @Async("hashGeneratorExecutor")
     @PostConstruct
+    @Transactional
+    @Async("hashGeneratorExecutor")
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> stringHashes = base62Encoder.encode(numbers);
@@ -48,5 +35,10 @@ public class HashGenerator {
         hashRepository.saveAll(hashes);
 
         log.info("{} hashes added to the table", hashes.size());
+    }
+
+    public String generateOneHash() {
+        Long number = hashRepository.getUniqueNumbers(1).get(0);
+        return base62Encoder.encode(number);
     }
 }

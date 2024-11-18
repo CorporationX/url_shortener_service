@@ -8,4 +8,4 @@ create table if not exists public.hash (
     hash varchar(6) primary key
 );
 
-create sequence if not exists public.unique_number_seq start with 0 minvalue 0 maxvalue 9223372036854775807;
+create sequence if not exists public.unique_number_seq start with 1 maxvalue 9223372036854775807;

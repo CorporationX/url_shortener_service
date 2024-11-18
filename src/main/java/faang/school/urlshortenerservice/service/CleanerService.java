@@ -3,11 +3,11 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ public class CleanerService {
     private final int deletionPeriodDays;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
     public void clean() {
@@ -36,11 +37,9 @@ public class CleanerService {
         List<String> hashStrings = hashes.stream()
             .map(Hash::getHash)
                 .toList();
-        hashStrings.forEach(this::clearCache);
+        hashStrings.forEach(urlCacheRepository::clearCache);
 
         log.info("{} hashes have been released", hashStrings.size());
     }
 
-    @CacheEvict("hash")
-    public void clearCache(String hash) {}
 }

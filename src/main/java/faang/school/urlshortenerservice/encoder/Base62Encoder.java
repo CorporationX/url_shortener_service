@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.encoder;
 
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class Base62Encoder {
             .toList();
     }
 
-    private String encode(Long number) {
+    public String encode(Long number) {
         StringBuilder string = new StringBuilder();
         while (!number.equals(0L)) {
             int index = (int) (number % BASE);

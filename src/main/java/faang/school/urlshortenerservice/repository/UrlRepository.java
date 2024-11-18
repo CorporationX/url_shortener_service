@@ -23,6 +23,14 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<String> findByShortUrl(String shortUrl);
 
     @Query(nativeQuery = true, value = """
+        select
+            u.url
+        from url u
+        where u.url = ?1
+        """)
+    Optional<String> findByUrl(String url);
+
+    @Query(nativeQuery = true, value = """
         delete from url
         where created_at < ?1
         returning *

@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice.dto;
 
-
-import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.URL;
 
 public record UrlDto(
-    @Pattern(regexp = "^http.+", message = "Incorrect link format")
+    @URL(message = "Incorrect link format")
     String url
 ) {
 }
