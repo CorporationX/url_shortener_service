@@ -32,10 +32,15 @@ localСache:
   fill:
     batch:
       size: 10_000
+
 hash:
   clean:
     scheduler:
       cron: "0 0 0/24 * * *"
+
 executor:
   threads:
     count: 10
+
+cache:
+  nonWorkingUrlTime: 1 # years
