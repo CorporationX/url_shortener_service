@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.repository;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             """)
     Optional<String> findByHash(String hash);
 
+    @Modifying
     @Query("""
             DELETE FROM Url u
             WHERE u.createdAt < :date
