@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UrlCacheRepository extends CrudRepository<Url, String> {
+
+    @Override
+    <S extends Url> S save(S entity);
 }
