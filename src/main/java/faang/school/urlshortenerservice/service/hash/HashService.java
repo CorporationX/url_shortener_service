@@ -45,7 +45,6 @@ public class HashService {
         return CompletableFuture.supplyAsync(this::getHashes);
     }
 
-    @Transactional
     @Async("urlThreadPool")
     public CompletableFuture<List<String>> generateBatchHash(int needHashes) {
         List<Long> numbers = uniqueNumberService.getUniqueNumbers();
