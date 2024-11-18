@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/url/")
+@RequestMapping("/api/v1/shortener")
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -30,7 +30,7 @@ public class UrlController {
         redirect(urlService.getLongUrlByHash(hash), response);
     }
 
-    @PostMapping("/shortener")
+    @PostMapping
     public void shortener(@RequestBody @Validated @NotNull @Url String url, HttpServletResponse response) throws IOException {
         redirect(urlService.generateHashForUrl(url), response);
     }
