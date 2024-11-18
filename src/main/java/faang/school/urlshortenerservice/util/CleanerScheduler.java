@@ -17,7 +17,7 @@ public class CleanerScheduler {
     private final ShortLinkHashRepository hashRepository;
     private final UrlRepository urlRepository;
 
-    @Scheduled(cron = "${hash.cache.cron..update}")
+    @Scheduled(cron = "${hash.cache.cron.update}")
     @Transactional
     public void scheduledCleanUrls() {
         List<Hash> listHashes = urlRepository.deleteOneYearUrl();

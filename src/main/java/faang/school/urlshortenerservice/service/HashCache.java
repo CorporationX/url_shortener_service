@@ -14,11 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class HashCache {
 
-    @Value("${hash.cache.capacity}")
-    private int hashCapacity;
     @Value("${hash.cache.load.factor}")
     private int hashLoadFactor;
-
+    private int hashCapacity;
     private final AtomicBoolean checkUpdate;
     private final BlockingQueue<String> queueHashes;
     private final HashFabricator hashFabricator;
@@ -32,12 +30,10 @@ public class HashCache {
         this.checkUpdate = new AtomicBoolean(false);
         this.queueHashes = new ArrayBlockingQueue<>(hashCapacity);
     }
-
     @PostConstruct
     void start() {
         queueHashes.addAll(hashFabricator.getHashes(hashCapacity));
     }
-
     @Async("shortLinkThreadPoolExecutor")
     public void updateCache() {
         int currentFullness = queueHashes.size() * 100 / (hashCapacity);
@@ -45,7 +41,6 @@ public class HashCache {
             hashFabricator.getHashesAsync(hashCapacity).thenAccept(queueHashes::addAll).thenRun(() -> checkUpdate.set(false));
         }
     }
-
     public String getHash() {
         updateCache();
         return queueHashes.poll();
