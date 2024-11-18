@@ -1,30 +1,47 @@
 package faang.school.urlshortenerservice.repository.url.jpa;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface HashRepository extends JpaRepository<String, String> {
+@Repository
+@RequiredArgsConstructor
+public class HashRepository {
 
-    @Query(
-            value = "SELECT NEXTVAL('unique_number_seq') FROM generate_series(1, ?1)",
-            nativeQuery = true
-    )
-    List<Long> getUniqueNumbers(int batchSize);
+    private final JdbcTemplate jdbcTemplate;
 
-    @Query(
-            value = """
-                    DELETE FROM hash h
-                        WHERE h.hash IN (
-                        SELECT h.hash
-                        FROM hash h
-                        ORDER BY h.hash
-                        LIMIT ?1
-                        )
-                    RETURNING *;
-                    """,
-            nativeQuery = true
-    )
-    List<String> getHashBatch(int batchSize);
+    public List<Long> getUniqueNumbers(int batchSize) {
+        String sql = "SELECT NEXTVAL('unique_number_seq') FROM generate_series(1, ?)";
+        return jdbcTemplate.query(
+                sql,
+                ps -> ps.setInt(1, batchSize),
+                (rs, rowNum) -> rs.getLong(1)
+        );
+    }
+
+    public List<String> getHashBatch(int batchSize) {
+        String sql = """
+                DELETE FROM hash
+                WHERE hash IN (
+                    SELECT hash
+                    FROM hash
+                    ORDER BY hash
+                    LIMIT ?
+                )
+                RETURNING hash
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                ps -> ps.setInt(1, batchSize),
+                (rs, rowNum) -> rs.getString("hash")
+        );
+    }
+
+    public void saveAll(List<String> hashes, int batchSize) {
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
+        jdbcTemplate.batchUpdate(sql, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
+    }
 }

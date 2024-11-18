@@ -16,7 +16,6 @@ spring:
         order_inserts: true
         jdbc:
           batch-size: 1000
-        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

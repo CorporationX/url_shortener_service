@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,12 @@ public class LocalCache {
 
     @Value("${generator.min-cache-fill-ratio:0.2}")
     private float minCacheFillRatio;
+
+    @PostConstruct
+    public void init() {
+        hashGenerator.getBatch(batchSize)
+                .thenAccept(cache::addAll);
+    }
 
     public String getHash() {
         if (cache.size() < batchSize * minCacheFillRatio
