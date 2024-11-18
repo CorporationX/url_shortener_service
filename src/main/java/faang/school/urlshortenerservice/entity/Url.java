@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "url", timeToLive = 10L)
+@RedisHash(value = "url", timeToLive = 3600L)
 public class Url {
 
     @org.springframework.data.annotation.Id
