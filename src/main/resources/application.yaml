@@ -32,6 +32,7 @@ hash:
 
 server:
   port: 8080
+  base-url: http://localhost:8080/api/v1/url
   exceptions:
     default-message: an error occurred on our side((( please try again later
 
@@ -50,5 +51,7 @@ thread-pool:
 schedulers:
   crons:
     cron-for-clean-urls: 0 0 0 * * *
+  url-cleaner:
+    interval: '1 year'
 
 

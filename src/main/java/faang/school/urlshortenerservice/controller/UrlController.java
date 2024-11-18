@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/url")
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/url")
+    @PostMapping("/")
     @ValidParams
-    public void postUrl(@RequestBody UrlDto dto) {
-        urlService.saveAssociation(dto);
+    public String postUrl(@RequestBody UrlDto dto) {
+        return urlService.saveShortUrlAssociation(dto);
     }
 
     @GetMapping("/{hash}")

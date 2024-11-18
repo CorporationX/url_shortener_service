@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.hash;
+package faang.school.urlshortenerservice.utils;
 
 import io.seruco.encoding.base62.Base62;
 import lombok.RequiredArgsConstructor;
