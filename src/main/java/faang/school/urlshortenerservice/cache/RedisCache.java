@@ -27,8 +27,4 @@ public class RedisCache {
         String url = redisTemplate.opsForValue().get(hash);
         return Optional.ofNullable(url);
     }
-
-    public void deleteFromCache(String hash) {
-        redisTemplate.delete(hash);
-    }
 }
