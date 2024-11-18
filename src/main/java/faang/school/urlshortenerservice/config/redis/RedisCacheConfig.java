@@ -17,6 +17,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisCacheConfig {
     private final RedisCacheProperties redisCacheProperties;
+
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
