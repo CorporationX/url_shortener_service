@@ -3,10 +3,8 @@ package faang.school.urlshortenerservice.util.encode;
 import io.seruco.encoding.base62.Base62;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.stream.LongStream;
 
 @Component
 public class Base62Encoder {
