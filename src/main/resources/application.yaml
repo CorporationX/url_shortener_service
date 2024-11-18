@@ -13,6 +13,33 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      duration: 1
+
+  task:
+    execution:
+      pool:
+        core-size: 3
+        max-size: 6
+        queue-capacity: 500
+
+hash:
+  batch:
+    size: 10
+  range : 10
+  numberOfParts: 2
+  threshold: 100000
+  percent: 0.2
+  cleaner:
+      cron: "0 0 0 * * *" # every day at midnight
+      year: 1
+short-url:
+  format: https://sh.com/%s
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -20,6 +47,10 @@ spring:
 server:
   port: 8080
 
+
+
 logging:
+  file:
+    name: logs/hikari-warnings.log
   level:
-    root: info
+    com.zaxxer.hikari: warn
