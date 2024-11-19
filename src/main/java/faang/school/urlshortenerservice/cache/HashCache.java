@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +30,9 @@ public class HashCache {
     private final HashGenerator hashGenerator;
 
     @Autowired
-    public HashCache(ExecutorServiceConfig executorServiceConfig, HashGenerator hashGenerator, CacheProperties cacheProperties) {
+    public HashCache(ExecutorServiceConfig executorServiceConfig,
+                     HashGenerator hashGenerator,
+                     CacheProperties cacheProperties) {
         this.executorServiceConfig = executorServiceConfig;
         this.cacheProperties = cacheProperties;
         this.hashGenerator = hashGenerator;
@@ -43,33 +43,27 @@ public class HashCache {
     }
 
     @Async("executor")
-    @Transactional
     public String getHash() {
-        log.info("start getHash");
         if (getFullnessCache() < cacheProperties.getFillPercent()) {
-            log.info("percentage of cache filling: {}", getFullnessCache());
-
             if (filling.compareAndSet(false, true)) {
                 log.info("start filling cache");
 
-                CompletableFuture.supplyAsync(() ->
-                                        hashGenerator.getHashesBatch(cacheProperties.getCapacity() - hashesCache.size()),
+                CompletableFuture.supplyAsync(() -> hashGenerator.getHashesBatch(
+                        cacheProperties.getCapacity() - hashesCache.size()),
                                 executorServiceConfig.executor())
                         .thenAccept(hashesCache::addAll)
                         .thenRun(() -> filling.set(false));
 
-                hashGenerator.generateBatch();
+                CompletableFuture.runAsync(hashGenerator::generateBatch, executorServiceConfig.executor());
                 log.info("finish filling cache");
             }
         }
 
-        String hash = Objects.requireNonNull(hashesCache.poll()).getHash();
-        log.info("finish getHash with: {}", hash);
-
-        return hash;
+        return hashesCache.poll().getHash();
     }
 
     private int getFullnessCache() {
-        return hashesCache.size() * ONE_HUNDRED / cacheProperties.getCapacity();
+        int capacityFactor = ONE_HUNDRED / cacheProperties.getCapacity();
+        return hashesCache.size() * capacityFactor;
     }
 }
