@@ -14,8 +14,14 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
 
 server:
   port: 8080
@@ -23,3 +29,18 @@ server:
 logging:
   level:
     root: info
+
+app:
+  async:
+    thread-pool:
+      core_pool_size: 1
+      max_pool_size: 1
+      capacity: 0
+  cache:
+    threshold: 0.2
+    capacity: 10
+  short-url-pattern: localhost:8080/
+  unique-count: 8
+  hash-batch-size: 8
+  scheduler:
+    clear-unused-hashes: "0 0 1 * * *" # every day at 01:00
