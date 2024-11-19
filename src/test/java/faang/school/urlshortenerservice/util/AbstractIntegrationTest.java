@@ -1,20 +1,17 @@
 package faang.school.urlshortenerservice.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
 import faang.school.urlshortenerservice.ServiceTemplateApplication;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,14 +26,9 @@ import org.testcontainers.utility.DockerImageName;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Testcontainers
-@AutoConfigureMockMvc
-public class BaseContextTest {
-
-    @Autowired
-    protected MockMvc mockMvc;
-
-    @Autowired
-    protected ObjectMapper objectMapper;
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(value = "/db/test_url_schema.sql")
+public class AbstractIntegrationTest {
 
     @Container
     protected static PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
@@ -48,7 +40,7 @@ public class BaseContextTest {
                     .withReuse(true);
 
     @AfterAll
-    public void afterAll() {
+    public static void afterAll() {
         POSTGRESQL_CONTAINER.stop();
         REDIS_CONTAINER.stop();
     }
@@ -69,10 +61,5 @@ public class BaseContextTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Test
-    public void loadContext() {
-
     }
 }

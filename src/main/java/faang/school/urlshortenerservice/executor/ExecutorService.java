@@ -30,7 +30,7 @@ public class ExecutorService {
     @Async("taskExecutor")
     public CompletableFuture<List<String>> fillCache() {
         if (hashRepository.getHashCount() < generationLimit) {
-            hashGenerator.generateBatch();
+            hashGenerator.generateBatchAsync();
         }
         List<String> hashBatch = hashRepository.getHashBatch();
         log.info("Added {} hashes to cache", hashBatch.size());

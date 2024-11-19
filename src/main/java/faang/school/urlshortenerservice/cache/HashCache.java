@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.executor.ExecutorService;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class HashCache {
         this.executorService = executorService;
         cache = new ArrayBlockingQueue<>(capacity);
         threshold = (int) Math.ceil(loadFactor * capacity);
-        fillCache();
+        cache.addAll(executorService.fillCache().join());
     }
 
     public String getHash() {

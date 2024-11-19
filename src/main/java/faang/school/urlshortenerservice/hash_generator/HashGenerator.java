@@ -30,7 +30,11 @@ public class HashGenerator {
     }
 
     @Async("taskExecutor")
-    public void generateBatch() {
+    public void generateBatchAsync() {
+        generateBatch();
+    }
+
+    private void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
         hashRepository.saveBatch(hashes);
