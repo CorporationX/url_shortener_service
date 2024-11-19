@@ -32,3 +32,16 @@ localСache:
   fill:
     batch:
       size: 10_000
+
+uniqueNumbers:
+  amount: 10_000
+
+hash:
+  batch:
+    size: 10_000
+    sublist:
+      length: 1_000
+
+executor:
+  threads:
+    count: 10
