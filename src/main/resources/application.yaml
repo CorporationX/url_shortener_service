@@ -29,7 +29,7 @@ hash:
   generator:
     batch:
       size: 100
-    generation-limit: 500
+    generation-limit: 100
   cache:
     load-factor: 0.2
     capacity: 50
