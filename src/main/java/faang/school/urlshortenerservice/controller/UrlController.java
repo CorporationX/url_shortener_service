@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

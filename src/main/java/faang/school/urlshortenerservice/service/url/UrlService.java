@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
