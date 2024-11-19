@@ -13,7 +13,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     Optional<Url> findByUrl(String url);
 
-    Optional<Url> findByHash(String hash);
+    Optional<Url> findUrlByHash(String hash);
 
     @Modifying
     @Query(nativeQuery = true, value = """

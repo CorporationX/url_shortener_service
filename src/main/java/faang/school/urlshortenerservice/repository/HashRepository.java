@@ -28,4 +28,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             RETURNING hash.hash
             """)
     List<Hash> getHashBatch(int n);
+
+    @Query(nativeQuery = true, value = """
+             SELECT character_maximum_length
+             FROM information_schema.columns
+             WHERE table_name = 'hash' AND column_name = 'hash';
+            """)
+    int getCharLength();
 }

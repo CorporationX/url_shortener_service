@@ -24,7 +24,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  host: localhost
   port: 8089
 
 logging:
@@ -37,14 +36,14 @@ hash:
     low-size-percentage: 20
   batch_size:
     get_batch: 20
-    save_batch: 10
-    generation_batch: 40
+    generation_batch: 50
 
 url:
-  days-to-live: 90
+  days-to-live: 30
 
 thread-pool:
-  size: 4
+  core_pool_size: 4
+  max_pool_size: 10
   queue_capacity: 20
 
 cleaner-scheduler:

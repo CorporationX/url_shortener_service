@@ -1,7 +1,9 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.sheduler;
 
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.service.HashService;
+import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +27,6 @@ public class CleanScheduler {
                 .map(Hash::new)
                 .toList();
 
-        hashService.saveHashBatch(hashes);
+        hashService.saveAllHashes(hashes);
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Hash {
     @Id
+    @Size(min = 6, max = 6)
     @NotBlank(message = "Hash cannot be blank")
     private String hash;
 
