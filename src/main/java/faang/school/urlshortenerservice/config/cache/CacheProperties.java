@@ -13,4 +13,5 @@ public class CacheProperties {
 
     private int capacity;
     private int fillPercent;
+    private int nonWorkingUrlTime;
 }
