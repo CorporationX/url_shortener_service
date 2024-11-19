@@ -16,7 +16,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(value = """
                    DELETE FROM Url u
-                    WHERE u.created_at <= current_timestamp - INTERVAL ':years year'
+                    WHERE u.created_at <= current_timestamp - INTERVAL ':years YEAR'
                 RETURNING u.*
             """, nativeQuery = true)
     List<Url> deleteAndReturnExpiredUrls(@Param("years") int years);

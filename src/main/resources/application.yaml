@@ -23,8 +23,8 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-unique_numbers:
-  batchSize: 1000
+hash:
+  batchSizeUniqueNumbers: 1000
 
 server:
   port: 8080

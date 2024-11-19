@@ -15,7 +15,7 @@ public class Base62Encoder {
                 .toList();
     }
 
-    public String encodeBase62(long number) {
+    private String encodeBase62(long number) {
         StringBuilder encoded = new StringBuilder();
         while (number > 0) {
             int remainder = (int) (number % BASE62_CHARACTERS.length());

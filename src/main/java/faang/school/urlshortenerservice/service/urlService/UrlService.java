@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.urlService;
 
+import faang.school.urlshortenerservice.config.url.UrlConfig;
 import faang.school.urlshortenerservice.dto.RequestUrlBody;
 import faang.school.urlshortenerservice.dto.ResponseUrlBody;
 import faang.school.urlshortenerservice.entity.Url;
@@ -22,13 +23,11 @@ import java.util.Optional;
 @Slf4j
 public class UrlService {
 
-    @Value("${url.shortName}")
-    private String urlShortPrefix;
-
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlMapper urlMapper;
     private final UrlCacheRepository urlCacheRepository;
+    private final UrlConfig urlConfig;
 
 
     @Transactional
@@ -38,7 +37,7 @@ public class UrlService {
 
         Url url = findUrlInDatabaseByFullUrl(fullLink).orElseGet(() -> createNewLink(fullLink));
 
-        ResponseUrlBody response = urlMapper.toResponseBody(url, urlShortPrefix);
+        ResponseUrlBody response = urlMapper.toResponseBody(url, urlConfig.getShortName());
         log.info("convertLink finish, response - {}", response);
         return response;
     }
