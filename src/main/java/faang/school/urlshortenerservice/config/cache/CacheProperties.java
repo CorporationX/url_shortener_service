@@ -11,5 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "cache")
 public class CacheProperties {
 
+    private int capacity;
+    private int fillPercent;
     private int nonWorkingUrlTime;
 }
