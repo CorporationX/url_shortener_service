@@ -1,13 +1,15 @@
 package faang.school.urlshortenerservice.generator;
 
 import org.springframework.stereotype.Component;
+import io.seruco.encoding.base62.Base62;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int MAX_HASH_SIZE = 6;
+    private final Base62 base62 = Base62.createInstance();
+    private final ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -16,12 +18,10 @@ public class Base62Encoder {
     }
 
     private String toBase62(Long number) {
-        StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE62.charAt((int) (number % BASE62.length())));
-            number /= BASE62.length();
-        }
-
-        return builder.length() > MAX_HASH_SIZE ? builder.substring(0, MAX_HASH_SIZE) : builder.toString();
+        byte[] bytes = buffer.clear()
+                .putLong(number)
+                .array();
+        String hash = new String(base62.encode(bytes));
+        return hash.replaceFirst("^0+", "");
     }
 }

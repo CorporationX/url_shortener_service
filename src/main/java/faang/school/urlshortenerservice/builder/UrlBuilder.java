@@ -1,14 +1,16 @@
 package faang.school.urlshortenerservice.builder;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Component
 public class UrlBuilder {
-    @Value("${server.url}")
-    private String serverUrl;
 
     public String makeUrl(String hash) {
-        return String.format("%s/%s", serverUrl, hash);
+        return ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/{hash}")
+                .buildAndExpand(hash)
+                .toUriString();
     }
 }

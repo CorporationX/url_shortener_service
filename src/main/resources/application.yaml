@@ -35,9 +35,6 @@ scheduler:
 generator:
   batch:
     size: 100000
-  async:
-    poolSize: 1
-    maxPoolSize: 1
 
 server:
   url: 'http://localhost:8080'

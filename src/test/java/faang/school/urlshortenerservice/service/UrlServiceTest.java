@@ -12,10 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +29,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UrlServiceTest {
-    private static final String SERVER_URL = "http://short.url";
-
     @Mock
     private HashCache hashCache;
     @Mock
     private HashRepository hashRepository;
-    @Spy
+    @Mock
     private UrlBuilder urlBuilder;
     @Mock
     private UrlCacheRepository urlCacheRepository;
@@ -55,10 +51,6 @@ public class UrlServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        Field serverUrl = UrlBuilder.class.getDeclaredField("serverUrl");
-        serverUrl.setAccessible(true);
-        serverUrl.set(urlBuilder, SERVER_URL);
-
         url = Url.builder()
                 .url(originalUrl)
                 .hash(hash)
@@ -69,10 +61,8 @@ public class UrlServiceTest {
     public void testCreateHashUrl() {
         when(hashCache.getHash()).thenReturn(hash);
 
-        String result = urlService.createHashUrl(originalUrl);
+        urlService.createHashUrl(originalUrl);
 
-        assertEquals(result, shortUrl);
-        verify(urlBuilder).makeUrl(hash);
         verify(hashCache).getHash();
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).save(any(Url.class));

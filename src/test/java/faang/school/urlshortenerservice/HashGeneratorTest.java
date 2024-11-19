@@ -59,11 +59,10 @@ public class HashGeneratorTest {
 
         List<Long> range = LongStream.range(1, amount).boxed().toList();
         when(hashRepository.getHashBatch(amount)).thenReturn(hashes);
-        when(hashRepository.getHashBatch(HASHES.size())).thenReturn(hashes);
         when(hashRepository.getUniqueNumbers(amount)).thenReturn(range);
 
         List<String> result = hashGenerator.getHashes(amount);
 
-        assertEquals(result.size(), amount);
+        assertEquals(result.size(), 10);
     }
 }

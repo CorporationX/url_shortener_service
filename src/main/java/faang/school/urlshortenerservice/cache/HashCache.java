@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,11 +18,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class HashCache {
     private final HashGenerator hashGenerator;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
-    @Value("${cache.capacity:100000}")
+    @Value("${cache.capacity}")
     private int capacity;
 
-    @Value("${cache.min_percent_hashes:20}")
+    @Value("${cache.min_percent_hashes}")
     private long minPercentHashes;
 
     private final AtomicBoolean generateIsProcessing = new AtomicBoolean(false);
@@ -38,20 +41,18 @@ public class HashCache {
     }
 
     private void checkAndGenerateHashes() {
-        double cacheFullPercentage = 100.0 / capacity * hashes.size();
+        executor.execute(() -> {
+            double cacheFullPercentage = 100.0 / capacity * hashes.size();
 
-        if (cacheFullPercentage < minPercentHashes) {
-            if (generateIsProcessing.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
-                        .handle((result, exception) -> {
-                            generateIsProcessing.set(false);
-                            if (exception != null) {
-                                log.error("Error during hash generation", exception);
-                            }
-                            return result;
-                        });
+            if (cacheFullPercentage < minPercentHashes) {
+                if (generateIsProcessing.compareAndSet(false, true)) {
+                    try {
+                        hashes.addAll(hashGenerator.getHashes(capacity));
+                    } finally {
+                        generateIsProcessing.set(false);
+                    }
+                }
             }
-        }
+        });
     }
 }

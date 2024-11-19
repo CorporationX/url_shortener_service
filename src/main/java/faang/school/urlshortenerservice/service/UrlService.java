@@ -50,9 +50,10 @@ public class UrlService {
     public void removeExpiredUrls() {
         LocalDate expireDate = LocalDate.now().minusDays(lifetimeDays);
         List<String> hashes = urlRepository.getAndDeleteUrlsByDate(expireDate);
-        hashRepository.saveAll(hashes.stream()
+        List<Hash> hashesEntity = hashes.stream()
                 .map(Hash::new)
-                .toList());
+                .toList();
+        hashRepository.saveAll(hashesEntity);
         urlCacheRepository.deleteHashes(hashes);
     }
 

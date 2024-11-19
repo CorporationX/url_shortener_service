@@ -52,9 +52,7 @@ public class HashCacheTest {
     public void testGetHashLowHashes() throws IllegalAccessException {
         capacity.set(hashCache, 100);
 
-        CompletableFuture<List<String>> completableFuture = new CompletableFuture<>();
-
-        when(hashGenerator.getHashesAsync(100)).thenReturn(completableFuture);
+        when(hashGenerator.getHashes(100)).thenReturn(hashes);
         String result = hashCache.getHash();
 
         String firstHash = hashes.stream().findFirst().get();

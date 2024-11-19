@@ -17,7 +17,9 @@ public class ErrorResponse {
     @Builder
     public ErrorResponse(String message, Map<String, String> errors) {
         this.message = message;
-        this.errors = errors;
+        if (!errors.isEmpty()) {
+            this.errors = errors;
+        }
     }
 
     public static class ErrorResponseBuilder {

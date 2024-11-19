@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -17,22 +16,17 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
 
-    @Value("${generator.batch.size:100000}")
+    @Value("${generator.batch.size}")
     private int batchSize;
 
     @Transactional
-    private void generateBatch() {
+    private List<Hash> generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = encoder.encode(range).stream()
                 .map(Hash::new)
                 .toList();
 
-        hashRepository.saveAll(hashes);
-    }
-
-    @Async("hashAsyncExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(int amount) {
-        return CompletableFuture.completedFuture(getHashes(amount));
+        return hashRepository.saveAll(hashes);
     }
 
     @Transactional
@@ -40,8 +34,7 @@ public class HashGenerator {
         List<Hash> hashes = hashRepository.getHashBatch(amount);
 
         if (hashes.size() < amount) {
-            generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(batchSize - hashes.size()));
+            hashes.addAll(generateBatch());
         }
 
         return hashes.stream().map(Hash::getHash).toList();
