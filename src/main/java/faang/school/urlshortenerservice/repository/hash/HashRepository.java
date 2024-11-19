@@ -29,6 +29,4 @@ public interface HashRepository extends JpaRepository<Hash, String>, CustomHashR
             RETURNING hash
             """)
     List<Hash> getAndDeleteHashBatch(int hashAmount);
-
-    long count();
 }
