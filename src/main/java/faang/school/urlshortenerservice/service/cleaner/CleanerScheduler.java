@@ -18,7 +18,7 @@ public class CleanerScheduler {
     public void cleanDB() {
         log.info("start cleanDB");
 
-        urlService.moderateDB();
+        urlService.releaseExpiredHashes();
 
         log.info("finish cleanDB");
     }

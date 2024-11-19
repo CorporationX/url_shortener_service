@@ -47,12 +47,12 @@ class UrlServiceTest {
     @Test
     @DisplayName("Success when clean DB")
     public void whenCleanDBThenDeleteOldUrlAndGetHashes() {
-        when(urlRepository.getHashesAndDeleteOldUrls(cacheProperties.getNonWorkingUrlTime())).thenReturn(existingHashes);
+        when(urlRepository.getHashesAndDeleteExpiredUrls(cacheProperties.getNonWorkingUrlTime())).thenReturn(existingHashes);
         doNothing().when(hashRepository).saveAllHashesBatched(anyList());
 
-        urlService.moderateDB();
+        urlService.releaseExpiredHashes();
 
-        verify(urlRepository).getHashesAndDeleteOldUrls(cacheProperties.getNonWorkingUrlTime());
+        verify(urlRepository).getHashesAndDeleteExpiredUrls(cacheProperties.getNonWorkingUrlTime());
         verify(hashRepository).saveAllHashesBatched(anyList());
     }
 }

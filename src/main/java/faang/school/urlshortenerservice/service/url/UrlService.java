@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +21,10 @@ public class UrlService {
     private final CacheProperties cacheProperties;
 
     @Transactional
-    @Async("executor")
-    public void moderateDB() {
+    public void releaseExpiredHashes() {
         log.info("start moderateDB");
 
-        List<String> existingHashes = urlRepository.getHashesAndDeleteOldUrls(cacheProperties.getNonWorkingUrlTime());
+        List<String> existingHashes = urlRepository.getHashesAndDeleteExpiredUrls(cacheProperties.getNonWorkingUrlTime());
         log.info("get {} existingHashes", existingHashes.size());
 
         hashRepository.saveAllHashesBatched(existingHashes.stream()

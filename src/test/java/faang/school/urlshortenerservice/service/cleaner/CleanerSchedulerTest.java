@@ -24,6 +24,6 @@ class CleanerSchedulerTest {
     public void whenCleanDBThenDeleteOldUrlAndGetHashes() {
         cleanerScheduler.cleanDB();
 
-        verify(urlService).moderateDB();
+        verify(urlService).releaseExpiredHashes();
     }
 }

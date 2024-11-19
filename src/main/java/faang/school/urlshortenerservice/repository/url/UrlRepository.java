@@ -23,5 +23,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             WHERE created_at < NOW() - INTERVAL :years YEAR
             RETURNING hash
             """)
-    List<String> getHashesAndDeleteOldUrls(@Param("years") int years);
+    List<String> getHashesAndDeleteExpiredUrls(@Param("years") int years);
 }
