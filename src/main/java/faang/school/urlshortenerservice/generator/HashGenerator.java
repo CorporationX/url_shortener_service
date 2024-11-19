@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.service.Base62Encoder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -38,30 +39,28 @@ public class HashGenerator {
         List<Long> numbers = hashRepository.getUniqueNumbers(amount);
         log.info("amount of getUniqueNumbers - {}", numbers.size());
 
-        List<CompletableFuture<List<Hash>>> futures = new ArrayList<>();
-        for (int i = 0; i < numbers.size(); i += sublistLength) {
-            List<Long> batch = numbers.subList(i, Math.min(i + sublistLength, numbers.size()));
-            futures.add(encodeNumbers(batch));
-        }
+        List<List<Long>> batches = ListUtils.partition(numbers, sublistLength);
+        List<CompletableFuture<List<Hash>>> futures = batches.stream()
+                .map(this::encodeNumbers)
+                .toList();
 
         CompletableFuture<List<Hash>> combinedFuture = CompletableFuture.completedFuture(new ArrayList<>());
-        for (CompletableFuture<List<Hash>> future : futures) {
-            combinedFuture = combinedFuture.thenCombine(future, (combinedHashes, batchHashes) -> {
-                combinedHashes.addAll(batchHashes);
-                return combinedHashes;
-            });
-        }
+        combinedFuture = futures.stream()
+                .reduce(combinedFuture, (combined, future) ->
+                        combined.thenCombine(future, (combinedHashes, batchHashes) -> {
+                                    combinedHashes.addAll(batchHashes);
+                                    return combinedHashes;
+                                }));
 
         combinedFuture.thenAccept(hashes -> {
             hashRepository.saveAllHashesBatched(hashes);
-            log.info("Finished generating batch with {} hashes.", hashes.size());
+            log.info("finished generating batch with {} hashes.", hashes.size());
         });
     }
 
-    @Transactional
     private CompletableFuture<List<Hash>> encodeNumbers(List<Long> numbers) {
         return CompletableFuture.supplyAsync(() -> {
-            log.info("Encoding numbers in thread - {}", Thread.currentThread().getName());
+            log.info("encoding numbers in thread - {}", Thread.currentThread().getName());
             return base62Encoder.encode(numbers);
         }, executorServiceConfig.executor());
     }
