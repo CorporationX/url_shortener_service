@@ -5,14 +5,13 @@ import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -20,6 +19,7 @@ import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableRedisRepositories(basePackages = "faang.school.urlshortenerservice.repository.cache")
 public class RedisConfig {
 
     private final RedisProperties redisProperties;
@@ -43,11 +43,11 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+    public RedisTemplate<String, Url> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+        RedisTemplate<String, Url> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Url.class));
 
         return template;
     }

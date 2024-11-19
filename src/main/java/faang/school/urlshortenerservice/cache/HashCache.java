@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 public class HashCache {
 
     public String getHash() {
-        return "mock";
+        return "varya";
     }
 }

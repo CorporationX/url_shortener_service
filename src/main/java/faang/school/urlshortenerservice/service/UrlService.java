@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
-import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
     private final UrlRepository urlRepository;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
@@ -30,18 +30,21 @@ public class UrlService {
         String hash = hashCache.getHash();
         log.info("get hash: {}", hash);
 
-        Url url = urlRepository.save(urlMapper.toEntity(urlDto, hash));
-        log.info("save Url in DB: {}", url);
-        saveUrlInRedisCache(url);
+        Url url = urlRepository.findByHash(hash)
+                .orElse(urlRepository.save(urlMapper.toEntity(urlDto, hash)));
+        log.info("get Url: {}", url);
+        urlCacheRepository.save(url);
+
+//        saveUrlInRedisCache(url);
 
         UrlDto shortUrlDto = urlMapper.toDto(url);
         log.info("finish createShortUrl with shortUrl: {}", shortUrlDto);
         return shortUrlDto;
     }
 
-    private void saveUrlInRedisCache(Url url) {
-        urlCacheRepository.save(url);
-        redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
-        log.info("save Url in Redis cache: {}", redisTemplate.opsForValue().get(url.getHash()));
-    }
+//    private void saveUrlInRedisCache(Url url) {
+//        urlCacheRepository.save(url);
+//        redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
+//        log.info("save Url in Redis cache: {}", redisTemplate.opsForValue().get(url.getHash()));
+//    }
 }

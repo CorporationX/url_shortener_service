@@ -10,7 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,10 +20,11 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @ToString
+@RedisHash("Url")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "urls")
-public class Url {
+public class Url implements Serializable {
 
     @Id
     @Column(length = 6, nullable = false)

@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
-import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
