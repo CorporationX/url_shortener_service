@@ -38,3 +38,6 @@ scheduler:
     cron:
         cleaner: "0 0 1 * * ?"
     batch-size: 10
+
+executor:
+    thread-pool-size: 10
