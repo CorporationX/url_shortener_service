@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private static final int ONE_HUNDRED = 100;
+    private double capacityFactor;
 
     private final AtomicBoolean filling;
     private final Queue<Hash> hashesCache;
@@ -36,6 +37,7 @@ public class HashCache {
         this.executorServiceConfig = executorServiceConfig;
         this.cacheProperties = cacheProperties;
         this.hashGenerator = hashGenerator;
+        this.capacityFactor = (double) ONE_HUNDRED / cacheProperties.getCapacity();
         filling = new AtomicBoolean(false);
         hashesCache = new ArrayBlockingQueue<>(cacheProperties.getCapacity());
 
@@ -62,8 +64,7 @@ public class HashCache {
         return hashesCache.poll().getHash();
     }
 
-    private int getFullnessCache() {
-        int capacityFactor = ONE_HUNDRED / cacheProperties.getCapacity();
+    private double getFullnessCache() {
         return hashesCache.size() * capacityFactor;
     }
 }
