@@ -6,10 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "executor.verify-task-executor-service")
-public class TaskExecutorServiceParams {
+@ConfigurationProperties(prefix = "executor2.verify-hash-cache-executor")
+public class HashCacheExecutorParams {
     private int corePoolSize;
     private int maxPoolSize;
-    private int queueCapacity;
-    private String threadNamePrefix;
+    private long keepAliveTime;
 }

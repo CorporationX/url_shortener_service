@@ -11,6 +11,8 @@ public class Base62Encoder {
 
     @Value("${params.base62.chars}")
     private String BASE62_CHARS;
+    @Value("${params.hash-max-length}")
+    private int hashMaxLength;
 
     public List<Hash> encode(List<Long> numbers) {
         return numbers.stream()
@@ -20,7 +22,7 @@ public class Base62Encoder {
 
     private String encodeNumber(Long number) {
         StringBuilder encoded = new StringBuilder();
-        while (number > 0) {
+        for (int i = 0; i < hashMaxLength; i++){
             int remainder = (int) (number % BASE62_CHARS.length());
             encoded.append(BASE62_CHARS.charAt(remainder));
             number /= BASE62_CHARS.length();

@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
-@EnableFeignClients("school.faang.servicetemplate.client")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)

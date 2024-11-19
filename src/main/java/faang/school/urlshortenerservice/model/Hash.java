@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Builder
@@ -14,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 public class Hash {
 
     @Id
-    @Length(max = 6)
+    @Column(name = "hash", length = 6)
     private String hash;
 
 }

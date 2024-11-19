@@ -28,7 +28,7 @@ public class RedisConfig {
     }
 
     @Bean
-    RedisTemplate<String, UrlDto> redisTemplate() {
+    RedisTemplate<String, UrlDto> UrlredisTemplate() {
         RedisTemplate<String, UrlDto> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -37,9 +37,20 @@ public class RedisConfig {
     }
 
     @Bean
+    RedisTemplate<String, String> HashRedisTemplate() {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        return redisTemplate;
+    }
+
+    @Bean
     RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return builder -> builder
-                .withCacheConfiguration("UrlCacheRepository",
+                .withCacheConfiguration("urlCache",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)))
+                .withCacheConfiguration("hashCache",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)));
     }
 }

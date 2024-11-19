@@ -13,18 +13,16 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_number_seq')
-            FROM generate_series(1, ?)
+            FROM generate_series(1, ?1)
             """)
     List<Long> getUniqueNumbers(long count);
 
-    void saveHashes(List<String> hashes);
-
     @Query(nativeQuery = true, value = """
             DELETE FROM hash
-            WHERE hash = (
+            WHERE hash IN (
                 SELECT hash FROM hash
                 ORDER BY RANDOM()
-                LIMIT ?)
+                LIMIT ?1)
             RETURNING hash
             """)
     @Modifying

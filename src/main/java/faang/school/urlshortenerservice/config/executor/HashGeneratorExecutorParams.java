@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "executor.verify-task-executor")
-public class TaskExecutorParams {
+@ConfigurationProperties(prefix = "executor1.verify-hash-generator-executor")
+public class HashGeneratorExecutorParams {
     private int corePoolSize;
     private int maxPoolSize;
     private int queueCapacity;
