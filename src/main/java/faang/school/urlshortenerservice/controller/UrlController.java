@@ -17,20 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/shortener")
+@RequestMapping("/api/v1/url")
 @RequiredArgsConstructor
 public class UrlController {
 
     private final UrlService urlService;
 
     @GetMapping("/{hash}")
-    public void redirectByHash(@PathVariable @Length(min = 6, max = 6, message = "The hash length must be 6 characters") String hash,
+    public void redirectToLongUrl(@PathVariable @Length(min = 6, max = 6, message = "The hash length must be 6 characters") String hash,
                                   HttpServletResponse response) throws IOException {
         redirect(urlService.getLongUrlByHash(hash), response);
     }
 
     @PostMapping
-    public void shortener(@RequestBody @Validated UrlDto urlDto, HttpServletResponse response) throws IOException {
+    public void redirectToShortUrl(@RequestBody @Validated UrlDto urlDto, HttpServletResponse response) throws IOException {
         redirect(urlService.generateHashForUrl(urlDto.getUrl()), response);
     }
 
