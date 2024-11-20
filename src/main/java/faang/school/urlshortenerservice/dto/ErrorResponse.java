@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.dto.error;
+package faang.school.urlshortenerservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

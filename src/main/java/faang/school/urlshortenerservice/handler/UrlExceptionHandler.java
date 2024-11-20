@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.handler;
 
-import faang.school.urlshortenerservice.dto.error.ErrorResponse;
+import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;

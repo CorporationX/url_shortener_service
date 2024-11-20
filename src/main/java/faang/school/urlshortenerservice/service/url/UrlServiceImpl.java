@@ -33,11 +33,17 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
+    @Transactional
     public String generateHashForUrl(String url) {
         String cachedHash = hashCache.getHash();
 
         redisCache.saveToCache(cachedHash, url);
-        urlRepository.save(Url.builder().hash(cachedHash).url(url).build());
+
+        Url urlEntity = Url.builder()
+                .hash(cachedHash)
+                .url(url)
+                .build();
+        urlRepository.save(urlEntity);
 
         return url;
     }
@@ -45,19 +51,24 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional
     public void cleaningOldHashes() {
-        LocalDateTime lifeTimeDate = LocalDateTime.now().minusDays(cleanerProperties.getLifeTimeDays());
+        LocalDateTime expirationDate = LocalDateTime.now().minusDays(cleanerProperties.getLifeTimeDays());
         int batchSize = cleanerProperties.getBatchSize();
 
-        List<String> outdatedHashes;
+        List<String> expiredHashes;
 
         do {
-            outdatedHashes = urlRepository.deleteOutdatedUrls(lifeTimeDate, batchSize);
+            expiredHashes = urlRepository.deleteOutdatedUrls(expirationDate, batchSize);
 
-            if (!outdatedHashes.isEmpty()) {
-                hashRepository.saveAll(outdatedHashes.stream()
-                        .map(hash -> Hash.builder().hash(hash).build())
-                        .toList());
+            if (!expiredHashes.isEmpty()) {
+                List<Hash> hashEntities = convertToHashEntities(expiredHashes);
+                hashRepository.saveAll(hashEntities);
             }
-        } while (!outdatedHashes.isEmpty());
+        } while (!expiredHashes.isEmpty());
+    }
+
+    private List<Hash> convertToHashEntities(List<String> hashes) {
+        return hashes.stream()
+                .map(hash -> Hash.builder().hash(hash).build())
+                .toList();
     }
 }
