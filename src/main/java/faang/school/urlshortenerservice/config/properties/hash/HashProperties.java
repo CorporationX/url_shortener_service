@@ -14,6 +14,7 @@ public class HashProperties {
     private Batch batch;
     private ThreadPool threadPool;
     private Queue queue;
+    private Cache cache;
 
     @Getter
     @Setter
@@ -36,5 +37,13 @@ public class HashProperties {
     public static class Queue {
 
         private int capacity;
+    }
+
+    @Getter
+    @Setter
+    public static class Cache {
+
+        private int capacity;
+        private double fillPercent;
     }
 }

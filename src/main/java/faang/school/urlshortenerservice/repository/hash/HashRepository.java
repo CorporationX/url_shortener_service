@@ -28,5 +28,5 @@ public interface HashRepository extends JpaRepository<Hash, String>, CustomHashR
             WHERE hash IN (SELECT hash FROM to_delete)
             RETURNING hash
             """)
-    List<Hash> getHashBatch(int hashAmount);
+    List<Hash> getAndDeleteHashBatch(int hashAmount);
 }

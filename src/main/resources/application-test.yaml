@@ -6,4 +6,13 @@ hash:
     capacity: 50
   batch:
     save: 100
-    get: 1000
+    get: 200
+  cache:
+    capacity: 10
+    fillPercent: 0.7
+  cleaner:
+    cron: "* * * * * *" #For test immediately
+
+url:
+  timeLimit:
+    year: 1

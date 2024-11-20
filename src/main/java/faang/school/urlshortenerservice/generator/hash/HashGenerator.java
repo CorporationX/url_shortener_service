@@ -59,4 +59,18 @@ public class HashGenerator {
             throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);
         }
     }
+
+    @Async("hashCacheGeneratorExecutor")
+    public CompletableFuture<List<Hash>> generateBatchForCache(int capacity) {
+        log.debug("Start generating batch for cache");
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(capacity);
+                return base62Encoder.encode(uniqueNumbers);
+            } catch (DataAccessException dae) {
+                log.error("Error while generating batch! :", dae);
+                throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);
+            }
+        });
+    }
 }
