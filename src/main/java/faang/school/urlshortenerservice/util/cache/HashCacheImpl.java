@@ -28,11 +28,9 @@ public class HashCacheImpl implements HashCache {
 
     @PostConstruct
     void initialize() {
-        synchronized (this) {
-            generator.generateBatch();
-            cacheRefillThreshold = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillPercent() / 100.0));
-            refillCacheAsync();
-        }
+        generator.generateBatch();
+        cacheRefillThreshold = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillPercent() / 100.0));
+        refillCacheAsync();
     }
 
     @Override
@@ -49,11 +47,10 @@ public class HashCacheImpl implements HashCache {
     private void refillCacheAsync() {
         executorHashCache.execute(() -> {
             try {
-                synchronized (this) {
-                    if (hashQueue.size() < cacheProperty.getMaxQueueSize()) {
-                        int limit = cacheProperty.getMaxQueueSize() - hashQueue.size();
-                        refillingCacheWithHashes(limit);
-                    }
+                int currentSize = hashQueue.size();
+                if (currentSize < cacheProperty.getMaxQueueSize()) {
+                    int limit = cacheProperty.getMaxQueueSize() - currentSize;
+                    refillingCacheWithHashes(limit);
                 }
             } finally {
                 isCacheRefilling.set(false);
