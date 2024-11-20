@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
@@ -20,12 +21,17 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM hash
-            WHERE hash IN
-            (
-            SELECT hash.hash FROM hash
-            LIMIT :n
+            WHERE hash NOT IN (
+                SELECT hash FROM url
             )
-            RETURNING hash.hash
+            AND hash NOT IN (
+                SELECT hash
+                FROM hash
+                ORDER BY random()
+                LIMIT :n
+                FOR UPDATE SKIP LOCKED
+            )
+            RETURNING hash;
             """)
     List<Hash> getHashBatch(int n);
 
@@ -35,4 +41,15 @@ public interface HashRepository extends JpaRepository<Hash, String> {
              WHERE table_name = 'hash' AND column_name = 'hash';
             """)
     int getCharLength();
+
+    @Query(nativeQuery = true, value = """
+            SELECT * FROM hash h
+            WHERE NOT EXISTS (
+                SELECT 1 FROM url u
+                WHERE u.hash = h.hash
+            )
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED
+            """)
+    Optional<Hash> findUnusedHash();
 }

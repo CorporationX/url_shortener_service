@@ -20,23 +20,19 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
+    private final HashService hashService;
     private final HashCache hashCache;
 
     @Value("${url.days-to-live}")
     private int daysToLive;
 
     @Transactional
-    public String shortenUrl(String url) {
-        Hash hash = hashCache.getHash();
-        Url shortUrl = getShortUrl(url, hash);
+    public String getShortUrl(String url) {
+        Url shortUrl = urlRepository.findByUrl(url)
+                .orElseGet(() -> buildUrl(url));
 
         urlRepository.save(shortUrl);
-
-        return ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/{hash}")
-                .buildAndExpand(hash)
-                .toUriString();
+        return buildUri(shortUrl);
     }
 
     @Cacheable(value = "urlCache")
@@ -51,14 +47,20 @@ public class UrlService {
         return urlRepository.findOlderUrls(now().minusDays(daysToLive));
     }
 
-    private Url getShortUrl(String url, Hash hash) {
-        String hashStr = hash.getHash();
-        return urlRepository.findByUrl(url).orElseGet(
-                () -> Url.builder()
-                        .url(url)
-                        .hash(hashStr)
-                        .build()
-        );
+    private Url buildUrl(String url) {
+        Hash hash = hashService.ensureHashExists(hashCache.getHash());
+        return Url.builder()
+                .url(url)
+                .hash(hash.getHash())
+                .build();
+    }
+
+    private String buildUri(Url shortUrl) {
+        return ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/{hash}")
+                .buildAndExpand(shortUrl.getHash())
+                .toUriString();
     }
 
     private Url getUrlByHash(String hash) {

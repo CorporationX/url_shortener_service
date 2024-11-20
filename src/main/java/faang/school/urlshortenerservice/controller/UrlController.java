@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController()
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public String shortenUrl(@RequestParam(name = "url") String url) {
-        return urlService.shortenUrl(url);
+    public String getShortUrl(@RequestParam(name = "url") String url) {
+        return urlService.getShortUrl(url);
     }
 
-    @GetMapping("/Hash/{hash}")
+    @GetMapping("/{hash}")
     public ResponseEntity<Void> getUrl(@PathVariable String hash) {
         String url = urlService.getUrl(hash);
         return ResponseEntity

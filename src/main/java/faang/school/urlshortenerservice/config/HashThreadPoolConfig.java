@@ -10,20 +10,21 @@ public class HashThreadPoolConfig {
     @Value("${thread-pool.core_pool_size}")
     private int corePoolSize;
 
-    @Value("${thread-pool.max_pool_size}")
-    private int maxPoolSize;
-
     @Value("${thread-pool.queue_capacity}")
     private int queueCapacity;
+
+    @Value("${thread-pool.thread_name_prefix}")
+    private String threadNamePrefix;
 
     @Bean
     public ThreadPoolTaskExecutor hashTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
         executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("HashCacheExecutor-");
+        executor.setThreadNamePrefix(threadNamePrefix);
         executor.initialize();
+
         return executor;
     }
 }

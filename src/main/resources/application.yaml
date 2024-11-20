@@ -32,19 +32,19 @@ logging:
 
 hash:
   cache:
-    capacity: 100
+    capacity: 50
     low-size-percentage: 20
   batch_size:
-    get_batch: 20
-    generation_batch: 50
+    get_batch: 15
+    generation_batch: 15
 
 url:
   days-to-live: 30
 
 thread-pool:
   core_pool_size: 4
-  max_pool_size: 10
   queue_capacity: 20
+  thread_name_prefix: HashCacheExecutor-
 
 cleaner-scheduler:
   cron: "0 0 6 1 * *"

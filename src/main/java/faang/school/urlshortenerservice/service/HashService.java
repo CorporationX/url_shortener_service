@@ -34,4 +34,13 @@ public class HashService {
     public int getCharLength() {
         return hashRepository.getCharLength();
     }
+
+    @Transactional()
+    public Hash ensureHashExists(Hash hash) {
+        if (!hashRepository.existsById(hash.getHash())) {
+            return hashRepository.findUnusedHash()
+                    .orElseGet(() -> hashRepository.save(hash));
+        }
+        return hash;
+    }
 }

@@ -10,8 +10,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -23,16 +23,16 @@ public class HashCache {
     private final HashProperties hashProperties;
     private final ThreadPoolTaskExecutor taskExecutor;
 
-    private double lowCacheThreshold;
     private AtomicBoolean isFilling;
+    private double lowCacheThreshold;
     private BlockingQueue<Hash> blockingQueue;
 
 
     @PostConstruct
     private void setUp() {
-        lowCacheThreshold = hashProperties.getLowCacheThreshold();
         isFilling = new AtomicBoolean(false);
-        blockingQueue = new ArrayBlockingQueue<>(hashProperties.getCapacity(), true);
+        lowCacheThreshold = hashProperties.getLowCacheThreshold();
+        blockingQueue = new LinkedBlockingQueue<>(hashProperties.getCapacity());
 
         log.info("Initializing hash cache with capacity: {} and low cache threshold: {}.",
                 hashProperties.getCapacity(), lowCacheThreshold
@@ -42,25 +42,21 @@ public class HashCache {
     }
 
     public Hash getHash() {
-        refillTrigger();
-        return blockingQueue.poll();
-    }
-
-    private void refillTrigger() {
         if (blockingQueue.size() < lowCacheThreshold && !isFilling.get()) {
             log.warn("Hash cache size dropped below {}%, triggering refill.", hashProperties.getLowSizePercentage());
             refillHashCache();
         }
+        return blockingQueue.poll();
     }
 
     private void refillHashCache() {
         if (!isFilling.compareAndSet(false, true)) {
             return;
         }
-        taskExecutor.execute(this::fillCache);
+        taskExecutor.execute(this::asyncFillCache);
     }
 
-    private void fillCache() {
+    private void asyncFillCache() {
         try {
             log.info("Refilling hash cache started.");
             hashGenerator.generateBatch();
