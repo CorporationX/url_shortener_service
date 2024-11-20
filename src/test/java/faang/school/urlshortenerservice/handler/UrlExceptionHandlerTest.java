@@ -76,15 +76,18 @@ class UrlExceptionHandlerTest {
     }
 
     @Test
-    void handleRuntimeException_ShouldReturnInternalServerErrorStatus() {
+    void handleGenericException_ShouldReturnInternalServerErrorStatus() {
         String message = "Unexpected server error";
         ErrorResponse expectedResponse = ErrorResponse.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(message)
                 .build();
 
-        RuntimeException exception = new RuntimeException(message);
-        ErrorResponse result = exceptionHandler.handleRuntimeException(exception);
+        Exception exception = new Exception(message);
+        ErrorResponse result = exceptionHandler.handleGenericException(exception);
+
+        System.out.println("Result: " + result);
+        System.out.println("Expected: " + expectedResponse);
 
         assertEquals(expectedResponse, result);
     }

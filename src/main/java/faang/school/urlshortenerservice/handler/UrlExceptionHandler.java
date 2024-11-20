@@ -32,13 +32,6 @@ public class UrlExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorResponse handleRuntimeException(RuntimeException exception) {
-        logException(exception, HttpStatus.INTERNAL_SERVER_ERROR);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
-    }
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
@@ -49,6 +42,13 @@ public class UrlExceptionHandler {
                 .forEach(error -> validationErrors.put(((FieldError) error).getField(), error.getDefaultMessage()));
 
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed for fields: " + validationErrors);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorResponse handleGenericException(Exception exception) {
+        logException(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
     private void logException(Exception exception, HttpStatus status) {
