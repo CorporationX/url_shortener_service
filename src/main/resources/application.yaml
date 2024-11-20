@@ -47,4 +47,4 @@ hash:
 
 url:
   urlShort:
-    baseUrl: "https://ushort.com/"
+    baseUrl: "localhost:8088/v1/urls/"
