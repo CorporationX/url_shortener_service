@@ -10,8 +10,9 @@ public class CustomCallerRunsPolicy implements RejectedExecutionHandler {
 
     @Override
     public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
-        log.info("We are experiencing high server loads due to the influx of visitors. Please remain calm."
-                + " Your request may take a little longer than usual!");
+        log.warn("High server load! The task queue is overloaded with maximum size of {}! "
+                        + "Active tasks : {} , Total tasks submitted : {}",
+                executor.getQueue().size(), executor.getActiveCount(), executor.getTaskCount());
         if (!executor.isShutdown()) {
             runnable.run();
         }

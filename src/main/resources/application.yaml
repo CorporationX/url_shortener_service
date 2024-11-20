@@ -46,6 +46,7 @@ hash:
     cron: "0 0 0 * * *" #One time a day at midnight
 
 url:
+  timeLimit:
+    year: 1
   urlShort:
-    baseUrl: "https://ushort.com/"
-    urlRegex: "^(https?://)?(www\\.)?[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}(/[a-zA-Z0-9-._~:/?#@!$&'()*+,;=]*)?$"
+    baseUrl: "localhost:8088/v1/urls/"

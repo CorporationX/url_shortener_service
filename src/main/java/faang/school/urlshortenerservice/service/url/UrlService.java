@@ -29,12 +29,11 @@ public class UrlService {
     public String saveAndConvertLongUrl(LongUrlDto longUrlDto) {
         String hash = hashCache.getOneHash();
         String longUrl = longUrlDto.getUrl();
-        log.debug("Url hash: {} , and url name: {} starting to save in DB and redis", hash, longUrl);
-        urlCacheRepository.save(hash, longUrl, redisProperties.getTtl());
-        log.debug("Saved url {} for {} in cache", longUrl, redisProperties.getTtl());
         Url urlToConvert = buildUrl(longUrl, hash);
+        log.debug("Url to save with url {} and hash {}", longUrl, hash);
+        urlCacheRepository.save(hash, longUrl, redisProperties.getTtl());
         urlRepository.save(urlToConvert);
-        log.debug("Saved url {} to DB", urlToConvert.getUrl());
+        log.debug("Successfully saved url in redis and db!");
         return hash;
     }
 
@@ -54,10 +53,5 @@ public class UrlService {
                 .url(longUrl)
                 .createdAt(LocalDateTime.now())
                 .build();
-    }
-
-    private String extractHash(String url) {
-        int lastSlashIndex = url.lastIndexOf("/");
-        return url.substring(lastSlashIndex + 1);
     }
 }

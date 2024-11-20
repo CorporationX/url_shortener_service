@@ -20,4 +20,13 @@ public class UrlProperties {
         private String baseUrl;
         private String urlRegex;
     }
+
+    private TimeLimit timeLimit;
+
+    @Getter
+    @Setter
+    public static class TimeLimit {
+
+        private int year;
+    }
 }
