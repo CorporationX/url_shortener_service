@@ -21,5 +21,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     List<String> deleteExpiredUrlsAndReturnHashes(@Param("timeLimit") LocalDateTime timeLimit);
 
     @Transactional(readOnly = true)
-    Optional<String> findUrlByHash(String hash);
+    @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
+    Optional<String> findUrlByHash(@Param("hash") String hash);
 }

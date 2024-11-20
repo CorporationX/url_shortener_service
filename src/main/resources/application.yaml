@@ -49,4 +49,4 @@ url:
   timeLimit:
     year: 1
   urlShort:
-    baseUrl: "localhost:8088/v1/urls/"
+    baseUrl: "http://localhost:8088/v1/urls/"

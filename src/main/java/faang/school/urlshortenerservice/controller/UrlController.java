@@ -5,7 +5,11 @@ import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
-import java.util.regex.Pattern;
 
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -35,16 +39,15 @@ public class UrlController {
         return urlProperties.getUrlShort().getBaseUrl() + urlService.saveAndConvertLongUrl(url);
     }
 
-    @GetMapping("/{shortUrl}")
-    public void redirect(@PathVariable String shortUrl, HttpServletResponse response) {
-        if (!Pattern.matches(urlProperties.getUrlShort().getUrlRegex(), shortUrl)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL format");
-        }
-        Optional<String> url = urlService.retrieveLongUrl(shortUrl);
+    @GetMapping("/{hash}")
+    public void redirect(@NotBlank @NotEmpty @Size(min = 1, max = 6) @PathVariable String hash,
+                         HttpServletResponse response) {
+        Optional<String> url = urlService.retrieveLongUrl(hash);
         if (url.isPresent()) {
             response.setStatus(HttpServletResponse.SC_FOUND);
-            response.setHeader("Location", String.valueOf(url));
+            response.setHeader("Location", url.get());
         } else {
+            log.debug("Url is not found! {} ", url);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found");
         }
     }

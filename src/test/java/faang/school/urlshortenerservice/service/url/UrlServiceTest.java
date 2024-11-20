@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.config.properties.redis.RedisProperties;
 import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,5 +57,34 @@ public class UrlServiceTest {
         verify(urlCacheRepository).save(HASH_FROM_CACHE, longUrlDto.getUrl(), redisProperties.getTtl());
 
         assertEquals(hashResult, HASH_FROM_CACHE);
+    }
+
+    @Test
+    @DisplayName("When valid hash passed then find it in redis")
+    public void whenValidHashPassedThenFindItsValueInRedisAndReturnUrl() {
+        when(urlCacheRepository.find(HASH_FROM_CACHE)).thenReturn(Optional.of(VALID_URL));
+        Optional<String> result = urlService.retrieveLongUrl(HASH_FROM_CACHE);
+
+        result.ifPresent(s -> assertEquals(s, VALID_URL));
+    }
+
+    @Test
+    @DisplayName("When valid hash passed and is not present in redis, then find it in db")
+    public void whenValidHashPassedThenFindItInDbAndReturn() {
+        when(urlCacheRepository.find(HASH_FROM_CACHE)).thenReturn(Optional.empty());
+        when(urlRepository.findUrlByHash(HASH_FROM_CACHE)).thenReturn(Optional.of(VALID_URL));
+        Optional<String> result = urlService.retrieveLongUrl(HASH_FROM_CACHE);
+
+        result.ifPresent(s -> assertEquals(s, VALID_URL));
+    }
+
+    @Test
+    @DisplayName("When valid hash passed and it doesn't exists both in redis and db then throws ENFException")
+    public void whenValidHashPassedAndItDoesNotExistsBothRedisAndDbThenThrowsException() {
+        when(urlCacheRepository.find(HASH_FROM_CACHE)).thenReturn(Optional.empty());
+        when(urlRepository.findUrlByHash(HASH_FROM_CACHE)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () ->
+                urlService.retrieveLongUrl(HASH_FROM_CACHE));
     }
 }

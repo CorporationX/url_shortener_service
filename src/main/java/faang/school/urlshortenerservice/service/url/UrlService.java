@@ -9,8 +9,10 @@ import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,9 +40,7 @@ public class UrlService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<String> retrieveLongUrl(String shortUrl) {
-        String hash = extractHash(shortUrl);
-        log.debug("Extracted hash {} from incoming shortUrl, searching for long url", hash);
+    public Optional<String> retrieveLongUrl(String hash) {
         return urlCacheRepository.find(hash)
                 .or(() -> urlRepository.findUrlByHash(hash))
                 .orElseThrow(() -> new EntityNotFoundException("URL with hash " + hash + " not found!"))
