@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.util.cache;
+package faang.school.urlshortenerservice.cache.hash;
 
 public interface HashCache {
 

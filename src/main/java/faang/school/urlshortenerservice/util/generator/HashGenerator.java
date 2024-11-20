@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.util.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.cache.HashCacheProperty;
+import faang.school.urlshortenerservice.cache.hash.HashCacheProperty;
 import faang.school.urlshortenerservice.util.encoder.Encoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

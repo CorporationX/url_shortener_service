@@ -1,5 +1,7 @@
-package faang.school.urlshortenerservice.util.cache;
+package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.cache.hash.HashCacheImpl;
+import faang.school.urlshortenerservice.cache.hash.HashCacheProperty;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.generator.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;

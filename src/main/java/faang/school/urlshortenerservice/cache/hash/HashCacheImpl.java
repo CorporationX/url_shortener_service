@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.util.cache;
+package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.generator.HashGenerator;
@@ -27,7 +27,7 @@ public class HashCacheImpl implements HashCache {
     private final AtomicBoolean isCacheRefilling = new AtomicBoolean(false);
 
     @PostConstruct
-    void initialize() {
+    public void initialize() {
         generator.generateBatch();
         cacheRefillThreshold = (int) (cacheProperty.getMaxQueueSize() * (cacheProperty.getRefillPercent() / 100.0));
         refillCacheAsync();

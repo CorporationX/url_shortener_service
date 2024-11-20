@@ -1,13 +1,13 @@
 package faang.school.urlshortenerservice.service.url;
 
-import faang.school.urlshortenerservice.cache.RedisCache;
+import faang.school.urlshortenerservice.cache.redis.RedisCache;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.scheduler.cleander.CleanerProperties;
-import faang.school.urlshortenerservice.util.cache.HashCache;
+import faang.school.urlshortenerservice.cache.hash.HashCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

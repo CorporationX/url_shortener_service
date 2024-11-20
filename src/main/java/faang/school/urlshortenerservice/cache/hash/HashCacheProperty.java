@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.util.cache;
+package faang.school.urlshortenerservice.cache.hash;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

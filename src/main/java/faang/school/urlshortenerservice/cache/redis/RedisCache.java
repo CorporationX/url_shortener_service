@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.cache.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
