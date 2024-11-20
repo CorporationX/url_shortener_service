@@ -29,7 +29,7 @@ public class HashGenerator {
         List<Hash> hashList = base62Encoder.generateHashList(uniqueNumbers).stream()
                 .map(Hash::new)
                 .toList();
-        hashRepository.saveAll(hashList);
+        hashRepository.saveAllBatched(hashList);
     }
 
     @Transactional
@@ -43,13 +43,8 @@ public class HashGenerator {
     }
 
     @Async(value = "urlThreadPool")
-    @Transactional
     public CompletableFuture<List<String>> getHashesAsync(long batchSize) {
-        List<String> hashes = hashRepository.getHashBatch(batchSize);
-        if (hashes.size() < batchSize) {
-            generateAndSaveHashBatch();
-            hashes.addAll(hashRepository.getHashBatch(batchSize - hashes.size()));
-        }
+        List<String> hashes = getHashes(batchSize);
         return CompletableFuture.completedFuture(hashes);
     }
 }

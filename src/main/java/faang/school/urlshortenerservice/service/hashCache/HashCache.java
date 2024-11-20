@@ -19,6 +19,7 @@ public class HashCache {
     private final int capacity;
     private final ArrayBlockingQueue<String> hashQueue;
     private final AtomicBoolean filling;
+    private final int capacityInPercentages;
 
     @Autowired
     public HashCache(CacheProperties cacheProperties,
@@ -26,19 +27,20 @@ public class HashCache {
         this.hashGenerator = hashGenerator;
         this.cacheProperties = cacheProperties;
         this.capacity = cacheProperties.getCapacity();
+        this.capacityInPercentages = capacity / 100;
         this.hashQueue = new ArrayBlockingQueue<>(cacheProperties.getCapacity());
         this.filling = new AtomicBoolean(false);
         hashQueue.addAll(hashGenerator.getHashes(capacity));
     }
 
     public String getHash() {
-        boolean exceededLimit = hashQueue.size() / (capacity / 100.0) < cacheProperties.getMinLimitCapacity();
+        boolean exceededLimit = hashQueue.size() / capacityInPercentages < cacheProperties.getMinLimitCapacity();
         log.debug("running a check on MinLimitCapacity: result {}", exceededLimit);
 
         if (exceededLimit) {
             if (filling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync( (long) capacity - hashQueue.size()).
-                        thenAccept(hashQueue::addAll)
+                hashGenerator.getHashesAsync( (long) capacity - hashQueue.size())
+                        .thenAccept(hashQueue::addAll)
                         .thenRun(() -> filling.set(false));
             }
         }

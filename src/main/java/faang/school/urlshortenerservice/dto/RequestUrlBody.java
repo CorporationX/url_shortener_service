@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 @Getter
 @Setter
@@ -15,10 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RequestUrlBody {
 
-    @NotBlank(message = "URL must not be empty")
-    @Pattern(
-            regexp = "^(http?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/[^\\s]*)?$",
-            message = "Invalid URL format"
-    )
+    @URL
     private String url;
 }

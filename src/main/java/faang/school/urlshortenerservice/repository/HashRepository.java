@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+public interface HashRepository extends JpaRepository<Hash, String>, CustomHashRepository {
 
     @Modifying
     @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :batchSize)", nativeQuery = true)

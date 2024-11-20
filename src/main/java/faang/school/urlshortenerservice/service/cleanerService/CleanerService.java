@@ -22,16 +22,14 @@ public class CleanerService {
     private final CacheProperties cacheProperties;
     private final HashRepository hashRepository;
 
-
     @Transactional
-    @Async("urlThreadPool")
     public void clearExpiredUrls() {
         List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getExpirationUrl());
         List<Hash> releasedHashes = releasedUrls.stream()
                 .map(Url::getHash)
                 .map(Hash::new)
                 .toList();
-        hashRepository.saveAll(releasedHashes);
+        hashRepository.saveAllBatched(releasedHashes);
         log.info("clearExpiredUrls - finish, released hashes size - {}", releasedHashes.size());
     }
 }
