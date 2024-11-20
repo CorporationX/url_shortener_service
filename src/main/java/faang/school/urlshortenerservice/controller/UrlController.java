@@ -1,9 +1,8 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.annotation.Url;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpHeaders;
@@ -31,8 +30,8 @@ public class UrlController {
     }
 
     @PostMapping
-    public void shortener(@RequestBody @Validated @NotNull @Url String url, HttpServletResponse response) throws IOException {
-        redirect(urlService.generateHashForUrl(url), response);
+    public void shortener(@RequestBody @Validated UrlDto urlDto, HttpServletResponse response) throws IOException {
+        redirect(urlService.generateHashForUrl(urlDto.getUrl()), response);
     }
 
     private void redirect(String redirectUrl, HttpServletResponse response) throws IOException {
