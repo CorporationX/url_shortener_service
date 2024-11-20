@@ -5,6 +5,11 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -18,8 +23,29 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
     root: info
+
+hash:
+  batch: 10
+  fillingPercent: 20
+  cache:
+    size: 100
+
+encoder:
+  base62:
+    symbols: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+scheduler:
+  clear:
+    cron: "0 0 0 * * ?"  # Launching every day at midnight
+  generate:
+    cron: "0 0 */4 * * ?" # Every 4 hours
+
+executor:
+  cores: 5
+  max: 10
+  queue_capacity: 25
