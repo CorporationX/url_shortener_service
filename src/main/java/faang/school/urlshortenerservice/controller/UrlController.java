@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
