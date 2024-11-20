@@ -17,3 +17,12 @@ databaseChangeLog:
                   type: TEXT
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 2
+      author: DariaMak
+      changes:
+        - createSequence:
+            sequenceName: unique_hash_number_seq
+            startValue: 1
+            incrementBy: 1
