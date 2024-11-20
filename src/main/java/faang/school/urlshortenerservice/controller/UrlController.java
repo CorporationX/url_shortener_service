@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.exception.UrlNotValid;
+import faang.school.urlshortenerservice.exception.UrlNotValidException;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -18,7 +18,7 @@ public class UrlController {
     @PostMapping("/shortener")
     public UrlDto createShortUrl(@RequestBody UrlDto urlDto) {
        if (!urlValidator.isValid(urlDto.getUrl())) {
-           throw new UrlNotValid("Url not valid: " + urlDto.getUrl());
+           throw new UrlNotValidException("Url not valid: " + urlDto.getUrl());
        }
        return urlService.createUrlHash(urlDto);
     }

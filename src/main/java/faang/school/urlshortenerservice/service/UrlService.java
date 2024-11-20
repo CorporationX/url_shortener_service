@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.UrlNotValid;
+import faang.school.urlshortenerservice.exception.UrlNotValidException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.properties.RedisProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -44,6 +44,6 @@ public class UrlService {
         return urlCacheRepository.getUrl(hash)
                 .or(() -> urlRepository.findByHash(hash))
                 .map(Url::getUrl)
-                .orElseThrow(() -> new UrlNotValid("not url exists with hash: " + hash));
+                .orElseThrow(() -> new UrlNotValidException("not url exists with hash: " + hash));
     }
 }

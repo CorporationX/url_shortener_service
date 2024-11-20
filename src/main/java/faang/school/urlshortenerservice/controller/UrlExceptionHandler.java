@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.ExceptionDto;
-import faang.school.urlshortenerservice.exception.UrlNotValid;
+import faang.school.urlshortenerservice.exception.UrlNotValidException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,9 +14,9 @@ import java.util.Arrays;
 @RestControllerAdvice
 @Slf4j
 public class UrlExceptionHandler {
-    @ExceptionHandler(UrlNotValid.class)
+    @ExceptionHandler(UrlNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionDto handleUrlNotExistException(UrlNotValid e, HttpServletRequest request) {
+    public ExceptionDto handleUrlNotExistException(UrlNotValidException e, HttpServletRequest request) {
         ExceptionDto dto = buildDto(e, request);
         log.error(dto.getMessage());
         return dto;

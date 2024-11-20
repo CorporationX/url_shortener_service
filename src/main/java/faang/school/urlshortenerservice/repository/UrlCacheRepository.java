@@ -18,6 +18,6 @@ public class UrlCacheRepository {
     }
 
     public Optional<Url> getUrl(String hash) {
-        return Optional.of((Url) redisTemplate.opsForValue().get(hash));
+        return Optional.ofNullable((Url) redisTemplate.opsForValue().get(hash));
     }
 }
