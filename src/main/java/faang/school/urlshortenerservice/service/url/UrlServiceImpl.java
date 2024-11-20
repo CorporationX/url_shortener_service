@@ -57,9 +57,11 @@ public class UrlServiceImpl implements UrlService {
         List<String> expiredHashes;
 
         do {
-            expiredHashes = urlRepository.deleteOutdatedUrls(expirationDate, batchSize);
+            expiredHashes = urlRepository.findHashesToDelete(expirationDate, batchSize);
 
             if (!expiredHashes.isEmpty()) {
+                urlRepository.deleteByHashes(expiredHashes);
+
                 List<Hash> hashEntities = convertToHashEntities(expiredHashes);
                 hashRepository.saveAll(hashEntities);
             }

@@ -16,14 +16,20 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Query("SELECT url FROM Url WHERE hash = :hash")
     Optional<String> findUrlByHash(String hash);
 
+    @Query(value = """
+            SELECT hash
+            FROM url
+            WHERE created_at < :dateTime
+            ORDER BY created_at
+            LIMIT :limit
+            FOR UPDATE
+            """, nativeQuery = true)
+    List<String> findHashesToDelete(LocalDateTime dateTime, int limit);
+
     @Modifying
     @Query(value = """
-            WITH deleted_rows AS (
-                DELETE FROM url
-                WHERE created_at < :dateTime
-                RETURNING hash
-            )
-            SELECT hash FROM deleted_rows LIMIT :limit
+            DELETE FROM url
+            WHERE hash IN :hashes
             """, nativeQuery = true)
-    List<String> deleteOutdatedUrls(LocalDateTime dateTime, int limit);
+    void deleteByHashes(List<String> hashes);
 }
