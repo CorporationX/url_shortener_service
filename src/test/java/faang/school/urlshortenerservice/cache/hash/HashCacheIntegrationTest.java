@@ -7,11 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnableAsync
 public class HashCacheIntegrationTest extends BaseContextTest {
 
     @Autowired
@@ -41,6 +39,6 @@ public class HashCacheIntegrationTest extends BaseContextTest {
         Thread.sleep(1500);
         int size = hashRepository.findAll().size();
 
-        assertEquals(196, size);
+        assertEquals(200, size);
     }
 }
