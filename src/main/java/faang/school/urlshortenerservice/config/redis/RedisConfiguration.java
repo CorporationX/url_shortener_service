@@ -20,8 +20,6 @@ public class RedisConfiguration {
 
     private final RedisProperties redisProperties;
 
-
-
     @Bean
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> template = new RedisTemplate<>();

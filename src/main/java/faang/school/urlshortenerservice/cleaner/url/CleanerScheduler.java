@@ -24,10 +24,11 @@ public class CleanerScheduler {
     @Transactional
     public void clean() {
         List<String> hashesStrings = urlRepository
-                .deleteExpiredUrlsAndReturnHashes(LocalDateTime.now().minusYears(urlProperties.getTimeLimit().getYear()));
+                .deleteExpiredUrlsAndReturnHashes(LocalDateTime.now()
+                        .minusYears(urlProperties.getTimeLimit().getYear()));
         List<Hash> hashes = hashesStrings.stream()
                 .map(Hash::new)
                 .toList();
-        hashRepository.saveAllCustom(hashes);
+        hashRepository.saveAllBatched(hashes);
     }
 }
