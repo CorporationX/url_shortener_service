@@ -43,6 +43,9 @@ redisson:
   filling-flag-key: sharedFillingFlag
   filling-lock-key: sharedFillingLock
 
+shortener:
+  host: localhost:8080/api/v1
+
 server:
   port: 8080
 
