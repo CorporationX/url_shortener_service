@@ -5,6 +5,11 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -16,6 +21,36 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+hash:
+  repository:
+    batch:
+      size: 25
+  generator:
+    batch:
+      size: 100
+    generation-limit: 100
+  cache:
+    load-factor: 0.2
+    capacity: 50
+  encoder:
+    size: 6
+
+scheduler:
+  cron: "0 0 0 * * *" #every day
+
+url:
+  host: http://localhost:8080/api/v1
+  cache:
+    ttl:
+      timeout: 1
+      time-unit: DAYS
+
+task-executor:
+  core-pool-size: 10
+  max-pool-size: 20
+  queue-capacity: 100
+  thread-name-prefix: taskExecutor-
 
 server:
   port: 8080
