@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -13,13 +16,33 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
-server:
-  port: 8080
+base.package: faang.school.urlshortenerservice.*
+
+hash:
+  cache:
+    capacity: 50
+    load:
+      factor: 20
+    cron:
+      create: 0 1 * * * *
+      update: 0 0 * * * *
+
+thread.pool:
+  corePoolSize: 4
+  maximumPoolSize: 10
+  keepAliveTime: 60
+  queueCapacity: 1000
 
 logging:
   level:
-    root: info
+    root: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: ERROR
+    org.hibernate.type: ERROR
