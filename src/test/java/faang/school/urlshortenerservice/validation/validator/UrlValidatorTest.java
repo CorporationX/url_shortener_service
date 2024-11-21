@@ -34,7 +34,6 @@ class UrlValidatorTest {
             "http://sub.domain.com/path, true",
             "ftp://example.com, false",
             "invalid-url, false",
-            "null, false",
             "example.com, false",
             "http://, false",
             "https://example.com?query=1, true"

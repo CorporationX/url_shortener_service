@@ -21,6 +21,6 @@ public class UrlValidator implements ConstraintValidator<Url, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return value != null && pattern.matcher(value).matches();
+        return pattern.matcher(value).matches();
     }
 }

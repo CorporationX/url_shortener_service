@@ -24,9 +24,7 @@ public class UniqueIdRepositoryTest {
     public void testGetNextSequenceValues() {
         int count = 3;
         List<Long> mockIds = List.of(1L, 2L, 3L);
-        String query = """
-                SELECT nextval('unique_number_seq') FROM generate_series(1, ?)
-                """;
+        String query = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
 
         when(jdbcTemplate.queryForList(query, Long.class, count)).thenReturn(mockIds);
 
