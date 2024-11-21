@@ -29,22 +29,22 @@ logging:
   level:
     root: info
 
-
 params:
-  url-pattern: "https://sh.c/"
-  base62:
-    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  hash-max-length: 6
-  count: 10
-  batch-size: 10
-  cache:
-    capacity: 10
+  hash-cache:
+    batch-size: 10
     percentage: 0.2
+  cache-queue:
+    capacity: 10
+  url-service:
+    url-pattern: "https://sh.c/"
+  hash-generator:
+    count: 10
+  base-62-encoder:
+    hash-max-length: 6
 
 cleaner:
   scheduler:
     cron: "0 0 0 * * ?" # every day
-
 
 executor1:
   verify-hash-generator-executor:

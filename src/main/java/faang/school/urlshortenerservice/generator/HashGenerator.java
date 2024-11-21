@@ -20,7 +20,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${params.count}")
+    @Value("${params.hash-generator.count}")
     private long count;
 
     @Async("hashGeneratorExecutor")

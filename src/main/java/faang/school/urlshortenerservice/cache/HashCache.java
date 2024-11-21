@@ -18,9 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Value("${params.cache.percentage}")
+    @Value("${params.hash-cache.percentage}")
     private double minPercentage;
-    @Value("${params.batch-size}")
+
+    @Value("${params.hash-cache.batch-size}")
     private int batchSize;
 
     private final ArrayBlockingQueue<String> queue;

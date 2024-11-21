@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
 
-    @Value("${params.url-pattern}")
+    @Value("${params.url-service.url-pattern}")
     private String urlPattern;
 
     private final HashCache hashCache;

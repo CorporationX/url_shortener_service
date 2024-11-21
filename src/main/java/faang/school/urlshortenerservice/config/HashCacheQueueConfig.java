@@ -9,7 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 @Configuration
 public class HashCacheQueueConfig {
 
-    @Value("${params.cache.capacity}")
+    @Value("${params.cache-queue.capacity}")
     private int capacity;
 
     @Bean

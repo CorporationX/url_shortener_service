@@ -9,9 +9,9 @@ import java.util.List;
 @Component
 public class Base62Encoder {
 
-    @Value("${params.base62.chars}")
-    private String BASE62_CHARS;
-    @Value("${params.hash-max-length}")
+    private static final String BASE62_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    @Value("${params.base-62-encoder.hash-max-length}")
     private int hashMaxLength;
 
     public List<Hash> encode(List<Long> numbers) {

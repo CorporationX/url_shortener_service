@@ -21,7 +21,7 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${cleaner.scheduler.cron}")
     @Transactional
-    public void cleaner() {
+    public void cleanOldHashes() {
         List<String> oldHashes = urlRepository.retrieveOldHashes();
         log.info("The {} hashes older than 1 year have been deleted", oldHashes.size());
         List<Hash> hashes = oldHashes.stream()
