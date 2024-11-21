@@ -14,8 +14,8 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(nativeQuery = true, value = """
-            DELETE FROM url WHERE url.url IN (
-                SELECT url.url FROM url WHERE url.created_at < :date FOR UPDATE SKIP LOCKED
+            DELETE FROM url WHERE url.hash IN (
+                SELECT url.hash FROM url WHERE url.created_at < :date FOR UPDATE SKIP LOCKED
             )
             RETURNING url.hash
             """)

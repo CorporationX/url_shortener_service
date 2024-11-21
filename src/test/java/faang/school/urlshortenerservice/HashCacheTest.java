@@ -11,10 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static utils.TestData.generateHashes;
 
 @ExtendWith(MockitoExtension.class)
 public class HashCacheTest {
@@ -23,11 +23,12 @@ public class HashCacheTest {
     @InjectMocks
     private HashCache hashCache;
 
-    private final List<String> hashes = List.of("8G", "9G", "AG", "BG", "CG", "DG", "EG", "FG", "GG", "HG", "IG");
+    private List<String> hashes;
     private Field capacity;
 
     @BeforeEach
     void setUp() throws Exception {
+        hashes = generateHashes(10, 6);
         capacity = HashCache.class.getDeclaredField("capacity");
         capacity.setAccessible(true);
         capacity.set(hashCache, hashes.size());
@@ -49,12 +50,13 @@ public class HashCacheTest {
     }
 
     @Test
-    public void testGetHashLowHashes() throws IllegalAccessException {
+    public void testGetHashLowHashes() throws Exception {
         capacity.set(hashCache, 100);
 
         when(hashGenerator.getHashes(100)).thenReturn(hashes);
         String result = hashCache.getHash();
 
+        Thread.sleep(100);
         String firstHash = hashes.stream().findFirst().get();
         assertEquals(result, firstHash);
     }

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,23 +19,26 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-    private List<Hash> generateBatch() {
+    private List<String> generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(batchSize);
-        List<Hash> hashes = encoder.encode(range).stream()
+        List<String> hashes = encoder.encode(range);
+        List<Hash> hashesEntity = encoder.encode(range).stream()
                 .map(Hash::new)
                 .toList();
 
-        return hashRepository.saveAll(hashes);
+        hashRepository.saveAll(hashesEntity);
+
+        return hashes;
     }
 
     @Transactional
     public List<String> getHashes(int amount) {
-        List<Hash> hashes = hashRepository.getHashBatch(amount);
+        Long hashesSize = hashRepository.getHashesSize();
 
-        if (hashes.size() < amount) {
-            hashes.addAll(generateBatch());
+        if (hashesSize < amount) {
+            return generateBatch();
         }
 
-        return hashes.stream().map(Hash::getHash).toList();
+        return hashRepository.getHashBatch(amount);
     }
 }

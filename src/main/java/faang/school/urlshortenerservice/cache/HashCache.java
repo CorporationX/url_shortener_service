@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -32,7 +33,7 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        hashes.addAll(hashGenerator.getHashes(capacity));
+        checkAndRunGenerate();
     }
 
     public String getHash() {
@@ -43,16 +44,20 @@ public class HashCache {
     private void checkAndGenerateHashes() {
         executor.execute(() -> {
             double cacheFullPercentage = 100.0 / capacity * hashes.size();
-
             if (cacheFullPercentage < minPercentHashes) {
-                if (generateIsProcessing.compareAndSet(false, true)) {
-                    try {
-                        hashes.addAll(hashGenerator.getHashes(capacity));
-                    } finally {
-                        generateIsProcessing.set(false);
-                    }
-                }
+                checkAndRunGenerate();
             }
         });
+    }
+
+    private void checkAndRunGenerate() {
+        if (generateIsProcessing.compareAndSet(false, true)) {
+            try {
+                List<String> generatedHashes = hashGenerator.getHashes(capacity);
+                hashes.addAll(generatedHashes);
+            } finally {
+                generateIsProcessing.set(false);
+            }
+        }
     }
 }
