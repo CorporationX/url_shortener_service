@@ -86,7 +86,8 @@ public class UrlControllerTest extends BaseContextTest {
         int lastSlashIndex = longUrl.lastIndexOf('/');
         String hash = longUrl.substring(lastSlashIndex + 1);
 
-        ResultActions resultActions = mockMvc.perform(get("/v1/urls/{hash}", hash))
+        ResultActions resultActions = mockMvc.perform(get("/v1/urls/{hash}", hash)
+                        .header("x-user-id", 1))
                 .andExpect(status().is3xxRedirection());
 
         String locationHeader = resultActions.andReturn().getResponse().getHeader("Location");
@@ -96,14 +97,14 @@ public class UrlControllerTest extends BaseContextTest {
     @Test
     @DisplayName("When calling get method with invalid hash PathVariable then return BAD REQUEST status")
     public void whenInvalidHashPassedThenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(get("/v1/urls/{hash}", NOT_VALID_HASH))
+        mockMvc.perform(get("/v1/urls/{hash}", NOT_VALID_HASH).header("x-user-id", 1))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("When non existing hash passed as PathVariable then return 404")
     public void whenNonExistingHashPassedThenReturnsNotFoundResponse() throws Exception {
-        mockMvc.perform(get("/v1/urls/{hash}", "AbC23"))
+        mockMvc.perform(get("/v1/urls/{hash}", "AbC23").header("x-user-id", 1))
                 .andExpect(status().isNotFound());
     }
 }
