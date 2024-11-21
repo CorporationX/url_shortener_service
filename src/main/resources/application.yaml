@@ -26,7 +26,7 @@ spring:
 
 cache:
   min_percent_hashes: 20
-  capacity: 10000
+  capacity: 1000
 
 scheduler:
   cron: '0 0 0 * * *'
@@ -34,7 +34,7 @@ scheduler:
 
 generator:
   batch:
-    size: 100000
+    size: 10000
 
 server:
   url: 'http://localhost:8080'

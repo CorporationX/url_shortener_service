@@ -28,18 +28,22 @@ public class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
 
-    private int batchSize = 20;
+    private int batchSize = 100;
+    private double minPercentHashes = 20.0;
 
     @BeforeEach
     void setUp() throws Exception {
         Field batchSize = HashGenerator.class.getDeclaredField("batchSize");
+        Field minPercentHashes = HashGenerator.class.getDeclaredField("minPercentHashes");
         batchSize.setAccessible(true);
+        minPercentHashes.setAccessible(true);
         batchSize.set(hashGenerator, this.batchSize);
+        minPercentHashes.set(hashGenerator, this.minPercentHashes);
     }
 
     @Test
     public void testGetHashes() {
-        List<String> hashes = generateHashes(10, 6);
+        List<String> hashes = generateHashes(100, 6);
 
         when(hashRepository.getHashBatch(hashes.size())).thenReturn(hashes);
         when(hashRepository.getHashesSize()).thenReturn((long) hashes.size());
@@ -53,9 +57,9 @@ public class HashGeneratorTest {
         int amount = 20;
         List<String> hashes = generateHashes(10, 6);
 
-        List<Long> range = LongStream.range(0, amount).boxed().toList();
+        List<Long> range = LongStream.range(0, batchSize).boxed().toList();
         when(hashRepository.getHashesSize()).thenReturn((long) hashes.size());
-        when(hashRepository.getUniqueNumbers(amount)).thenReturn(range);
+        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(range);
 
         List<String> result = hashGenerator.getHashes(amount);
 

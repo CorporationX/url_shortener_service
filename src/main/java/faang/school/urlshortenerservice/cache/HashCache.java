@@ -44,7 +44,7 @@ public class HashCache {
     private void checkAndGenerateHashes() {
         executor.execute(() -> {
             double cacheFullPercentage = 100.0 / capacity * hashes.size();
-            if (cacheFullPercentage < minPercentHashes) {
+            if (cacheFullPercentage <= minPercentHashes) {
                 checkAndRunGenerate();
             }
         });
