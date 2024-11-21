@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+public interface HashRepository extends JpaRepository<Hash, String>, CustomHashRepository {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :hashAmount)
@@ -28,5 +28,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (SELECT hash FROM to_delete)
             RETURNING hash
             """)
-    List<Hash> getHashBatch(int hashAmount);
+    List<Hash> getAndDeleteHashBatch(int hashAmount);
 }

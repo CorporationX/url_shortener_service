@@ -30,6 +30,20 @@ logging:
     root: info
 
 hash:
+  threadPool:
+    initialPoolSize: 5
+    maxPoolSize: 20
+  queue:
+    capacity: 200
   batch:
     save: 10_000
     get: 10_000
+  cache:
+    capacity: 1000
+    fillPercent: 0.2
+  cleaner:
+    cron: "0 0 0 * * *" #One time a day at midnight
+
+url:
+  timeLimit:
+    year: 1

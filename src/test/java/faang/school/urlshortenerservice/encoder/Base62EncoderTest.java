@@ -24,7 +24,7 @@ public class Base62EncoderTest {
     @DisplayName("When list of numbers passed encode it using Base62 algorithm and return back list of Hashes")
     public void whenNumbersPassedThenEncodeItWithBase62ThenReturnHashList() {
         List<Hash> hashes = base62Encoder.encode(List.of(FIRST_VALUE, SECOND_VALUE));
-        assertEquals(hashes.get(0).getHash(), FIRST_RESULT);
-        assertEquals(hashes.get(1).getHash(), SECOND_RESULT);
+        assertEquals(FIRST_RESULT, hashes.get(0).getHash());
+        assertEquals(SECOND_RESULT, hashes.get(1).getHash());
     }
 }
