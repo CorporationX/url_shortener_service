@@ -29,12 +29,12 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-    DELETE FROM hash h1
-    WHERE h1.hash IN (
-        SELECT h2.hash FROM hash h2
-        LIMIT ?1
-    )
-    RETURNING h1.hash;
-""")
+                DELETE FROM hash h1
+                WHERE h1.hash IN (
+                    SELECT h2.hash FROM hash h2
+                    LIMIT ?1
+                )
+                RETURNING h1.hash;
+            """)
     List<String> getHashBatch(int count);
 }

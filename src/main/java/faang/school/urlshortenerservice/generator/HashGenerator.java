@@ -19,11 +19,11 @@ public class HashGenerator {
     private final Encoder<Long, Hash> encoder;
 
     @Value("${server.hash.generate.batch.size}")
-    private int generateBatchSize;
+    private int batchSize;
 
     @Async("asyncThreadPoolExecutor")
     public void generateBatch() {
-        List<Long> uniqueNumbers = uniqueIdRepository.getUniqueNumbers(generateBatchSize);
+        List<Long> uniqueNumbers = uniqueIdRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = encoder.encode(uniqueNumbers);
         hashRepository.saveBatch(hashes);
     }

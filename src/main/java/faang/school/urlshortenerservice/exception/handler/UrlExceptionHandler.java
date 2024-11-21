@@ -18,53 +18,54 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class UrlExceptionHandler {
+    private static final String SOMETHING_MESSAGE_ERROR = "Something went wrong";
 
     @Value("${spring.application.name}")
     private String serviceName;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        log.error("Validation error: {}", ex.getMessage());
-
-        Map<String, String> details = ex.getBindingResult()
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorResponse handleValidationException(MethodArgumentNotValidException exception) {
+        Map<String, String> details = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
                         error -> Optional.ofNullable(error.getDefaultMessage())
-                                .orElse("Invalid input for field " + error.getField())
+                                .orElse(SOMETHING_MESSAGE_ERROR)
                 ));
 
-        return ErrorResponse.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .serviceName(serviceName)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Validation error")
                 .details(details)
                 .build();
+        log.error("Not Valid Exception: {}", errorResponse);
+        return errorResponse;
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error("Error 404: {}", ex.getMessage());
-
-        return ErrorResponse.builder()
-                .serviceName(serviceName)
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .message(ex.getMessage())
-                .build();
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException exception) {
+        ErrorResponse errorResponse = buildErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage());
+        log.error("Not Found Exception: {}", errorResponse);
+        return errorResponse;
     }
 
-    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRuntimeException(RuntimeException ex) {
-        log.error("Internal server error: {}", ex.getMessage(), ex);
+    @ExceptionHandler(Exception.class)
+    public ErrorResponse handleRuntimeException(Exception exception) {
+        ErrorResponse errorResponse = buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        log.error("Exception: {}", errorResponse);
+        return errorResponse;
+    }
 
+
+    private ErrorResponse buildErrorResponse(HttpStatus status, String message) {
         return ErrorResponse.builder()
                 .serviceName(serviceName)
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("Internal server error. Please try again later.")
+                .statusCode(status.value())
+                .message(message)
                 .build();
     }
 }

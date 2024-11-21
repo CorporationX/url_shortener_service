@@ -22,4 +22,12 @@ public class UrlCacheRepository {
     public void save(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url, Duration.ofHours(redisCacheConfigProperties.getTtlTimeHours()));
     }
+
+    public Optional<String> getAndRefresh(String hash) {
+        String url = redisTemplate.opsForValue().get(hash);
+        if (url != null) {
+            redisTemplate.expire(hash, Duration.ofHours(redisCacheConfigProperties.getTtlTimeHours()));
+        }
+        return Optional.ofNullable(url);
+    }
 }

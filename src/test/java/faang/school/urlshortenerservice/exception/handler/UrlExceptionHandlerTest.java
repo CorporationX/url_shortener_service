@@ -41,12 +41,11 @@ public class UrlExceptionHandlerTest {
 
     @Test
     void handleMethodArgumentNotValidException_ShouldReturnBadRequestStatusWithErrors() throws NoSuchMethodException {
-        String message = "must not be null";
+        String message = "Validation failed for argument";
         ErrorResponse correctResult = ErrorResponse.builder()
                 .serviceName(SERVICE_NAME)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .details(Map.of("field", message))
-                .message("Validation error")
                 .build();
         MethodArgumentNotValidException exception = getMethodArgumentNotValidException(message);
 
@@ -72,15 +71,15 @@ public class UrlExceptionHandlerTest {
     }
 
     @Test
-    void handleRuntimeException_ShouldReturnInternalServerErrorStatus() {
-        String message = "Internal server error. Please try again later.";
+    void handleException_ShouldReturnInternalServerErrorStatus() {
+        String message = "Unexpected error";
         ErrorResponse expectedResponse = ErrorResponse.builder()
                 .serviceName(SERVICE_NAME)
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(message)
                 .build();
 
-        RuntimeException exception = new RuntimeException("Unexpected error");
+        Exception exception = new Exception(message);
 
         ErrorResponse actualResponse = urlExceptionHandler.handleRuntimeException(exception);
 
