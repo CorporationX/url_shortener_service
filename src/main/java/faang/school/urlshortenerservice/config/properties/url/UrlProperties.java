@@ -18,6 +18,7 @@ public class UrlProperties {
     public static class UrlShort {
 
         private String baseUrl;
+        private String urlRegex;
     }
 
     private TimeLimit timeLimit;

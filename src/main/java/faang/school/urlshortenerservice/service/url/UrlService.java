@@ -6,12 +6,14 @@ import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,6 +35,14 @@ public class UrlService {
         urlRepository.save(urlToConvert);
         log.debug("Successfully saved url in redis and db!");
         return hash;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<String> retrieveLongUrl(String hash) {
+        return urlCacheRepository.find(hash)
+                .or(() -> urlRepository.findUrlByHash(hash))
+                .orElseThrow(() -> new EntityNotFoundException("URL with hash " + hash + " not found!"))
+                .describeConstable();
     }
 
     private Url buildUrl(String longUrl, String hash) {

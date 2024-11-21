@@ -19,8 +19,7 @@ hash:
     cron: "0 * * * * ?" #For test immediately
 
 url:
-  urlShort:
-    baseUrl: "localhost:8088/v1/urls/"
-    cron: "* * * * * *" #For test immediately
   timeLimit:
     year: 1
+  urlShort:
+    baseUrl: "http://localhost:8088/v1/urls/"
