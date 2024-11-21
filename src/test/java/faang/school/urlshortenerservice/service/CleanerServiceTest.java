@@ -46,12 +46,12 @@ class CleanerServiceTest {
 
     @Test
     void testClearExpiredUrls_successfulExecution() {
-        when(cacheProperties.getExpirationUrl()).thenReturn(EXPIRATION_URL);
+        when(cacheProperties.getUrlCleaningInterval()).thenReturn(EXPIRATION_URL);
         when(urlService.findAndReturnExpiredUrls(EXPIRATION_URL)).thenReturn(List.of(Url.builder().hash(HASH).build()));
 
         cleanerService.clearExpiredUrls();
 
-        verify(cacheProperties).getExpirationUrl();
+        verify(cacheProperties).getUrlCleaningInterval();
         verify(urlService).findAndReturnExpiredUrls(EXPIRATION_URL);
 
         ArgumentCaptor<List<Hash>> captor = ArgumentCaptor.forClass(List.class);

@@ -41,6 +41,10 @@ public class HashCache {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync( (long) capacity - hashQueue.size())
                         .thenAccept(hashQueue::addAll)
+                        .exceptionally(ex -> {
+                            log.error("Error when executing getHashesAsync: {}", ex.getMessage(), ex);
+                            return null;
+                        })
                         .thenRun(() -> filling.set(false));
             }
         }

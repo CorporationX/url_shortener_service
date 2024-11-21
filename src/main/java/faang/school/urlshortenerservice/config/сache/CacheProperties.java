@@ -14,5 +14,5 @@ public class CacheProperties {
 
     private int capacity;
     private int minLimitCapacity;
-    private int expirationUrl;
+    private int urlCleaningInterval;
 }

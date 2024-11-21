@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties()
+@ConfigurationProperties
 public class RedisProperties {
 
     private String host;

@@ -31,7 +31,7 @@ public class UrlController {
         return urlService.convertLink(dto);
     }
 
-    @GetMapping("{hash}")
+    @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectLink(@PathVariable("hash") @NotBlank String hash) {
         String url = urlService.redirectLink(hash);
         return ResponseEntity.status(HttpStatus.FOUND)

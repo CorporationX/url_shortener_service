@@ -64,9 +64,7 @@ public class UrlService {
     }
 
     @Transactional
-    private Url createNewLink(String fullLink) {
-        log.info("createNewLink start");
-
+    public Url createNewLink(String fullLink) {
         Url url = Url.builder()
                 .hash(hashCache.getHash())
                 .url(fullLink)
