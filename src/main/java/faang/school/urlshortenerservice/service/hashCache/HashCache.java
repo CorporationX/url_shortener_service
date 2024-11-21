@@ -19,7 +19,7 @@ public class HashCache {
     private final int capacity;
     private final ArrayBlockingQueue<String> hashQueue;
     private final AtomicBoolean filling;
-    private final int capacityInPercentages;
+    private final double capacityInPercentages;
 
     @Autowired
     public HashCache(CacheProperties cacheProperties,
@@ -27,7 +27,7 @@ public class HashCache {
         this.hashGenerator = hashGenerator;
         this.cacheProperties = cacheProperties;
         this.capacity = cacheProperties.getCapacity();
-        this.capacityInPercentages = capacity / 100;
+        this.capacityInPercentages = (double) capacity / 100;
         this.hashQueue = new ArrayBlockingQueue<>(cacheProperties.getCapacity());
         this.filling = new AtomicBoolean(false);
         hashQueue.addAll(hashGenerator.getHashes(capacity));

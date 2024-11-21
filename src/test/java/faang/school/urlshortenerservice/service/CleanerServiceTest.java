@@ -36,9 +36,6 @@ class CleanerServiceTest {
     private UrlService urlService;
 
     @Mock
-    private HashGenerator hashGenerator;
-
-    @Mock
     private CacheProperties cacheProperties;
 
     @Mock
@@ -55,7 +52,7 @@ class CleanerServiceTest {
         verify(urlService).findAndReturnExpiredUrls(EXPIRATION_URL);
 
         ArgumentCaptor<List<Hash>> captor = ArgumentCaptor.forClass(List.class);
-        verify(hashRepository).saveAll(captor.capture());
+        verify(hashRepository).saveAllBatched(captor.capture());
 
         List<Hash> capturedHashes = captor.getValue();
 

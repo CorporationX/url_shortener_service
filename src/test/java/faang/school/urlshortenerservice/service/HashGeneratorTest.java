@@ -48,7 +48,7 @@ class HashGeneratorTest {
 
         verify(hashRepository).getUniqueNumbers(BATCH_SIZE_UNIQUE_NUMBERS);
         verify(base62Encoder).generateHashList(anyList());
-        verify(hashRepository).saveAll(anyList());
+        verify(hashRepository).saveAllBatched(anyList());
     }
 
     @Test
@@ -64,7 +64,7 @@ class HashGeneratorTest {
         verify(hashRepository).getHashBatch(BATCH_SIZE_UNIQUE_NUMBERS);
         verify(hashRepository).getUniqueNumbers(anyInt());
         verify(base62Encoder).generateHashList(anyList());
-        verify(hashRepository).saveAll(anyList());
+        verify(hashRepository).saveAllBatched(anyList());
     }
 
     @Test
@@ -94,6 +94,6 @@ class HashGeneratorTest {
         verify(hashRepository).getHashBatch(BATCH_SIZE_UNIQUE_NUMBERS);
         verify(hashRepository).getUniqueNumbers(anyInt());
         verify(base62Encoder).generateHashList(anyList());
-        verify(hashRepository).saveAll(anyList());
+        verify(hashRepository).saveAllBatched(anyList());
     }
 }
