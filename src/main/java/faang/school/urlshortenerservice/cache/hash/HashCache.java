@@ -55,9 +55,14 @@ public class HashCache {
             log.debug("Cache capacity is lower than {} % , starting to generate additional caches", fillPercent);
             hashGenerator.generateBatch();
             CompletableFuture.runAsync(() -> {
-                fillUpCache(hashRepository.getAndDeleteHashBatch(capacity - cache.size()));
-                log.info("Generated hashes for cache successfully now cache size is {}", cache.size());
-                isFilling.set(false);
+                try {
+                    fillUpCache(hashRepository.getAndDeleteHashBatch(capacity - cache.size()));
+                    log.debug("Generated hashes for cache successfully now cache size is {}", cache.size());
+                } catch (Exception e) {
+                    log.error("Error occurred while generating hashes: {}", e.getMessage(), e);
+                } finally {
+                    isFilling.set(false);
+                }
             });
         }
         return cache.poll();

@@ -8,13 +8,11 @@ import faang.school.urlshortenerservice.util.BaseContextTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnableScheduling
 public class CleanerSchedulerTest extends BaseContextTest {
 
     @Autowired
