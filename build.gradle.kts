@@ -29,7 +29,12 @@ dependencies {
      */
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:4.3.2")
+    implementation("org.redisson:redisson:3.36.0")
+    implementation("org.redisson:redisson-spring-boot-starter:3.36.0")
+    implementation("org.redisson:redisson-spring-data-30:3.36.0")
     runtimeOnly("org.postgresql:postgresql")
+
+
 
     /**
      * Utils & Logging

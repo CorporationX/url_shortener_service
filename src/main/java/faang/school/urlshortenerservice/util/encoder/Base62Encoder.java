@@ -9,15 +9,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-@Setter
 @Component
 @RequiredArgsConstructor
-public class Base62Encoder {
+public class Base62Encoder implements Encoder {
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     private final Executor taskExecutor;
 
-    @Value("${hash.encoder.alphabet}")
-    private String alphabet;
-
+    @Setter
     @Value("${hash.encoder.hash-size}")
     private int hashSize;
 
@@ -33,8 +32,8 @@ public class Base62Encoder {
     private String encode(Long number) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < hashSize; i++) {
-            result.append(alphabet.charAt((int) (number % alphabet.length())));
-            number /= alphabet.length();
+            result.append(ALPHABET.charAt((int) (number % ALPHABET.length())));
+            number /= ALPHABET.length();
         }
         return result.toString();
     }

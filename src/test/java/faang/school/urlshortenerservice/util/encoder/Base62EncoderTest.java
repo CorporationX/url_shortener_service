@@ -21,7 +21,6 @@ class Base62EncoderTest {
     void setUp() {
         encoder = new Base62Encoder(executor);
         encoder.setHashSize(6);
-        encoder.setAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
     }
 
     @Test

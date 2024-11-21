@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.util.generator;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.encoder.Base62Encoder;
+import faang.school.urlshortenerservice.util.encoder.Encoder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    private final Base62Encoder encoder;
+    private final Encoder encoder;
     private final HashRepository hashRepository;
 
     @Setter
