@@ -8,6 +8,8 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
+    private static final int SUBSTRING_INDEX = 3;
+
     private final Base62 base62 = Base62.createInstance();
     private final ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 
@@ -22,6 +24,6 @@ public class Base62Encoder {
                 .putLong(number)
                 .array();
         String hash = new String(base62.encode(bytes));
-        return hash.replaceFirst("^0+", "");
+        return hash.substring(SUBSTRING_INDEX);
     }
 }

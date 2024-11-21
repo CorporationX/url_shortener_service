@@ -69,7 +69,7 @@ class UrlServiceTest {
         ArgumentCaptor<Long> ttlCaptor = ArgumentCaptor.forClass(Long.class);
 
         verify(urlRepository).save(urlCaptor.capture());
-        verify(urlCacheRepository).saveTtlInHour(urlCaptor.capture(), ttlCaptor.capture());
+        verify(urlCacheRepository).saveByTtlInHour(urlCaptor.capture(), ttlCaptor.capture());
 
         Url expectedUrl = URL;
 
@@ -92,19 +92,19 @@ class UrlServiceTest {
 
     @Test
     void testGetPrimalUri_cacheHaveUrl() {
-        when(urlCacheRepository.findByHash(HASH)).thenReturn(URL);
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(Optional.of(URL));
 
         assertThat(urlService.getPrimalUri(HASH))
                 .isNotNull()
                 .isEqualTo(REQUEST_URL);
 
         verify(urlRepository, never()).findById(anyString());
-        verify(urlCacheRepository, never()).saveTtlInHour(any(Url.class), any(Long.class));
+        verify(urlCacheRepository, never()).saveByTtlInHour(any(Url.class), any(Long.class));
     }
 
     @Test
     void testGetPrimalUrl_noUrlInTheCache() {
-        when(urlCacheRepository.findByHash(HASH)).thenReturn(null);
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(Optional.empty());
         when(urlRepository.findById(HASH)).thenReturn(Optional.of(URL));
 
         assertThat(urlService.getPrimalUri(HASH))
@@ -116,7 +116,7 @@ class UrlServiceTest {
         ArgumentCaptor<Long> ttlCaptor = ArgumentCaptor.forClass(Long.class);
 
         verify(urlRepository).findById(hashCaptor.capture());
-        verify(urlCacheRepository).saveTtlInHour(urlCaptor.capture(), ttlCaptor.capture());
+        verify(urlCacheRepository).saveByTtlInHour(urlCaptor.capture(), ttlCaptor.capture());
 
         assertThat(hashCaptor.getValue())
                 .isNotNull()
@@ -131,7 +131,7 @@ class UrlServiceTest {
 
     @Test
     void testGetPrimalUrl_exception() {
-        when(urlCacheRepository.findByHash(HASH)).thenReturn(null);
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(Optional.empty());
         when(urlRepository.findById(HASH)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> urlService.getPrimalUri(HASH))
@@ -141,7 +141,7 @@ class UrlServiceTest {
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
 
         verify(urlRepository).findById(hashCaptor.capture());
-        verify(urlCacheRepository, never()).saveTtlInHour(any(Url.class), any(Long.class));
+        verify(urlCacheRepository, never()).saveByTtlInHour(any(Url.class), any(Long.class));
 
         assertThat(hashCaptor.getValue())
                 .isNotNull()

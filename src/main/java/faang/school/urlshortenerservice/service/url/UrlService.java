@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -33,20 +35,21 @@ public class UrlService {
                 .build();
 
         urlRepository.save(url);
-        urlCacheRepository.saveTtlInHour(url, urlTtlInCache);
+        urlCacheRepository.saveByTtlInHour(url, urlTtlInCache);
 
         return uriBuilder.response(hash);
     }
 
     @Transactional(readOnly = true)
     public String getPrimalUri(String hash) {
-        Url url = urlCacheRepository.findByHash(hash);
-        if (url != null) {
-            return url.getUrl();
+        Optional<Url> urlOpt = urlCacheRepository.findByHash(hash);
+        if (urlOpt.isPresent()) {
+            return urlOpt.get().getUrl();
         }
-        url = urlRepository.findById(hash).orElseThrow(() ->
+        Url url = urlRepository.findById(hash).orElseThrow(() ->
                 new ResourceNotFoundException("Url by hash: %s not found", hash));
-        urlCacheRepository.saveTtlInHour(url, urlTtlInCache);
+
+        urlCacheRepository.saveByTtlInHour(url, urlTtlInCache);
 
         return url.getUrl();
     }

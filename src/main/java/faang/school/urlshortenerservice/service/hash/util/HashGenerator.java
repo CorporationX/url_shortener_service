@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.util.encode.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +23,6 @@ public class HashGenerator {
     @Value("${app.hash_generator.db_hashes_limit}")
     private long dbHashesLimit;
 
-    @Async
     public void generate() {
         Long dbHashesSize = hashService.getHashesSize();
         if (dbHashesSize < dbHashesLimit) {
@@ -35,5 +33,11 @@ public class HashGenerator {
                     .toList();
             hashService.saveAllBatch(hashesEntity);
         }
+    }
+
+    public List<String> generateAndGet(int size) {
+        List<Long> numbers = hashService.getUniqueNumbers(size);
+
+        return encoder.encode(numbers);
     }
 }

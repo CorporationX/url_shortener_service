@@ -71,4 +71,15 @@ class HashGeneratorTest {
         verify(encoder, never()).encode(anyList());
         verify(hashService, never()).saveAllBatch(anyList());
     }
+
+    @Test
+    void testGenerateAndGet_successful() {
+        int size = 10;
+        when(hashService.getUniqueNumbers(size)).thenReturn(NUMBERS);
+
+        hashGenerator.generateAndGet(size);
+
+        verify(hashService).getUniqueNumbers(size);
+        verify(encoder).encode(NUMBERS);
+    }
 }

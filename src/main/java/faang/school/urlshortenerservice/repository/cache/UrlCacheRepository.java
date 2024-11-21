@@ -9,6 +9,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ import java.util.List;
 public class UrlCacheRepository {
     private final RedisTemplate<String, Url> urlRedisTemplate;
 
-    public void saveTtlInHour(Url url, long ttlInHour) {
+    public void saveByTtlInHour(Url url, long ttlInHour) {
         try {
             urlRedisTemplate.opsForValue().set(url.getHash(), url, Duration.ofHours(ttlInHour));
         } catch (JedisConnectionException exception) {
@@ -24,12 +25,12 @@ public class UrlCacheRepository {
         }
     }
 
-    public Url findByHash(String hash) {
+    public Optional<Url> findByHash(String hash) {
         try {
-            return urlRedisTemplate.opsForValue().get(hash);
+            return Optional.ofNullable(urlRedisTemplate.opsForValue().get(hash));
         } catch (JedisConnectionException exception) {
             log.error("{}", exception.getMessage(), exception);
-            return null;
+            return Optional.empty();
         }
     }
 
