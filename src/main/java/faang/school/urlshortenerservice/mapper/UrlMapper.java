@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import org.mapstruct.Mapper;
 
-@Mapper()
+@Mapper(componentModel = "spring")
 public interface UrlMapper {
     Url toEntity(UrlDto urlDto);
 

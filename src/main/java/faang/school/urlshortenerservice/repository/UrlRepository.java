@@ -12,6 +12,7 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, Long> {
     @Query("SELECT h.url FROM Hash h WHERE h.hash = :hash")
     Url getUrlByHash(@Param("hash") String hash);
-    @Query(value = "DELETE FROM url WHERE created_at < NOW() - INTERVAL '1 year' RETURNING hash", nativeQuery = true)
-    List<String> deleteOldUrlsAndReturnHashes();
+
+    @Query(value = "DELETE FROM url WHERE created_at < NOW() - INTERVAL :interval RETURNING hash", nativeQuery = true)
+    List<String> deleteOldUrlsAndReturnHashes(@Param("interval") String interval);
 }

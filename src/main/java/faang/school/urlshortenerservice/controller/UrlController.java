@@ -8,21 +8,18 @@ import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-@RestController("/api/v1/url")
+@RestController
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
     private final UrlValidator urlValidator;
-    private final UrlMapper urlMapper;
+    private UrlMapper urlMapper;
 
-    @GetMapping("/original/{hash}")
+    @GetMapping("/api/v1/url/original/{hash}")
     public ResponseEntity<Void> sendToOriginalUrl(@PathVariable String hash) {
         Url originalUrl = urlService.getOriginalUrl(hash);
 
@@ -31,9 +28,9 @@ public class UrlController {
                 .build();
     }
 
-    @PostMapping("/short/{longUrl}")
-    public String convertLongUrl(@PathVariable UrlDto longUrl) {
-        return urlService.convertLongUrl(processResponse(longUrl)).getUrl();
+    @PostMapping("/api/v1/url/short")
+    public UrlDto convertLongUrl(@RequestBody UrlDto longUrl) {
+        return urlService.convertLongUrl(processResponse(longUrl));
     }
 
     private Url processResponse(UrlDto urlDto) {

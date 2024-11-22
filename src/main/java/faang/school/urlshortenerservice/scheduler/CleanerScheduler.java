@@ -12,9 +12,9 @@ import java.util.List;
 public class CleanerScheduler {
     private final UrlService urlService;
 
-    @Scheduled(cron = "${scheduler.daily}")
-    public void cleanAssociations() {
+    @Scheduled(cron = "${scheduler.old_url_hashes}")
+    public void cleanOldUrlHashes() {
         List<String> deletedHashes = urlService.cleanOldUrls();
-        System.out.println("Удалены хэши старых URL: " + deletedHashes);
+        System.out.println("Deleted hashes of old URL: " + deletedHashes);
     }
 }

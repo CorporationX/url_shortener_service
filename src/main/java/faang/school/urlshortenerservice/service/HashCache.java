@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.config.properties.HashProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -26,7 +27,17 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
 
-    private final AtomicBoolean isLoading = new AtomicBoolean(false);
+    private final AtomicBoolean hashesLoading = new AtomicBoolean(false);
+    private Integer cacheSize;
+    private Integer thresholdSize;
+
+    @PostConstruct
+    public void init() {
+        cacheSize = hashProperties.getMaxSize();
+        thresholdSize = (cacheSize * hashProperties.getPercentThreshold() / 100);
+        loadInitialHashes();
+    }
+
 
     public String getRandomShortUrl() {
         if (urlMap.isEmpty()) {
@@ -38,12 +49,11 @@ public class HashCache {
     }
 
     public String getHash() {
-
-        if (urlMap.size() > (hashProperties.getMaxSize() * hashProperties.getPercentThreshold() / 100)) {
+        if (urlMap.size() > thresholdSize) {
             return urlMap.firstEntry().getValue();
         }
-        if (urlMap.size() < (hashProperties.getMaxSize() * hashProperties.getPercentThreshold() / 100)) {
-            if (isLoading.compareAndSet(false, true)) {
+        if (urlMap.size() < thresholdSize) {
+            if (hashesLoading.compareAndSet(false, true)) {
                 hashCacheExecutor.execute(() -> {
                     try {
                         List<Hash> hashes = hashRepository.getHashBatch(hashProperties.getBatchSize());
@@ -53,14 +63,32 @@ public class HashCache {
                                         hash -> hash.getUrl().getUrl()
                                 ));
                         urlMap.putAll(hashesMap);
-
                         hashGenerator.generateBatch();
                     } finally {
-                        isLoading.set(false);
+                        hashesLoading.set(false);
                     }
                 });
             }
         }
-        return null;
+        throw new IllegalArgumentException("Hash is not found");
+    }
+
+    private void loadInitialHashes() {
+        if (urlMap.isEmpty() && hashesLoading.compareAndSet(false, true)) {
+            hashCacheExecutor.execute(() -> {
+                try {
+                    List<Hash> hashes = hashRepository.getHashBatch(hashProperties.getBatchSize());
+                    Map<String, String> hashesMap = hashes.stream()
+                            .collect(Collectors.toMap(
+                                    Hash::getHash,
+                                    hash -> hash.getUrl().getUrl()
+                            ));
+                    urlMap.putAll(hashesMap);
+                    hashGenerator.generateBatch();
+                } finally {
+                    hashesLoading.set(false);
+                }
+            });
+        }
     }
 }

@@ -11,4 +11,5 @@ public class HashProperties {
     private int batchSize;
     private int maxSize;
     private int percentThreshold;
+    private String interval;
 }

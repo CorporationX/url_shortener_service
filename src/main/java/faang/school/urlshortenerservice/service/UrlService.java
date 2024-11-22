@@ -1,8 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.config.properties.HashProperties;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exeption.url.UrlNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -24,6 +27,8 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final HashCache hashCache;
+    private final HashProperties hashProperties;
+    private UrlMapper urlMapper;
 
 
     public Url getOriginalUrl(String hash) {
@@ -43,17 +48,18 @@ public class UrlService {
         return url;
     }
 
-    public Url convertLongUrl(Url longUrl) {
+    @Transactional
+    public UrlDto convertLongUrl(Url longUrl) {
         longUrl.setHash(hashCache.getHash());
         redisTemplate.opsForValue().set(longUrl.getHash(), longUrl.getUrl());
         urlCacheRepository.save(longUrl);
         urlRepository.save(longUrl);
-        return longUrl;
+        return urlMapper.toDto(longUrl);
     }
 
     @Transactional
     public List<String> cleanOldUrls() {
-        List<String> deletedHashes = urlRepository.deleteOldUrlsAndReturnHashes();
+        List<String> deletedHashes = urlRepository.deleteOldUrlsAndReturnHashes(hashProperties.getInterval());
         log.info("Удалены хэши старых URL: {}", deletedHashes);
 
         for (String hash : deletedHashes) {

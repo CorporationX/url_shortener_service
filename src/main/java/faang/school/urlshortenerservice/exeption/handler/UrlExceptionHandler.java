@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Slf4j
 @RestControllerAdvice
@@ -16,10 +17,10 @@ public class UrlExceptionHandler {
     @Value("${services.url-shortener-service.name}")
     private String serviceName;
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleException(Exception e) {
-        log.info("Exception found and occurred: {}", e.getMessage());
+    @ExceptionHandler(HttpServerErrorException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleHttpServerErrorException(Exception e) {
+        log.error("Something gone wrong with a server: {}", e.getMessage());
         return ErrorResponse.builder()
                 .serviceName(serviceName)
                 .globalMessage(e.getMessage())
@@ -30,7 +31,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(DataValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDataValidationException(DataValidationException e) {
-        log.info("Exception found and occurred: {}", e.getMessage());
+        log.error("Data is not valid: {}", e.getMessage());
         return ErrorResponse.builder().
                 serviceName(serviceName)
                 .globalMessage(e.getMessage())

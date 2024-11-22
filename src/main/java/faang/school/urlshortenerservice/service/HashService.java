@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.properties.HashProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.AllArgsConstructor;
@@ -13,11 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 public class HashService {
     private final HashRepository hashRepository;
-    private final HashProperties hashProperties;
 
     @Transactional
     public void saveHashes(List<Hash> hashes) {
-        hashRepository.saveHashes(hashes);
+        hashRepository.saveAll(hashes);
     }
 
     public List<Long> getUniqueNumbers(long n) {

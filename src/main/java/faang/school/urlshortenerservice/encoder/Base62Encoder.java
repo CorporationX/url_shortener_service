@@ -7,8 +7,8 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private final String BASE62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final int BASE = BASE62_CHARACTERS.length();
+    private static final String BASE62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE = BASE62_CHARACTERS.length();
 
     public List<String> encode(List<Long> numbers) {
         List<String> encodedList = new ArrayList<>();

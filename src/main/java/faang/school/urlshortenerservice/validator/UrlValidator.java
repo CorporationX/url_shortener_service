@@ -14,13 +14,9 @@ public class UrlValidator {
     private final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
 
     public void isValidUrl(String url) {
-        try {
-            if (!URL_PATTERN.matcher(url).matches()) {
-                throw new DataValidationException("Invalid URL");
-            }
-        } catch (DataValidationException e) {
-            log.error("URL name is not valid: {}", e.getMessage());
-            throw new DataValidationException("URL is not valid: " + e.getMessage());
+        if (!URL_PATTERN.matcher(url).matches()) {
+            log.error("URL has to fit into pattern: {} ", URL_REGEX);
+            throw new DataValidationException("Invalid URL: " + url);
         }
     }
 }

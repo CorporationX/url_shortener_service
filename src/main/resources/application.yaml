@@ -43,6 +43,7 @@ hash:
     size: 6
     maxSize: 100
     percentThreshold: 20
+    interval: 1 year
 
 scheduler:
-  daily: 0 0 2 * * ?
+  old_url_hashes: 0 0 2 * * ?
