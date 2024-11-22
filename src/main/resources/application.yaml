@@ -17,6 +17,33 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+hash:
+  encoder:
+    hash-size: 6
+  repository:
+    batch-size: 50
+  generator:
+    batch-size: 100
+  cache:
+    capacity: 100
+    min-filling-ratio: 0.2
+
+task-executor:
+  core-pool-size: 10
+  max-pool-size: 20
+  queue-capacity: 100
+  thread-name-prefix: taskExecutor-
+
+redisson:
+  address: redis://${spring.data.redis.host}:${spring.data.redis.port}
+  filling-flag-key: sharedFillingFlag
+  filling-lock-key: sharedFillingLock
+
 server:
   port: 8080
 
