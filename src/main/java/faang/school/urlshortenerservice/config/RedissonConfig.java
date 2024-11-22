@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.config;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RLock;
@@ -11,12 +12,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "spring.data.redis")
+@ConfigurationProperties(prefix = "redisson")
 public class RedissonConfig {
-    private String host;
-    private String port;
+    private String address;
 
     @Value("${redisson.filling-flag-key}")
     private String fillingFlagKey;
@@ -27,7 +28,7 @@ public class RedissonConfig {
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://%s:%s".formatted(host, port));
+        config.useSingleServer().setAddress(address);
         return Redisson.create(config);
     }
 

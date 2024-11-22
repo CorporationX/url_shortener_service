@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.stream.LongStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,11 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Base62EncoderTest {
     private Base62Encoder encoder;
-    private final Executor executor = Executors.newFixedThreadPool(10);
 
     @BeforeEach
     void setUp() {
-        encoder = new Base62Encoder(executor);
+        encoder = new Base62Encoder();
         encoder.setHashSize(6);
     }
 

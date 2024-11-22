@@ -65,9 +65,6 @@ public class HashCache {
             if (hashes.size() < batchSize) {
                 hashGenerator.generateBatch();
             }
-            if (hashes.isEmpty()) {
-                hashes = hashRepository.getHashBatch();
-            }
             queue.addAll(hashes);
             log.info("Added {} hashes to cache", hashes.size());
         } finally {

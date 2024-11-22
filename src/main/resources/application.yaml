@@ -40,6 +40,7 @@ task-executor:
   thread-name-prefix: taskExecutor-
 
 redisson:
+  address: redis://${spring.data.redis.host}:${spring.data.redis.port}
   filling-flag-key: sharedFillingFlag
   filling-lock-key: sharedFillingLock
 
