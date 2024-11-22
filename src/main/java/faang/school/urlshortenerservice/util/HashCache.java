@@ -24,6 +24,8 @@ public class HashCache {
             @Value("${app.hash-cache.size:1000}") int cacheCapacity,
             @Value("${app.hash-cache.threshold:200}") int threshold,
             @Value("${app.hashes-generation.batch-size:800}") int batchSize,
+            @Value("${app.hashes-generation.initial-min-size:500}") int initialMinSize,
+            @Value("${app.hashes-generation.initial-filling-size:250}") int initialFillingSize,
             HashGenerator hashGenerator,
             ExecutorService fillUpCacheExecutorService) {
         this.cacheCapacity = cacheCapacity;
@@ -33,8 +35,16 @@ public class HashCache {
         this.fillUpCacheExecutorService = fillUpCacheExecutorService;
         this.cache = new ConcurrentLinkedDeque<>();
 
-        hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
-        List<String> hashesFromDb = hashGenerator.getHashes(cacheCapacity);
+        List<String> hashesFromDb;
+
+        int hashesCount = hashGenerator.getHashesCount();
+        if (hashesCount >= initialMinSize) {
+            hashesFromDb = hashGenerator.getHashes(initialFillingSize);
+        } else {
+            hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
+            hashesFromDb = hashGenerator.getHashes(cacheCapacity);
+        }
+
         cache.addAll(hashesFromDb);
     }
 

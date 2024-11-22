@@ -11,6 +11,11 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = """
+            SELECT nextval('unique_number_seq')
+            """)
+    Long getNextUniqueNumber();
+
+    @Query(nativeQuery = true, value = """
             SELECT nextval('unique_number_seq') FROM generate_series(1, :n)
             """)
     List<Long> getUniqueNumbers(@Param("n") int n);
@@ -21,4 +26,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             RETURNING hash.hash;
             """)
     List<String> getBatchAndDelete(@Param("batchSize") int batchSize);
+
+    @Query("SELECT COUNT(h) FROM Hash h")
+    int getHashesCount();
 }

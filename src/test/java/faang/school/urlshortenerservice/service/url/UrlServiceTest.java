@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +32,7 @@ class UrlServiceTest {
     private static final String GET_HASH_URL = "http://localhost:8080/url/";
     private static final String LONG_URL = "https://faang-school.com/courses";
     private static final String HASH = "123abc";
+    private static final Integer LIFE_TIME = 12;
 
     @Mock
     private AppUrlValidator appUrlValidator;
@@ -54,6 +54,7 @@ class UrlServiceTest {
     @BeforeEach
     public void setUp() {
         ReflectionTestUtils.setField(urlService, "getHashUrl", GET_HASH_URL);
+        ReflectionTestUtils.setField(urlService, "lifeTime", LIFE_TIME);
 
         url = Url.builder().build();
     }
@@ -107,7 +108,7 @@ class UrlServiceTest {
     @Test
     void testCleanHashes() {
         List<String> cleanedHashes = List.of("1", "a");
-        when(urlRepository.getOldUrlsAndDelete(any(LocalDateTime.class))).thenReturn(cleanedHashes);
+        when(urlRepository.getOldUrlsAndDelete()).thenReturn(cleanedHashes);
         List<String> result = urlService.cleanHashes();
         assertEquals(cleanedHashes, result);
     }

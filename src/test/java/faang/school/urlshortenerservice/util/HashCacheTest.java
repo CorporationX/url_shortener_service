@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.util;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,6 +24,8 @@ class HashCacheTest {
     private static final int CACHE_CAPACITY = 3;
     private static final int THRESHOLD = 2;
     private static final int BATCH_SIZE = 2;
+    private static final int INITIAL_MIN_SIZE = 6;
+    private static final int INITIAL_FILLING_SIZE = 3;
 
     @Mock
     private HashGenerator hashGenerator;
@@ -34,14 +35,30 @@ class HashCacheTest {
 
     private HashCache hashCache;
 
-    @BeforeEach
-    void setUp() {
+    private void initWithGenerateBatchOfHashes() {
+        when(hashGenerator.getHashesCount()).thenReturn(0);
         when(hashGenerator.getHashes(anyInt())).thenReturn(List.of("hash1", "hash2", "hash3"));
-        hashCache = new HashCache(CACHE_CAPACITY, THRESHOLD, BATCH_SIZE, hashGenerator, fillUpCacheExecutorService);
+        hashCache = new HashCache(CACHE_CAPACITY, THRESHOLD, BATCH_SIZE, INITIAL_MIN_SIZE, INITIAL_FILLING_SIZE,
+                hashGenerator, fillUpCacheExecutorService);
+        verify(hashGenerator).generateBatchOfHashes(eq(CACHE_CAPACITY + BATCH_SIZE));
+    }
+
+    private void initWithoutGenerateBatchOfHashes() {
+        when(hashGenerator.getHashesCount()).thenReturn(INITIAL_MIN_SIZE);
+        hashCache = new HashCache(CACHE_CAPACITY, THRESHOLD, BATCH_SIZE, INITIAL_MIN_SIZE, INITIAL_FILLING_SIZE,
+                hashGenerator, fillUpCacheExecutorService);
+        verify(hashGenerator, never()).generateBatchOfHashes(anyInt());
+    }
+
+    @Test
+    void testConstructor_GetExistedHashes() {
+        initWithoutGenerateBatchOfHashes();
     }
 
     @Test
     void testGetHash_RunFillUpCache() {
+        initWithGenerateBatchOfHashes();
+
         String hash1 = hashCache.getHash();
         assertEquals("hash1", hash1);
         verify(fillUpCacheExecutorService, never()).execute(any(Runnable.class));
@@ -67,6 +84,8 @@ class HashCacheTest {
 
     @Test
     void testGetHash_SkipFillUpCache() {
+        initWithGenerateBatchOfHashes();
+
         String hash1 = hashCache.getHash();
         assertEquals("hash1", hash1);
         verify(fillUpCacheExecutorService, never()).execute(any(Runnable.class));

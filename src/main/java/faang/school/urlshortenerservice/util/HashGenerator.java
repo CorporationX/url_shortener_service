@@ -31,4 +31,9 @@ public class HashGenerator {
     public List<String> getHashes(int amount) {
         return hashRepository.getBatchAndDelete(amount);
     }
+
+    @Transactional(readOnly = true)
+    public int getHashesCount() {
+        return hashRepository.getHashesCount();
+    }
 }

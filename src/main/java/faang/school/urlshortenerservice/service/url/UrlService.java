@@ -20,6 +20,9 @@ public class UrlService {
     @Value("${app.get-hash-url}")
     private String getHashUrl;
 
+    @Value("${app.url.life-time}")
+    private Integer lifeTime;
+
     private final AppUrlValidator appUrlValidator;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
@@ -48,8 +51,7 @@ public class UrlService {
 
     @Transactional
     public List<String> cleanHashes() {
-        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
-        return urlRepository.getOldUrlsAndDelete(oneYearAgo);
+        return urlRepository.getOldUrlsAndDelete();
     }
 
     private String buildRedirectUrl(String hash) {
@@ -60,6 +62,7 @@ public class UrlService {
         return Url.builder()
                 .hash(hash)
                 .url(url)
+                .expirationTime(LocalDateTime.now().plusMonths(lifeTime))
                 .build();
     }
 }

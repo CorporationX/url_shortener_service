@@ -62,4 +62,12 @@ class HashGeneratorTest {
         List<String> result = hashGenerator.getHashes(BATCH_SIZE);
         assertEquals(hashes, result);
     }
+
+    @Test
+    void testGetHashCount() {
+        int hashesCount = 666;
+        when(hashRepository.getHashesCount()).thenReturn(hashesCount);
+        int result = hashGenerator.getHashesCount();
+        assertEquals(hashesCount, result);
+    }
 }
