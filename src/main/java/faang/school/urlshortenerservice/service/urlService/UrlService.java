@@ -11,7 +11,6 @@ import faang.school.urlshortenerservice.service.hashCache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +92,6 @@ public class UrlService {
 
     public String findUrlInCacheByHash(String hash) {
         log.debug("Trying to get url from cache by hash - {}", hash);
-        return urlCacheRepository.findUrlInCacheByHash(hash);
+        return urlCacheRepository.findUrlByHash(hash);
     }
 }

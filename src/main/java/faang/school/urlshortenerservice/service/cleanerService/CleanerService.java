@@ -23,7 +23,7 @@ public class CleanerService {
 
     @Transactional
     public void clearExpiredUrls() {
-        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getUrlCleaningInterval());
+        List<Url> releasedUrls = urlService.findAndReturnExpiredUrls(cacheProperties.getUrlCleaningForYear());
         List<Hash> releasedHashes = releasedUrls.stream()
                 .map(Url::getHash)
                 .map(Hash::new)

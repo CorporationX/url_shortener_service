@@ -19,7 +19,7 @@ class Base62EncoderTest {
     @Test
     void testGenerateHashList() {
         List<Long> numbers = List.of(1L, 36L, 62L, 3843L, 3844L);
-        List<String> expectedHashes = List.of("1", "a", "10", "zz", "100");
+        List<String> expectedHashes = List.of("1", "a", "01", "zz", "001");
 
         assertEquals(expectedHashes, base62Encoder.generateHashList(numbers));
     }

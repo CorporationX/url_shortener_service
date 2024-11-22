@@ -18,7 +18,7 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     }
 
     @Override
-    public String findUrlInCacheByHash(String hash) {
+    public String findUrlByHash(String hash) {
         return redisStringTemplate.opsForValue().get(hash);
     }
 }

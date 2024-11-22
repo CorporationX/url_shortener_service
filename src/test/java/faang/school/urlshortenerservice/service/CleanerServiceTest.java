@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.cleanerService.CleanerService;
-import faang.school.urlshortenerservice.service.hashGenerator.HashGenerator;
 import faang.school.urlshortenerservice.service.urlService.UrlService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,12 +42,12 @@ class CleanerServiceTest {
 
     @Test
     void testClearExpiredUrls_successfulExecution() {
-        when(cacheProperties.getUrlCleaningInterval()).thenReturn(EXPIRATION_URL);
+        when(cacheProperties.getUrlCleaningForYear()).thenReturn(EXPIRATION_URL);
         when(urlService.findAndReturnExpiredUrls(EXPIRATION_URL)).thenReturn(List.of(Url.builder().hash(HASH).build()));
 
         cleanerService.clearExpiredUrls();
 
-        verify(cacheProperties).getUrlCleaningInterval();
+        verify(cacheProperties).getUrlCleaningForYear();
         verify(urlService).findAndReturnExpiredUrls(EXPIRATION_URL);
 
         ArgumentCaptor<List<Hash>> captor = ArgumentCaptor.forClass(List.class);

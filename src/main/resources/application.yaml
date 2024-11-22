@@ -42,7 +42,7 @@ scheduler:
 cache:
   capacity: 100
   minLimitCapacity: 20
-  urlCleaningInterval: 1 # in years
+  urlCleaningForYear: 1
 
 thread-pool-config:
   size: 4

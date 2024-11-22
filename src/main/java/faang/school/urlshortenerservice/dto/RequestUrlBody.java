@@ -17,5 +17,6 @@ import org.hibernate.validator.constraints.URL;
 public class RequestUrlBody {
 
     @URL
+    @NotBlank
     private String url;
 }
