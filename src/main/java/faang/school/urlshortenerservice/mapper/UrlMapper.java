@@ -9,8 +9,8 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UrlMapper {
 
-    @Mapping(target = "url", source = "hash")
-    UrlDto toDto(Url url);
+    @Mapping(target = "url", expression = "java(domain + url.getHash())")
+    UrlDto toDto(Url url, String domain);
 
     Url toEntity(UrlDto urlDto, String hash);
 }

@@ -2,22 +2,21 @@ package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.config.cache.CacheProperties;
+import faang.school.urlshortenerservice.config.url.ShortUrlProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.url.UrlCacheRepositoryImpl;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,7 +28,8 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final CacheProperties cacheProperties;
-    private final RedisTemplate<String, Url> redisTemplate;
+    private final ShortUrlProperties shortUrlProperties;
+    private final UrlCacheRepositoryImpl urlCacheRepository;
 
     @Transactional
     public void releaseExpiredHashes() {
@@ -48,7 +48,7 @@ public class UrlService {
     public String getLongUrl(String hash) {
         log.info("start getLongUrl with hash: {}", hash);
 
-        Url url = Optional.ofNullable(redisTemplate.opsForValue().get(hash))
+        Url url = urlCacheRepository.findUrlByHash(hash)
                 .orElseGet(() -> urlRepository.findUrlByHash(hash)
                         .orElseThrow(() -> new EntityNotFoundException("long url for: " + hash + " - does not exist")));
 
@@ -67,10 +67,9 @@ public class UrlService {
                 .orElse(urlRepository.save(urlMapper.toEntity(urlDto, hash)));
         log.info("get Url: {}", url);
 
-        redisTemplate.opsForValue().set(url.getHash(), url);
-        log.info("save Url in Redis cache: {}", redisTemplate.opsForValue().get(url.getHash()));
+        urlCacheRepository.save(url);
 
-        UrlDto shortUrlDto = urlMapper.toDto(url);
+        UrlDto shortUrlDto = urlMapper.toDto(url, shortUrlProperties.getDomain());
         log.info("finish createShortUrl with shortUrl: {}", shortUrlDto);
         return shortUrlDto;
     }

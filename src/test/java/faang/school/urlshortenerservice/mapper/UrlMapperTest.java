@@ -18,6 +18,7 @@ class UrlMapperTest {
 
     private static final String URL = "url";
     private static final String HASH = "hash";
+    private static final String DOMAIN = "domain";
 
     @Test
     @DisplayName("Success when Url mapping to UrlDto")
@@ -27,10 +28,10 @@ class UrlMapperTest {
                 .url(URL)
                 .build();
 
-        UrlDto result = urlMapper.toDto(url);
+        UrlDto result = urlMapper.toDto(url, DOMAIN);
 
         assertNotNull(result);
-        assertEquals(url.getHash(), result.getUrl());
+        assertEquals(DOMAIN + url.getHash(), result.getUrl());
     }
 
     @Test

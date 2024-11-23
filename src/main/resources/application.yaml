@@ -59,3 +59,6 @@ cache:
 
 uniqueNumbers:
   amount: 10_000
+
+url:
+  domain: localhost:8080/v1/urls/
