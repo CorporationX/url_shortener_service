@@ -1,5 +1,6 @@
 spring:
   datasource:
+    service-name: urlShortenerService
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
@@ -13,9 +14,37 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    amount-unique-numbers: 100
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 24
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  base62:
+    number of characters in hashcode: 6
+
+  async:
+    core pool size: 4
+    max pool size: 10
+    queue capacity: 50
+
+  hash-cache:
+    maxQueueSize: 100
+    refillThresholdPercent: 20
+    amount-hash: 50
+
+  validation:
+    url-regex: "^(https?://)(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
+
+  scheduler:
+    cron-for-cleaner: "0 0 * * * *"
+
+  interval-hours: 8760
 
 server:
   port: 8080
