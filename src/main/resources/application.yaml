@@ -1,4 +1,8 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,11 +17,27 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+          order_inserts: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+cache:
+  min_percent_hashes: 20
+  capacity: 1000
+
+scheduler:
+  cron: '0 0 0 * * *'
+  lifetime_days: 365
+
+generator:
+  batch:
+    size: 10000
+
 server:
+  url: 'http://localhost:8080'
   port: 8080
 
 logging:
