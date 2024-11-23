@@ -8,7 +8,6 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.model.UrlCache;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @Transactional
-    public List<String> deleteUnusedHashes() {
+    public List<String> deleteUnusedUrls() {
         LocalDate today = LocalDate.now();
         List<String> urls = urlRepository.releaseUnusedHashesFrom(today.minusDays(daysToRemove));
         log.info("Deleted {} unused urls", urls.size());
@@ -49,7 +48,7 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     public void updateUrls(List<String> hashes) {
         List<Url> urls = urlRepository.findAllById(hashes);
-        urls.forEach(url -> url.setCacheDate(LocalDate.now()));
+        urls.forEach(url -> url.setLastTtlExpirationDate(LocalDate.now()));
         urlRepository.saveAll(urls);
         log.info("Updated {} urls", urls.size());
     }
@@ -63,8 +62,7 @@ public class UrlServiceImpl implements UrlService {
         Optional<Url> savedUrl = urlRepository.findUrlByUrl(request.url());
         if (savedUrl.isPresent()) {
             Url url = savedUrl.get();
-            throw new EntityExistsException("Url already exists url: %s, hash: %s"
-                    .formatted(url.getUrl(), url.getHash()));
+            return new UrlResponse(url.getHash());
         }
         Url url = Url.builder()
                 .url(request.url())
@@ -80,6 +78,7 @@ public class UrlServiceImpl implements UrlService {
     public String getUrl(String hash) {
         Optional<UrlCache> urlCache = urlCacheRepository.findById(hash);
         if (urlCache.isPresent()) {
+            urlCacheRepository.save(urlCache.get());
             return urlCache.get().getUrl();
         }
         Url url = urlRepository.findById(hash)

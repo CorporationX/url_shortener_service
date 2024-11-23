@@ -21,7 +21,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${url.schedule.cron}")
     @Transactional
     public void releaseHashes() {
-        List<String> hashes = urlService.deleteUnusedHashes();
+        List<String> hashes = urlService.deleteUnusedUrls();
         hashService.saveBatch(hashes);
         log.info("{} hashes have been released and saved", hashes.size());
     }

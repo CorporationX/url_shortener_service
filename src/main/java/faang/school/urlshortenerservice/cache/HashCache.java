@@ -9,10 +9,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -45,11 +43,17 @@ public class HashCache {
     }
 
     private void warmCache() {
-        hashGenerator.generateBatch(batchSize).join();
-        CompletableFuture<List<String>> future = hashService.getHashes(capacity);
-        List<String> hashes = future.join();
-        hashesCache.addAll(hashes);
-        log.info("Warming up cache for {} hashes", hashes.size());
+        hashGenerator.generateBatch(batchSize)
+                .thenCompose(v -> hashService.getHashes(capacity))
+                .thenAccept(hashes -> {
+                    hashesCache.addAll(hashes);
+                    log.info("Warming up cache for {} hashes", hashes.size());
+                })
+                .exceptionally(ex -> {
+                    log.error("Warming up cache failed", ex);
+                    throw new RuntimeException(ex);
+                });
+
     }
 
     public String getHash() {
@@ -59,7 +63,13 @@ public class HashCache {
                 hashGenerator.generateBatch(capacity - hashesCache.size());
                 hashService.getHashes(capacity - hashesCache.size())
                         .thenAccept(hashesCache::addAll)
-                        .thenRun(() -> isFillingRequired.set(false));
+                        .whenComplete((result, throwable) -> {
+                            if (throwable != null) {
+                                log.error("Error during get hash", throwable);
+                                throw new RuntimeException(throwable);
+                            }
+                            isFillingRequired.set(false);
+                        });
             }
         }
         return hashesCache.poll();

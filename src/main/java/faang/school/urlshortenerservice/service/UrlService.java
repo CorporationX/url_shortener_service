@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UrlService {
 
-    List<String> deleteUnusedHashes();
+    List<String> deleteUnusedUrls();
 
     void updateUrls(List<String> hashes);
 

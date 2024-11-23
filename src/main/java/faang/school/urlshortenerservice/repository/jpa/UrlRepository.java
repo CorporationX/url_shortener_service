@@ -14,7 +14,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(value = """
             DELETE FROM url u
-                   WHERE u.cache_date <= :date
+                   WHERE u.last_ttl_expiration_date <= :date
                    RETURNING u.hash
             """, nativeQuery = true)
     List<String> releaseUnusedHashesFrom(LocalDate date);

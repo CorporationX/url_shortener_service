@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.schedule;
 
-import faang.school.urlshortenerservice.listener.RedisKeyExpiredEventListener;
+import faang.school.urlshortenerservice.listener.TtlExpiredHashStorage;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,12 +12,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CacheDateUpdater {
 
-    private final RedisKeyExpiredEventListener listener;
+    private final TtlExpiredHashStorage expiredHashStorage;
     private final UrlService urlService;
 
     @Scheduled(cron = "${url.schedule.cron}")
     public void updateCacheDate() {
-        List<String> hashes = listener.getHashesToUpdate();
+        List<String> hashes = expiredHashStorage.getHashesToUpdate();
         urlService.updateUrls(hashes);
     }
 }

@@ -32,9 +32,9 @@ public class Url {
     @Column(name = "url", length = 2048)
     private String url;
 
-    @Column(name = "cache_date")
+    @Column(name = "last_ttl_expiration_date")
     @Temporal(TemporalType.DATE)
-    private LocalDate cacheDate;
+    private LocalDate lastTtlExpirationDate;
 
     @Column(name = "created_at")
     @CreationTimestamp

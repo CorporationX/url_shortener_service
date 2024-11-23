@@ -30,7 +30,6 @@ public class HashServiceImpl implements HashService {
 
     @Override
     @Async("taskExecutor")
-    @Transactional
     public CompletableFuture<List<String>> getHashes(int number) {
         List<String> hashes = hashRepository.getHashBatch(number);
         return CompletableFuture.completedFuture(hashes);
