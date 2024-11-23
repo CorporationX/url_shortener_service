@@ -1,4 +1,10 @@
 spring:
+  application:
+    name: url-shortener-service
+
+  validation:
+    url-regex: '^(https?|ftp):\/\/([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(:\d+)?(\/[^\s]*)?$'
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -12,13 +18,44 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 100
         format_sql: true
+        order_inserts: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
+  hash:
+    fetch:
+      batch:
+        size: 10000
+        min-size-percentage: 20
+
+    generate:
+      batch:
+        size: 10000
+
+    scheduler:
+      cleaner:
+        days-threshold: 365
+        cron: "0 0 0 * * ?"
+
+
+  async:
+    thread:
+      pool:
+        corePoolSize: 4
+        maximumPoolSize: 8
+        keepAliveTime: 60
+        queueCapacity: 40
+
+cache:
+  redis:
+    ttl-time-hours: 1
 
 logging:
   level:
