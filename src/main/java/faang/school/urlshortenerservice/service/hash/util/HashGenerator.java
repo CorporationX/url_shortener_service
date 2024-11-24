@@ -17,20 +17,20 @@ public class HashGenerator {
     private final HashService hashService;
     private final Base62Encoder encoder;
 
-    @Value("${app.hash_generator.get_unique_number_size}")
-    private int numberSize;
-
     @Value("${app.hash_generator.db_hashes_limit}")
     private long dbHashesLimit;
 
     public void generate() {
         Long dbHashesSize = hashService.getHashesSize();
+
         if (dbHashesSize < dbHashesLimit) {
-            List<Long> numbers = hashService.getUniqueNumbers(numberSize);
+            List<Long> numbers = hashService.getUniqueNumbers(dbHashesLimit - dbHashesSize);
             List<String> hashes = encoder.encode(numbers);
+
             List<Hash> hashesEntity = hashes.stream()
                     .map(Hash::new)
                     .toList();
+
             hashService.saveAllBatch(hashesEntity);
         }
     }

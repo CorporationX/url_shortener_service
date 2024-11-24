@@ -15,7 +15,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             SELECT nextval('unique_number_seq')
             FROM generate_series(1, :number)
             """)
-    List<Long> getUniqueNumbers(@Param("number") int number);
+    List<Long> getUniqueNumbers(@Param("number") long number);
 
     @Query(nativeQuery = true, value = """
             SELECT COUNT(h.hash)
@@ -35,5 +35,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
             RETURNING hash
             """)
-    List<String> findAllAndDeletePack(@Param("number") int number);
+    List<String> findAllAndDeleteByPackSize(@Param("number") int number);
 }

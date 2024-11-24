@@ -39,7 +39,6 @@ class HashGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "numberSize", NUMBER_SIZE);
         ReflectionTestUtils.setField(hashGenerator, "dbHashesLimit", MAX_DB_HASHES_SIZE);
     }
 

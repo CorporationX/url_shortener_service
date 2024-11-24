@@ -48,25 +48,23 @@ class HashServiceTest {
 
     @Test
     void testFindAllByPackSize_successful() {
-        when(hashRepository.findAllAndDeletePack(HASHES.size())).thenReturn(HASHES);
+        when(hashRepository.findAllAndDeleteByPackSize(HASHES.size())).thenReturn(HASHES);
 
         assertThat(hashService.findAllByPackSize(HASHES.size()))
                 .isNotNull()
                 .isEqualTo(HASHES);
 
         ArgumentCaptor<Integer> packSizeCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(hashRepository).findAllAndDeletePack(packSizeCaptor.capture());
+        verify(hashRepository).findAllAndDeleteByPackSize(packSizeCaptor.capture());
         assertThat(packSizeCaptor.getValue()).isEqualTo(HASHES.size());
     }
 
     @Test
     void testFindAllByPackSize_notEnoughHashes() {
-        Executor executor = mock(Executor.class);
-        ReflectionTestUtils.setField(hashService, "executor", executor);
         List<String> hashes1 = new ArrayList<>(HASHES.subList(0, HASHES.size() - 8));
         List<String> hashes2 = new ArrayList<>(HASHES.subList(hashes1.size(), HASHES.size()));
 
-        when(hashRepository.findAllAndDeletePack(HASHES.size())).thenReturn(hashes1);
+        when(hashRepository.findAllAndDeleteByPackSize(HASHES.size())).thenReturn(hashes1);
         when(hashGenerator.generateAndGet(HASHES.size() - hashes1.size())).thenReturn(hashes2);
 
         assertThat(hashService.findAllByPackSize(HASHES.size()))
@@ -74,13 +72,8 @@ class HashServiceTest {
                 .isEqualTo(HASHES);
 
         ArgumentCaptor<Integer> packSizeCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(hashRepository).findAllAndDeletePack(packSizeCaptor.capture());
+        verify(hashRepository).findAllAndDeleteByPackSize(packSizeCaptor.capture());
         assertThat(packSizeCaptor.getValue()).isEqualTo(HASHES.size());
-
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
-        verify(hashGenerator).generate();
     }
 
     @Test
@@ -91,7 +84,7 @@ class HashServiceTest {
                 .isNotNull()
                 .isEqualTo(NUMBERS);
 
-        ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Long> sizeCaptor = ArgumentCaptor.forClass(Long.class);
         verify(hashRepository).getUniqueNumbers(sizeCaptor.capture());
         assertThat(sizeCaptor.getValue()).isEqualTo(HASHES.size());
     }

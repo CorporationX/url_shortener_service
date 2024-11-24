@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.service.hash.util;
 
 import faang.school.urlshortenerservice.service.hash.HashService;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class HashCache {
     private static final int THREAD_POOL_SIZE = 2;
@@ -32,8 +29,10 @@ public class HashCache {
     @Value("${app.hash_cache.hashes_min_size}")
     private int hashesMin;
 
-    @PostConstruct
-    public void loadHashes() {
+    public HashCache(HashService hashService, HashGenerator hashGenerator) {
+        this.hashService = hashService;
+        this.hashGenerator = hashGenerator;
+
         cacheIsUpdating.set(true);
         updateHashes();
     }
@@ -46,16 +45,20 @@ public class HashCache {
     private void checkHashesSize() {
         if (cacheIsUpdating.compareAndSet(false, true)) {
             if (hashes.size() < hashesMin) {
-                executor.execute(this::updateHashes);
+                executor.execute(this::updateHashesAndExecuteAsyncGenerateHashes);
             } else {
                 cacheIsUpdating.set(false);
             }
         }
     }
 
+    private void updateHashesAndExecuteAsyncGenerateHashes() {
+        updateHashes();
+        executor.execute(hashGenerator::generate);
+    }
+
     private void updateHashes() {
         try {
-            executor.execute(hashGenerator::generate);
             List<String> newHashes = hashService.findAllByPackSize(hashesMax);
             hashes.addAll(newHashes);
         } finally {

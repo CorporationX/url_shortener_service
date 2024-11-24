@@ -49,18 +49,6 @@ class HashCacheTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void testLoadHashes_successful() {
-        when(hashService.findAllByPackSize(HASHES_MAX)).thenReturn(HASHES);
-
-        hashCache.loadHashes();
-
-        Queue<String> hashes = (Queue<String>) ReflectionTestUtils.getField(hashCache, "hashes");
-        assert hashes != null;
-        assertThat(hashes.size()).isEqualTo(HASHES.size());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
     void testGetHash_hashesEnough() {
         Queue<String> hashes = new ConcurrentLinkedDeque<>(HASHES);
         ReflectionTestUtils.setField(hashCache, "hashes", hashes);
@@ -100,12 +88,11 @@ class HashCacheTest {
         assertThat(hashes.size()).isEqualTo(HASHES.size());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    void testUpdateHashes_successful() {
-        when(hashService.findAllByPackSize(HASHES_MAX)).thenReturn(HASHES);
+    void testUpdateHashesAndExecuteAsyncGenerateHashes_successful() {
+        ReflectionTestUtils.invokeMethod(hashCache, "updateHashesAndExecuteAsyncGenerateHashes");
 
-        ReflectionTestUtils.invokeMethod(hashCache, "updateHashes");
+        verify(hashService).findAllByPackSize(HASHES_MAX);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
 
@@ -115,6 +102,14 @@ class HashCacheTest {
         runnable.run();
 
         verify(hashGenerator).generate();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void testUpdateHashes_successful() {
+        when(hashService.findAllByPackSize(HASHES_MAX)).thenReturn(HASHES);
+
+        ReflectionTestUtils.invokeMethod(hashCache, "updateHashes");
 
         AtomicBoolean isUpdating = (AtomicBoolean) ReflectionTestUtils.getField(hashCache, "cacheIsUpdating");
         assert isUpdating != null;
