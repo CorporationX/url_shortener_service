@@ -22,6 +22,8 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 app:
+  hash-config:
+    hash-count: ${ENV_HASH_COUNT}
   url-config:
     base-url: ${ENV_BASE_URL}
     cache:
