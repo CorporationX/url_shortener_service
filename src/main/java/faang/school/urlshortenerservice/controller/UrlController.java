@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
@@ -26,11 +27,9 @@ public class UrlController {
 
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlResponseDto createShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
+    public ShortUrlDto createShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
         log.info("Create url : {}", urlRequestDto);
         Url url = urlMapper.toEntity(urlRequestDto);
-        Url result = urlService.createShortUrl(url);
-        log.info("Created url : {}", result);
-        return urlMapper.toResponseDto(result);
+        return urlService.createShortUrl(url);
     }
 }

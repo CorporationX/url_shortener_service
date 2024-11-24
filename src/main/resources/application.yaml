@@ -23,6 +23,7 @@ spring:
 
 app:
   url-config:
+    base-url: ${ENV_BASE_URL}
     cache:
       ttl: ${ENV_URL_CACHE_TTL}
       key-prefix:
