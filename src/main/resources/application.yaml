@@ -31,17 +31,11 @@ logging:
 
 scheduler:
   clean: 0 0 0 * * *
-  urls_life_time_years: 1
+  urls_life_time_days: 365
 hash:
-  cache:
+  local_cache:
     capacity: 1000
     min_load_factor: 20
-  generator:
+  db_cache:
     batch_size: 100000
-    executor:
-      core_pool_size: 20
-      max_pool_size: 10
-      name_prefix: Hash-Generator-Executor
-
-
-static_address: "http://sh.c/"
+    min_load_factor: 80

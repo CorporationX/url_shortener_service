@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.builder.UrlBuilder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotfoundException;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,45 +25,41 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
-
-    @Value("${static_address}")
-    private String staticAddress;
+    private final UrlBuilder urlBuilder;
 
     @Value("${spring.data.redis.url_ttl}")
     private int urlTtlAtCache;
 
-    @Value("${scheduler.urls_life_time_years}")
-    private int urlTtlAtRepo;
+    @Value("${scheduler.urls_life_time_days}")
+    private int urlTtlAtDB;
 
     @Transactional(readOnly = true)
     public String getUrl(String hash) {
-        Optional<Url> optionalUrl = Optional.ofNullable(urlCacheRepository.findByHash(hash));
-        if (optionalUrl.isEmpty()) {
-            log.info("Url by cache {} not found at cache", hash);
-            optionalUrl = urlRepository.findById(hash);
+        Url urlFromCache = urlCacheRepository.findByHash(hash);
+        if (urlFromCache != null) {
+            log.info("The URL was found at the cache {}", urlFromCache.getUrl());
+            return urlFromCache.getUrl();
         }
-        Url url = optionalUrl.orElseThrow(() -> new UrlNotfoundException("Url by hash: %s not found", hash));
-        log.info("Url founded {}", url.getUrl());
-        urlCacheRepository.saveUrl(url, urlTtlAtCache);
-        return url.getUrl();
+        log.info("Url by hash {} not found at the cache", hash);
+        Url urlFromDB = urlRepository.findById(hash)
+                .orElseThrow(() -> new UrlNotfoundException("Url by hash: %s not found", hash));
+        log.info("The URL was found at the DB {}", urlFromDB.getUrl());
+        urlCacheRepository.saveUrl(urlFromDB, urlTtlAtCache);
+        return urlFromDB.getUrl();
     }
 
     @Transactional
     public String createHash(String url) {
         String hash = hashCache.getHash();
-        Url entity = Url.builder()
-                .url(url)
-                .hash(hash)
-                .build();
+        Url entity = new Url(hash, url, LocalDateTime.now().plusDays(urlTtlAtDB));
         urlRepository.save(entity);
         urlCacheRepository.saveUrl(entity, urlTtlAtCache);
-        return staticAddress + hash;
+        return urlBuilder.buildUrl(hash);
     }
 
     @Transactional
     public void cleanOldUrlsAndSavingFreedHashes() {
-        LocalDateTime minusYear = LocalDateTime.now().minusYears(urlTtlAtRepo);
-        List<Hash> oldUrls = urlRepository.deleteOldUrlsAndGetFreedHashes(minusYear);
+        List<Hash> oldUrls = urlRepository.deleteAndGetOldLines();
         log.info("{} old urls have been deleted", oldUrls.size());
         hashRepository.saveAll(oldUrls);
         log.info("{} released hashes are saved", oldUrls.size());

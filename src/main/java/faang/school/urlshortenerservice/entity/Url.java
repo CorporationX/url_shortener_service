@@ -25,7 +25,6 @@ public class Url {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Builder.Default
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

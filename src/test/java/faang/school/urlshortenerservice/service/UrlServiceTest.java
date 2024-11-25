@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.builder.UrlBuilder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotfoundException;
@@ -41,10 +42,12 @@ class UrlServiceTest {
     @Mock
     private HashRepository hashRepository;
 
+    @Mock
+    private UrlBuilder urlBuilder;
+
     @InjectMocks
     private UrlService urlService;
 
-    private final String staticAddress = "http://static-address/";
     private final int urlTtlAtCache = 7;
     private final String strUrl = "http://example.com";
     private final String hash = "abc123";
@@ -52,18 +55,14 @@ class UrlServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        Field staticAddressField = UrlService.class.getDeclaredField("staticAddress");
-        staticAddressField.setAccessible(true);
-        staticAddressField.set(urlService, staticAddress);
-
         Field urlTtlAtCacheField = UrlService.class.getDeclaredField("urlTtlAtCache");
         urlTtlAtCacheField.setAccessible(true);
         urlTtlAtCacheField.set(urlService, urlTtlAtCache);
 
-        Field urlTtlAtRepoField = UrlService.class.getDeclaredField("urlTtlAtRepo");
+        Field urlTtlAtRepoField = UrlService.class.getDeclaredField("urlTtlAtDB");
         urlTtlAtRepoField.setAccessible(true);
-        int urlTtlAtRepo = 1;
-        urlTtlAtRepoField.set(urlService, urlTtlAtRepo);
+        int urlTtlAtDB = 1;
+        urlTtlAtRepoField.set(urlService, urlTtlAtDB);
 
         url = Url.builder()
                 .url(strUrl)
@@ -106,11 +105,13 @@ class UrlServiceTest {
 
     @Test
     void testCreateHash() {
+        String createdUrl = "http://static-address/" + hash;
         when(hashCache.getHash()).thenReturn(hash);
+        when(urlBuilder.buildUrl(hash)).thenReturn(createdUrl);
 
         String result = urlService.createHash(strUrl);
 
-        assertEquals(staticAddress + hash, result);
+        assertEquals(createdUrl, result);
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).saveUrl(any(Url.class), eq(urlTtlAtCache));
     }
@@ -118,11 +119,11 @@ class UrlServiceTest {
     @Test
     void testCleanOldUrlsAndSavingFreedHashes() {
         List<Hash> freedHashes = List.of(new Hash(hash));
-        when(urlRepository.deleteOldUrlsAndGetFreedHashes(any())).thenReturn(freedHashes);
+        when(urlRepository.deleteAndGetOldLines()).thenReturn(freedHashes);
 
         urlService.cleanOldUrlsAndSavingFreedHashes();
 
-        verify(urlRepository).deleteOldUrlsAndGetFreedHashes(any());
+        verify(urlRepository).deleteAndGetOldLines();
         verify(hashRepository).saveAll(freedHashes);
     }
 }

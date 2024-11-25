@@ -2,7 +2,7 @@ CREATE TABLE url
 (
     hash       VARCHAR(6)   NOT NULL PRIMARY KEY,
     url        VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE hash
@@ -11,5 +11,5 @@ CREATE TABLE hash
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 1000000000
     INCREMENT BY 1;

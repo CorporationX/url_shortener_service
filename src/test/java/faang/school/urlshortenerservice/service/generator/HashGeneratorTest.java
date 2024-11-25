@@ -1,11 +1,13 @@
 package faang.school.urlshortenerservice.service.generator;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
@@ -13,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.LongStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,63 +30,80 @@ public class HashGeneratorTest {
     @Mock
     private HashRepository hashRepository;
 
-    @Mock
+    @Spy
     private Base62Encoder base62Encoder;
 
     @InjectMocks
     private HashGenerator hashGenerator;
 
-    private final int batchSize = 10;
+    private final int minCacheSizeAtDB = 10;
+    private List<Long> numbers;
+    private List<String> strHashes;
+    private List<Hash> hashes;
 
     @BeforeEach
     public void setUp() throws Exception {
-        Field batchSizeField = HashGenerator.class.getDeclaredField("batchSize");
+        Field batchSizeField = HashGenerator.class.getDeclaredField("minCacheSizeAtDB");
         batchSizeField.setAccessible(true);
-        batchSizeField.set(hashGenerator, batchSize);
+        batchSizeField.set(hashGenerator, minCacheSizeAtDB);
+
+        Field minLoadFactorField = HashGenerator.class.getDeclaredField("minLoadFactor");
+        minLoadFactorField.setAccessible(true);
+        int loadFactor = 80;
+        minLoadFactorField.set(hashGenerator, loadFactor);
+
+        numbers = LongStream.rangeClosed(1_000_000_001L, 1_000_000_010L)
+                .boxed()
+                .toList();
+        strHashes = Arrays.asList("Hgtf51", "Igtf51", "Jgtf51", "Kgtf51", "Lgtf51",
+                "Mgtf51", "Ngtf51", "Ogtf51", "Pgtf51", "Qgtf51");
+        hashes = strHashes.stream()
+                .map(Hash::new)
+                .toList();
     }
 
     @Test
     public void testGenerateHashes() {
-        long amount = 5;
-        List<Long> uniqueNumbers = Arrays.asList(1L, 2L, 3L, 4L, 5L);
-        List<String> encodedHashes = Arrays.asList("hash1", "hash2", "hash3", "hash4", "hash5");
-        when(hashRepository.getUniqueNumbers(amount)).thenReturn(uniqueNumbers);
-        when(base62Encoder.encode(uniqueNumbers)).thenReturn(encodedHashes);
+        long amount = 10;
+        when(hashRepository.getUniqueNumbers(amount)).thenReturn(numbers);
 
         List<String> result = hashGenerator.generateHashes(amount);
 
-        assertEquals(encodedHashes, result);
+        assertEquals(strHashes, result);
         verify(hashRepository, times(1)).getUniqueNumbers(amount);
-        verify(base62Encoder, times(1)).encode(uniqueNumbers);
+    }
+
+    @Test
+    public void testGenerateHashesAsyncWhenEnoughHashes() {
+        when(hashRepository.count()).thenReturn(9L);
+
+        hashGenerator.generateHashesAsync();
+
+        verify(hashRepository, times(0)).saveAll(anyList());
+        verify(hashRepository, times(0)).getUniqueNumbers(anyLong());
     }
 
     @Test
     public void testGenerateHashesAsync() {
-        List<String> hashes = Arrays.asList("hash1", "hash2");
-        when(base62Encoder.encode(anyList())).thenReturn(hashes);
-        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(Arrays.asList(1L, 2L));
+        when(hashRepository.count()).thenReturn(0L);
+        when(hashRepository.getUniqueNumbers(minCacheSizeAtDB)).thenReturn(numbers);
 
         hashGenerator.generateHashesAsync();
 
-        verify(hashRepository, times(1)).saveAll(anyList());
-        verify(hashRepository, times(1)).getUniqueNumbers(batchSize);
-        assertEquals(2, hashes.size());
+        verify(hashRepository, times(1)).saveAll(hashes);
+        verify(hashRepository, times(1)).getUniqueNumbers(minCacheSizeAtDB);
     }
 
     @Test
     public void testGetHashes() {
         long amount = 5;
-        List<String> existingHashes = new ArrayList<>(List.of("hash1", "hash2"));
-        List<String> newHashes = Arrays.asList("hash3", "hash4", "hash5");
+        List<String> existingHashes = new ArrayList<>(List.of("hash1", "hash2", "hash3", "hash4", "hash5"));
         when(hashRepository.findAndDelete(amount)).thenReturn(existingHashes);
-        when(hashRepository.getUniqueNumbers(3)).thenReturn(Arrays.asList(3L, 4L, 5L));
-        when(base62Encoder.encode(anyList())).thenReturn(newHashes);
 
         List<String> result = hashGenerator.getHashes(amount);
 
-        assertEquals(5, result.size()); // Should return 5 hashes
+        assertEquals(5, result.size());
         verify(hashRepository, times(1)).findAndDelete(amount);
-        verify(hashRepository, times(1)).getUniqueNumbers(3);
     }
 
     @Test
