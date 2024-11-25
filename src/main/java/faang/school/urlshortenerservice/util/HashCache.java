@@ -35,17 +35,15 @@ public class HashCache {
         this.fillUpCacheExecutorService = fillUpCacheExecutorService;
         this.cache = new ConcurrentLinkedDeque<>();
 
-        List<String> hashesFromDb;
-
         int hashesCount = hashGenerator.getHashesCount();
         if (hashesCount >= initialMinSize) {
-            hashesFromDb = hashGenerator.getHashes(initialFillingSize);
+            List<String> hashesFromDb = hashGenerator.getHashes(initialFillingSize);
+            cache.addAll(hashesFromDb);
         } else {
             hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
-            hashesFromDb = hashGenerator.getHashes(cacheCapacity);
+            List<String> hashesFromDb = hashGenerator.getHashes(cacheCapacity);
+            cache.addAll(hashesFromDb);
         }
-
-        cache.addAll(hashesFromDb);
     }
 
     public String getHash() {

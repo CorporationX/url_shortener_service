@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.config.properties.UrlLifeTimeConfig;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.url.Url;
 import faang.school.urlshortenerservice.repository.postgres.url.UrlRepository;
@@ -29,10 +30,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
-    private static final String GET_HASH_URL = "http://localhost:8080/url/";
+    private static final String PATH_WITH_HASHED_URL = "http://localhost:8080/url/";
     private static final String LONG_URL = "https://faang-school.com/courses";
     private static final String HASH = "123abc";
-    private static final Integer LIFE_TIME = 12;
 
     @Mock
     private AppUrlValidator appUrlValidator;
@@ -46,6 +46,8 @@ class UrlServiceTest {
     @Mock
     private UrlCacheRepository urlCacheRepository;
 
+    private UrlLifeTimeConfig lifeTime;
+
     @InjectMocks
     private UrlService urlService;
 
@@ -53,8 +55,9 @@ class UrlServiceTest {
 
     @BeforeEach
     public void setUp() {
-        ReflectionTestUtils.setField(urlService, "getHashUrl", GET_HASH_URL);
-        ReflectionTestUtils.setField(urlService, "lifeTime", LIFE_TIME);
+        ReflectionTestUtils.setField(urlService, "pathWithHashedUrl", PATH_WITH_HASHED_URL);
+        lifeTime = UrlLifeTimeConfig.builder().months(12).days(0).hours(0).build();
+        ReflectionTestUtils.setField(urlService, "lifeTime", lifeTime);
 
         url = Url.builder().build();
     }
@@ -68,7 +71,7 @@ class UrlServiceTest {
 
         String result = urlService.generateShortUrl(LONG_URL);
 
-        assertEquals(GET_HASH_URL + HASH, result);
+        assertEquals(PATH_WITH_HASHED_URL + HASH, result);
     }
 
     @Test

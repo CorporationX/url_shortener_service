@@ -27,7 +27,6 @@ public class HashGenerator {
         generateBatchOfHashes(batchSize);
     }
 
-    @Transactional
     public List<String> getHashes(int amount) {
         return hashRepository.getBatchAndDelete(amount);
     }

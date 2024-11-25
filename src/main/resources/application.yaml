@@ -30,7 +30,7 @@ server:
 
 app:
   base-url: http://localhost:8080
-  get-hash-url: ${app.base-url}/url/
+  path-with-hashed-url: ${app.base-url}/url/
 
   hashes-generation:
     batch-size: 800
@@ -41,7 +41,10 @@ app:
     threshold: 200
 
   url:
-    life-time: 12 # months
+    life-time:
+      months: 12
+      days: 0
+      hours: 0
 
 thread-pool:
   hashes-generator:

@@ -8,9 +8,12 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
+    private static final String FIRST_WORD_WITH_SIX_SIGNS = "00000100000";
+    private static final String LAST_WORD_WITH_SIX_SIGNS = "00000zzzzzz";
+
     public Base62Encoder(HashRepository hashRepository) {
-        long[] minValue = Base62.decodeArray("00000100000");
-        long[] maxValue = Base62.decodeArray("00000zzzzzz");
+        long[] minValue = Base62.decodeArray(FIRST_WORD_WITH_SIX_SIGNS);
+        long[] maxValue = Base62.decodeArray(LAST_WORD_WITH_SIX_SIGNS);
 
         Long firstNumber = hashRepository.getNextUniqueNumber();
 
