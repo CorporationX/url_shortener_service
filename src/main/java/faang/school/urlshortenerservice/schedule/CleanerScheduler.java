@@ -22,7 +22,11 @@ public class CleanerScheduler {
     @Transactional
     public void releaseHashes() {
         List<String> hashes = urlService.deleteUnusedUrls();
-        hashService.saveBatch(hashes);
-        log.info("{} hashes have been released and saved", hashes.size());
+        if (!hashes.isEmpty()) {
+            hashService.saveBatch(hashes);
+            log.info("{} hashes have been released and saved", hashes.size());
+        } else {
+            log.info("No hashes to release");
+        }
     }
 }
