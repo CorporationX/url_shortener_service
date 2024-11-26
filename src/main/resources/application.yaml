@@ -4,12 +4,16 @@ spring:
     url: ${ENV_JDBC_URL}
     username: ${ENV_JDBC_USERNAME}
     password: ${ENV_JDBC_PASSWORD}
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,8 +21,23 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+app:
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 1000
+    thread-name-prefix: HashGenerator-
+  hash-config:
+    hash-count: ${ENV_HASH_COUNT}
+  url-config:
+    base-url: ${ENV_BASE_URL}
+    cache:
+      ttl: ${ENV_URL_CACHE_TTL}
+      key-prefix:
+        url-hash: ${ENV_CACHE_URL_HASH_PREFIX}
+
 server:
-  port: 8080
+  port: 8092
 
 logging:
   level:
