@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.dto.response.ConstraintErrorResponse;
 import faang.school.urlshortenerservice.dto.response.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +36,13 @@ public class UrlExceptionHandler {
                 .toList());
         log.error(ex.getMessage(), ex);
         return new ConstraintErrorResponse(violations);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("Data integrity violation", ex);
+        return new ErrorResponse("Data integrity violation: " + ex.getMessage());
     }
 
     @ExceptionHandler(Throwable.class)
