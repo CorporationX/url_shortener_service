@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,17 +23,16 @@ public class UrlShortenerService {
     private final HashCache hashCache;
 
     @Transactional
-    public void cleanOldUrls(String removedPeriod) {
-        urlRepository.getHashAndDeleteURL(removedPeriod).ifPresent(hashes -> {
-            hashRepository.saveAll(hashes.stream()
-                    .map(Hash::new)
-                    .toList());
-            log.info("Removed {} hashes.", hashes.size());
+    public void cleanOldUrls() {
+        List<Hash> hashList = urlRepository.getHashAndDeleteURL().stream()
+                .map(hash -> new Hash())
+                .toList();
 
-        });
+        hashRepository.saveAll(hashList);
+        log.info("Removed {} hashes.", hashList.size());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public String getUrl(String hash) {
         String cachedUrl = urlCacheRepository.getUrlByHash(hash);
         if (cachedUrl != null) {
@@ -50,25 +51,17 @@ public class UrlShortenerService {
 
     @Transactional
     public String createShortLink(Url url) {
-        String cachedHash = urlCacheRepository.getHashByUrl(url.getUrl());
-        if (cachedHash == null) {
-            cachedHash = urlRepository.findHashByUrl(url.getUrl()).orElse(null);
-        }
+        String newHash = hashCache.getHash();
 
-        if (cachedHash == null) {
-            String newHash = hashCache.getHash();
+        Url newUrl = Url.builder()
+                .url(url.getUrl())
+                .hash(newHash)
+                .build();
 
-            Url newUrl = Url.builder()
-                    .url(url.getUrl())
-                    .hash(newHash)
-                    .build();
+        Url savedUrl = urlRepository.save(newUrl);
+        urlCacheRepository.save(savedUrl);
 
-            Url savedUrl = urlRepository.save(newUrl);
-            urlCacheRepository.save(savedUrl);
+        return savedUrl.getHash();
 
-            return savedUrl.getHash();
-        }
-
-        return cachedHash;
     }
 }

@@ -21,14 +21,8 @@ public class UrlCacheRepository {
         return redisTemplate.opsForValue().get(hash);
     }
 
-    public String getHashByUrl(String url) {
-        return redisTemplate.opsForValue().get(url);
-    }
-
-    public void save(Url url) {
+       public void save(Url url) {
         redisTemplate.opsForValue()
                 .set(url.getHash(), url.getUrl(), timeToLive, TimeUnit.SECONDS);
-        redisTemplate.opsForValue()
-                .set(url.getUrl(), url.getHash(), timeToLive, TimeUnit.SECONDS);
     }
 }

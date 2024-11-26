@@ -18,6 +18,7 @@ import org.testcontainers.shaded.com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,24 +56,15 @@ public class UrlShortenerServiceTest {
     @Test
     @DisplayName("Create short link by url: cache repository is not null")
     void testCreateShortLinkCacheNotNull() {
-        String cachedHash = "eaYt12";
-        when(urlCacheRepository.getHashByUrl(anyString())).thenReturn(cachedHash);
-
         String cache = urlService.createShortLink(url);
         assertNotNull(cache);
-        assertEquals(cachedHash, cache);
     }
 
     @Test
     @DisplayName("Create short link by url: url repository is not null")
     void testCreateShortLinkUrlRepositoryNotNull() {
-        String cachedHash = "eaYt12";
-        when(urlCacheRepository.getHashByUrl(anyString())).thenReturn(null);
-        when(urlRepository.findHashByUrl(anyString())).thenReturn(Optional.of(cachedHash));
-
         String cache = urlService.createShortLink(url);
         assertNotNull(cache);
-        assertEquals(cachedHash, cache);
     }
 
     @Test
@@ -125,28 +117,27 @@ public class UrlShortenerServiceTest {
     @Test
     @DisplayName("Clean old urls: url's not present")
     void testCleanOldUrlsNotPresent() {
-        String period = "1 year";
-        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Optional.empty());
+        when(urlRepository.getHashAndDeleteURL()).thenReturn(null);
 
-        urlService.cleanOldUrls(period);
+        urlService.cleanOldUrls();
 
-        verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
+        verify(urlRepository, times(1)).getHashAndDeleteURL();
         verify(hashRepository, times(0)).saveAll(anyList());
     }
 
     @Test
     @DisplayName("Clean old urls: url's are present")
     void testCleanOldUrlsArePresent() {
-        String period = "1 year";
-        List<Hash> hashes = Lists.newArrayList(new Hash("gfY6f5"), new Hash("jjdT6f"), new Hash("sdt6Df"));
+        List<Hash> hashes = Lists.newArrayList(new Hash(UUID.fromString("test1"), "gfY6f5"),
+                new Hash(UUID.fromString("test2"), "jjdT6f"), new Hash(UUID.fromString("test3"), "sdt6Df"));
         List<String> hashStrings = Lists.newArrayList("gfY6f5", "jjdT6f");
 
-        when(urlRepository.getHashAndDeleteURL(anyString())).thenReturn(Optional.of(hashStrings));
+        when(urlRepository.getHashAndDeleteURL()).thenReturn(hashStrings);
         when(hashRepository.saveAll(anyList())).thenReturn(hashes);
 
-        urlService.cleanOldUrls(period);
+        urlService.cleanOldUrls();
 
-        verify(urlRepository, times(1)).getHashAndDeleteURL(anyString());
+        verify(urlRepository, times(1)).getHashAndDeleteURL();
         verify(hashRepository, times(1)).saveAll(anyList());
     }
 }

@@ -13,11 +13,11 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table (name = "hash")
 public class Hash {
@@ -28,8 +28,4 @@ public class Hash {
 
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
-
-    public Hash(String hash) {
-        this.hash = hash;
-    }
 }

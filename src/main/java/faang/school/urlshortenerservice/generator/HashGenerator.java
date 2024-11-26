@@ -21,13 +21,16 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${generator.hash.count}")
-    private long countUniqueNumbers;
+//    @Value("${generator.hash.count}")
+//    private long countUniqueNumbers;
 
     @Async("asyncExecutor")
-    public List<Hash> generateBatch(long countUniqueNumbers){
+    public List<Hash> generateBatch(long countUniqueNumbers) {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(countUniqueNumbers);
-        List<Hash> hashes = base62Encoder.encode(uniqueNumbers).stream().map(Hash::new).toList();
+        List<Hash> hashes = base62Encoder.encode(uniqueNumbers)
+                .stream()
+                .map(encodeNumber -> new Hash())
+                .toList();
         return hashRepository.saveAll(hashes);
     }
 
