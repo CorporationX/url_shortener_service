@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.impl;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.request.UrlRequest;
@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.model.UrlCache;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
+import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
 
-    @Value("${url.constants.days-to-remove:30}")
+    @Value("${url.constants.days-to-remove:365}")
     private int daysToRemove;
 
     @Override
@@ -54,8 +55,8 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Retryable(retryFor = DataIntegrityViolationException.class,
-            maxAttemptsExpression = "${retryable.max-attempts}",
-            backoff = @Backoff(delayExpression = "${retryable.delay}"))
+            maxAttemptsExpression = "${retryable.max-attempts:5}",
+            backoff = @Backoff(delayExpression = "${retryable.delay:5000}"))
     @Override
     @Transactional
     public UrlResponse shortenUrl(UrlRequest request) {
@@ -64,11 +65,20 @@ public class UrlServiceImpl implements UrlService {
             Url url = savedUrl.get();
             return new UrlResponse(url.getHash());
         }
+        String hash = hashCache.getHash();
+        if (hash == null) {
+            throw new RuntimeException("No available hashes");
+        }
         Url url = Url.builder()
                 .url(request.url())
-                .hash(hashCache.getHash())
+                .hash(hash)
                 .build();
-        url = urlRepository.save(url);
+        try {
+            url = urlRepository.save(url);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Hash collision detected, retrying...");
+            throw e;
+        }
         urlCacheRepository.save(urlMapper.toUrlCache(url));
         log.debug("Saved url: {}", url);
         return new UrlResponse(url.getHash());

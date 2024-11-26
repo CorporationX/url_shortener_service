@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.config.redis;
 
 import faang.school.urlshortenerservice.model.UrlCache;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.convert.KeyspaceConfiguration;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
