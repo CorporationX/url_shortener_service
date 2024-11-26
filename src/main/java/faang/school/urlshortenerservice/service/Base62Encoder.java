@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class Base62Encoder {
     private final String BASE62_CHAR_SET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -22,6 +24,6 @@ public class Base62Encoder {
             sb.append(BASE62_CHAR_SET.charAt(remainder));
             number /= BASE_62_LENGTH;
         }
-        return sb.reverse().toString();
+        return sb.toString();
     }
 }

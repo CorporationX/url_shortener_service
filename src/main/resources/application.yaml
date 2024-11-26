@@ -13,7 +13,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -22,6 +22,11 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 app:
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 1000
+    thread-name-prefix: HashGenerator-
   hash-config:
     hash-count: ${ENV_HASH_COUNT}
   url-config:
