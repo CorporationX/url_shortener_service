@@ -1,0 +1,81 @@
+{
+	"info": {
+		"_postman_id": "f7f9d572-080f-49f6-bc43-62c04d9f708b",
+		"name": "url_shortener",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3997404"
+	},
+	"item": [
+		{
+			"name": "Generate short URL",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "1",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\": \"https://faang-school.com/courses\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/url",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get original URL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8088/url/LT",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"url",
+						"LT"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

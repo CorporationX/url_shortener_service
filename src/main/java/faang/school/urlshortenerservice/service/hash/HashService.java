@@ -1,0 +1,23 @@
+package faang.school.urlshortenerservice.service.hash;
+
+import faang.school.urlshortenerservice.model.hash.Hash;
+import faang.school.urlshortenerservice.repository.postgres.hash.HashRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class HashService {
+    private final HashRepository hashRepository;
+
+    public void saveAll(List<String> hashes) {
+        List<Hash> entities = hashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashRepository.saveAll(entities);
+    }
+}

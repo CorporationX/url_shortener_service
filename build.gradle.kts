@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -41,6 +42,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("commons-validator:commons-validator:1.9.0")
+    implementation("org.unbroken-dome.base62:base62:1.1.0")
 
     /**
      * Test containers
@@ -66,4 +69,65 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+/**
+ * JaCoCo settings
+ */
+val jacocoInclude = listOf(
+        "**/service/**",
+        "**/util/**",
+        "**/validator/**"
+)
+val jacocoExclude = listOf(
+        "**/client/**",
+        "**/config/**",
+        "**/controller/**",
+        "**/dto/**",
+        "**/exception/**",
+        "**/model/**",
+        "**/repository/**",
+        "**/scheduler/**"
+)
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
+}
+tasks.jacocoTestReport {
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        csv.required.set(false)
+    }
+
+    // Include only the specified directories in the coverage report
+    classDirectories.setFrom(
+            sourceSets.main.get().output.asFileTree.matching {
+                include(jacocoInclude)
+                exclude(jacocoExclude)
+            }
+    )
+}
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.99".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.99".toBigDecimal()
+            }
+        }
+    }
+
+    classDirectories.setFrom(
+            sourceSets.main.get().output.asFileTree.matching {
+                include(jacocoInclude)
+                exclude(jacocoExclude)
+            }
+    )
 }

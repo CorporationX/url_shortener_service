@@ -13,10 +13,49 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      jdbc:
+        batch_size: 100
 
   liquibase:
-    enabled: false
+    enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
-  port: 8080
+  port: 8088
+
+app:
+  base-url: http://localhost:8080
+  path-with-hashed-url: ${app.base-url}/url/
+
+  hashes-generation:
+    batch-size: 800
+    initial-min-size: 500
+    initial-filling-size: 250
+  hash-cache:
+    size: 1000
+    threshold: 200
+
+  url:
+    life-time:
+      months: 12
+      days: 0
+      hours: 0
+
+thread-pool:
+  hashes-generator:
+    corePoolSize: 2
+    maxPoolSize: 2
+    queueCapacity: 2
+    threadNamePrefix: "HashesGenerator-"
+
+executor:
+  thread-pool-size: 1
+
+scheduler:
+  clean-hashes:
+    cron: "0 0 0 * * *" # every day
