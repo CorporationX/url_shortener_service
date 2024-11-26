@@ -46,5 +46,7 @@ hash:
     cron: "0 0 0 * * *" #One time a day at midnight
 
 url:
+  timeLimit:
+    year: 1
   urlShort:
     baseUrl: "localhost:8088/v1/urls/"
