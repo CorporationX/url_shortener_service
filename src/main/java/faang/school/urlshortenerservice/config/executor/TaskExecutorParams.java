@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "task-executor")
 public class TaskExecutorParams {
-
     private int corePoolSize;
     private int maxPoolSize;
     private int queueCapacity;
