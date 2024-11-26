@@ -6,15 +6,10 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.HashCache;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.util.List;
-
-import static java.time.LocalDateTime.now;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +17,6 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final HashService hashService;
     private final HashCache hashCache;
-
-    @Value("${url.days-to-live}")
-    private int daysToLive;
 
     @Transactional
     public String getShortUrl(String url) {
@@ -40,11 +32,6 @@ public class UrlService {
     public String getUrl(String hash) {
         Url url = getUrlByHash(hash);
         return url.getUrl();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Url> findOldUrls() {
-        return urlRepository.findOlderUrls(now().minusDays(daysToLive));
     }
 
     private Url buildUrl(String url) {

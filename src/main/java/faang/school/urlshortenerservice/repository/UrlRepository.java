@@ -19,13 +19,14 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-            DELETE FROM url u
-            WHERE hash IN
-            (
-                SELECT u.hash FROM url u
-                WHERE u.created_at < :time
-            )
-            RETURNING u.url, u.hash, u.created_at
-            """)
-    List<Url> findOlderUrls(LocalDateTime time);
+        DELETE FROM url u
+        WHERE u.hash IN (
+            SELECT u_inner.hash
+            FROM url u_inner
+            WHERE u_inner.created_at < :time
+            FOR UPDATE SKIP LOCKED
+        )
+        RETURNING u.url, u.hash, u.created_at
+        """)
+    List<Url> getAndDeleteOldUrls(LocalDateTime time);
 }

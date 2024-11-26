@@ -9,20 +9,20 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @Entity
 @Builder
 @Table(name = "url")
@@ -41,17 +41,4 @@ public class Url {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Url url = (Url) o;
-        return getHash() != null && Objects.equals(getHash(), url.getHash());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

@@ -5,11 +5,11 @@ import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.UrlBase64;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.List;
 
 @Slf4j
@@ -18,7 +18,7 @@ import java.util.List;
 public class Base62Encoder {
     private final HashService hashService;
 
-    private int charLength;
+    private Integer charLength;
 
     @PostConstruct
     private void setUp() {
@@ -36,7 +36,7 @@ public class Base62Encoder {
         byte[] input = String.valueOf(num).getBytes();
         byte[] hash = getSha256Hash(input);
 
-        byte[] encodedBytes = UrlBase64.encode(hash);
+        byte[] encodedBytes = Base64.getUrlEncoder().encode(hash);
         String encoded = new String(encodedBytes);
 
         return ensureFixedLength(encoded);

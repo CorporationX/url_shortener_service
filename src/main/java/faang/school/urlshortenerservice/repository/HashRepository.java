@@ -14,26 +14,23 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             SELECT NEXTVAL('unique_number_seq')
-            FROM GENERATE_SERIES(1, :n)
+            FROM GENERATE_SERIES(1, :number)
             """)
-    List<Long> getUniqueNumbers(long n);
+    List<Long> getUniqueNumbers(long number);
 
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM hash
-            WHERE hash NOT IN (
-                SELECT hash FROM url
-            )
-            AND hash NOT IN (
+            WHERE hash IN (
                 SELECT hash
                 FROM hash
                 ORDER BY random()
-                LIMIT :n
+                LIMIT :number
                 FOR UPDATE SKIP LOCKED
             )
             RETURNING hash;
             """)
-    List<Hash> getHashBatch(int n);
+    List<Hash> getHashBatch(long number);
 
     @Query(nativeQuery = true, value = """
              SELECT character_maximum_length
@@ -52,4 +49,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             FOR UPDATE SKIP LOCKED
             """)
     Optional<Hash> findUnusedHash();
+
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash
+            WHERE hash = :hash
+            """)
+    void markHashAsReserved(String hash);
 }

@@ -15,7 +15,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -32,11 +32,14 @@ logging:
 
 hash:
   cache:
-    capacity: 50
+    capacity: 300
     low-size-percentage: 20
   batch_size:
-    get_batch: 15
-    generation_batch: 15
+    get_batch: 180
+    generation_batch: 180
+  retryable:
+    max_attempts: 3
+    delay: 1000
 
 url:
   days-to-live: 30
@@ -48,3 +51,4 @@ thread-pool:
 
 cleaner-scheduler:
   cron: "0 0 6 1 * *"
+

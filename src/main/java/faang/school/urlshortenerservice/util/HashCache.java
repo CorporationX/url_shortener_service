@@ -61,19 +61,7 @@ public class HashCache {
             log.info("Refilling hash cache started.");
             hashGenerator.generateBatch();
             List<Hash> hashBatch = hashService.getHashBatch();
-
-            int addedHashCount = 0;
-            for (Hash hash : hashBatch) {
-                if (!blockingQueue.offer(hash)) {
-                    log.warn("Hash cache reached its capacity. Skipped remaining hashes.");
-                    break;
-                }
-                addedHashCount++;
-            }
-
-            log.info("Refilling hash cache completed. Added {} hashes. Current size: {}",
-                    addedHashCount, blockingQueue.size()
-            );
+            blockingQueue.addAll(hashBatch);
         } catch (Exception e) {
             log.error("Hash cache refill error: {}", e.getMessage(), e);
         } finally {

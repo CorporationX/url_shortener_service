@@ -19,6 +19,12 @@ public class HashProperties {
     @Value("${hash.batch_size.generation_batch}")
     private Integer batchSizeForGenerationHashes;
 
+    @Value("${hash.retryable.max_attempts}")
+    private String maxAttempts;
+
+    @Value("${hash.retryable.delay}")
+    private String delay;
+
     public double getLowCacheThreshold() {
         return getCapacity() * getLowSizePercentage() / 100.0;
     }

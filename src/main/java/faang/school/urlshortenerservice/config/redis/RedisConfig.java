@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import faang.school.urlshortenerservice.model.Hash;
-import faang.school.urlshortenerservice.model.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +24,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<Hash, Url> redisTemplate() {
-        RedisTemplate<Hash, Url> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<String, String> redisTemplate() {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
