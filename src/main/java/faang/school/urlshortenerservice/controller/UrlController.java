@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.UrlServiceImpl;
 import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import java.net.URI;
 @RestController
 @RequiredArgsConstructor
 public class UrlController {
-    private final UrlService urlService;
+    private final UrlServiceImpl urlService;
     private final UrlValidator urlValidator;
     private UrlMapper urlMapper;
 

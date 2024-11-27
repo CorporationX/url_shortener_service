@@ -29,7 +29,7 @@ public class HashGenerator {
                         .build())
                 .toList();
 
-        hashRepository.saveHashes(hashes);
+        hashRepository.saveAll(hashes);
     }
 }
 
