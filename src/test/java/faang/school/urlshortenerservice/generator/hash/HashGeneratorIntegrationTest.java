@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator.hash;
 
+import faang.school.urlshortenerservice.cleaner.url.CleanerScheduler;
 import faang.school.urlshortenerservice.model.hash.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.util.BaseContextTest;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class HashGeneratorIntegrationTest extends BaseContextTest {
         private HashGenerator hashGenerator;
         @Autowired
         private HashRepository hashRepository;
+        @MockBean
+        private CleanerScheduler cleanerScheduler;
 
         @Test
         @DisplayName("When 50 almost simultaneously generateBatch called then runs async")

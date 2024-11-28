@@ -21,6 +21,7 @@ spring:
     redis:
       port: 6379
       host: localhost
+      ttl: 60
 
 server:
   port: 8088
@@ -47,3 +48,5 @@ hash:
 url:
   timeLimit:
     year: 1
+  urlShort:
+    baseUrl: "http://localhost:8088/v1/urls/"
