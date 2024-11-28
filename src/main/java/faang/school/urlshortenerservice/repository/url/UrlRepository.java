@@ -23,4 +23,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Transactional(readOnly = true)
     @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
     Optional<String> findUrlByHash(@Param("hash") String hash);
+
+    Optional<Url> findByUrl(String url);
+
+    @Query("SELECT h.hash FROM Url h WHERE h.hash = :url")
+    String findHashByUrl(@Param("url") String url);
 }

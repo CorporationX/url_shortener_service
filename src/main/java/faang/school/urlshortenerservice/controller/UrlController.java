@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.config.properties.url.UrlProperties;
 import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.validation.Valid;
@@ -32,12 +31,11 @@ import java.util.Optional;
 public class UrlController {
 
     private final UrlService urlService;
-    private final UrlProperties urlProperties;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String getShortUrl(@Valid @RequestBody LongUrlDto url) {
-        return urlProperties.getUrlShort().getBaseUrl() + urlService.saveAndConvertLongUrl(url);
+        return urlService.shortUrl(url);
     }
 
     @GetMapping("/{hash}")

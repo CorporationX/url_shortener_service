@@ -51,7 +51,7 @@ public class UrlServiceTest {
     @DisplayName("When valid dto passed then save it in redis, db, and return hash from cache")
     public void whenValidDtoPassedThenSaveItAndReturnHash() {
         when(hashCache.getOneHash()).thenReturn(HASH_FROM_CACHE);
-        String hashResult = urlService.saveAndConvertLongUrl(longUrlDto);
+        String hashResult = urlService.saveLongUrlAndGenerateHash(longUrlDto);
 
         verify(urlRepository).save(any());
         verify(urlCacheRepository).save(HASH_FROM_CACHE, longUrlDto.getUrl(), redisProperties.getTtl());

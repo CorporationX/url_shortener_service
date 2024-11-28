@@ -13,8 +13,8 @@ public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String key, String value, long timeout) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES);
+    public void save(String key, String value, long ttl) {
+        redisTemplate.opsForValue().set(key, value, ttl, TimeUnit.MINUTES);
     }
 
     public Optional<String> find(String key) {
