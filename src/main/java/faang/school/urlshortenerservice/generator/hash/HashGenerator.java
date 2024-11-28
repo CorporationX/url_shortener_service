@@ -6,10 +6,12 @@ import faang.school.urlshortenerservice.model.hash.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,11 +30,30 @@ public class HashGenerator {
             String threadName = Thread.currentThread().getName();
             int batchSize = hashProperties.getBatch().getGet();
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-            log.debug("Thread {} , retrieved {} of unique numbers!", threadName, uniqueNumbers.size());
-            List<Hash> hashes = base62Encoder.encode(uniqueNumbers);
-            log.debug("Thread {} , encoded {} hashes! Starting to batch save!", threadName, hashes.size());
-            hashRepository.saveAllCustom(hashes);
-            log.debug("Thread {} , successfully saved hashes in DB!", threadName);
+            log.debug("Thread {} , retrieved {} unique numbers!", threadName, uniqueNumbers.size());
+
+            List<List<Long>> partitions = ListUtils.partition(uniqueNumbers, hashProperties.getThreadPool()
+                    .getInitialPoolSize());
+
+            List<CompletableFuture<List<Hash>>> futures = partitions.stream()
+                    .map(base62Encoder::encode)
+                    .map(CompletableFuture::completedFuture)
+                    .toList();
+
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+            allFutures.thenAccept(v -> {
+                List<Hash> hashes = futures.stream()
+                        .map(CompletableFuture::join)
+                        .flatMap(Collection::stream)
+                        .toList();
+
+                hashRepository.saveAllBatched(hashes);
+                log.debug("Thread {} , successfully saved hashes in DB!", threadName);
+            }).exceptionally(ex -> {
+                log.error("Error while encoding hashes! :", ex);
+                return null;
+            });
+
         } catch (DataAccessException dae) {
             log.error("Error while generating batch! :", dae);
             throw new RuntimeException("Error! " + dae.getMessage() + " ", dae);

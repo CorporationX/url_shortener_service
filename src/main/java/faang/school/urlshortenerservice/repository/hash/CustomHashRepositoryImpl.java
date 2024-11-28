@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -17,8 +16,7 @@ public class CustomHashRepositoryImpl implements CustomHashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    @Transactional
-    public void saveAllCustom(List<Hash> hashes) {
+    public void saveAllBatched(List<Hash> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
         try {
             log.debug("Inserting {} amount of hash into db", hashes.size());

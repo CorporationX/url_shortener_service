@@ -75,7 +75,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true }
+val test by tasks.getting(Test::class) {
+    testLogging.showStandardStreams = true
+    maxParallelForks = 1
+}
 
 tasks.bootJar {
     archiveFileName.set("service.jar")

@@ -21,6 +21,7 @@ spring:
     redis:
       port: 6379
       host: localhost
+      ttl: 60
 
 server:
   port: 8088
@@ -43,3 +44,9 @@ hash:
     fillPercent: 0.2
   cleaner:
     cron: "0 0 0 * * *" #One time a day at midnight
+
+url:
+  timeLimit:
+    year: 1
+  urlShort:
+    baseUrl: "http://localhost:8088/v1/urls/"
