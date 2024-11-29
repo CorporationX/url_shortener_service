@@ -21,7 +21,6 @@ public class HashGenerator {
     private int batchSize;
 
     @Async("hashGeneratorExecutor")
-    @Transactional
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
 

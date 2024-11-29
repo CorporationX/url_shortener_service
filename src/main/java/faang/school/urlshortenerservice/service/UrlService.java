@@ -22,10 +22,6 @@ public class UrlService {
     @Transactional
     public String createShortUrl(String originalUrl) {
         String hash = hashCache.getHash();
-        if (hash == null) {
-            throw new InternalServerException("Failed to retrieve a hash for URL shortening");
-        }
-
         Url urlEntity = new Url(hash, originalUrl, LocalDateTime.now());
         urlRepository.save(urlEntity);
         urlCacheRepository.save(hash, originalUrl);
