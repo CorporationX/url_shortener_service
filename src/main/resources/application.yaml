@@ -18,9 +18,32 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: public
 
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  hash:
+    batch-size: 10
+    generation-batch-size: 1000
+    cache:
+      size: 1000
+      refill-threshold-percent: 20
+      executor:
+        core-pool-size: 2
+        max-pool-size: 4
+        queue-capacity: 100
+  async:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 50
+
+cleaner:
+  cron: 0 0 0 * * ?
