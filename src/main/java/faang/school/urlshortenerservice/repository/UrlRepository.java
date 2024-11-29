@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
 
+    @Query(value = "SELECT * FROM url WHERE hash = ?1", nativeQuery = true)
     Url findByHash(String hash);
 
     @Modifying

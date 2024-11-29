@@ -33,15 +33,17 @@ public class UrlService {
     @Transactional(readOnly = true)
     public String getShortUrl(String hash) {
         String cachedUrl = urlCacheRepository.get(hash);
+        log.info("Received - hash: {}", hash);
         if (cachedUrl == null) {
             Url url = urlRepository.findByHash(hash);
             if (url != null) {
                 cachedUrl = url.getUrl();
             } else {
-                log.error("Url not found");
-                throw new EntityNotFoundException("URL Not Found");
+                log.error("Url not found!");
+                throw new EntityNotFoundException("URL NOT FOUND!");
             }
         }
+        log.info("Converted url received: {}", cachedUrl);
         return cachedUrl;
     }
 }
