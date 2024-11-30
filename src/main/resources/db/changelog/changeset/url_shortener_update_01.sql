@@ -1,0 +1,6 @@
+DROP TABLE hash;
+
+CREATE TABLE IF NOT EXISTS hash
+(
+    hash VARCHAR(6) PRIMARY KEY
+);
