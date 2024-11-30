@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class AppShortLink {
     public static void main(String[] args) {
+
         new SpringApplicationBuilder(AppShortLink.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
