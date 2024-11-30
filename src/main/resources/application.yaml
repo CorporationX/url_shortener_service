@@ -34,9 +34,10 @@ url-shortener:
 
 hash:
   generate-size: 12000
+  low-threshold-free-hash-size: 2500
   hash-batch-size: 8000
   cache-capacity: 10000
-  low-threshold-factor: 0.2
+  low-threshold-cache-size: 2000
 
 
 thread-pool:

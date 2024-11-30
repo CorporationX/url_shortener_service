@@ -1,17 +1,11 @@
 package faang.school.urlshortenerservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -30,8 +24,11 @@ public class UrlEntity {
     @Column(name = "url_value", nullable = false)
     private String urlValue;
 
-    @Column(name = "created_at", nullable = false)
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt;
+    @Column(name = "validated_at", nullable = false)
+    private LocalDateTime validatedAt;
+
+    @PrePersist
+    private void setValidatedAt() {
+        this.validatedAt = LocalDateTime.now().plusYears(1);
+    }
 }

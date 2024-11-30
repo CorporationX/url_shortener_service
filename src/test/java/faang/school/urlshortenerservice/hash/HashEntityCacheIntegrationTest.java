@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.hash;
 
 
 import faang.school.urlshortenerservice.ServiceTemplateApplication;
-import faang.school.urlshortenerservice.properties.HashProperties;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
-public class HashCacheIntegrationTest {
+public class HashEntityCacheIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

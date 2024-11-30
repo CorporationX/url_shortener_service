@@ -1,7 +1,7 @@
 CREATE TABLE urls (
     hash_value  VARCHAR(6)  PRIMARY KEY,
     url_value   TEXT        NOT NULL,
-    created_at  TIMESTAMP   NOT NULL
+    validated_at  TIMESTAMP   NOT NULL
 );
 
 CREATE TABLE free_hash_set (
@@ -9,5 +9,5 @@ CREATE TABLE free_hash_set (
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 916132832
     INCREMENT BY 1;

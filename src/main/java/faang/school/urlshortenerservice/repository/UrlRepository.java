@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<UrlEntity, String> {
 
-    List<UrlEntity> deleteByCreatedAtBefore(LocalDateTime before);
+    List<UrlEntity> deleteByValidatedAtBefore(LocalDateTime date);
 }

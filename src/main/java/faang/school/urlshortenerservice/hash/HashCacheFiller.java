@@ -1,39 +1,50 @@
 package faang.school.urlshortenerservice.hash;
 
-import faang.school.urlshortenerservice.properties.HashProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class HashCacheFiller {
-    private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
-    private final HashProperties hashProperties;
+    private final HashService hashService;
     private final HashCache hashCache;
+    private final AtomicBoolean isUpdating;
+
+    public HashCacheFiller(HashService hashService, HashCache hashCache) {
+        this.hashService = hashService;
+        this.hashCache = hashCache;
+        isUpdating = new AtomicBoolean(false);
+    }
+
+    @Value("${hash.low-threshold-cache-size}")
+    private int lowThresholdCacheSize;
 
     @PostConstruct
     public void init() {
-        hashGenerator.generate();
-        int initBatchSize = hashProperties.getCacheCapacity();
-        List<String> hashes = hashRepository.getHashBatch(initBatchSize);
-        hashCache.setHashBatch(hashes);
-        log.info("Hash cache initialized. Filling size: {}", hashes.size());
+        if (isUpdating.compareAndSet(false, true)) {
+            hashService.generateHashIfNecessary();
+            List<String> hashBatch = hashService.getHashBatch();
+            hashCache.setHashBatch(hashBatch);
+            isUpdating.set(false);
+            log.info("Hash cache has been updated");
+        }
     }
 
-    @Async("threadPool")
-    public void fillCache() {
-        hashGenerator.generate();
-        int batchSize = hashProperties.getHashBatchSize();
-        List<String> hashes = hashRepository.getHashBatch(batchSize);
-        hashCache.setHashBatch(hashes);
-        log.info("Hash cache filling. Filling size: {}", hashes.size());
+    @Async
+    public void fillCacheIfNecessary() {
+        if (isUpdating.compareAndExchange(false, true)
+                && hashCache.getSize() < lowThresholdCacheSize) {
+            List<String> hashBatch = hashService.getHashBatch();
+            hashCache.setHashBatch(hashBatch);
+            hashService.generateHashIfNecessary();
+            isUpdating.set(false);
+        }
     }
 }

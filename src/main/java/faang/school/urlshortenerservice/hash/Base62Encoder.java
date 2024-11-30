@@ -18,13 +18,9 @@ public class Base62Encoder {
         StringBuilder result = new StringBuilder();
 
         while (num > 0) {
-            int remainder = (int) (num % 62);
-            result.append(alphabet[remainder]);
+            int index = (int) (num % 62);
+            result.append(alphabet[index]);
             num /= 62;
-        }
-
-        while (result.length() < 6) {
-            result.append("0");
         }
 
         return result.reverse().toString();

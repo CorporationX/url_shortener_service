@@ -1,20 +1,18 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.exception.IncorrectUrl;
 import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.hash.HashCacheFiller;
+import faang.school.urlshortenerservice.model.HashEntity;
 import faang.school.urlshortenerservice.model.UrlEntity;
-import faang.school.urlshortenerservice.properties.HashProperties;
-import faang.school.urlshortenerservice.properties.UrlShortenerProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.URLCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -25,15 +23,14 @@ import java.util.Objects;
 public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
-    private final UrlShortenerProperties urlShortenerProperties;
-    private final URLCacheRepository urlCacheRepository;
+    private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
+    private final HashCacheFiller hashCacheFiller;
 
     @Transactional
     public String shorten(String longUrl) {
-        validateUrl(longUrl);
-
         String hash = hashCache.getHash();
+        hashCacheFiller.fillCacheIfNecessary();
 
         UrlEntity entity = new UrlEntity();
         entity.setUrlValue(longUrl);
@@ -55,6 +52,7 @@ public class UrlService {
        }
        UrlEntity currentUrl = urlRepository.findById(hash).orElseThrow();
        String currentLongUrl = currentUrl.getUrlValue();
+       urlCacheRepository.put(hash, currentLongUrl);
 
        log.info("Get original url {} <- {}", currentLongUrl, createShortUrl(hash));
        return currentLongUrl;
@@ -62,29 +60,20 @@ public class UrlService {
 
     @Transactional
     public void cleanHashes() {
-        long dayToKeep = urlShortenerProperties.getDaysToKeep();
-        LocalDateTime before = LocalDateTime.now().minusDays(dayToKeep);
-        List<String> cleanedHash = urlRepository.deleteByCreatedAtBefore(before).stream()
+        LocalDateTime now = LocalDateTime.now();
+        List<HashEntity> cleanedHash = urlRepository.deleteByValidatedAtBefore(now).stream()
                 .map(UrlEntity::getHashValue)
+                .map(HashEntity::new)
                 .toList();
 
         log.info("Cleaned old hashes: {}", cleanedHash.size());
-        hashRepository.save(cleanedHash);
-
-    }
-
-    private void validateUrl(String longUrl) {
-        try {
-            new URL(longUrl);
-        } catch (MalformedURLException e) {
-            log.error("Incorrect URL: {}", longUrl);
-            throw new IncorrectUrl("Incorrect URL: " + longUrl);
-        }
+        hashRepository.saveAll(cleanedHash);
     }
 
     private String createShortUrl(String hash) {
-        String protocol = urlShortenerProperties.getProtocol();
-        String domain = urlShortenerProperties.getDomain();
-        return protocol + "://" + domain + "/" + hash;
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/")
+                .path(hash)
+                .toUriString();
     }
 }
