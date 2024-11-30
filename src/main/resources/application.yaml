@@ -30,7 +30,7 @@ server:
 
 app:
   base-url: http://localhost:8080
-  path-with-hashed-url: ${app.base-url}/url/
+  path-with-hashed-url-to-redirect: ${app.base-url}/url/
 
   hashes-generation:
     batch-size: 800
@@ -45,13 +45,6 @@ app:
       months: 12
       days: 0
       hours: 0
-
-thread-pool:
-  hashes-generator:
-    corePoolSize: 2
-    maxPoolSize: 2
-    queueCapacity: 2
-    threadNamePrefix: "HashesGenerator-"
 
 executor:
   thread-pool-size: 1

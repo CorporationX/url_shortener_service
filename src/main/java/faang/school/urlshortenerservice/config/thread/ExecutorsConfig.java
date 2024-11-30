@@ -10,8 +10,6 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 @Configuration
 public class ExecutorsConfig {
-    private final TaskExecutorProperties taskExecutorProperties;
-
     @Bean
     public ExecutorService fillUpCacheExecutorService() {
         return Executors.newSingleThreadExecutor();
