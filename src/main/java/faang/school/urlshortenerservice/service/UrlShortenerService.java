@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -25,7 +26,7 @@ public class UrlShortenerService {
     @Transactional
     public void cleanOldUrls() {
         List<Hash> hashList = urlRepository.getHashAndDeleteURL().stream()
-                .map(hash -> new Hash())
+                .map(Hash::new)
                 .toList();
 
         hashRepository.saveAll(hashList);
@@ -39,11 +40,7 @@ public class UrlShortenerService {
             return cachedUrl;
         }
 
-        Url url = urlRepository.findUrlByHash(hash).orElseThrow(() -> {
-            String message = String.format("Cannot find url by hash = %s", hash);
-            log.info(message);
-            return new RuntimeException(message);
-        });
+        Url url = urlRepository.findUrlByHash(hash).orElseThrow(HashNotFoundException::new);
 
         urlCacheRepository.save(url);
         return url.getUrl();

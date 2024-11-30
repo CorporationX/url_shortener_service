@@ -1,11 +1,13 @@
 package faang.school.urlshortenerservice.controller.advice;
 
+import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -21,6 +23,18 @@ public class ControllerAdvice {
             IllegalStateException.class, HttpStatus.BAD_REQUEST,
             SecurityException.class, HttpStatus.UNAUTHORIZED
     );
+
+    @ExceptionHandler(HashNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleHashNotFoundException(HashNotFoundException ex) {
+        log.error("Hash not found error: ", ex);
+
+        HttpStatus status = exceptionStatus.getOrDefault(ex.getClass(), HttpStatus.INTERNAL_SERVER_ERROR);
+        String message = determineErrorMessage(ex);
+
+        return new ResponseEntity<>(new ErrorResponse(status, message, ex), status);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {

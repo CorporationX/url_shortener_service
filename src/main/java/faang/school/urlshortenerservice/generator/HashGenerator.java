@@ -17,37 +17,40 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-//    @Value("${generator.hash.count}")
-//    private long countUniqueNumbers;
+    @Value("${generator.hash.count}")
+    private int maxRange;
 
-    @Async("asyncExecutor")
-    public List<Hash> generateBatch(long countUniqueNumbers) {
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(countUniqueNumbers);
-        List<Hash> hashes = base62Encoder.encode(uniqueNumbers)
-                .stream()
-                .map(encodeNumber -> new Hash())
-                .toList();
+    @Transactional
+    public List<Hash> generateAndSaveBatches() {
+        List<Hash> hashes = generateBatch(maxRange);
         return hashRepository.saveAll(hashes);
     }
 
+    public List<Hash> generateBatch(int maxRange) {
+        List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
+        return base62Encoder.encode(numbers).stream()
+                .map(Hash::new)
+                .toList();
+    }
+
     @Transactional
-    public List<String> getHashBatch(int batchSize) {
-        List<Hash> hashes = hashRepository.getHashBatch(batchSize);
-        if (hashes.size() < batchSize) {
-            List<Hash> leftHashes = generateBatch(batchSize - hashes.size());
-            log.info("Remaining hashes generated");
-            hashes.addAll(leftHashes);
-            log.info("Remaining hashes added to the general list");
+    public List<String> getHashBatch(int amount) {
+        List<Hash> hashes = hashRepository.getHashBatch(amount);
+        if (hashes.size() < amount) {
+            List<Hash> extraHashes = generateBatch(amount - hashes.size());
+            hashes.addAll(extraHashes);
         }
-        return hashes.stream().map(Hash::getHash).toList();
+
+        return hashes.stream()
+                .map(Hash::getHash)
+                .toList();
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<List<String>> getHashBatchAsync(int batchSize) {
-        return CompletableFuture.completedFuture(getHashBatch(batchSize));
+    public CompletableFuture<List<String>> getHashBatchAsync(int amount) {
+        return CompletableFuture.completedFuture(getHashBatch(amount));
     }
 }

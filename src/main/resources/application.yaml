@@ -25,6 +25,14 @@ spring:
   cache:
     type: redis
 
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 100
+        keep-alive: 60
+      thread-name-prefix: AsyncThread-
 
 generator:
   hash:
@@ -32,6 +40,7 @@ generator:
     cache:
       capacity: 100
       minPercent: 20
+
 
 
 schedule:

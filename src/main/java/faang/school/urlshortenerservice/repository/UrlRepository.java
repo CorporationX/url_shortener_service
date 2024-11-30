@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.repository;
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,9 +17,5 @@ public interface UrlRepository extends JpaRepository<Url, UUID> {
             """)
     List<String> getHashAndDeleteURL();
 
-    @Query(nativeQuery = true, value = """
-            SELECT * FROM url u
-            WHERE u.hash = :hash
-            """)
-    Optional<Url> findUrlByHash(@Param("hash") String hash);
+    Optional<Url> findUrlByHash(String hash);
 }
