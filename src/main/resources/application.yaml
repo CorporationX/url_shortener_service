@@ -35,20 +35,19 @@ hash:
     capacity: 300
     low-size-percentage: 20
   batch_size:
-    get_batch: 180
-    generation_batch: 180
+    get_batch: 120
+    generation_batch: 120
   retryable:
     max_attempts: 3
     delay: 1000
 
 url:
-  days-to-live: 30
+  days-to-live: 1
 
 thread-pool:
-  core_pool_size: 4
-  queue_capacity: 20
+  core_pool_size: 2
+  queue_capacity: 120
   thread_name_prefix: HashCacheExecutor-
 
 cleaner-scheduler:
   cron: "0 0 6 1 * *"
-
