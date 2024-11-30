@@ -65,14 +65,14 @@ public class HashFillerTest {
     public void testFillHashCache_NotHash() throws ExecutionException, InterruptedException {
         // Arrange
         when(hashRepository.deleteByIdsAndGet(BATCH_SIZE)).thenReturn(new ArrayList<>());
-        when(hashGenerator.generateOneHash()).thenReturn("123");
+        when(hashGenerator.getStringHashes()).thenReturn(new ArrayList<>(List.of("123")));
         List<String> expectedHashes = new ArrayList<>(List.of("123"));
 
         // Act
         CompletableFuture<List<String>> hashes = hashFiller.fillHashCache(BATCH_SIZE);
 
         // Assert
-        verify(hashGenerator, times(1)).generateOneHash();
+        verify(hashGenerator, times(1)).getStringHashes();
         assertEquals(expectedHashes, hashes.get());
 
     }

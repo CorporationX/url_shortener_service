@@ -27,8 +27,7 @@ public class HashGenerator {
     @Transactional
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-        List<String> stringHashes = base62Encoder.encode(numbers);
+        List<String> stringHashes = getStringHashes();
         List<Hash> hashes = stringHashes.stream()
             .map(string -> Hash.builder().hash(string).build())
             .toList();
@@ -37,8 +36,8 @@ public class HashGenerator {
         log.info("{} hashes added to the table", hashes.size());
     }
 
-    public String generateOneHash() {
-        Long number = hashRepository.getUniqueNumbers(1).get(0);
-        return base62Encoder.encode(number);
+    public List<String> getStringHashes() {
+        List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
+        return base62Encoder.encode(numbers);
     }
 }

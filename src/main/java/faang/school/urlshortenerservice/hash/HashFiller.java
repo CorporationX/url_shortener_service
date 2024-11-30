@@ -25,9 +25,9 @@ public class HashFiller {
             .map(Hash::getHash)
             .toList();
         if (hashes.isEmpty()) {
-            List<String> oneHashes = new ArrayList<>();
-            oneHashes.add(hashGenerator.generateOneHash());
-            return CompletableFuture.completedFuture(oneHashes);
+            log.warn("Hash is empty!!!");
+            List<String> stringHashes = new ArrayList<>(hashGenerator.getStringHashes());
+            return CompletableFuture.completedFuture(stringHashes);
         }
         log.info("{} hashes added to the queue", hashes);
 
