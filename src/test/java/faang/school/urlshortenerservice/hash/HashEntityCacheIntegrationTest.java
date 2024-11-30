@@ -2,20 +2,19 @@ package faang.school.urlshortenerservice.hash;
 
 
 import faang.school.urlshortenerservice.ServiceTemplateApplication;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = ServiceTemplateApplication.class)
@@ -26,16 +25,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HashEntityCacheIntegrationTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private HashRepository hashRepository;
 
     @Autowired
-    private HashProperties hashProperties;
+    private HashCacheFiller hashCacheFiller;
 
     @Autowired
     private HashCache hashCache;
 
-    @Autowired
-    private ThreadPoolTaskExecutor threadPool;
+    @Value("${hash.generate-size}")
+    private long generateSize;
+
+    @Value("${hash.hash-batch-size}")
+    private long hashBatchSize;
+
+    @Value("${hash.low-threshold-cache-size}")
+    private long lowThresholdCacheSize;
 
     @Container
     public static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
@@ -53,30 +58,23 @@ public class HashEntityCacheIntegrationTest {
 
     @Test
     public void testFreeHashSetState() {
-        String sql = "SELECT COUNT(*) FROM free_hash_set";
-        Long resultCount = jdbcTemplate.queryForObject(sql, Long.class);
+        long resultCount = hashRepository.count();
 
-        Long expectedCount = (long) hashProperties.getGenerateSize() - hashProperties.getCacheCapacity() ;
+        Long expectedCount = generateSize - hashBatchSize;
         assertEquals(expectedCount, resultCount);
     }
 
+
     @Test
-    public void testGenerateHash_ExactlyOnce() throws InterruptedException {
-        int count = (int) (hashProperties.getCacheCapacity() * (1.0 - hashProperties.getLowThresholdFactor()));
-        for (int i = 0; i < count; i++) {
+    public void testFillHash_ExactlyOnce() throws InterruptedException {
+        for (int i = 0; i < 700; i++) {
             hashCache.getHash();
         }
 
-        Runnable hashGetter = () -> hashCache.getHash();
-        threadPool.execute(hashGetter);
-        threadPool.execute(hashGetter);
+        hashCacheFiller.fillCacheIfNecessary();
+        hashCacheFiller.fillCacheIfNecessary();
+        Thread.sleep(10000);
 
-        SECONDS.sleep(1);
-
-        Long expectedCount = 2L * hashProperties.getGenerateSize() - hashProperties.getCacheCapacity() - hashProperties.getHashBatchSize();
-
-        String sql = "SELECT COUNT(*) FROM free_hash_set";
-        Long resultCount = jdbcTemplate.queryForObject(sql, Long.class);
-        assertEquals(expectedCount, resultCount);
+        assertEquals(900, hashCache.getSize());
     }
 }

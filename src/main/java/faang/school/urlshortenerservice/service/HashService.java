@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class HashService {
     @Value("${hash.hash-batch-size}")
     private int hashBatchSize;
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void generateHashIfNecessary() {
         long freeHashSize = hashRepository.count();
         if (freeHashSize > lowThresholdFreeHashSize) {
@@ -41,8 +42,8 @@ public class HashService {
         log.info("Generated {} hashes", hashEntities.size());
     }
 
-    @Transactional
-    public List<String> getHashBatch() {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public List<String> pollHashBatch() {
         List<HashEntity> randomHashEntity = hashRepository.getRandomHashBatch(hashBatchSize);
         hashRepository.deleteAll(randomHashEntity);
         return randomHashEntity.stream()

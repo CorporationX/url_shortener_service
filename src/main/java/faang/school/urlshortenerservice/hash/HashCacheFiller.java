@@ -30,7 +30,7 @@ public class HashCacheFiller {
     public void init() {
         if (isUpdating.compareAndSet(false, true)) {
             hashService.generateHashIfNecessary();
-            List<String> hashBatch = hashService.getHashBatch();
+            List<String> hashBatch = hashService.pollHashBatch();
             hashCache.setHashBatch(hashBatch);
             isUpdating.set(false);
             log.info("Hash cache has been updated");
@@ -39,9 +39,9 @@ public class HashCacheFiller {
 
     @Async
     public void fillCacheIfNecessary() {
-        if (isUpdating.compareAndExchange(false, true)
+        if (isUpdating.compareAndSet(false, true)
                 && hashCache.getSize() < lowThresholdCacheSize) {
-            List<String> hashBatch = hashService.getHashBatch();
+            List<String> hashBatch = hashService.pollHashBatch();
             hashCache.setHashBatch(hashBatch);
             hashService.generateHashIfNecessary();
             isUpdating.set(false);

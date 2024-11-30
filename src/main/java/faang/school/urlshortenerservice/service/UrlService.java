@@ -48,9 +48,10 @@ public class UrlService {
     public String getUrl(String hash) {
        String longUrl = urlCacheRepository.get(hash);
        if (Objects.nonNull(longUrl)) {
+           log.info("Get original url {} <- {}", longUrl, createShortUrl(hash));
            return longUrl;
        }
-       UrlEntity currentUrl = urlRepository.findById(hash).orElseThrow();
+       UrlEntity currentUrl = urlRepository.findByHashValue(hash).orElseThrow();
        String currentLongUrl = currentUrl.getUrlValue();
        urlCacheRepository.put(hash, currentLongUrl);
 

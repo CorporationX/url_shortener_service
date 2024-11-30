@@ -24,26 +24,16 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8086
 
 url-shortener:
-  protocol: https
-  domain: sh.c
-  days-to-keep: 365
   cleaning-cron: 0 0 0 * * *
 
 hash:
-  generate-size: 12000
-  low-threshold-free-hash-size: 2500
+  generate-size: 80000
+  low-threshold-free-hash-size: 20000
   hash-batch-size: 8000
-  cache-capacity: 10000
   low-threshold-cache-size: 2000
-
-
-thread-pool:
-  core-pool-size: 6
-  max-pool-size: 12
-  queue-capacity: 10
 
 logging:
   level:
