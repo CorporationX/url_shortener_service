@@ -1,0 +1,34 @@
+package faang.school.urlshortenerservice.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "urls")
+public class UrlEntity {
+    @Id
+    @Column(name = "hash_value", nullable = false, unique = true)
+    private String hashValue;
+
+    @Column(name = "url_value", nullable = false)
+    private String urlValue;
+
+    @Column(name = "validated_at", nullable = false)
+    private LocalDateTime validatedAt;
+
+    @PrePersist
+    private void setValidatedAt() {
+        this.validatedAt = LocalDateTime.now().plusYears(1);
+    }
+}
