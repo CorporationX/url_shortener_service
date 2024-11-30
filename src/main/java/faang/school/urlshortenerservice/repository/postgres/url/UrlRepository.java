@@ -14,7 +14,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(nativeQuery = true, value = """
             DELETE FROM url 
-            WHERE hash IN (SELECT hash FROM url WHERE expiration_time < CURRENT_TIMESTAMP FOR UPDATE) 
+            WHERE hash IN (
+                SELECT hash FROM url
+                WHERE expiration_time < CURRENT_TIMESTAMP FOR UPDATE) 
             RETURNING hash
             """)
     List<String> getOldUrlsAndDelete();

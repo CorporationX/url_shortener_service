@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UrlService {
-    @Value("${app.path-with-hashed-url}")
+    @Value("${app.path-with-hashed-url-to-redirect}")
     private String pathWithHashedUrl;
 
     private final AppUrlValidator appUrlValidator;
