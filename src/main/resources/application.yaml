@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      url_ttl: 10
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -9,7 +15,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -18,8 +24,30 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    capacity: 300
+    low-size-percentage: 20
+  batch_size:
+    get_batch: 120
+    generation_batch: 120
+  retryable:
+    max_attempts: 3
+    delay: 1000
+
+url:
+  days-to-live: 1
+
+thread-pool:
+  core_pool_size: 2
+  queue_capacity: 120
+  thread_name_prefix: HashCacheExecutor-
+
+cleaner-scheduler:
+  cron: "0 0 6 1 * *"
