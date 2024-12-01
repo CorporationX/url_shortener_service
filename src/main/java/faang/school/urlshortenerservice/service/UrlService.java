@@ -22,15 +22,13 @@ public class UrlService {
 
     @Transactional
     public String getShortUrl(String url) {
-        Url shortUrl = urlRepository.findByUrl(url)
-                .orElseGet(() -> buildUrl(url));
-
+        Url shortUrl = buildUrl(url);
         urlRepository.save(shortUrl);
         urlCacheService.saveInCache(shortUrl);
         return buildUri(shortUrl);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public String getUrl(String hash) {
         Optional<Object> urlOpt = urlCacheService.findByHash(hash);
         if (urlOpt.isPresent()) {

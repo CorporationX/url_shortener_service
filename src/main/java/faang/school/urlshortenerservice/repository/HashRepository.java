@@ -33,22 +33,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Hash> getHashBatch(long number);
 
     @Query(nativeQuery = true, value = """
-             SELECT character_maximum_length
-             FROM information_schema.columns
-             WHERE table_name = 'hash' AND column_name = 'hash';
-            """)
-    int getCharLength();
-
-    @Query(nativeQuery = true, value = """
             SELECT * FROM hash h
-            WHERE NOT EXISTS (
-                SELECT 1 FROM url u
-                WHERE u.hash = h.hash
-            )
             LIMIT 1
             FOR UPDATE SKIP LOCKED
             """)
-    Optional<Hash> findUnusedHash();
+    Optional<Hash> getAvailableHash();
 
     @Modifying
     @Query(nativeQuery = true, value = """

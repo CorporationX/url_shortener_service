@@ -34,11 +34,6 @@ public class HashService {
         hashRepository.saveAll(hashes);
     }
 
-    @Transactional(readOnly = true)
-    public int getCharLength() {
-        return hashRepository.getCharLength();
-    }
-
     @Retryable(
             retryFor = { DataValidationException.class },
             maxAttemptsExpression = "#{@hashProperties.getMaxAttempts()}",
@@ -47,7 +42,7 @@ public class HashService {
     public Hash ensureHashExists(Hash hash) {
         return hashRepository.existsById(hash.getHash())
                 ? hash
-                : hashRepository.findUnusedHash()
+                : hashRepository.getAvailableHash()
                 .map(unusedHash -> {
                     hashRepository.markHashAsReserved(unusedHash.getHash());
                     return unusedHash;

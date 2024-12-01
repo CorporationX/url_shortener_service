@@ -38,7 +38,7 @@ public class UrlCleanerService {
                 .map(Hash::new)
                 .toList();
 
-        hashService.saveAllHashes(hashes);
         urlCacheService.deleteAllHashes(hashes);
+        hashService.saveAllHashes(hashes);
     }
 }

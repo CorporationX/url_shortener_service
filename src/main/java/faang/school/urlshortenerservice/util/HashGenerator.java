@@ -26,7 +26,7 @@ public class HashGenerator {
         List<Long> uniqueNumbers = hashService.getUniqueNumbers(generationHashesSize);
         log.info("Generated {} unique numbers", uniqueNumbers.size());
 
-        List<Hash> encodedHashes = base62Encoder.encodeList(uniqueNumbers);
+        List<Hash> encodedHashes = base62Encoder.encode(uniqueNumbers);
         log.info("Encoded {} hashes", encodedHashes.size());
 
         hashService.saveAllHashes(encodedHashes);

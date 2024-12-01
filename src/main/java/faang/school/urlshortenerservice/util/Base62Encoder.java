@@ -15,14 +15,14 @@ public class Base62Encoder {
     private final Base62 base62 = Base62.createInstance();
     private final ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 
-    public List<Hash> encodeList(List<Long> nums) {
+    public List<Hash> encode(List<Long> nums) {
         return nums.stream()
-                .map(this::encode)
+                .map(this::encodeToBase62)
                 .map(Hash::new)
                 .toList();
     }
 
-    private String encode(Long number) {
+    private String encodeToBase62(Long number) {
         buffer.clear();
         byte[] bytes = buffer.putLong(number).array();
         byte[] encodedBytes = base62.encode(bytes);

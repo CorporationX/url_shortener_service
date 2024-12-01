@@ -12,9 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
-
-    Optional<Url> findByUrl(String url);
-
     Optional<Url> findUrlByHash(String hash);
 
     @Modifying
@@ -26,7 +23,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             WHERE u_inner.created_at < :time
             FOR UPDATE SKIP LOCKED
         )
-        RETURNING u.url, u.hash, u.created_at
+        RETURNING u.url
         """)
     List<Url> getAndDeleteOldUrls(LocalDateTime time);
 }
