@@ -18,17 +18,16 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     Url findByHash(String hash);
 
     @Modifying
-    @Transactional
-    @Query(value = """
-    WITH cte AS (
+    @Query(nativeQuery = true, value =
+    """
+    DELETE FROM url
+    WHERE hash IN (
         SELECT hash
         FROM url
         WHERE created_at < :cutoffDate
         FOR UPDATE SKIP LOCKED
     )
-    DELETE FROM url
-    WHERE hash IN (SELECT hash FROM cte)
     RETURNING hash
-    """, nativeQuery = true)
+    """)
     List<String> deleteAllByCreatedAtBeforeReturningHashes(@Param("cutoffDate") LocalDateTime cutoffDate);
 }
