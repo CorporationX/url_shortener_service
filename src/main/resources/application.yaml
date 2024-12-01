@@ -4,11 +4,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+      jdbc:
+        batch_size: 50
+        order-inserts: true
+        order-updates: true
     show-sql: true
     properties:
       hibernate:
@@ -17,9 +20,31 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  async:
+    executor:
+      corePoolSize: 2
+      maxPoolSize: 5
+      queueCapacity: 500
+      threadNamePrefix: Async-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      time-to-live: 24
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  batch:
+    size: 6
+    maxSize: 100
+    percentThreshold: 20
+    interval: 1 year
+
+scheduler:
+  old_url_hashes: 0 0 2 * * ?
