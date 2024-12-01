@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-@RestController
+@RestController("/api/v1/url")
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlServiceImpl urlService;
     private final UrlValidator urlValidator;
     private UrlMapper urlMapper;
 
-    @GetMapping("/api/v1/url/original/{hash}")
+    @GetMapping("original/{hash}")
     public ResponseEntity<Void> sendToOriginalUrl(@PathVariable String hash) {
         Url originalUrl = urlService.getOriginalUrl(hash);
 
@@ -28,13 +28,13 @@ public class UrlController {
                 .build();
     }
 
-    @PostMapping("/api/v1/url/short")
+    @PostMapping("/url/short")
     public UrlDto convertLongUrl(@RequestBody UrlDto longUrl) {
-        return urlService.convertLongUrl(processResponse(longUrl));
+        return urlService.convertLongUrl(validateUrl(longUrl).getUrl());
     }
 
-    private Url processResponse(UrlDto urlDto) {
-        urlValidator.isValidUrl(urlDto.getUrl());
-        return urlMapper.toEntity(urlDto);
+    private UrlDto validateUrl(UrlDto urlDto) {
+        urlValidator.validateUrl(urlDto.getUrl());
+        return urlDto;
     }
 }

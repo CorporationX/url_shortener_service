@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UrlValidator {
 
-    private final String URL_REGEX = "^(https?|ftp)://[^\s/$.?#].[^\s]*$";
+    private static final String URL_REGEX = "^(https?|ftp)://[^\s/$.?#].[^\s]*$";
     private final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
 
-    public void isValidUrl(String url) {
+    public void validateUrl(String url) {
         if (!URL_PATTERN.matcher(url).matches()) {
             log.error("URL has to fit into pattern: {} ", URL_REGEX);
             throw new DataValidationException("Invalid URL: " + url);
