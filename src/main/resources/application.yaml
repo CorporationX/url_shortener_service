@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
     username: user
     password: password
 
@@ -12,14 +12,49 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 100
         format_sql: true
+        order_updates: true
+
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      caches:
+        url-cache: url-cache
+      port: 6379
+      host: localhost
+
+hash:
+  batch-size: 100
+  count-of-numbers-from-the-sequence: 16
+  generated-batch-size: 200
+
 server:
   port: 8080
+  base-url: http://localhost:8080/api/v1/url
+  exceptions:
+    default-message: an error occurred on our side((( please try again later
 
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        type: trace
+
+thread-pool:
+  size: 10
+  max-size: 20
+  timeout: 120
+
+schedulers:
+  crons:
+    cron-for-clean-urls: 0 0 0 * * *
+  url-cleaner:
+    interval: '1 year'
+
+

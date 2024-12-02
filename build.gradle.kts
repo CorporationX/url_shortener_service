@@ -30,6 +30,9 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:4.3.2")
     runtimeOnly("org.postgresql:postgresql")
+    implementation("org.hibernate:hibernate-jcache:6.6.2.Final")
+    implementation("net.sf.ehcache:ehcache:2.10.9.2")
+
 
     /**
      * Utils & Logging
@@ -41,6 +44,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("io.seruco.encoding:base62:0.1.3")
 
     /**
      * Test containers
