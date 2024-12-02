@@ -9,6 +9,6 @@ public interface UrlService {
 
     Url getUrl(String hash);
 
-    void jobForCleanerScheduler();
+    void jobForCleanerScheduler(int expirationInterval);
 
 }

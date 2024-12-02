@@ -8,8 +8,8 @@ import java.util.List;
 @Component
 public class Base62Encoder {
 
-    private final static String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final static int BASE62_LENGTH = BASE62_CHARS.length();
+    private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE62_LENGTH = BASE62_CHARS.length();
 
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();

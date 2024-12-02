@@ -9,7 +9,6 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +18,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
-
-    @Value("${scheduler.cleaning.url.expiration-interval}")
-    private int expirationInterval;
 
     private static final String SHORT_URL = "https://urlshortener/";
 
@@ -56,7 +52,7 @@ public class UrlServiceImpl implements UrlService{
 
     @Transactional
     @Override
-    public void jobForCleanerScheduler() {
+    public void jobForCleanerScheduler(int expirationInterval) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusYears(expirationInterval);
         List<String> stringHashes = urlRepository.findExpiredUrls(cutoffDate);
         List<Hash> hashes = stringHashes.stream()

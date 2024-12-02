@@ -25,8 +25,8 @@ public class HashGenerator {
     @Async("customThreadPoolForHashGenerator")
     @Transactional
     public void generateBatch() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(uniqueNumberRequestCount);
-        List<String> hashesEncoder = base62Encoder.encode(numbers);
+        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumberRequestCount);
+        List<String> hashesEncoder = base62Encoder.encode(uniqueNumbers);
 
         List<Hash> hashes = new ArrayList<>();
         hashesEncoder.forEach(hashEncoder -> {

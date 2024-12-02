@@ -17,4 +17,5 @@ public class ServiceTemplateApplication {
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }
+
 }

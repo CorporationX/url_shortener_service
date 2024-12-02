@@ -20,7 +20,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${scheduler.cleaning.url.cron}")
     public void removingExpiredUrlsAndSavingHashes() {
         log.info("Started job removingExpiredUrlsAndSavingHashes in " + CleanerScheduler.class);
-        urlService.jobForCleanerScheduler();
+        urlService.jobForCleanerScheduler(expirationInterval);
     }
 
 }
