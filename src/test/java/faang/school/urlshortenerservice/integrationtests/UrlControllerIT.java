@@ -21,6 +21,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -66,37 +67,50 @@ public class UrlControllerIT {
             .url("https://")
             .build();
 
-    private String endpoint = "/api/v1/url/get/{hash}";
+    private String endpointGetUrl = "/api/v1/url/get/{hash}";
+    private String endpointCreateShortLink = "/api/v1/url/shorten";
 
     @BeforeEach
     void setUp() {
         urlRepository.save(url);
     }
     @Test
-    void testSuccessfulRedirect() throws Exception {
+    void testGetUrlSuccessfulRedirect() throws Exception {
         mockMvc.perform(
-                get(endpoint, 2)
+                get(endpointGetUrl, 2)
                         .header("x-user-id", "1")
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().is3xxRedirection());
     }
 
     @Test
-    void testDontUrlInDatabase() throws Exception {
+    void testGetUrlDontUrlInDatabase() throws Exception {
         mockMvc.perform(
-                get(endpoint, 1)
+                get(endpointGetUrl, 1)
                         .header("x-user-id", "1")
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
-    void testCreateShortLink() throws Exception {
+    void testCreateShortLinkInvalidUrl() throws Exception {
         mockMvc.perform(
-                post("/api/v1/url/shorten")
+                post(endpointCreateShortLink)
                         .header("x-user-id", "1")
-                        .content(objectMapper.writeValueAsString(UrlDto.builder().url("fsdf").build()))
+                        .content(objectMapper.writeValueAsString(UrlDto.builder().url("not url").build()))
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateShortLinkEmptyUrl() throws Exception {
+        mockMvc.perform(
+                post(endpointCreateShortLink)
+                        .header("x-user-id", "1")
+                        .content(objectMapper.writeValueAsString(UrlDto.builder().url("").build()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.url").value("URL must not be blank"));
     }
 
 }
