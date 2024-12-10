@@ -38,8 +38,7 @@ public class CleanerHash {
         if (!hashes.isEmpty()) {
             log.info("Cleaner start save batch - Thread name {}", Thread.currentThread().getName());
             hashRepository.saveAllBatched(hashes);
-
-            log.info("Cleaner finish - Thread name {}", Thread.currentThread().getName());
         }
+        log.info("Cleaner finish - Thread name {}", Thread.currentThread().getName());
     }
 }
