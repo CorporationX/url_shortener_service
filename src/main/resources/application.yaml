@@ -14,11 +14,37 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      urlTtl: 24
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+
+hash:
+  cache:
+    fill:
+      percent: 0.2
+    capacity-hash: 10_000
+
+  generator:
+    max-batch: 50_000
+    range-d-b: 10_000
+
+  threads:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 25
+    thread-name: hashGeneratorExecutor-
+
+  cleaner:
+    cron: "0 0 0 * * *"
+
 server:
-  port: 8080
+  port: 8083
 
 logging:
   level:
