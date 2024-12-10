@@ -29,14 +29,17 @@ hash:
     fill:
       percent: 0.2
     capacity-hash: 10_000
+
   generator:
     max-batch: 50_000
     range-d-b: 10_000
+
   threads:
     core-pool-size: 5
     max-pool-size: 10
     queue-capacity: 25
     thread-name: hashGeneratorExecutor-
+
   cleaner:
     cron: "0 0 0 * * *"
 

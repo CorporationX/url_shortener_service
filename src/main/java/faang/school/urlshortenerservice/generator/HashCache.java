@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.config.executor.ExecutorServiceConfig;
 import faang.school.urlshortenerservice.repository.HashRepositoryImpl;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

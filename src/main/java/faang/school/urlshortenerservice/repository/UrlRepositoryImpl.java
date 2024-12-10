@@ -9,12 +9,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface UrlRepositoryImpl extends JpaRepository <Url,Hash> {
+public interface UrlRepositoryImpl extends JpaRepository<Url, Hash> {
 
     @Modifying
     @Transactional

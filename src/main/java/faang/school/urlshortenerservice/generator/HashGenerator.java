@@ -1,61 +1,99 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.config.executor.ExecutorServiceConfig;
+import faang.school.urlshortenerservice.config.propertis.hash.ThreadProperties;
+import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
+import faang.school.urlshortenerservice.repository.CustomHashRepositoryImpl;
+import faang.school.urlshortenerservice.repository.HashRepositoryImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingDeque;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private final HashRepository hashRepository;
+    private final HashRepositoryImpl hashRepositoryImpl;
+    private final ThreadProperties threadProperties;
+    private final Base62Encoder base62Encoder;
+    private final CustomHashRepositoryImpl customHashRepository;
+    private final ExecutorServiceConfig executor;
 
-    private static final String BASE_62 = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+    @Value("${hash.generator.max-batch:50000}")
+    private int maxBatch;
+    @Value("${hash.generator.range-d-b:10000}")
+    private long range;
 
-    @Value("${hash.range:10000}")
-    private int maxRange;
-
-    @Transactional
-    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
-    public void generateHash() {
-        List<Long> range = hashRepository.getUniqueNumbers(maxRange);
-        List<Hash> hashes = range.stream()
-                .map(this::applyBase62Encoding)
-                .map(Hash::new)
-                .toList();
-        hashRepository.saveAll(hashes);
+    public CompletableFuture<Void> generateHash(long amount) {
+        log.info("Starting generateHash with amount: {}", amount);
+        return CompletableFuture
+                .supplyAsync(() -> {
+                    return hashRepositoryImpl.getUniqueNumbers(amount + range);
+                }, executor.executor())
+                .thenApply(base62Encoder::encode)
+                .thenCompose(this::saveHashesInBatches);
     }
 
-    @Transactional
-    public List<String> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateHash();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+    public CompletableFuture<List<String>> getHashes(long amount) {
+        log.info("Starting getHashes with amount: {}", amount);
+        return CompletableFuture.supplyAsync(() -> {
+                    return hashRepositoryImpl.findAndDelete(amount);
+                }, executor.executor())
+                .thenCompose(hashes -> {
+                    long missing = amount - hashes.size();
+                    log.debug("Hashes fetched: {}, missing: {}", hashes.size(), missing);
+                    if (missing > 0) {
+                        return generateHash(missing)
+                                .thenCompose(v -> {
+                                    log.debug("Fetching additional hashes from database...");
+                                    hashes.addAll(hashRepositoryImpl.findAndDelete(missing));
+                                    return CompletableFuture.completedFuture(hashes);
+                                });
+                    } else {
+                        return CompletableFuture.completedFuture(hashes);
+                    }
+                })
+                .thenApply(hashes -> {
+                    log.debug("Converting hashes to strings...");
+                    return hashes.stream().map(Hash::getHash).toList();
+                });
+    }
+
+    private CompletableFuture<Void> saveHashesInBatches(List<Hash> hashes) {
+        log.info("Saving {} hashes in batches...", hashes.size());
+        BlockingDeque<Hash> batches = new LinkedBlockingDeque<>(hashes);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        int range = correctedBatch(hashes);
+
+        while (!batches.isEmpty()) {
+            List<Hash> batch = new ArrayList<>(range);
+            int transferred = batches.drainTo(batch, range);
+            log.debug("Transferred {} hashes to batch.", transferred);
+
+            if (!batch.isEmpty()) {
+                futures.add(CompletableFuture.runAsync(() -> {
+                    log.trace("Saving batch of {} hashes...", batch.size());
+                    customHashRepository.saveAllBatched(batch);
+                }, executor.executor()));
+            }
         }
-        return hashes.stream().map(Hash::getHash).toList();
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
-    @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(long amount) {
-        return CompletableFuture.completedFuture(getHashes(amount));
-    }
-
-    private String applyBase62Encoding(long number) {
-        StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE_62.charAt((int) (number % BASE_62.length())));
-            number /= BASE_62.length();
+    private int correctedBatch(List<Hash> hashes) {
+        if (hashes.size() > maxBatch) {
+            return hashes.size() / (threadProperties.getCorePoolSize() - 1);
         }
-        return builder.toString();
-
+        return hashes.size();
     }
 }
