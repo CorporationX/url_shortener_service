@@ -4,9 +4,9 @@ CREATE SEQUENCE unique_number_seq
 
 CREATE TABLE urls
 (
-    url        VARCHAR PRIMARY KEY,
-    hash       VARCHAR(6),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    url       VARCHAR(4096) PRIMARY KEY NOT NULL,
+    hash        VARCHAR(6) NOT NULL,
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE hashes

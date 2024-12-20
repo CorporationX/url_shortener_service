@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,5 +17,6 @@ public class UrlCreateDto {
 
     @URL
     @NotNull
+    @NotEmpty
     private String url;
 }

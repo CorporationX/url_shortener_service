@@ -27,27 +27,27 @@ public class UrlService {
     private final UrlMapper urlMapper;
 
     public String getOriginUrl(String hash) {
-        log.info("getOriginUrl started - " + hash);
+        log.info("getOriginUrl started - {}", hash);
 
         String url = urlCashRepository.getValue(hash)
                 .orElse(urlRepository.findById(hash)
                         .orElseThrow(() -> new EntityNotFoundException("long url for: " + hash + " - does not exist"))
                         .getHash());
 
-        log.info("getOriginUrl return - " + url);
+        log.info("getOriginUrl return - {}", url);
         return url;
     }
 
     @Transactional
     public UrlDto createShortUrl(UrlCreateDto urlCreateDto) {
-        log.info("createShortUrl started - " + urlCreateDto);
+        log.info("createShortUrl started - {}", urlCreateDto);
 
         Url url = new Url();
         urlRepository.findById(urlCreateDto.getUrl()).ifPresentOrElse(url1 ->
                 {
                     throw new DataValidationException("This URL has already been registered.");
                 }, () -> {
-                    url.setUrl(urlCreateDto.getUrl());
+                    url.setUrl(urlCreateDto.getUrl().trim());
                     url.setHash(hashCache.getHash());
                     url.setCreatedAt(LocalDateTime.now());
 
@@ -55,8 +55,8 @@ public class UrlService {
                     urlCashRepository.save(url.getHash(), url.getUrl());
                 }
         );
-        log.info("createShortUrl save to DB " + url);
-        log.info("createShortUrl save to redis - Hash:" + url.getHash() + " Url: " + url.getUrl());
+        log.info("createShortUrl save to DB {}", url);
+        log.info("createShortUrl save to redis - Hash:{} Url: {}", url.getHash(), url.getUrl());
 
         return urlMapper.toDto(url);
     }

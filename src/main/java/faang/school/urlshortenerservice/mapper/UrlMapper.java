@@ -9,5 +9,4 @@ import org.mapstruct.ReportingPolicy;
 public interface UrlMapper {
 
     UrlDto toDto(Url url);
-
 }
