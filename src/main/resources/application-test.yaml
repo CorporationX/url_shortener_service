@@ -1,0 +1,5 @@
+hash:
+  generate-size: 8000
+  low-threshold-free-hash-size: 2000
+  hash-batch-size: 800
+  low-threshold-cache-size: 200
