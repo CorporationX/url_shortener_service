@@ -1,8 +1,9 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
+import faang.school.urlshortenerservice.service.hash.HashService;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UrlCleanerService {
     private final UrlRepository urlRepository;
-    private final HashRepository hashRepository;
+    private final HashService hashService;
     private final UrlCacheRepository urlCacheRepository;
 
     @Value("${app.scheduler.url_cleaner.url_lifetime_days:365}")
@@ -21,8 +22,8 @@ public class UrlCleanerService {
 
     @Transactional
     public void removeExpiredUrlsAndResaveHashes() {
-        List<String> freedHashes = urlRepository.getAndDeleteUrlsByDate(days);
-        hashRepository.save(freedHashes);
+        List<String> freedHashes = urlRepository.getAndDeleteUrlsByDate(LocalDateTime.now().minusDays(days));
+        hashService.saveAllBatch(freedHashes);
         urlCacheRepository.deleteAllByHashes(freedHashes);
     }
 }

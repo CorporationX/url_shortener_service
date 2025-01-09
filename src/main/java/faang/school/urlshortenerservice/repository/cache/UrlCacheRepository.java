@@ -27,7 +27,6 @@ public class UrlCacheRepository {
         if (hashes == null || hashes.isEmpty()) {
             return;
         }
-        // Удаляем ключи из Redis
         urlRedisTemplate.delete(hashes);
     }
 }
