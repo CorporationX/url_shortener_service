@@ -23,3 +23,15 @@ server:
 logging:
   level:
     root: info
+app:
+  hash_cache:
+    hashes_max_size: 1_000
+    hashes_min_size: 200
+  hash_generator:
+    db_hashes_limit: 5_000
+  scheduler:
+    url_cleaner:
+      cron: '0 0 0 * * *'
+      url_lifetime_days: 365
+  shortener:
+    base-url: "https://sh.com"

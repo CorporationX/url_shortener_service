@@ -56,6 +56,12 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    /**
+     * Base62 Encoding
+     */
+    implementation("io.seruco.encoding:base62:0.1.3")
+
 }
 
 tasks.withType<Test> {
