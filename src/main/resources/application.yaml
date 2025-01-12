@@ -23,3 +23,14 @@ server:
 logging:
   level:
     root: info
+
+url:
+  hash:
+    get-count: 10000
+    generate-count: 100000
+
+async:
+  thread-name-prefix: UrlHashAsyncThread-
+  core-pool-size: 5
+  max-pool-size: 10
+  queue_capacity: 25
