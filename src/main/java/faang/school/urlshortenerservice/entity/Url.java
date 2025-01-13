@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "url")
 public class Url {
-
     @Id
     private String hash;
     @Column(name = "url", nullable = false)
