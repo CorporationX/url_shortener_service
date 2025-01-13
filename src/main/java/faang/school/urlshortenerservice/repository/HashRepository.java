@@ -14,4 +14,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                 SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :n) 
             """)
     public List<Long> getUniqueNumbers(long n);
+
+    public List<Hash> getHashBatch();
 }
