@@ -36,3 +36,5 @@ async:
   threadPrefixName: url-shortener-
 
 alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+batchSize: 500
