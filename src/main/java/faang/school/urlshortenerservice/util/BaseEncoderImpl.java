@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 @Component
 public class BaseEncoderImpl implements BaseEncoder {
 
-    @Value("${encoder.string}")
-    private String baseString;
+    @Value("${encoder.base62}")
+    private String base;
 
     @Override
     public List<String> encode(List<Long> numbers) {
@@ -22,10 +22,10 @@ public class BaseEncoderImpl implements BaseEncoder {
     private String encodeToBase62(Long number) {
         StringBuilder encoded = new StringBuilder();
 
-        int baseSize = baseString.length();
+        int baseSize = base.length();
         while (number > 0){
             int remainder = (int) (number % baseSize);
-            encoded.insert(0, baseString.charAt(remainder));
+            encoded.insert(0, base.charAt(remainder));
             number /= baseSize;
         }
         return encoded.toString();
