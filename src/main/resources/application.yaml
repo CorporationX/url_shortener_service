@@ -34,3 +34,4 @@ logging:
 app:
   count_of_generated_hashes: 10000
   cache_volume: 1000
+  base62_chars: SlTc6wVygLdOsbutzEDneAK5GZpImMrxfXYvF1aoN2k83JiUWRCqQ97jHP40Bh
