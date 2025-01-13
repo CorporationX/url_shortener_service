@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             """)
     public List<Long> getUniqueNumbers(long n);
 
-    public List<Hash> getHashBatch();
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash
+            WHERE hash IN (SELECT hash FROM hash LIMIT :batchSize)
+            RETURNING *
+            """)
+    public List<Hash> getHashBatch(Long batchSize);
 }
