@@ -17,5 +17,5 @@ public class UrlDto {
     @NotNull(message = "Url can't be null")
     @NotBlank(message = "Url can't be blank")
     @URL(message = "Invalid URL format")
-    String url;
+    private String url;
 }

@@ -34,8 +34,6 @@ public class HashRepository {
                 "SELECT hash FROM hash LIMIT ? FOR UPDATE" +
                 ") RETURNING hash";
 
-        List<String> hashes = jdbcTemplate.queryForList(deleteQuery, String.class, batchSize);
-
-        return hashes;
+        return jdbcTemplate.queryForList(deleteQuery, String.class, batchSize);
     }
 }

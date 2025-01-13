@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-@ConfigurationProperties(prefix = "async.generator")
-public class HashGeneratorExecutorProperties {
+@ConfigurationProperties(prefix = "async.filler")
+public class HashCashFillExecutorProperties {
 
     private int corePoolSize;
     private int maxPoolSize;
