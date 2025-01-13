@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+batch:
+  size: 100
+encoder:
+  string: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz

@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,12 +25,12 @@ public class HashRepositoryImpl implements HashRepository {
     }
 
     @Override
-    public void save(List<Hash> hashes) {
+    public void save(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES(?)";
         jdbcTemplate.batchUpdate(sql,
                 hashes,
                 hashes.size(),
-                (ps, hash) -> ps.setString(1, hash.getHash())
+                (ps, hash) -> ps.setString(1, hash)
         );
     }
 
