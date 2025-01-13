@@ -10,9 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients("school.faang.servicetemplate.client")
 public class ServiceTemplateApplication {
-    public static void main(String[] args) {
-        new SpringApplicationBuilder(ServiceTemplateApplication.class)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-    }
+
+  public static void main(String[] args) {
+    new SpringApplicationBuilder(ServiceTemplateApplication.class)
+        .bannerMode(Banner.Mode.OFF)
+        .run(args);
+  }
 }
