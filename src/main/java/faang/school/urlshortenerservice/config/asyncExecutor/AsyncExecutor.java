@@ -9,7 +9,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class AsyncExecutor {
-
     @Value("${async.CorePoolSize}")
     private int corePoolSize;
     @Value("${async.MaxPoolSize}")

@@ -9,7 +9,6 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-
     @Value("${alphabet}")
     private String alphabetBase62;
 
