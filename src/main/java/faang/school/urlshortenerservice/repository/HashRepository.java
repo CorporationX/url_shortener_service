@@ -22,5 +22,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (SELECT hash FROM hash LIMIT :batchSize)
             RETURNING *
             """)
-    public List<Hash> getHashBatch(Long batchSize);
+    public List<Hash> getHashBatch(long batchSize);
 }

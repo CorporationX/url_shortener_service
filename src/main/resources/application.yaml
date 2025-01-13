@@ -34,3 +34,5 @@ async:
   MaxPoolSize: 6
   queueCapacity: 500
   threadPrefixName: url-shortener-
+
+alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
