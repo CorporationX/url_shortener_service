@@ -13,13 +13,24 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        generate_statistics: true
+        jdbc:
+          batch_size: 1000
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8087
+  servlet:
+    context-path: /api/v1/url-shortener
 
 logging:
   level:
     root: info
+
+app:
+  count_of_generated_hashes: 10000
+  cache_volume: 1000
