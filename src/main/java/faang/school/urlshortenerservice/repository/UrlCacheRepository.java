@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Url;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,8 +15,10 @@ public class UrlCacheRepository {
 
     public String searchUrl(String hash) {
         String url = redisTemplate.opsForValue().get(hash);
-        if (url == null){
-            url = urlRepository.findById(hash).orElseThrow(()-> new EntityNotFoundException("Урл не найден"));
+        if (url == null) {
+            Url urlFromDb = urlRepository.findById(hash).orElseThrow(() -> new EntityNotFoundException("Урл не найден"));
+            url = urlFromDb.getUrl();
         }
+        return url;
     }
 }
