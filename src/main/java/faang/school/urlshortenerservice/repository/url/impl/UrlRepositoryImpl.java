@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UrlRepositoryImpl implements UrlRepository {
@@ -21,6 +23,18 @@ public class UrlRepositoryImpl implements UrlRepository {
     @Override
     public String findLongUrlByHash(String hash) {
         String sql = "SELECT long_url FROM url WHERE hash = ?";
+
         return jdbcTemplate.queryForObject(sql, new Object[]{hash}, String.class);
+    }
+
+    @Override
+    public List<String> retrieveAllUrlsElderOneYear() {
+        String sql = """
+                DELETE FROM url
+                WHERE created_at < (CURRENT_TIMESTAMP - INTERVAL '1 year')
+                RETURNING hash
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"));
     }
 }

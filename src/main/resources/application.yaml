@@ -47,3 +47,7 @@ async:
     core-pool-size: 10
     max-pool-size: 20
     queue-capacity: 100
+
+scheduler:
+  cron:
+    clean-hashes: "0 0 0 * * *"
