@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.encoder;
 
 import faang.school.urlshortenerservice.validator.Base62Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class Base62Encoder {
     @Value("${base62.chars}")
     private String base62Chars;
@@ -18,6 +20,7 @@ public class Base62Encoder {
     private final Base62Validator validator;
 
     public List<String> encode(List<Long> numbers) {
+        log.info("Validate list for null");
         validator.checkList(numbers);
 
         List<String> resultList = new ArrayList<>();
