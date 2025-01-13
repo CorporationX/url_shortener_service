@@ -20,7 +20,7 @@ public class ThreadPool {
         executor.setCorePoolSize(hashGenerationProp.getCorePoolSize());
         executor.setMaxPoolSize(hashGenerationProp.getMaxPoolSize());
         executor.setQueueCapacity(hashGenerationProp.getQueueCapacity());
-        executor.setThreadNamePrefix("async-exec-");
+        executor.setThreadNamePrefix("async-hash-gen-exec-");
         executor.initialize();
         return executor;
     }
@@ -31,7 +31,7 @@ public class ThreadPool {
         executor.setCorePoolSize(hashCashFillingProp.getCorePoolSize());
         executor.setMaxPoolSize(hashCashFillingProp.getMaxPoolSize());
         executor.setQueueCapacity(hashCashFillingProp.getQueueCapacity());
-        executor.setThreadNamePrefix("async-exec-");
+        executor.setThreadNamePrefix("async-hash-fill-exec-");
         executor.initialize();
         return executor;
     }

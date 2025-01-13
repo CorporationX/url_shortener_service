@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service.generatr;
 
 import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCashQueueProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.encoder.Base62Encoder;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private final HashRepository hashRepository;
+    private final HashRepositoryImpl hashRepositoryImpl;
     private final HashCashQueueProperties properties;
     private final Base62Encoder base62Encoder;
     private final ThreadPool threadPool;
@@ -26,7 +26,7 @@ public class HashGenerator {
     @Transactional
     @Async(value = "hashGeneratorExecutor")
     public void generateBatch(int batchSize) {
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
+        List<Long> uniqueNumbers = hashRepositoryImpl.getUniqueNumbers(batchSize);
         List<List<Long>> batches = getBatches(uniqueNumbers);
 
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
@@ -36,7 +36,7 @@ public class HashGenerator {
 
         List<String> hashes = new ArrayList<>();
         futures.forEach(future -> hashes.addAll(future.join()));
-        hashRepository.saveHashes(hashes);
+        hashRepositoryImpl.saveHashes(hashes);
     }
 
     @PostConstruct

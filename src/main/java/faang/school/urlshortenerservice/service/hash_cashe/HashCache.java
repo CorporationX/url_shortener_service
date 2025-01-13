@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service.hash_cashe;
 
 import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCashQueueProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generatr.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private final HashCashQueueProperties queueProp;
-    private final HashRepository hashRepository;
+    private final HashRepositoryImpl hashRepositoryImpl;
     private final HashGenerator hashGenerator;
     private final ThreadPool threadPool;
 
@@ -42,7 +42,7 @@ public class HashCache {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
-                        queue.addAll(hashRepository.getHashBatch(batch))
+                        queue.addAll(hashRepositoryImpl.getHashBatch(batch))
                 , threadPool.hashCacheFillExecutor())));
 
         hashGenerator.generateBatch(batchSize);
