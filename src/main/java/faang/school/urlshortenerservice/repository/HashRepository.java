@@ -9,8 +9,8 @@ import java.util.List;
 
 @Repository
 public interface HashRepository extends JpaRepository<HashEntity, String> {
-    @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :n)", nativeQuery = true)
-    List<Long> getUniqueNumbers(int n);
+    @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :number)", nativeQuery = true)
+    List<Long> getUniqueNumbers(int number);
 
     @Modifying
     @Query(value = "DELETE FROM hash WHERE hash IN (" +

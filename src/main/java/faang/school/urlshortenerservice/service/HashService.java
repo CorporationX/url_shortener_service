@@ -17,8 +17,8 @@ public class HashService {
         hashRepository.saveAll(hashes);
     }
 
-    public List<Long> getUniqueNumbers(int n) {
-        return hashRepository.getUniqueNumbers(n);
+    public List<Long> getUniqueNumbers(int number) {
+        return hashRepository.getUniqueNumbers(number);
     }
 
     @Transactional
