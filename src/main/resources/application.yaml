@@ -34,8 +34,8 @@ url:
 
 hash:
   cash:
-    percentage-to-start-fill: 20
     max-queue-size: 100
+    percentage-to-start-fill: 20
     filling-batches-quantity: 10
 
 async:

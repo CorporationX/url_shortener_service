@@ -28,10 +28,11 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final ThreadPool threadPool;
 
-    private final Queue<String> queue = new LinkedBlockingQueue<>(queueProp.getMaxQueueSize());
+    //queueProp.getMaxQueueSize()
+    private final Queue<String> queue = new LinkedBlockingQueue<>(100);
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
-    @PostConstruct()
+    @PostConstruct
     @Transactional
     @Async(value = "hashCacheFillExecutor")
     public CompletableFuture<Void> fillCash() {

@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.repository.url_cash.UrlCacheRepository;
 import faang.school.urlshortenerservice.service.hash_cashe.HashCache;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,11 @@ public class UrlService {
                 .build();
     }
 
-    public UrlDto getOriginalUrl(UrlDto longUrlDto) {
-        //go to Redis check is present
-        //go to Sql DB(if not present in Redis)
-
-        return new UrlDto();
+    public String getOriginalUrl(String hash) {
+        String originalUrl = urlCacheRepository.getUrl(hash).orElse(
+                urlRepository.findLongUrlByHash(hash).
+                        orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash))
+        );
+        return originalUrl;
     }
 }

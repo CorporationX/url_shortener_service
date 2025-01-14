@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -22,12 +21,9 @@ public class HashRepositoryImpl implements HashRepository {
     }
 
     public void saveHashes(List<String> hashes) {
-        String query = "INSERT INTO hash (hash) VALUES " +
-                String.join(", ", Collections.nCopies(hashes.size(), "(?)"));
+        String query = "INSERT INTO hash (hash) VALUES (?)";
+        jdbcTemplate.batchUpdate(query, hashes, hashes.size(), (ps, hash) -> ps.setString(1, hash));
 
-        jdbcTemplate.batchUpdate(query, hashes, hashes.size(),
-                (ps, hash) -> ps.setString(1, hash)
-        );
     }
 
     public List<String> getHashBatch(int batchSize) {

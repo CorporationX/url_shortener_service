@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,10 +22,11 @@ public class UrlRepositoryImpl implements UrlRepository {
     }
 
     @Override
-    public String findLongUrlByHash(String hash) {
+    public Optional<String> findLongUrlByHash(String hash) {
         String sql = "SELECT long_url FROM url WHERE hash = ?";
 
-        return jdbcTemplate.queryForObject(sql, new Object[]{hash}, String.class);
+        String url = jdbcTemplate.queryForObject(sql, new Object[]{hash}, String.class);
+        return Optional.ofNullable(url);
     }
 
     @Override
