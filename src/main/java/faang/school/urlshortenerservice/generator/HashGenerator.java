@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.persistence.EntityManager;
@@ -15,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private static final String BASE_62_CHARACTER = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
     private final HashRepository hashRepository;
 
     private final EntityManager entityManager;
+
+    private final Base62Encoder base62Encoder;
 
     @Value("${hash.range}")
     private int maxRange;
@@ -28,21 +29,15 @@ public class HashGenerator {
     @Transactional
     public void generateBatch() {
         List<Long> range = hashRepository.getNextRange(maxRange);
-        List<Hash> hashes = range.stream()
-                .map(this::applyBase62Encoding)
+
+        List<String> encodedHashes = base62Encoder.encode(range);
+
+        List<Hash> hashes = encodedHashes.stream()
                 .map(Hash::new)
                 .toList();
+
         hashRepository.saveAllAndFlush(hashes);
         entityManager.clear();
-    }
-
-    private String applyBase62Encoding(long number) {
-        StringBuilder result = new StringBuilder();
-        while (number > 0) {
-            result.append(BASE_62_CHARACTER.charAt((int) (number % BASE_62_CHARACTER.length())));
-            number /= BASE_62_CHARACTER.length();
-        }
-        return result.toString();
     }
 
 }
