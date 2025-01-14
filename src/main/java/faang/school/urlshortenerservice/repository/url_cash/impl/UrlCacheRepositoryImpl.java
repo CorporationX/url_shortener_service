@@ -5,11 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 @RequiredArgsConstructor
-public class UrlCashRepositoryImpl implements UrlCacheRepository {
+public class UrlCacheRepositoryImpl implements UrlCacheRepository {
 
     private static final String CACHE_KEY_PREFIX = "url_cache:";
 
@@ -23,11 +21,10 @@ public class UrlCashRepositoryImpl implements UrlCacheRepository {
     }
 
     @Override
-    public Optional<String> getUrl(String hash) {
+    public String getUrl(String hash) {
         String cacheKey = CACHE_KEY_PREFIX + hash;
 
-        String url = redisTemplate.opsForValue().get(cacheKey);
-        return Optional.ofNullable(url);
+        return redisTemplate.opsForValue().get(cacheKey);
     }
 
     @Override

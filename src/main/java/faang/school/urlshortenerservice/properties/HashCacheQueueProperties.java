@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-@ConfigurationProperties(prefix = "async.filler")
-public class HashCashFillExecutorProperties {
+@ConfigurationProperties(prefix = "hash.cash")
+public class HashCacheQueueProperties {
 
-    private int corePoolSize;
-    private int maxPoolSize;
-    private int queueCapacity;
+    private int maxQueueSize;
+    private int percentageToStartFill;
+    private int fillingBatchesQuantity;
 }

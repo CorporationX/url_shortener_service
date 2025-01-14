@@ -22,7 +22,7 @@ public class UrlShortenerController {
     private final UrlService urlService;
 
     @PostMapping()
-    public UrlDto shortenUrl(@RequestBody @Valid UrlDto urlDto) {
+    public String shortenUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.shortenUrl(urlDto);
     }
 

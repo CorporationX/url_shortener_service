@@ -1,11 +1,12 @@
 package faang.school.urlshortenerservice.service.hash_cashe;
 
 import faang.school.urlshortenerservice.config.async.ThreadPool;
-import faang.school.urlshortenerservice.properties.HashCashQueueProperties;
+import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generatr.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @DependsOn("hashGenerator")
 public class HashCache {
 
-    private final HashCashQueueProperties queueProp;
+    private final HashCacheQueueProperties queueProp;
     private final HashRepositoryImpl hashRepositoryImpl;
     private final HashGenerator hashGenerator;
     private final ThreadPool threadPool;
@@ -38,6 +40,7 @@ public class HashCache {
     public CompletableFuture<Void> fillCash() {
         int batchSize = queueProp.getMaxQueueSize() -
                 (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+        log.info("Start filling local cash with {} elements", batchSize);
 
         List<Integer> subBatches = getSubBatches(batchSize);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -55,12 +58,19 @@ public class HashCache {
         if (isNecessaryToFill()) {
             if (!isFilling.get()) {
                 isFilling.compareAndSet(false, true);
-                CompletableFuture<Void> future = fillCash();
-                future.join();
-                isFilling.set(false);
+                waitForFill(fillCash());
             }
         }
-        return queue.poll();
+        String hash = queue.poll();
+        log.info("Hash {} was got from local cash", hash);
+        return hash;
+    }
+
+    @Async(value = "hashCacheFillExecutor")
+    public void waitForFill(CompletableFuture<Void> future) {
+        future.join();
+        isFilling.set(false);
+        log.info("Finished filling local cash");
     }
 
     private List<Integer> getSubBatches(int batchSize) {
