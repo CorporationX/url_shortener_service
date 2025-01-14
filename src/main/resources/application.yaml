@@ -17,12 +17,19 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-    task:
-      execution:
-        pool:
-          core-size: 5
-          max-size: 10
-          queue-capacity: 100
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 100
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        payment: payment_topic
 
 server:
   port: 8080
@@ -35,11 +42,11 @@ base62:
   chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   length: 62
 
-Hash:
+hash:
   generate_size: 5000
   get_size: 2700
   min_cache_rep_size: 2500
   rep_mid_size: 7000
   cache:
-    get_hash_time: 0 0,12 * * *
-    generate_hash_time: 0 0,12 * * *
+    get_hash_time: 0 0,12 * * * *
+    generate_hash_time: 0 0,12 * * * *

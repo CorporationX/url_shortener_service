@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +16,7 @@ public class Url {
     @Column(nullable = false)
     private String hash;
     @Column(nullable = false)
-    private String url;
+    private URL url;
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
