@@ -31,3 +31,7 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    range-size: 100

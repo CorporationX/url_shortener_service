@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Hash {
     @Id
-    @Column(name = "hash")
+    private Long id;
+
     private String hash;
 
     @Override

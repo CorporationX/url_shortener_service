@@ -13,11 +13,14 @@ import java.time.LocalDateTime;
 @Data
 public class Url {
     @Id
+    private Long id;
+
+    @Column(unique = true, nullable = false)
     private String hash;
 
     @Column(name = "url", nullable = false)
     private String url;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
