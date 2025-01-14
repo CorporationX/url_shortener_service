@@ -14,7 +14,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = """
                 SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :n) 
             """)
-    public List<Long> getUniqueNumbers(long n);
+    List<Long> getUniqueNumbers(long n);
 
     @Modifying
     @Query(nativeQuery = true, value = """
@@ -22,5 +22,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (SELECT hash FROM hash LIMIT :batchSize)
             RETURNING *
             """)
-    public List<Hash> getHashBatch(long batchSize);
+    List<Hash> getHashBatch(long batchSize);
 }

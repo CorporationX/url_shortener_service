@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class Url {
     @Id
     private String hash;
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, length = 6)
     private String url;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime localDateTime;

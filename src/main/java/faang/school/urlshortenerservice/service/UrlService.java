@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
-
-    private final
-
-    private final
+//    private final
+//    private final
 }
