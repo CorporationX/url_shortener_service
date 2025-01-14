@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Component
 public class BaseEncoderImpl implements BaseEncoder {
 
-    @Value("${encoder.base62}")
+    @Value("${hash.generator.encoder-base62}")
     private String base;
 
     @Override
