@@ -17,7 +17,6 @@ public class Base62Encoder {
 
     public List<String> encode(List<Long> numbers) {
         log.info("Start encoding : {} numbers", numbers.size());
-        //if will be a lot of numbers maybe should do parallel stream but should check is it necessary
         List<String> result = new ArrayList<>();
         numbers.forEach(number -> {
             StringBuilder encoded = new StringBuilder();

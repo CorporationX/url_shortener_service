@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.concurrent.TimeUnit;
+
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
@@ -17,7 +19,7 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     public void saveUrl(String hash, String longUrl) {
         String cacheKey = CACHE_KEY_PREFIX + hash;
 
-        redisTemplate.opsForValue().set(cacheKey, longUrl);
+        redisTemplate.opsForValue().set(cacheKey, longUrl, 1, TimeUnit.DAYS);
     }
 
     @Override
@@ -25,12 +27,5 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
         String cacheKey = CACHE_KEY_PREFIX + hash;
 
         return redisTemplate.opsForValue().get(cacheKey);
-    }
-
-    @Override
-    public void deleteUrl(String hash) {
-        String cacheKey = CACHE_KEY_PREFIX + hash;
-
-        redisTemplate.delete(cacheKey);
     }
 }

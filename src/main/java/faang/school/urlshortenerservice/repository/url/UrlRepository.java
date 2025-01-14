@@ -7,6 +7,7 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository {
+
     void save(String hash, String longUrl);
     Optional<String> findLongUrlByHash(String hash);
     List<String> retrieveAllUrlsElderOneYear();

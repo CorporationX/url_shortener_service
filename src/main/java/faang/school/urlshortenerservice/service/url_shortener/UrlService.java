@@ -30,7 +30,7 @@ public class UrlService {
         log.info("Hash - {}, Url - {} was saved to Url repository", hash, urlDto.getUrl());
 
         urlCacheRepository.saveUrl(hash, urlDto.getUrl());
-        log.info("Hash - {}, Url - {} was saved to Redis cash", hash, urlDto.getUrl());
+        log.info("Hash - {}, Url - {} was saved to UrlCache repository", hash, urlDto.getUrl());
 
         String shortenedUrl = domain + hash;
         log.info("Shortened Url - {}, was created", shortenedUrl);
@@ -45,10 +45,10 @@ public class UrlService {
             originalUrl = urlRepository.findLongUrlByHash(hash).
                     orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash));
             urlCacheRepository.saveUrl(hash, originalUrl);
-            log.info("Hash - {}, Url - {} was saved to Redis cash", hash, originalUrl);
+            log.info("Hash - {}, Url - {} was saved to UrlCache repository", hash, originalUrl);
         }
 
-        log.info("Original Url - {} related to Hash - {} was got", originalUrl, hash);
+        log.info("Got original Url - {} related to Hash - {}", originalUrl, hash);
         return originalUrl;
     }
 }

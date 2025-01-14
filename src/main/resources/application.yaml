@@ -30,11 +30,11 @@ logging:
     root: info
 
 url:
-  base-pattern: http://localhost:8080/
+  base-pattern: http://localhost:8080/api/v1/urls/
 
 hash:
   cash:
-    max-queue-size: 100
+    max-queue-size: 50
     percentage-to-start-fill: 20
     filling-batches-quantity: 10
 
@@ -44,9 +44,9 @@ async:
     max-pool-size: 20
     queue-capacity: 100
   filler:
-    core-pool-size: 10
-    max-pool-size: 20
-    queue-capacity: 100
+    core-pool-size: 3
+    max-pool-size: 6
+    queue-capacity: 30
 
 scheduler:
   cron:

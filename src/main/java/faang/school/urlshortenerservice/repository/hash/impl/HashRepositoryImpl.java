@@ -14,16 +14,15 @@ public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Long> getUniqueNumbers(int batchSize) {
-        String query = String.format(
-                "SELECT nextval('unique_numbers_for_hashes') FROM generate_series(1, %d)", batchSize
-        );
-        return jdbcTemplate.query(query, (rs, rowNum) -> rs.getLong(1));
+        String sql = "SELECT nextval('unique_numbers_for_hashes') " +
+                "FROM generate_series(1, ?)";
+
+        return jdbcTemplate.queryForList(sql, Long.class, batchSize);
     }
 
     public void saveHashes(List<String> hashes) {
         String query = "INSERT INTO hash (hash) VALUES (?)";
         jdbcTemplate.batchUpdate(query, hashes, hashes.size(), (ps, hash) -> ps.setString(1, hash));
-
     }
 
     public List<String> getHashBatch(int batchSize) {

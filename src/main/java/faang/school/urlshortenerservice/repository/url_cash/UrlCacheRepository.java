@@ -7,5 +7,4 @@ public interface UrlCacheRepository {
 
     void saveUrl(String hash, String url);
     String getUrl(String hash);
-    void deleteUrl(String hash);
 }

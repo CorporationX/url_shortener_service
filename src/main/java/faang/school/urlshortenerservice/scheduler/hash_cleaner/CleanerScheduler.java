@@ -21,10 +21,11 @@ public class CleanerScheduler {
     @Transactional
     @Scheduled(cron = "${scheduler.cron.clean-hashes}")
     public void cleanUnusedHashes() {
-        log.info("Start cleaning unused hashes");
+        log.info("Start cleaning hashes elder one year");
         List<String> hashes = urlRepository.retrieveAllUrlsElderOneYear();
-        log.info("{} hashes were retrieved from URL repository}",hashes.size());
+        log.info("{} hashes were retrieved from URL repository", hashes.size());
+
         hashRepository.saveHashes(hashes);
-        log.info("{} free hashes were saved to hash repository}",hashes.size());
+        log.info("{} free hashes were saved to hash repository}", hashes.size());
     }
 }

@@ -4,11 +4,10 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generatr.HashGenerator;
+import faang.school.urlshortenerservice.util.Util;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,34 +21,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@DependsOn("hashGenerator")
 public class HashCache {
 
     private final HashCacheQueueProperties queueProp;
-    private final HashRepositoryImpl hashRepositoryImpl;
+    private final HashRepositoryImpl hashRepository;
     private final HashGenerator hashGenerator;
     private final ThreadPool threadPool;
+    private final Util util;
 
-    //queueProp.getMaxQueueSize()
-    private final Queue<String> queue = new LinkedBlockingQueue<>(100);
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
+    private Queue<String> queue;
+
+    @PostConstruct
+    public void init() {
+        queue = new LinkedBlockingQueue<>(queueProp.getMaxQueueSize());
+    }
 
     @PostConstruct
     @Transactional
-    @Async(value = "hashCacheFillExecutor")
     public CompletableFuture<Void> fillCash() {
         int batchSize = queueProp.getMaxQueueSize() -
                 (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+
         log.info("Start filling local cash with {} elements", batchSize);
-
-        List<Integer> subBatches = getSubBatches(batchSize);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
+        List<String> hashes = hashRepository.getHashBatch(batchSize);
+        log.info("Got {} hashes from hash repository", hashes.size());
 
+        List<List<String>> subBatches = util.getBatches(hashes, queueProp.getFillingBatchesQuantity());
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
-                        queue.addAll(hashRepositoryImpl.getHashBatch(batch))
-                , threadPool.hashCacheFillExecutor())));
+                queue.addAll(batch), threadPool.hashCacheFillExecutor())));
 
-        hashGenerator.generateBatch(batchSize);
+        hashGenerator.generateBatchHashes(queueProp.getMaxQueueSize());
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
@@ -58,7 +61,9 @@ public class HashCache {
         if (isNecessaryToFill()) {
             if (!isFilling.get()) {
                 isFilling.compareAndSet(false, true);
-                waitForFill(fillCash());
+                CompletableFuture<Void> future = CompletableFuture.runAsync(this::fillCash,
+                        threadPool.hashCacheFillExecutor());
+                threadPool.hashCacheFillExecutor().execute(() -> waitForFillEnding(future));
             }
         }
         String hash = queue.poll();
@@ -66,24 +71,10 @@ public class HashCache {
         return hash;
     }
 
-    @Async(value = "hashCacheFillExecutor")
-    public void waitForFill(CompletableFuture<Void> future) {
+    private void waitForFillEnding(CompletableFuture<Void> future) {
         future.join();
         isFilling.set(false);
         log.info("Finished filling local cash");
-    }
-
-    private List<Integer> getSubBatches(int batchSize) {
-        List<Integer> subBatches = new ArrayList<>();
-        int subBatchesQuantity = queueProp.getFillingBatchesQuantity();
-        int baseBatchSize = batchSize / subBatchesQuantity;
-        int remainder = batchSize % subBatchesQuantity;
-
-        for (int i = 0; i < subBatchesQuantity; i++) {
-            int currentBatchSize = baseBatchSize + (i < remainder ? 1 : 0);
-            subBatches.add(currentBatchSize);
-        }
-        return subBatches;
     }
 
     private boolean isNecessaryToFill() {
