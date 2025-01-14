@@ -27,7 +27,10 @@ logging:
     root: info
 
 hash:
-  range: 10000
+  range: 1000
+  cache:
+    capacity: 1000
+    fill-percentage: 20
 
 async:
   thread-name-prefix: AsyncThread-
