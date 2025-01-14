@@ -1,0 +1,9 @@
+CREATE SEQUENCE unique_hash_number_seq
+    START WITH 69
+    INCREMENT BY 1;
+
+CREATE TABLE hash
+(
+    id   bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
+    hash VARCHAR(255) NOT NULL
+)
