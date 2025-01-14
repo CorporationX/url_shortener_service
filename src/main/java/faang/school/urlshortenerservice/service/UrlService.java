@@ -27,15 +27,15 @@ public class UrlService {
     private String port;
 
     public String getUrlByHash(String hash) {
-        log.info("getting url by hash {}", hash);
+        log.info("Getting url by hash: {}", hash);
         Url url = urlCacheRepository.findByHash(hash);
         if (url != null) {
             return url.getUrl();
         }
 
         url = urlRepository.findById(hash).orElseThrow(
-                () -> new EntityNotFoundException(String.format("url by hash: %s doesn't exist.", hash)));
-        log.info("returning url: {} by hash: {}", url.getUrl(), hash);
+                () -> new EntityNotFoundException(String.format("Url by hash = %s doesn't exist.", hash)));
+        log.info("Returning url = {} by hash = {}", url.getUrl(), hash);
         return url.getUrl();
     }
 
