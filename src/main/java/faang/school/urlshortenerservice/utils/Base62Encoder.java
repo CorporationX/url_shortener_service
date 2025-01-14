@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class Base62Encoder {
-    private static final String BASE62_CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String BASE62_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
     private static final int BASE = BASE62_CHARSET.length();
 
     public List<HashEntity> encode(List<Long> numbers) {
