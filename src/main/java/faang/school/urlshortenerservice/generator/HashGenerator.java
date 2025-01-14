@@ -28,7 +28,7 @@ public class HashGenerator {
     @Async("hashGeneratorExecutor")
     @Transactional
     public void generateBatch() {
-        List<Long> range = hashRepository.getNextRange(maxRange);
+        List<Long> range = hashRepository.getUniqueNumbers(maxRange);
 
         List<String> encodedHashes = base62Encoder.encode(range);
 

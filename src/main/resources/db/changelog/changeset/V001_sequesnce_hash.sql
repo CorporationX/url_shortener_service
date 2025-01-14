@@ -1,4 +1,4 @@
-CREATE SEQUENCE unique_hash_number_seq
+CREATE SEQUENCE unique_number_seq
     START WITH 69
     INCREMENT BY 1;
 
