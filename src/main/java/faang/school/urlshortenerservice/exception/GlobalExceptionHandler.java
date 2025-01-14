@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.exception;
 
 import faang.school.urlshortenerservice.dto.ExceptionDto;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,6 +28,21 @@ public class GlobalExceptionHandler {
         return new ExceptionDto(exceptionMessage);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionDto handleBadRequests(Exception ex) {
+        log.info("Handle exception", ex);
+
+        return new ExceptionDto("Invalid hash");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ExceptionDto methodNotAllowedHandler(Exception ex) {
+        log.info("Handle exception", ex);
+
+        return new ExceptionDto(ex.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
