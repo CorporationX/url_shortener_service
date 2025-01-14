@@ -18,6 +18,11 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: shortener_schema
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
