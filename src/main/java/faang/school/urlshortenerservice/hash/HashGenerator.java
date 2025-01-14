@@ -6,10 +6,11 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -17,16 +18,15 @@ import java.util.List;
 public class HashGenerator {
     @Value("${batchSize}")
     private long batchSize;
-
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+    private final ThreadPoolTaskExecutor taskExecutor;
 
-    @Async(value = "asyncExecutor")
     public void generateBatch() {
-        log.info("Генерируем батчи, тут поток с названием: {}", Thread.currentThread().getName());
         List<Long> forHashGenerate = hashRepository.getUniqueNumbers(batchSize);
-        List<Hash> hashes = base62Encoder.encode(forHashGenerate);
-        hashRepository.saveAll(hashes);
+        CompletableFuture.runAsync(() -> {
+            List<Hash> hashes = base62Encoder.encode(forHashGenerate);
+            hashRepository.saveAll(hashes);
+        }, taskExecutor);
     }
-
 }

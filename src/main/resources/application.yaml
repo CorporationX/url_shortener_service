@@ -38,6 +38,8 @@ async:
 alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 batchSize: 500
+
 hashCash:
   queueCapacity: 500
   percent: 0.2
+  batchSizeForRedis: 200

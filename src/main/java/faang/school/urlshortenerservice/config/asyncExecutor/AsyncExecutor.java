@@ -20,8 +20,8 @@ public class AsyncExecutor {
 
     private ThreadPoolTaskExecutor asyncExecutor;
 
-    @Bean
-    public TaskExecutor taskExecutor() {
+    @Bean("async")
+    public ThreadPoolTaskExecutor taskExecutor() {
         asyncExecutor = new ThreadPoolTaskExecutor();
         asyncExecutor.setCorePoolSize(corePoolSize);
         asyncExecutor.setMaxPoolSize(maxPoolSize);
