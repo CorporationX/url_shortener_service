@@ -17,6 +17,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
@@ -24,10 +29,24 @@ logging:
   level:
     root: info
 
-url:
-  hash:
-    get-count: 10000
-    generate-count: 100000
+api:
+  current-version: v1
+
+short-url:
+  base-domain: http://localhost:${server.port}
+  base-path: api/${api.current-version}/url
+
+  cache-settings:
+    popular-ttl-hours: 24
+    default-ttl-minutes: 10
+    default-cache-name: shortUrls
+    popular-hash-max-count: 10
+    short-url-request-stats-cache-name: shortUrlStats
+    reset-short-url-request-stats-cron: "0 0 0/3 * * ?"
+
+  hash-generation-settings:
+    cache-preload-size: 10000
+    db-create-batch-size: 100000
 
 async:
   thread-name-prefix: UrlHashAsyncThread-

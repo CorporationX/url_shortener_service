@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS url (
     hash        VARCHAR(6) PRIMARY KEY,
-    url         TEXT NOT NULL,
+    url         VARCHAR(512) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

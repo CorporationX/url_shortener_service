@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.properties.short_url.ShortUrlProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,9 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepository {
 
-    @Value("${url.hash.get-count}")
-    private int hashGetCount;
-
+    private final ShortUrlProperties shortUrlProperties;
     private final JdbcTemplate jdbcTemplate;
 
     public List<Long> getUniqueNumbers(int numbersCount) {
@@ -42,13 +40,15 @@ public class HashRepository {
         String getHashBatchQuery = """
                 DELETE FROM hash
                 WHERE hash in (
-                    SELECT hash 
-                    FROM hash
+                    SELECT hash FROM hash
                     LIMIT ?
                 )
                 RETURNING hash;
                 """;
 
-        return jdbcTemplate.queryForList(getHashBatchQuery, String.class, hashGetCount);
+        return jdbcTemplate.queryForList(getHashBatchQuery,
+                String.class,
+                shortUrlProperties.getHashGenerationSettings().getCachePreloadSize()
+        );
     }
 }
