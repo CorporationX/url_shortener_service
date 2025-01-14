@@ -94,13 +94,6 @@ configurations.all {
     }
 }
 
-jsonSchema2Pojo {
-    setSource(files("src/main/resources/json"))
-    targetDirectory = file("${project.buildDir}/generated-sources/js2p")
-    targetPackage = "com.json.student"
-    setSourceType("jsonschema")
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
 }
