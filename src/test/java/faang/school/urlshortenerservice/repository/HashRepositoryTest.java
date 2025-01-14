@@ -52,7 +52,7 @@ class HashRepositoryTest {
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5")
     void test_getUniqueNumbers_Success() {
-        List<Long> result = hashRepository.getUniqueNumbers(5);
+        List<Long> result = hashRepository.getUniqueNumbers(5L);
         System.out.println(result);
 
         assertNotNull(result);
@@ -63,7 +63,7 @@ class HashRepositoryTest {
     @Test
     @DisplayName("Get empty list if queries amount < 1")
     void test_getUniqueNumbers_Fail_EmptyList() {
-        List<Long> result = hashRepository.getUniqueNumbers(0);
+        List<Long> result = hashRepository.getUniqueNumbers(0L);
         System.out.println(result);
 
         assertNotNull(result);
@@ -73,14 +73,14 @@ class HashRepositoryTest {
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5, then next 3")
     void test_getUniqueNumbers_Success_DoubleRequest() {
-        List<Long> resultOne = hashRepository.getUniqueNumbers(5);
+        List<Long> resultOne = hashRepository.getUniqueNumbers(5L);
         System.out.println(resultOne);
 
         assertNotNull(resultOne);
         assertEquals(5, resultOne.size());
         assertEquals(1, resultOne.get(0));
 
-        List<Long> resultTwo = hashRepository.getUniqueNumbers(3);
+        List<Long> resultTwo = hashRepository.getUniqueNumbers(3L);
         System.out.println(resultTwo);
 
         assertNotNull(resultTwo);

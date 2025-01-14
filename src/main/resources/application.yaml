@@ -23,6 +23,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  async:
+    queue_capacity: 100
+
 server:
   port: 8080
 
