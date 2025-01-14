@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.config.context;
 
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +13,9 @@ public class UserContext {
     }
 
     public long getUserId() {
-        return userIdHolder.get();
+        Long userId = userIdHolder.get();
+        if(userId == null) throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+        return userId;
     }
 
     public void clear() {
