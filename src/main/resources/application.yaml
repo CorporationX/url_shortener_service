@@ -20,6 +20,25 @@ spring:
 server:
   port: 8080
 
+async-config:
+  generate_hash:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 1000
+    thread_name_prefix: GenerateHash-Async-
+
+range_seq:
+  range: 10000
+
+range_capacity:
+  queue: 10000
+
+fill_percent:
+  percent: 20
+
+scheduled:
+  cron: 0 0 0 * * *
+
 logging:
   level:
     root: info
