@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
     username: user
     password: password
 
@@ -12,7 +12,13 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        order_inserts: true
+        order_updates: true
+        format_sql: false
+        jdbc:
+          batch_size: 50
+        generate_statistics: true
+        batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -26,3 +32,4 @@ logging:
 
 url-shortener:
   unique-numbers-from-sequence: 100_000
+  short-free-url-amount: 10_000

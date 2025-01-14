@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Getter
 @Entity
@@ -17,5 +18,6 @@ public class Hash {
 
     @Id
     @Column(name = "hash")
+    @BatchSize(size = 50)
     private String shortUrl;
 }

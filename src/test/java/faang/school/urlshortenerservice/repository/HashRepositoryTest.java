@@ -1,10 +1,13 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -29,7 +32,8 @@ class HashRepositoryTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        String urlWithRewrite = postgres.getJdbcUrl() + "?reWriteBatchedInserts=true";
+        registry.add("spring.datasource.url", () -> urlWithRewrite);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
@@ -37,9 +41,17 @@ class HashRepositoryTest {
     @Autowired
     private HashRepository hashRepository;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("ALTER SEQUENCE unique_number_seq RESTART WITH 1");
+    }
+
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5")
-    void test_GetListOfUniqueNumbers_Success() {
+    void test_getUniqueNumbers_Success() {
         List<Long> result = hashRepository.getUniqueNumbers(5);
         System.out.println(result);
 
@@ -50,7 +62,7 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get empty list if queries amount < 1")
-    void test_GetListOfUniqueNumbers_Fail_EmptyList() {
+    void test_getUniqueNumbers_Fail_EmptyList() {
         List<Long> result = hashRepository.getUniqueNumbers(0);
         System.out.println(result);
 
@@ -60,7 +72,7 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5, then next 3")
-    void test_GetListOfUniqueNumbers_Success_DoubleRequest() {
+    void test_getUniqueNumbers_Success_DoubleRequest() {
         List<Long> resultOne = hashRepository.getUniqueNumbers(5);
         System.out.println(resultOne);
 
@@ -74,5 +86,27 @@ class HashRepositoryTest {
         assertNotNull(resultTwo);
         assertEquals(3, resultTwo.size());
         assertEquals(6, resultTwo.get(0));
+    }
+
+    @Test
+    @DisplayName("Get hashes in batch")
+    void test_getHashBatch_Success() {
+        int entriesAmount = 30;
+        populateDb(entriesAmount);
+
+        List<Hash> result = hashRepository.getHashBatch(10);
+        result.forEach(x -> System.out.println(x.getShortUrl()));
+        Long remainingHashes = hashRepository.count();
+
+        assertNotNull(result);
+        assertEquals(10, result.size());
+        assertEquals(20, remainingHashes);
+    }
+
+    private void populateDb(int amount) {
+        for (int i = 0; i < amount; i++) {
+            Hash hash = new Hash(String.valueOf(i));
+            hashRepository.save(hash);
+        }
     }
 }
