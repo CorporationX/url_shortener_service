@@ -26,13 +26,13 @@ logging:
 
 hash:
   generator:
-    batch-size: 100
+    batch-size: 10000
     encoder-base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     async:
       thread-pool-size: 4
       thread-queue-capacity: 100
       thread-name-prefix: HashGenerator-
-    cron: 0 0 * * * *
+    cron: 0/20 * * * * *
   cache:
-    capacity: 100000
+    capacity: 1000
     fill-percent: 20
