@@ -35,13 +35,18 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (freeHashesQueue.size() < hashProperties.getCacheCapacity() * hashProperties.getMinPercentageThreshold() / 100) {
+        if (needToFillQueue()) {
             if (isQueueBeingUpdated.compareAndSet(false, true)) {
                 log.info("Queue size below threshold. Triggering async replenishment.");
                 hashGenerator.getHashesAsync(hashProperties.getCacheCapacity() - freeHashesQueue.size())
                         .thenRun(hashGenerator::generateBatch);
+                isQueueBeingUpdated.set(false);
             }
         }
         return freeHashesQueue.poll();
+    }
+
+    private boolean needToFillQueue() {
+        return freeHashesQueue.size() < hashProperties.getCacheCapacity() * hashProperties.getMinPercentageThreshold() / 100;
     }
 }
