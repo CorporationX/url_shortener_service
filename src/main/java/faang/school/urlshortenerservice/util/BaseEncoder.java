@@ -17,10 +17,6 @@ public class BaseEncoder {
     private String characters;
 
     public List<String> encodeList(List<Long> numbers) {
-        if (numbers == null || numbers.isEmpty()) {
-            throw new RuntimeException("The list of numbers to encode is null or empty");
-        }
-
         List<String> hashes = new ArrayList<>();
         numbers.forEach(number -> hashes.add(encode(number)));
         return hashes;
