@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.util;
 
-import faang.school.urlshortenerservice.exception.DataValidationException;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,7 @@ public class BaseEncoder {
 
     public List<String> encodeList(List<Long> numbers) {
         if (numbers == null || numbers.isEmpty()) {
-            throw new DataValidationException("The list of numbers to encode must not be null or empty");
+            throw new RuntimeException("The list of numbers to encode is null or empty");
         }
 
         List<String> hashes = new ArrayList<>();
