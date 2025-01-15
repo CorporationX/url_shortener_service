@@ -7,6 +7,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,10 +19,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-@RequiredArgsConstructor
+@Slf4j
 public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final HashRepository hashRepository;
+    private final AtomicBoolean aBoolean;
     @Value("${hash.generate_size:5000}")
     private long generateSize;
     @Value("${hash.get_size:2700}")
@@ -29,10 +32,17 @@ public class HashGenerator {
     private long minSize;
     @Value("${hash.rep_mid_size:7000}")
     private long hashForSchedulerSize;
-    private AtomicBoolean aBoolean = new AtomicBoolean(false);
+
+    public HashGenerator(Base62Encoder base62Encoder, HashRepository hashRepository,
+                         @Qualifier("hashGeneratorAtomicBoolean") AtomicBoolean aBoolean) {
+        this.base62Encoder = base62Encoder;
+        this.hashRepository = hashRepository;
+        this.aBoolean = aBoolean;
+    }
 
     @PostConstruct
-    public void init(){
+    public void init() {
+        log.info("init values at db if needed");
         generateHash();
     }
 
@@ -40,23 +50,32 @@ public class HashGenerator {
     @Scheduled(cron = "${hash.cache.generate_hash_time}")
     @Async
     public void generateHash() {
+        log.info("check the database for a non-redundant number of values");
         while (hashRepository.count() <= hashForSchedulerSize) {
 
+            log.info("Not enough values at db , creating new values");
             List<Hash> hashes = base62Encoder.encode(hashRepository.getUniqueNumbers(generateSize)).stream()
                     .map(Hash::new)
                     .toList();
 
+            log.info("save new values as butch");
             hashRepository.saveAll(hashes);
         }
     }
 
     @Transactional
     public List<Hash> findAndDelete() {
+        log.info("getting new hash from db");
         List<Hash> hashes = hashRepository.findAndDelete(getSize);
 
         if (hashRepository.count() <= minSize) {
             if (aBoolean.compareAndExchange(false, true)) {
-                CompletableFuture.runAsync(this::generateHash).thenRun(() -> aBoolean.set(false));
+
+                log.info("start generating new hash");
+                CompletableFuture.runAsync(() -> {
+                    log.info("start new Thread to generate hash");
+                    generateHash();
+                }).thenRun(() -> aBoolean.set(false));
             }
         }
 

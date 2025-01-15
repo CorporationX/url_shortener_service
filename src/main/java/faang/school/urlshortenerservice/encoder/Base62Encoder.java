@@ -25,6 +25,11 @@ public class Base62Encoder {
 
         List<String> resultList = new ArrayList<>();
 
+        log.info("""
+                divide by base62.length and getting chat an position base62.chars 
+                may be produced arithmetic exception  and IndexOutOfBoundsException 
+                check values at application.yml
+                """);
         for (Long number : numbers) {
             StringBuilder result = new StringBuilder();
             while (number > 0) {

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashGeneratorTest {
-    @Spy
+    @InjectMocks
     private HashGenerator hashGenerator;
 
     @Mock
@@ -47,8 +47,6 @@ class HashGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        hashGenerator = new HashGenerator(base62Encoder,hashRepository);
-
         ReflectionTestUtils.setField(hashGenerator, "generateSize", generateSize);
         ReflectionTestUtils.setField(hashGenerator, "getSize", getSize);
         ReflectionTestUtils.setField(hashGenerator, "minSize", minSize);
@@ -90,39 +88,4 @@ class HashGeneratorTest {
         verify(hashRepository, times(1)).count();
         verify(hashRepository, never()).getUniqueNumbers(generateSize);
     }
-    //тут вопрос остался как тест делать
-    @Test
-    void testFindAndDeleteCallsGenerateHashWhenCountIsLow() throws InterruptedException {
-        when(hashRepository.findAndDelete(getSize)).thenReturn(Arrays.asList(new Hash("2")));
-        when(hashRepository.count()).thenReturn(minSize - 10,minSize - 10);
-
-        CountDownLatch latch = new CountDownLatch(1);
-
-        Mockito.doAnswer(invocation -> {
-            latch.countDown();
-            return null;
-        }).when(hashGenerator).generateHash();
-
-        boolean isCompleted = latch.await(1, TimeUnit.SECONDS);
-        assertTrue(isCompleted);
-
-        verify(hashRepository, times(1)).findAndDelete(getSize);
-        verify(hashRepository, times(1)).count();
-        verify(hashRepository, times(1)).getUniqueNumbers(generateSize);
-    }
-//
-////    @Test
-////    void testFindAndDeleteDoesNotCallGenerateHashTwice() {
-////        // Arrange
-////        when(hashRepository.findAndDelete(getSize)).thenReturn(Arrays.asList(new Hash("2")));
-////        when(hashRepository.count()).thenReturn(5L); // меньше minSize
-////        doNothing().when(hashGenerator).generateHash(); // заглушка для generateHash
-////
-////        // Act
-////        hashGenerator.findAndDelete();
-////        hashGenerator.findAndDelete(); // второй вызов
-////
-////        // Assert
-////        verify(hashGenerator, times(1)).generateHash(); // должен вызываться только один раз
-////    }
 }

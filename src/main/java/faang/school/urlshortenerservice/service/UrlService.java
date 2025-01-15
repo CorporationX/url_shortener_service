@@ -7,6 +7,8 @@ import faang.school.urlshortenerservice.local_cache.LocalCache;
 import faang.school.urlshortenerservice.validator.UrlServiceValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -14,46 +16,58 @@ import java.net.URL;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlServiceValidator urlServiceValidator;
     private final LocalCache localCache;
     private final UrlCacheRepository urlCacheRepository;
-    private final String link = "http://localhost:8080/api/v1/shorter/redirect/";
+    @Value("${link}")
+    private String link;
 
+    //тут вопрос если одна и та же ссылка приходит мы что делает ? просто возвращаем из бд или новый hash ?
     @Transactional
-    public URL createNewShortUrl(URL url){
+    public URL createNewShortUrl(URL url) {
+        log.info("calling localCache to get hash");
         String hash = localCache.getCache();
 
         Url entityUrl = new Url();
         entityUrl.setHash(hash);
         entityUrl.setUrl(url);
 
+        log.info("saving hash and url at db and redis");
         urlRepository.save(entityUrl);
         urlCacheRepository.saveAtRedis(entityUrl);
 
         return createShortURLWithHash(hash);
     }
 
-    public URL getUrl(String hash){
-        Url url = urlRepository.findByHash(hash);
-        return url.getUrl();
-    }
+    public URL getUrl(String hash) {
+        log.info("trying to find url at redis");
+        URL result = urlCacheRepository.getFromRedis(hash);
 
-    private URL convertStrToURL(String url){
+        if (result != null) {
+            return result;
+        }
+
         try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid url");
+            log.info("trying to find url at db");
+            Url url = urlRepository.findByHash(hash);
+            return url.getUrl();
+        } catch (Exception e) {
+            log.error("cant fiend url at redis and db", e);
+            throw new IllegalArgumentException("can't redirect to main ulr , incorrect hash", e);
         }
     }
 
-    private URL createShortURLWithHash(String hash){
+    private URL createShortURLWithHash(String hash) {
         String fullUrl = link.concat(hash);
         try {
+            log.info("trying to create new short url");
             return new URL(fullUrl);
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Something went wrong when creating shortUrl");
+            log.error("cant create url with given link and hash, check properties");
+            throw new IllegalArgumentException("Something went wrong when creating shortUrl", e);
         }
     }
 }
