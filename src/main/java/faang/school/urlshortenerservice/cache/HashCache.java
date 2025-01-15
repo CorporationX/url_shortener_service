@@ -24,7 +24,7 @@ public class HashCache {
     @Value("${hashCash.redisBatchSize}")
     private int redisBatchSize;
 
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
+    private final AtomicBoolean isCacheFilling = new AtomicBoolean(false);
     private final ThreadPoolTaskExecutor taskExecutor;
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
@@ -37,70 +37,17 @@ public class HashCache {
         caches.addAll(hashRepository.getHashBatch(redisBatchSize));
     }
 
-//    public Hash getHash() {
-//        synchronized (this) {
-//            int threshold = (int) (cache.size() * percent);
-//
-//            if (cache.size() < threshold) {
-//                try {
-//                    return cache.take();
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//
-//            if (isFilling.compareAndSet(false, true)) {
-//                asyncExecutor.asyncExecutor().execute(() -> {
-//                    try {
-//                        fillCacheFromRepository();
-//                        generateAdditionalHashes();
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    } finally {
-//                        isFilling.set(false);
-//                    }
-//                });
-//            }
-//        }
-//
-//        return cache.poll();
-//    }
-//
-//    private void fillCacheFromRepository() {
-//        try {
-//            int missingHashes = queueCapacity - cache.size();
-//            var newHashes = hashRepository.getHashBatch(missingHashes);
-//
-//            cache.addAll(newHashes);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    private void generateAdditionalHashes() {
-//        try {
-//            hashGenerator.generateBatch();
-//            var generatedHashes = hashRepository.getHashBatch(redisBatchSize);
-//
-//            hashRepository.saveAll(generatedHashes);
-//            cache.addAll(generatedHashes);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-
     public Hash getHash() {
         if (caches.size() <= redisBatchSize * percent) {
-            if (isFilling.compareAndSet(false, true)) {
+            if (isCacheFilling.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
                     try {
                         hashGenerator.generateBatch();
                         caches.addAll(hashRepository.getHashBatch(redisBatchSize));
                     } catch (Exception e) {
-                        throw new RuntimeException("Something wrong: " + e.getMessage());
+                        throw new RuntimeException("Something went wrong when adding hash to cache: " + e.getMessage(), e);
                     } finally {
-                        isFilling.set(false);
+                        isCacheFilling.set(false);
                     }
                 }, taskExecutor);
             }
@@ -108,7 +55,7 @@ public class HashCache {
         try {
             return caches.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException("что то отвалилось пока ждали хеш : " + e.getMessage(), e.getCause());
+            throw new RuntimeException("Something went wrong when getting hash: " + e.getMessage(), e.getCause());
         }
     }
 }
