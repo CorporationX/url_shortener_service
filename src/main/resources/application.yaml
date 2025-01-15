@@ -26,7 +26,7 @@ logging:
 
 hash:
   generator:
-    batch-size: 10000
+    batch-size: 10
     encoder-base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     async:
       thread-pool-size: 4
@@ -34,9 +34,12 @@ hash:
       thread-name-prefix: HashGenerator-
     cron: 0 0 * * * *
   cache:
-    capacity: 1000
+    capacity: 10
     fill-percent: 20
+  cleaner:
+    cron: 0 0 * * * *
+    times: 1
 
 urlShortener:
   protocol: https
-  domain: www.shorturl.bk
+  domain: www.shorturl.bk/fdf4
