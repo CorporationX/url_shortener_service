@@ -20,7 +20,7 @@ public class UrlService {
     private final UrlRepositoryImpl urlRepository;
     private final HashCache hashCache;
 
-    @Value("${url.base-pattern}")
+    @Value("${url.domain}")
     private String domain;
 
     @Transactional
@@ -42,7 +42,7 @@ public class UrlService {
         String originalUrl = urlCacheRepository.getUrl(hash);
 
         if (originalUrl == null) {
-            originalUrl = urlRepository.findLongUrlByHash(hash).
+            originalUrl = urlRepository.findOriginalUrlByHash(hash).
                     orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash));
             urlCacheRepository.saveUrl(hash, originalUrl);
             log.info("Hash - {}, Url - {} was saved to UrlCache repository", hash, originalUrl);

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -16,18 +15,21 @@ public class Base62Encoder {
     private static final int BASE = BASE62_ALPHABET.length();
 
     public List<String> encode(List<Long> numbers) {
-        log.info("Start encoding : {} numbers", numbers.size());
-        List<String> result = new ArrayList<>();
-        numbers.forEach(number -> {
-            StringBuilder encoded = new StringBuilder();
-            while (number > 0) {
-                int remainder = (int) (number % BASE);
-                encoded.append(BASE62_ALPHABET.charAt(remainder));
-                number /= BASE;
-            }
-            result.add(encoded.reverse().toString());
-        });
-        log.info("End encoding : {} hashes", result.size());
+        log.info("Start encoding: {} numbers", numbers.size());
+        List<String> result = numbers.stream()
+                .map(this::encodeNumber)
+                .toList();
+
+        log.info("End encoding: {} hashes", result.size());
         return result;
+    }
+
+    private String encodeNumber(Long number) {
+        StringBuilder encoded = new StringBuilder();
+        while (number > 0) {
+            encoded.append(BASE62_ALPHABET.charAt((int) (number % BASE)));
+            number /= BASE;
+        }
+        return encoded.reverse().toString();
     }
 }

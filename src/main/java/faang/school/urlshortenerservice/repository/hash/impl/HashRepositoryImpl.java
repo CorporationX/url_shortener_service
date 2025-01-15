@@ -22,6 +22,7 @@ public class HashRepositoryImpl implements HashRepository {
 
     public void saveHashes(List<String> hashes) {
         String query = "INSERT INTO hash (hash) VALUES (?)";
+
         jdbcTemplate.batchUpdate(query, hashes, hashes.size(), (ps, hash) -> ps.setString(1, hash));
     }
 

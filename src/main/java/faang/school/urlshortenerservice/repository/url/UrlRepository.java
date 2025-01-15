@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface UrlRepository {
 
     void save(String hash, String longUrl);
-    Optional<String> findLongUrlByHash(String hash);
-    List<String> retrieveAllUrlsElderOneYear();
+    Optional<String> findOriginalUrlByHash(String hash);
+    List<String> deleteUrlsOlderThanOneYear();
 }

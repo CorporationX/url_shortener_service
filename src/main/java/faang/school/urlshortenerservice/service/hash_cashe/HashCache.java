@@ -42,12 +42,12 @@ public class HashCache {
     public CompletableFuture<Void> fillCash() {
         int batchSize = queueProp.getMaxQueueSize() -
                 (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
-
         log.info("Start filling local cash with {} elements", batchSize);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
         List<String> hashes = hashRepository.getHashBatch(batchSize);
         log.info("Got {} hashes from hash repository", hashes.size());
 
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
         List<List<String>> subBatches = util.getBatches(hashes, queueProp.getFillingBatchesQuantity());
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
                 queue.addAll(batch), threadPool.hashCacheFillExecutor())));

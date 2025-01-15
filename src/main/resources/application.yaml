@@ -30,7 +30,8 @@ logging:
     root: info
 
 url:
-  base-pattern: http://localhost:8080/api/v1/urls/
+  domain: http://localhost:${server.port}${url.path}}
+  path: /api/v1/urls/
 
 hash:
   cash:

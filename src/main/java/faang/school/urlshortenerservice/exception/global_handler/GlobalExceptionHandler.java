@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.exception.global_handler;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +19,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return buildResponse(e);
+        String errorMessage = e.getBindingResult().getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation error");
+        return buildResponseWithParticularMessage(e, errorMessage);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("Validation error");
+        return buildResponseWithParticularMessage(e, errorMessage);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -27,9 +43,17 @@ public class GlobalExceptionHandler {
     }
 
     private ErrorResponse buildResponse(Exception e) {
-        log.error(e.getMessage(), e);
+        return build(e, e.getMessage());
+    }
+
+    private ErrorResponse buildResponseWithParticularMessage(Exception e, String errorMessage) {
+        return build(e, errorMessage);
+    }
+
+    private ErrorResponse build(Exception e, String errorMessage) {
+        log.error(errorMessage, e);
         return ErrorResponse.builder()
-                .message(e.getMessage())
+                .message(errorMessage)
                 .error(e.getClass().getSimpleName())
                 .timestamp(LocalDateTime.now())
                 .build();

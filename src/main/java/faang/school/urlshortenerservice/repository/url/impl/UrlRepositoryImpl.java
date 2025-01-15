@@ -22,7 +22,7 @@ public class UrlRepositoryImpl implements UrlRepository {
     }
 
     @Override
-    public Optional<String> findLongUrlByHash(String hash) {
+    public Optional<String> findOriginalUrlByHash(String hash) {
         String sql = "SELECT long_url FROM url WHERE hash = ?";
 
         String url = jdbcTemplate.queryForObject(sql, new Object[]{hash}, String.class);
@@ -30,7 +30,7 @@ public class UrlRepositoryImpl implements UrlRepository {
     }
 
     @Override
-    public List<String> retrieveAllUrlsElderOneYear() {
+    public List<String> deleteUrlsOlderThanOneYear() {
         String sql = """
                 DELETE FROM url
                 WHERE created_at < (CURRENT_TIMESTAMP - INTERVAL '1 year')

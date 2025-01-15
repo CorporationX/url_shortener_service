@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
 @Data
@@ -16,6 +17,7 @@ public class UrlDto {
 
     @NotNull(message = "Url can't be null")
     @NotBlank(message = "Url can't be blank")
+    @Length(max = 2048)
     @URL(message = "Invalid URL format")
     private String url;
 }
