@@ -32,11 +32,18 @@ logging:
     root: info
 
 app:
-  count_of_generated_hashes: 1000
-  cache_volume: 100
+  count_of_generated_hashes: 10000
+  cache_capacity: 1000
+  cache_to_store_coefficient: 3
+  cache_min_volume_percent: 20
   base62_chars: SlTc6wVygLdOsbutzEDneAK5GZpImMrxfXYvF1aoN2k83JiUWRCqQ97jHP40Bh
   hash_generator_thread_pool:
     core_size: 2
-    max_size: 16
+    max_size: 8
     keep_alive_millisecond: 5000
+    queue_size: 1000
+  hash_cache_thread_pool:
+    core_size: 2
+    max_size: 16
+    keep_alive_millisecond: 2000
     queue_size: 1000

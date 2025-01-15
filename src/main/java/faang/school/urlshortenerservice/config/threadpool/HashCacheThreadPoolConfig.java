@@ -12,14 +12,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class HashGeneratorThreadPoolConfig {
-    @Value("${app.hash_generator_thread_pool.core_size:2}")
+public class HashCacheThreadPoolConfig {
+    @Value("${app.hash_cache_thread_pool.core_size:2}")
     private int coreSize;
-    @Value("${app.hash_generator_thread_pool.max_size:16}")
+    @Value("${app.hash_cache_thread_pool.max_size:16}")
     private int maxSize;
-    @Value("${app.hash_generator_thread_pool.keep_alive_millisecond:5000}")
+    @Value("${app.hash_cache_thread_pool.keep_alive_millisecond:2000}")
     private long keepAliveTime;
-    @Value("${app.hash_generator_thread_pool.queue_size:10000}")
+    @Value("${app.hash_cache_thread_pool.queue_size:1000}")
     private int queueSize;
     BlockingQueue<Runnable> workQueue;
 
@@ -29,7 +29,7 @@ public class HashGeneratorThreadPoolConfig {
     }
 
     @Bean
-    public ExecutorService hashGeneratorThreadPool() {
+    public ExecutorService hashCacheThreadPool() {
         return new ThreadPoolExecutor(
                 coreSize,
                 maxSize,
