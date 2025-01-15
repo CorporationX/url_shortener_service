@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-public class LocalCache {
+public class HashCache {
 
     private final HashGenerator hashGenerator;
     private AtomicBoolean filling = new AtomicBoolean(false);

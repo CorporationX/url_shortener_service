@@ -16,21 +16,17 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private final String BASE_62_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
     private final UniqueHashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
 
     @Value("${range_seq.range}")
     private int maxRange;
 
     @Transactional
-    @Scheduled(cron = "${scheduled.cron}")
-    public void generateHash() {
+    @Scheduled(cron = "${scheduled.cron_generated}")
+    public void generateBatch() {
         List<Long> range = hashRepository.getNextRange(maxRange);
-        List<Hash> hashes = range.parallelStream()
-                .map(this::applyBase62)
-                .map(Hash::new)
-                .toList();
+        List<Hash> hashes = base62Encoder.encode(range);
         hashRepository.saveAll(hashes);
     }
 
@@ -38,7 +34,7 @@ public class HashGenerator {
     public List<String> getHashes(long amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
-            generateHash();
+            generateBatch();
             hashes.addAll(hashRepository.findAndDelete(amount-hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).toList();
@@ -47,15 +43,6 @@ public class HashGenerator {
     @Async("generateHashPool")
     public CompletableFuture<List<String>> getHashesAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
-    }
-
-    private String applyBase62(long number) {
-        StringBuilder hash = new StringBuilder();
-        while (number > 0) {
-            hash.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
-            number /= BASE_62_CHARACTERS.length();
-        }
-        return hash.toString();
     }
 
 }

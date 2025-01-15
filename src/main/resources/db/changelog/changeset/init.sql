@@ -9,5 +9,5 @@ CREATE TABLE hash (
 );
 
 CREATE SEQUENCE unique_hash_number_seq
-    START WITH 1
+    START WITH 123
     INCREMENT BY 1;
