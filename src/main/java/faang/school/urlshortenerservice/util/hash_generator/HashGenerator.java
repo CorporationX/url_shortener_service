@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +28,6 @@ public class HashGenerator {
         return hashes;
     }
 
-    @Transactional
     public void generateBatch() {
         long newHashesCount = hashProperties.getDbCreateMaxCount();
         log.info("Generating new {} hashes for urls...", newHashesCount);
