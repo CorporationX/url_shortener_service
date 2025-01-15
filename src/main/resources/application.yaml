@@ -37,7 +37,7 @@ async:
 
 alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
-batchSize: 500
+batchSize: 100
 
 hashCash:
   queueCapacity: 500
