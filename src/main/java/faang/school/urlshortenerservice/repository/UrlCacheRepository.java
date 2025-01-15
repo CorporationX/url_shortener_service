@@ -16,9 +16,14 @@ public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
     private final UrlCacheProperties urlCacheProperties;
 
-    public void save(String hash, String originalUrl, int ttl, TimeUnit timeUnit) {
+    public void saveDefaultUrl(String hash, String originalUrl) {
         String shortUrlKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
-        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, ttl, timeUnit);
+        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, urlCacheProperties.getDefaultTtlMinutes(), TimeUnit.MINUTES);
+    }
+
+    public void savePopularUrl(String hash, String originalUrl) {
+        String shortUrlKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
+        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, urlCacheProperties.getPopularTtlHours(), TimeUnit.HOURS);
     }
 
     public Optional<String> getOriginalUrl(String hash) {

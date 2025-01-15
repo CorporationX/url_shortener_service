@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.scheduler.popular_hash;
 
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.properties.short_url.UrlCacheProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class PopularUrlHashesUpdateScheduler {
 
     private final UrlService urlService;
     private final UrlCacheRepository urlCacheRepository;
-    private final UrlCacheProperties urlCacheProperties;
     private final RedissonClient redissonClient;
 
     @Value("${scheduler.update-popular-url-hashes.rlock-name}")
@@ -40,12 +38,7 @@ public class PopularUrlHashesUpdateScheduler {
                 Set<String> popularUrlHashes = urlCacheRepository.getPopularUrlHashes();
                 urlCacheRepository.resetShortUrlRequestStats();
                 List<Url> urlEntities = urlService.findUrlEntities(popularUrlHashes);
-                urlEntities.forEach(url -> urlCacheRepository.save(
-                        url.getHash(),
-                        url.getUrl(),
-                        urlCacheProperties.getPopularTtlHours(),
-                        TimeUnit.HOURS)
-                );
+                urlEntities.forEach(url -> urlCacheRepository.savePopularUrl(url.getHash(), url.getUrl()));
                 log.info("Finished updating cache for popular short URLs.");
             } else {
                 log.info("Another instance is already processing the popular URL hashes update.");

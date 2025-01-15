@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.properties.short_url.BaseUrlProperties;
-import faang.school.urlshortenerservice.properties.short_url.UrlCacheProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlUtil;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -29,7 +27,6 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final BaseUrlProperties baseUrlProperties;
-    private final UrlCacheProperties urlCacheProperties;
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
@@ -39,7 +36,7 @@ public class UrlService {
         String freeHash = hashCache.getHash();
         urlRepository.save(createUrlEntity(urlDto.getUrl(), freeHash));
         String shortUrl = "%s/%s".formatted(createBaseUrl(), freeHash);
-        saveToDefaultCache(freeHash, urlDto.getUrl());
+        urlCacheRepository.saveDefaultUrl(freeHash, urlDto.getUrl());
 
         log.info("Short URL={} for original URL={} was created!", shortUrl, urlDto.getUrl());
         return shortUrl;
@@ -50,7 +47,7 @@ public class UrlService {
         String originalUrl = urlCacheRepository.getOriginalUrl(hash)
                 .orElseGet(() -> {
                     String originalUrlFromDb = getOriginalUrlFromDb(hash);
-                    saveToDefaultCache(hash, originalUrlFromDb);
+                    urlCacheRepository.saveDefaultUrl(hash, originalUrlFromDb);
                     return originalUrlFromDb;
                 });
         urlCacheRepository.updateShortUrlRequestStats(hash);
@@ -65,10 +62,6 @@ public class UrlService {
     private String getOriginalUrlFromDb(String hash) {
         return urlRepository.findOriginalUrlByHash(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Original URL not found for hash: %s".formatted(hash)));
-    }
-
-    private void saveToDefaultCache(String hash, String originalUrl) {
-        urlCacheRepository.save(hash, originalUrl, urlCacheProperties.getDefaultTtlMinutes(), TimeUnit.MINUTES);
     }
 
     private void validateUrl(String url) {
