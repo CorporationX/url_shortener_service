@@ -36,3 +36,8 @@ logging:
 
 batch:
   size: 100
+
+scheduler:
+  cleaner:
+    cron: 0 * * * * *
+#    cron: 0 0 0 * * *

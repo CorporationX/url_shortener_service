@@ -25,4 +25,10 @@ public interface HashRepository extends JpaRepository<HashEntity, String> {
     List<String> getAvailableHashes();
 
     HashEntity findByHash(String hash);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE hash SET is_used = false WHERE hash IN :hashes", nativeQuery = true)
+    void saveUnusedHashes(@Param("hashes") List<String> hashes);
+
 }

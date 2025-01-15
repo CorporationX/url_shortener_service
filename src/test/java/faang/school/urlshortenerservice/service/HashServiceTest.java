@@ -9,12 +9,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,5 +108,20 @@ class HashServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> hashService.getHashBatch(batchSize));
         assertEquals("Database error", exception.getMessage());
         verify(hashRepository, times(1)).getHashBatch(batchSize);
+    }
+
+    @Test
+    public void testSaveUnusedHashes() {
+        List<String> hashes = Arrays.asList(
+                "hash1", "hash2", "hash3", "hash4", "hash5",
+                "hash6", "hash7", "hash8", "hash9", "hash10"
+        );
+
+        hashService.saveUnusedHashes(hashes);
+
+        verify(hashRepository, times(1)).saveUnusedHashes(anyList());
+
+        ArgumentCaptor<List<String>> captor = ArgumentCaptor.forClass(List.class);
+        verify(hashRepository, times(1)).saveUnusedHashes(captor.capture());
     }
 }
