@@ -30,9 +30,9 @@ class HashServiceTest {
     @Test
     void saveHashesShouldSaveAllHashes() {
         List<HashEntity> hashEntities = List.of(
-                new HashEntity("hash1"),
-                new HashEntity("hash2"),
-                new HashEntity("hash3")
+                HashEntity.builder().hash("hash1").isUsed(false).build(),
+                HashEntity.builder().hash("hash2").isUsed(false).build(),
+                HashEntity.builder().hash("hash3").isUsed(false).build()
         );
 
         hashService.saveHashes(hashEntities);

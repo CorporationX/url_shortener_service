@@ -14,7 +14,7 @@ public class Base62Encoder {
     public List<HashEntity> encode(List<Long> numbers) {
         return numbers.stream()
                 .map(this::encodeBase62)
-                .map(HashEntity::new)
+                .map(hash -> HashEntity.builder().hash(hash).isUsed(false).build())
                 .collect(Collectors.toList());
     }
 

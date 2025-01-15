@@ -36,7 +36,13 @@ class HashGeneratorTest {
     @Test
     void testGenerateBatch() {
         List<Long> uniqueNumbers = Arrays.asList(1L, 2L, 3L, 4L, 5L);
-        List<HashEntity> encodedHashes = Arrays.asList(new HashEntity("a"), new HashEntity("b"), new HashEntity("c"), new HashEntity("d"), new HashEntity("e"));
+        List<HashEntity> encodedHashes = Arrays.asList(
+                HashEntity.builder().hash("a").isUsed(false).build(),
+                HashEntity.builder().hash("b").isUsed(false).build(),
+                HashEntity.builder().hash("c").isUsed(false).build(),
+                HashEntity.builder().hash("d").isUsed(false).build(),
+                HashEntity.builder().hash("e").isUsed(false).build()
+        );
 
         when(hashService.getUniqueNumbers(batchSize)).thenReturn(uniqueNumbers);
         when(base62Encoder.encode(uniqueNumbers)).thenReturn(encodedHashes);
