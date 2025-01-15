@@ -43,3 +43,7 @@ hashCash:
   queueCapacity: 500
   percent: 0.2
   batchSizeForRedis: 200
+
+scheduler:
+  cron: "0 0 0 * * *"
+  year: 1
