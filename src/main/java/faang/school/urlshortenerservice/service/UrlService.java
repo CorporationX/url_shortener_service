@@ -20,7 +20,6 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
-    private final RedisTemplate<String, String> template;
 
     @Transactional
     public void saveNewHash(UrlDto urlDto) {

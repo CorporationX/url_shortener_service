@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> template;
-    private final UrlRepository urlRepository;
 
     public String searchInRedis(String hash) {
         return template.opsForValue().get(hash);
