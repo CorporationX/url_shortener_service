@@ -1,13 +1,6 @@
 package faang.school.urlshortenerservice.handler;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@Setter
-@Getter
-public class ErrorResponse {
-    private String error;
-    private String message;
+public record ErrorResponse(String error, String message, LocalDateTime timestamp) {
 }

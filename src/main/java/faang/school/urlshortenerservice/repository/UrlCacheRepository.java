@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,8 +17,8 @@ public class UrlCacheRepository {
         return redisTemplate.opsForValue().get(hash);
     }
 
-    public void saveToCache(String hash, String url) {
-        log.debug("Saving URL to cache for hash: {}", hash);
-        redisTemplate.opsForValue().set(hash, url);
+    public void saveToCache(Url url) {
+        log.debug("Saving URL to cache for hash: {}", url);
+        redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
     }
 }
