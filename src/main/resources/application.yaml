@@ -17,14 +17,16 @@ spring:
         format_sql: false
         jdbc:
           batch_size: 50
-        generate_statistics: true
+        generate_statistics: false
         batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   async:
-    queue_capacity: 100
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 100
 
 server:
   port: 8080
@@ -34,5 +36,10 @@ logging:
     root: info
 
 url-shortener:
+  host-name: http:/shrt.com/
+  hash-amount-to-local-cache: 10_000
   unique-numbers-from-sequence: 100_000
-  short-free-url-amount: 10_000
+
+local-cache:
+  capacity: 12_000
+  upload-treshold: 2_000
