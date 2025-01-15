@@ -20,13 +20,13 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-  values:
-    base: 62
-    characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+encoder-values:
+  base: 62
+  characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz

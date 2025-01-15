@@ -14,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class BaseEncoder {
 
-    @Value("${spring.values.base}")
+    @Value("${encoder-values.base}")
     private Long base;
 
-    @Value("${spring.values.characters}")
+    @Value("${encoder-values.characters}")
     private String characters;
 
     public List<String> encodeList(List<Long> numbers) {
