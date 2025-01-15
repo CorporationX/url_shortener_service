@@ -26,12 +26,14 @@ public class UrlService {
     @Transactional
     public UrlDto shortenUrl(UrlDto dto) {
         String hash = hashCache.getHash();
-        Url url = new Url();
-        url.setHash(hash);
-        url.setUrl(dto.getUrl());
+        Url url = new Url(hash, dto.getUrl());
         urlRepository.save(url);
         urlCacheRepository.saveToCache(url);
-        dto.setUrl(protocol + "://" + domain + "/" + hash);
-        return dto;
+        String urlShort = protocol + "://" + domain + "/" + hash;
+        return new UrlDto(urlShort);
+    }
+
+    public String getUrl(String hash) {
+        return urlCacheRepository.getUrlByHash(hash);
     }
 }

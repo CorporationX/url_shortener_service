@@ -32,7 +32,7 @@ hash:
       thread-pool-size: 4
       thread-queue-capacity: 100
       thread-name-prefix: HashGenerator-
-    cron: 0/20 * * * * *
+    cron: 0 0 * * * *
   cache:
     capacity: 1000
     fill-percent: 20

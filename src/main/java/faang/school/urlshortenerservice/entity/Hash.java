@@ -6,8 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "hash")
@@ -18,4 +22,8 @@ public class Hash {
 
     @Column(name = "hash", unique = true, nullable = false, length = 6)
     private String hash;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }

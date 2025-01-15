@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UrlRepository extends JpaRepository<Url, Hash> {
+import java.util.Optional;
+
+public interface UrlRepository extends JpaRepository<Url, String> {
+    Optional<Url> findByHash(String hash);
 }
