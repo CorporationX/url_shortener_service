@@ -29,4 +29,13 @@ server:
 
 logging:
   level:
-    root: info
+    root: trace
+
+hash:
+  batch-size:
+    unique-number: 2000
+    save: 1000
+  thread-pool:
+    core-pool-size: 1
+    max-pool-size: 1
+    queue-capacity: 1

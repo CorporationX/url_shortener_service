@@ -13,12 +13,15 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = """
             WITH range AS (
-                        SELECT nextval('shortener_schema.unique_number_seq') AS start_value
-                    )
-                    SELECT start_value, start_value + :rangeSize - 1 AS end_value
-                    FROM range;
+                SELECT nextval('shortener_schema.unique_number_seq') AS start_value
+            )
+            SELECT generate_series(
+                range.start_value,
+                setval('shortener_schema.unique_number_seq', range.start_value + :rangeSize - 1)
+            ) AS unique_number
+            FROM range;
             """)
-    List<Long> getUniqueNumbers(@Param("rangeSize") Long rangeSize);
+    List<Long> getUniqueNumbers(@Param("rangeSize") int rangeSize);
 
     @Query(nativeQuery = true, value = """
             WITH deleted_hashes AS (
@@ -32,7 +35,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
             SELECT hash FROM deleted_hashes;
             """)
-    List<String> getHashBatch(@Param("batchSize") Long batchSize);
+    List<String> getHashBatch(@Param("batchSize") int batchSize);
 
     default void save(List<String> hashes, int batchSize, JdbcTemplate jdbcTemplate) {
         String sql = "INSERT INTO shortener_schema.hash (hash) VALUES (?)";

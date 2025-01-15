@@ -41,10 +41,13 @@ public class UrlService {
 
     @Transactional
     public String createShortUrl(OriginalUrlRequest request) {
+        log.info("Starting to create a short url for {}", request.getUrl());
         String hash = hashCache.getHash();
         Url url = new Url(hash, request.getUrl());
+
         urlRepository.save(url);
         urlCacheRepository.save(url);
+        log.info("Successfully creating a short url = {} for {}", hash, request.getUrl());
         return buildShortUrl(hash);
     }
 
