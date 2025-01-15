@@ -27,3 +27,10 @@ server:
 logging:
   level:
     root: info
+
+hash-generating:
+  batch-size: 50
+  thread-pool:
+    max-size: 10
+    core-size: 6
+    queue-capacity: 20
