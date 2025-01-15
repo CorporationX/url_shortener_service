@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.ShortUrlCreateDto;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +12,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.view.RedirectView;
 
-@RequestMapping("/${short-url.base-path}")
+@RequestMapping("/${short-url.base.path}")
 @Controller
 @RequiredArgsConstructor
 @Validated
@@ -24,14 +26,14 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public ResponseEntity<String> createShortUrl(@Valid ShortUrlCreateDto shortUrlCreateDto) {
-        return ResponseEntity.ok(urlService.createShortUrl(shortUrlCreateDto));
+    public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlDto urlDto) {
+        return ResponseEntity.ok(urlService.createShortUrl(urlDto));
     }
 
     @ResponseStatus(HttpStatus.MOVED_PERMANENTLY)
     @GetMapping("/{hash}")
     public String redirectToOriginalUrl(@PathVariable @Length(max = 6) String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        return "redirect:https://youtube.com";
+        return "redirect:%s".formatted(originalUrl);
     }
 }

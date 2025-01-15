@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @RestControllerAdvice
-public class UrlExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -30,7 +30,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerExceptions(Exception e) {
-        log.error(e.getClass().getSimpleName(), e);
+        log.error("%s: %s".formatted(e.getClass().getSimpleName(), e.getMessage()), e);
         return ErrorResponse.builder()
                 .message("Internal server error!")
                 .timestamp(LocalDateTime.now())

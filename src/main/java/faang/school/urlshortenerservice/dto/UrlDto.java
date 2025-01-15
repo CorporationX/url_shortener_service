@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortUrlCreateDto {
+public class UrlDto {
 
     @NotNull(message = "Original url must be specified")
     @Length(min = 3, max = 512)

@@ -12,7 +12,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(value = """
             SELECT url FROM url
-            WHERE hash = :hash;
+            WHERE hash = :hash
             """, nativeQuery = true)
     Optional<String> findOriginalUrlByHash(String hash);
 
@@ -21,4 +21,11 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             WHERE hash in :urlHashes
             """, nativeQuery = true)
     List<Url> findByHashSet(Set<String> urlHashes);
+
+    @Query(value = """
+            DELETE FROM url 
+            WHERE created_at <= CURRENT_DATE - INTERVAL '1 YEAR' 
+            RETURNING hash
+            """, nativeQuery = true)
+    List<String> deleteOldUrls();
 }

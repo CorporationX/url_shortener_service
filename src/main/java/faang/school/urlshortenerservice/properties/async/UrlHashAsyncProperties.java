@@ -11,9 +11,10 @@ import org.springframework.stereotype.Component;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ConfigurationProperties(prefix = "async")
+@ConfigurationProperties(prefix = "async.url-hash")
 @Component
 public class UrlHashAsyncProperties {
+
     private String threadNamePrefix;
     private int corePoolSize;
     private int maxPoolSize;

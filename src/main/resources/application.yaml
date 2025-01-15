@@ -33,23 +33,34 @@ api:
   current-version: v1
 
 short-url:
-  base-domain: http://localhost:${server.port}
-  base-path: api/${api.current-version}/url
+  base:
+    domain: http://localhost:${server.port}
+    path: api/${api.current-version}/url
 
-  cache-settings:
+  cache:
     popular-ttl-hours: 24
     default-ttl-minutes: 10
     default-cache-name: shortUrls
+    popular-cache-name: shortUrlStats
     popular-hash-max-count: 10
-    short-url-request-stats-cache-name: shortUrlStats
-    reset-short-url-request-stats-cron: "0 0 0/3 * * ?"
 
-  hash-generation-settings:
-    cache-preload-size: 10000
-    db-create-batch-size: 100000
+  hash:
+    cache-capacity: 10000
+    db-create-batch-size: 20000
+    min-percentage-threshold: 20
+
+scheduler:
+  cleaning-old-hash:
+    cron: "0 0 0 * * ?"
+    batch-size: 500
+  update-popular-url-hashes:
+    cron: "0 0 */3 * * ?"
+    rlock-name: popularUrlHashesUpdateLock
 
 async:
-  thread-name-prefix: UrlHashAsyncThread-
-  core-pool-size: 5
-  max-pool-size: 10
-  queue_capacity: 25
+  url-hash:
+    thread-name-prefix: UrlHashAsyncThread-
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 25
+

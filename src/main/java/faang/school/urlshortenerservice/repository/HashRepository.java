@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.properties.short_url.ShortUrlProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,13 +10,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepository {
 
-    private final ShortUrlProperties shortUrlProperties;
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Long> getUniqueNumbers(int numbersCount) {
+    public List<Long> getUniqueNumbers(long numbersCount) {
         String getUniqueNumbersQuery = """
-                SELECT nextval(hash_unique_number_seq) 
-                FROM generate_series(1, ?); 
+                SELECT nextval('hash_unique_number_seq') 
+                FROM generate_series(1, ?)
                 """;
         return jdbcTemplate.queryForList(getUniqueNumbersQuery, Long.class, numbersCount);
     }
@@ -31,24 +29,24 @@ public class HashRepository {
         jdbcTemplate.batchUpdate(
                 saveUrlHashsQuery,
                 urlHashs.stream()
-                        .map(urlHash -> new Object[] { urlHash })
+                        .map(urlHash -> new Object[] {urlHash})
                         .toList()
         );
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(long batchSize) {
         String getHashBatchQuery = """
                 DELETE FROM hash
                 WHERE hash in (
                     SELECT hash FROM hash
                     LIMIT ?
                 )
-                RETURNING hash;
+                RETURNING hash
                 """;
 
         return jdbcTemplate.queryForList(getHashBatchQuery,
                 String.class,
-                shortUrlProperties.getHashGenerationSettings().getCachePreloadSize()
+                batchSize
         );
     }
 }
