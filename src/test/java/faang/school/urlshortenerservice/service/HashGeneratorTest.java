@@ -41,7 +41,7 @@ class HashGeneratorTest {
         when(hashService.getUniqueNumbers(batchSize)).thenReturn(uniqueNumbers);
         when(base62Encoder.encode(uniqueNumbers)).thenReturn(encodedHashes);
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch(batchSize);
 
         verify(hashService).getUniqueNumbers(batchSize);
         verify(base62Encoder).encode(uniqueNumbers);
@@ -56,7 +56,7 @@ class HashGeneratorTest {
         when(hashService.getUniqueNumbers(batchSize)).thenReturn(uniqueNumbers);
         when(base62Encoder.encode(uniqueNumbers)).thenReturn(encodedHashes);
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch(batchSize);
 
         verify(hashService).getUniqueNumbers(batchSize);
         verify(base62Encoder).encode(uniqueNumbers);

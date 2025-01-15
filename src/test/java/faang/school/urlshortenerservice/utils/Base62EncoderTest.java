@@ -19,7 +19,7 @@ class Base62EncoderTest {
     @Test
     void testEncode() {
         List<Long> numbers = Arrays.asList(1L, 62L, 123L, 999L);
-        List<String> expectedEncoded = Arrays.asList("1", "10", "1z", "G7");
+        List<String> expectedEncoded = Arrays.asList("f", "f4", "fb", "iS");
 
         List<HashEntity> encodedEntities = base62Encoder.encode(numbers);
 

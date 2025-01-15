@@ -17,8 +17,18 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channel:
+        hashes: hashes_channel
+
 server:
+  url: http://localhost:8093
   port: 8093
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
