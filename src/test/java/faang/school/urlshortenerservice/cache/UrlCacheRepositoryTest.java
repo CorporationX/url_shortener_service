@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,5 +39,28 @@ class UrlCacheRepositoryTest {
 
         verify(redisTemplate, times(1)).opsForValue();
         verify(valueOperations, times(1)).set(hash, longUrl);
+    }
+
+    @Test
+    void getUrlShouldReturnUrlWhenHashExists() {
+        String hash = "abc123";
+        String expectedUrl = "https://example.com";
+        when(valueOperations.get(hash)).thenReturn(expectedUrl);
+
+        String actualUrl = urlCacheRepository.getUrl(hash);
+
+        assertEquals(expectedUrl, actualUrl);
+        verify(valueOperations, times(1)).get(hash);
+    }
+
+    @Test
+    void getUrlShouldReturnNullWhenHashDoesNotExist() {
+        String hash = "abc123";
+        when(valueOperations.get(hash)).thenReturn(null);
+
+        String actualUrl = urlCacheRepository.getUrl(hash);
+
+        assertEquals(null, actualUrl);
+        verify(valueOperations, times(1)).get(hash);
     }
 }

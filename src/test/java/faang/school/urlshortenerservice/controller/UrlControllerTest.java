@@ -8,14 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,7 +46,7 @@ class UrlControllerTest {
 
         UrlRequest urlRequest = new UrlRequest(longUrl);
 
-        Mockito.when(urlService.createShortUrl(longUrl)).thenReturn(shortUrl);
+        when(urlService.createShortUrl(longUrl)).thenReturn(shortUrl);
 
         mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -51,6 +56,20 @@ class UrlControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.shortUrl").value(shortUrl));
 
-        Mockito.verify(urlService, Mockito.times(1)).createShortUrl(longUrl);
+        verify(urlService, times(1)).createShortUrl(longUrl);
+    }
+
+    @Test
+    void testRedirectToOriginalUrl() throws Exception {
+        String hash = "abc123";
+        String originalUrl = "http://example.com";
+
+        when(urlService.getOriginalUrl(hash)).thenReturn(originalUrl);
+
+        mockMvc.perform(get("/url/" + hash))
+                .andExpect(status().isFound())
+                .andExpect(header().string(HttpHeaders.LOCATION, originalUrl));
+
+        verify(urlService, times(1)).getOriginalUrl(hash);
     }
 }
