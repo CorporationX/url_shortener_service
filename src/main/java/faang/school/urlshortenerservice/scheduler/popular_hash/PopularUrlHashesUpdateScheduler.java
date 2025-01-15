@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ public class PopularUrlHashesUpdateScheduler {
     @Value("${scheduler.update-popular-url-hashes.rlock-name}")
     private String rLockName;
 
+    @Async("urlHashTaskExecutor")
     @Scheduled(cron = "${scheduler.update-popular-url-hashes.cron}")
     public void updatePopularShortUrls() {
         RLock lock = redissonClient.getLock(rLockName);
