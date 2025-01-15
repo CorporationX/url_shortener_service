@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS url
+CREATE TABLE IF NOT EXISTS short_url
 (
     hash       VARCHAR(6) PRIMARY KEY,
     url        VARCHAR NOT NULL,
