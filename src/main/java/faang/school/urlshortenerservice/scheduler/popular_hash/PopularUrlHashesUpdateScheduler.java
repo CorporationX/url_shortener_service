@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.scheduler.popular_hash;
 
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.RedissonException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class PopularUrlHashesUpdateScheduler {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Error acquiring lock", e);
+            throw new RedissonException("Unexpected exception while updating popular URL hashes.", e);
         } finally {
             lock.unlock();
         }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class HashProperties {
 
     private int cacheCapacity;
+    private int dbCreateMaxCount;
     private int dbCreateBatchSize;
     private int minPercentageThreshold;
 }

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
-import faang.school.urlshortenerservice.properties.short_url.BaseUrlProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlUtil;
@@ -13,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -26,7 +26,6 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final BaseUrlProperties baseUrlProperties;
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
@@ -35,7 +34,7 @@ public class UrlService {
 
         String freeHash = hashCache.getHash();
         urlRepository.save(createUrlEntity(urlDto.getUrl(), freeHash));
-        String shortUrl = "%s/%s".formatted(createBaseUrl(), freeHash);
+        String shortUrl = "%s/%s".formatted(createShortUrl(freeHash), freeHash);
         urlCacheRepository.saveDefaultUrl(freeHash, urlDto.getUrl());
 
         log.info("Short URL={} for original URL={} was created!", shortUrl, urlDto.getUrl());
@@ -71,8 +70,12 @@ public class UrlService {
         }
     }
 
-    private String createBaseUrl() {
-        return "%s/%s".formatted(baseUrlProperties.getDomain(), baseUrlProperties.getPath());
+    private String createShortUrl(String hash) {
+        return ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/{hash}")
+                .buildAndExpand(hash)
+                .toUriString();
     }
 
     private Url createUrlEntity(String url, String hash) {

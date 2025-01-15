@@ -29,14 +29,7 @@ logging:
   level:
     root: info
 
-api:
-  current-version: v1
-
 short-url:
-  base:
-    domain: http://localhost:${server.port}
-    path: api/${api.current-version}/url
-
   cache:
     popular-ttl-hours: 24
     default-ttl-minutes: 10
@@ -46,7 +39,8 @@ short-url:
 
   hash:
     cache-capacity: 10000
-    db-create-batch-size: 20000
+    db-create-max-count: 20000
+    db-create-batch-size: 1000
     min-percentage-threshold: 20
 
 scheduler:
@@ -60,7 +54,13 @@ scheduler:
 async:
   url-hash:
     thread-name-prefix: UrlHashAsyncThread-
-    core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 25
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 60
 
+thread:
+  hash-cache:
+    core-pool-size: 4
+    max-pool-size: 4
+    keep-alive-seconds: 60
+    queue-capacity: 10
