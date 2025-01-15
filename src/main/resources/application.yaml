@@ -25,7 +25,7 @@ spring:
         hashes: hashes_channel
 
 server:
-  url: http://localhost:8093
+  url: http://localhost:8093/api/v1/url
   port: 8093
   servlet:
     context-path: /api/v1
