@@ -17,7 +17,7 @@ public class UrlDto {
 
     @NotNull(message = "Url can't be null")
     @NotBlank(message = "Url can't be blank")
-    @Length(max = 2048)
+    @Length(max = 2048, message = "Max allowed length 2048 characters")
     @URL(message = "Invalid URL format")
     private String url;
 }
