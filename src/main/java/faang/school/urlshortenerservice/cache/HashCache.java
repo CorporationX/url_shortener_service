@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.CacheUpdateException;
+import faang.school.urlshortenerservice.exception.HashRetrievalException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -45,7 +47,7 @@ public class HashCache {
                         hashGenerator.generateBatch();
                         caches.addAll(hashRepository.getHashBatch(redisBatchSize));
                     } catch (Exception e) {
-                        throw new RuntimeException("Something went wrong when adding hash to cache: " + e.getMessage(), e);
+                        throw new CacheUpdateException("Failed to update cache with new hashes: " + e.getMessage(), e);
                     } finally {
                         isCacheFilling.set(false);
                     }
@@ -55,7 +57,7 @@ public class HashCache {
         try {
             return caches.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException("Something went wrong when getting hash: " + e.getMessage(), e.getCause());
+            throw new HashRetrievalException("Failed to retrieve hash from the queue: " + e.getMessage(), e);
         }
     }
 }
