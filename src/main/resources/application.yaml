@@ -36,3 +36,7 @@ hash:
   cache:
     capacity: 1000
     fill-percent: 20
+
+urlShortener:
+  protocol: https
+  domain: www.shorturl.bk
