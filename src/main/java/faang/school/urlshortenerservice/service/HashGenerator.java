@@ -20,12 +20,12 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final EntityManager entityManager;
 
-    private static final int MIN_HASH_COUNT = 20;
-
     public void generateAndSaveHashes(int rangeSize) {
         long count = hashRepository.countHashes();
 
-        if (count >= MIN_HASH_COUNT) {
+        int minimalHashCount = (int) (rangeSize * 0.2);
+
+        if (count >= minimalHashCount) {
             log.info("Sufficient hashes available, skipping generation.");
             return;
         }

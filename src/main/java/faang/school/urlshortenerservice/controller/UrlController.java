@@ -21,11 +21,11 @@ public class UrlController {
 
     @GetMapping
     public String getRealUrl(@Valid @RequestBody UrlDto urlDto) {
-        return "Hello from URL Shortener Service! Please check the documentation for more information.";
+        return urlService.getRealUrl(urlDto);
     }
 
     @PostMapping
     public String getShortUrl(@Valid @RequestBody UrlDto urlDto) {
-        return "";
+        return urlService.getShortUrl(urlDto);
     }
 }

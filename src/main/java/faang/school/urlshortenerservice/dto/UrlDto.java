@@ -15,7 +15,6 @@ public class UrlDto {
 
     private static final String REGEXP_FORMAT = "^(https?://)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}.*$";
 
-    @NotBlank(message = "URL cannot be empty")
     @Pattern(
             regexp = REGEXP_FORMAT,
             message = "Invalid URL format"

@@ -21,9 +21,8 @@ spring:
     redis:
       port: 6379
       host: localhost
-      channels:
-        calculations_channel:
-          name: calculations_channel
+      time: 1
+      time-unit: DAYS
 
 server:
   port: 8080
