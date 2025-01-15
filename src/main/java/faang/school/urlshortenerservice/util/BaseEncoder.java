@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,11 +10,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class BaseEncoder {
-
-    @Value("${encoder-values.base}")
-    private Long base;
 
     @Value("${encoder-values.characters}")
     private String characters;
@@ -32,6 +27,7 @@ public class BaseEncoder {
 
     private String encode(long number) {
         var sb = new StringBuilder();
+        int base = characters.length();
 
         while (number > 0) {
             sb.append(characters.charAt((int) (number % base)));

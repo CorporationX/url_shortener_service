@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.util;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BaseEncoderTest {
-    private Long base;
     private String characters;
     private List<Long> numbers;
     private List<String> encodedValues;
@@ -19,11 +19,11 @@ class BaseEncoderTest {
 
     @BeforeEach
     void setUp() {
-        base = 62L;
         characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         numbers = new ArrayList<>(List.of(1L, 2L, 3L));
         encodedValues = new ArrayList<>(List.of("1", "2", "3"));
-        baseEncoder = new BaseEncoder(base, characters);
+        baseEncoder = new BaseEncoder();
+        ReflectionTestUtils.setField(baseEncoder, "characters", characters);
     }
 
     @Test

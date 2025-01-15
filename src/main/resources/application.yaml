@@ -28,5 +28,4 @@ logging:
     root: info
 
 encoder-values:
-  base: 62
   characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
