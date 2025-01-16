@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.time.Duration;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +40,7 @@ class UrlCacheRepositoryTest {
         urlCacheRepository.saveUrl(hash, longUrl);
 
         verify(redisTemplate, times(1)).opsForValue();
-        verify(valueOperations, times(1)).set(hash, longUrl);
+        verify(valueOperations, times(1)).set(hash, longUrl, Duration.ofDays(30));
     }
 
     @Test
