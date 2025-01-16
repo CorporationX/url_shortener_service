@@ -26,16 +26,19 @@ public class CleanerScheduler {
         log.info("Cleaning up old urls and hashes");
 
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
-        List<String> freedHashes = urlRepository.deleteByCreatedAtBefore(oneYearAgo);
+        int batchSize = 1000;
+        int deletedCount = 0;
 
-        if (!freedHashes.isEmpty()) {
-            log.info("Deleted {} old URLs. Reclaiming {} hashes...", freedHashes.size(), freedHashes.size());
+        List<String> freedHashes;
+        do {
+            freedHashes = urlRepository.deleteByCreatedAtBefore(oneYearAgo);
+            if (!freedHashes.isEmpty()) {
+                log.info("Deleted {} old URLs. Reclaiming {} hashes...", freedHashes.size(), freedHashes.size());
+                hashRepository.saveHashes(freedHashes);
+                deletedCount += freedHashes.size();
+            }
+        } while (!freedHashes.isEmpty());
 
-            hashRepository.saveHashes(freedHashes);
-
-            log.info("Successfully reclaimed {} hashes.", freedHashes.size());
-        } else {
-            log.info("No old URLs to clean up.");
-        }
+        log.info("Cleanup completed. Total URLs deleted: {}", deletedCount);
     }
 }

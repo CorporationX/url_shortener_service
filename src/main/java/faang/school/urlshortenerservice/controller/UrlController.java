@@ -27,4 +27,5 @@ public class UrlController {
         String longUrl = urlService.getLongUrl(hash);
         return ResponseEntity.status(302).header("Location", longUrl).build();
     }
+    //Tut nado proverit url
 }

@@ -8,6 +8,5 @@ public interface HashRepositoryCustom {
     void saveHashes(List<String> hashes);
 
     List<String> getHashBatch(int count);
-
 }
 

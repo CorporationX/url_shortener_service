@@ -12,6 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,4 +36,8 @@ public class Url {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToOne
+    @JoinColumn(name = "hash", referencedColumnName = "hash", insertable = false, updatable = false)
+    private Hash hashEntity;
 }

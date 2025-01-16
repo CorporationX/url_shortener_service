@@ -19,19 +19,17 @@ public class UserHeaderFilter implements Filter {
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         String userIdHeader = req.getHeader("x-user-id");
-        try {
+
+        try (UserContext ignored = userContext) {
             if (userIdHeader == null) {
                 throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
             }
             long userId = Long.parseLong(userIdHeader);
             userContext.setUserId(userId);
+
+            chain.doFilter(request, response);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid 'x-user-id' header. It must be a valid numeric value.", e);
-        }
-        try {
-            chain.doFilter(request, response);
-        } finally {
-            userContext.clear();
         }
     }
 }

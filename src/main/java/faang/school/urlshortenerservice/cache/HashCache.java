@@ -39,7 +39,8 @@ public class HashCache {
 
         String hash = hashQueue.poll();
         if (hash == null) {
-            log.warn("Cache is empty! Returning null.");
+            log.warn("Cache is empty! Unable to retrieve a hash.");
+            throw new IllegalStateException("Hash cache is empty!");
         }
         return hash;
     }
@@ -47,26 +48,32 @@ public class HashCache {
     private void triggerAsyncRefill() {
         if (refillInProgress.compareAndSet(false, true)) {
             log.info("Triggering async refill of the hash cache...");
-
-            executorService.submit(() -> {
-                try {
-
-                    List<String> hashes = hashRepository.getHashBatch(maxSize - hashQueue.size());
-                    log.info("Fetched {} hashes from the database.", hashes.size());
-                    hashQueue.addAll(hashes);
-
-                    log.info("Triggering hash generation in the database.");
-                    hashGenerator.generatedBatch();
-                } catch (Exception e) {
-                    log.error("Error while refilling the hash cache: {}", e.getMessage(), e);
-                } finally {
-                    refillInProgress.set(false);
-                }
-            });
+            executorService.submit(this::refillCache);
         } else {
-            log.info("Refill already in progress. Skipping duplicate trigger.");
+            log.debug("Refill already in progress. Skipping duplicate trigger.");
+        }
+    }
+
+    private void refillCache() {
+        try {
+            int needed = maxSize - hashQueue.size();
+            if (needed <= 0) {
+                log.info("Hash cache is already full. No refill needed.");
+                return;
+            }
+
+            List<String> hashes = hashRepository.getHashBatch(needed);
+            log.info("Fetched {} hashes from the database.", hashes.size());
+            hashQueue.addAll(hashes);
+
+            if (hashes.size() < needed) {
+                log.info("Generating additional hashes to meet the cache size.");
+                hashGenerator.generatedBatch();
+            }
+        } catch (Exception e) {
+            log.error("Error while refilling the hash cache: {}", e.getMessage(), e);
+        } finally {
+            refillInProgress.set(false);
         }
     }
 }
-
-

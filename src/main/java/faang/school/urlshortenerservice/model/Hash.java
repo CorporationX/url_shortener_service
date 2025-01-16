@@ -11,6 +11,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.*;
+
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,4 +26,7 @@ public class Hash {
     @Size(max = 6)
     @NotEmpty
     private String hash;
+
+    @OneToOne(mappedBy = "hash", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Url url;
 }

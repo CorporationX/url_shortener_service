@@ -53,4 +53,4 @@ public class HashRepositoryCustomImpl implements HashRepositoryCustom {
         return jdbcTemplate.query(sql, ps -> ps.setInt(1, batchSize), (rs, rowNum) -> rs.getString(1));
     }
 }
-
+//Lutshe cherez spring batch jdbc
