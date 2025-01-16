@@ -13,9 +13,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_versioned_data: true
+          batch_size: 100
+        order_inserts: true
+        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+sequence:
+  batch:
+    # Number of sequence values to allocate in single database call
+    # Recommended range: 50-1000
+    # Default: 100
+    size: 100
+
 
 server:
   port: 8080
@@ -23,3 +36,18 @@ server:
 logging:
   level:
     root: info
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.stat: DEBUG
+
+async:
+  thread-pools:
+    hash-generator-pool:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 1
+      thread-name-prefix: "HashGenerationThread-"
+
+cache:
+  hash-cache:
+    capacity: 1000
