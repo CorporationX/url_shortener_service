@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -18,10 +19,14 @@ dependencies {
      */
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
@@ -66,4 +71,53 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+/**
+ * JaCoCo settings
+ */
+val jacocoInclude = listOf(
+    "**/controller/**",
+    "**/service/**",
+    "**/validator/**",
+    "**/mapper/**",
+    "**/filter/**"
+)
+jacoco {
+    toolVersion = "0.8.9"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
+}
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        //html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            include(jacocoInclude)
+        }
+    )
+}
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+            classDirectories.setFrom(
+                sourceSets.main.get().output.asFileTree.matching {
+                    include(jacocoInclude)
+                }
+            )
+            enabled = true
+            limit {
+                minimum = BigDecimal(0.7).setScale(2, BigDecimal.ROUND_HALF_UP) // Задаем минимальный уровень покрытия
+            }
+        }
+    }
 }
