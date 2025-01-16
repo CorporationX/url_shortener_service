@@ -2,12 +2,14 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,9 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +29,11 @@ class HashServiceTest {
 
     @InjectMocks
     private HashService hashService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(hashService, "BATCH_SIZE", 1000);
+    }
 
     @Test
     void saveHashesShouldSaveAllHashes() {
@@ -59,18 +64,6 @@ class HashServiceTest {
     }
 
     @Test
-    void getHashBatchShouldReturnAndDeleteBatchOfHashes() {
-        int batchSize = 3;
-        List<String> hashBatch = List.of("hash1", "hash2", "hash3");
-        when(hashRepository.getHashBatch(batchSize)).thenReturn(hashBatch);
-
-        List<String> result = hashService.getHashBatch(batchSize);
-
-        assertEquals(hashBatch, result);
-        verify(hashRepository, times(1)).getHashBatch(batchSize);
-    }
-
-    @Test
     void saveHashesShouldHandleEmptyList() {
         List<HashEntity> emptyList = Collections.emptyList();
 
@@ -87,27 +80,6 @@ class HashServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> hashService.getUniqueNumbers(n));
         assertEquals("Database error", exception.getMessage());
         verify(hashRepository, times(1)).getUniqueNumbers(n);
-    }
-
-    @Test
-    void getHashBatchShouldReturnEmptyListIfNoHashesAvailable() {
-        int batchSize = 3;
-        when(hashRepository.getHashBatch(batchSize)).thenReturn(Collections.emptyList());
-
-        List<String> result = hashService.getHashBatch(batchSize);
-
-        assertTrue(result.isEmpty());
-        verify(hashRepository, times(1)).getHashBatch(batchSize);
-    }
-
-    @Test
-    void getHashBatchShouldThrowExceptionWhenRepositoryFails() {
-        int batchSize = 3;
-        when(hashRepository.getHashBatch(batchSize)).thenThrow(new RuntimeException("Database error"));
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> hashService.getHashBatch(batchSize));
-        assertEquals("Database error", exception.getMessage());
-        verify(hashRepository, times(1)).getHashBatch(batchSize);
     }
 
     @Test

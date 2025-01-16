@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.service.HashService;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,8 @@ public class CleanerScheduler {
     private final UrlService urlService;
     private final HashService hashService;
 
-    private static final int BATCH_SIZE = 1000;  // Размер партии для обработки
+    @Value("${batch.size}")
+    private Integer BATCH_SIZE;
 
     @Transactional
     @Scheduled(cron = "${scheduler.cleaner.cron}")

@@ -2,9 +2,9 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashService {
     private final HashRepository hashRepository;
-    private final int BATCH_SIZE = 1000;
+
+    @Value("${batch.size}")
+    private Integer BATCH_SIZE;
 
     public void saveHashes(List<HashEntity> hashes) {
         hashRepository.saveAll(hashes);
@@ -22,11 +24,6 @@ public class HashService {
 
     public List<Long> getUniqueNumbers(int number) {
         return hashRepository.getUniqueNumbers(number);
-    }
-
-    @Transactional
-    public List<String> getHashBatch(int batchSize) {
-        return hashRepository.getHashBatch(batchSize);
     }
 
     public void saveUnusedHashes(List<String> hashes) {

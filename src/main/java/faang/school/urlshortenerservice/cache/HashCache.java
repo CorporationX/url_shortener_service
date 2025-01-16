@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,8 +24,12 @@ public class HashCache {
     private final ExecutorService executorService;
     private final CountDownLatch cacheFillingLatch = new CountDownLatch(1);
 
-    private final int maxSize = 10000;
-    private final int thresholdPercentage = 20;
+    @Value("${cache.max-size}")
+    private Integer maxSize;
+
+    @Value("${cache.threshold-percentage}")
+    private Integer thresholdPercentage;
+
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
 
     public String getHash() {
