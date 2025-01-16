@@ -1,0 +1,19 @@
+CREATE SEQUENCE unique_number_seq
+    START WITH 1
+    INCREMENT BY 1;
+
+CREATE TABLE url(
+    has VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE hash (
+    has VARCHAR(6) PRIMARY KEY
+);
+
+ALTER TABLE url
+    ADD CONSTRAINT chk_hash_length CHECK (LENGTH(hash) <=6);
+
+ALTER TABLE hash
+    ADD CONSTRAINT chk_hash_length CHECK (LENGTH(hash) <=6);
