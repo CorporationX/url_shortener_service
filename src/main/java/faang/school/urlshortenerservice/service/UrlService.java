@@ -10,6 +10,7 @@ import faang.school.urlshortenerservice.validator.UrlUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +28,9 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
 
+    @Value("${short-url.base-path}")
+    private String endpointBasePath;
+
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
         log.info("Creating short URL for long URL: {}", urlDto.getUrl());
@@ -34,7 +38,7 @@ public class UrlService {
 
         String freeHash = hashCache.getHash();
         urlRepository.save(createUrlEntity(urlDto.getUrl(), freeHash));
-        String shortUrl = "%s/%s".formatted(createShortUrl(freeHash), freeHash);
+        String shortUrl = createShortUrl(freeHash);
         urlCacheRepository.saveDefaultUrl(freeHash, urlDto.getUrl());
 
         log.info("Short URL={} for original URL={} was created!", shortUrl, urlDto.getUrl());
@@ -73,7 +77,7 @@ public class UrlService {
     private String createShortUrl(String hash) {
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/{hash}")
+                .path("%s/{hash}".formatted(endpointBasePath))
                 .buildAndExpand(hash)
                 .toUriString();
     }

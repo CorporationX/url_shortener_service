@@ -20,7 +20,7 @@ public class HashCache {
     private final ExecutorService executorService;
     private final HashGenerator hashGenerator;
     private final HashProperties hashProperties;
-    private final Queue<String> freeHashesQueue;
+    public final Queue<String> freeHashesQueue;
     private final AtomicBoolean isQueueBeingUpdated = new AtomicBoolean(false);
 
     public HashCache(@Qualifier("hashCacheExecutorService") ExecutorService executorService,

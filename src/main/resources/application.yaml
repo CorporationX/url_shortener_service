@@ -30,6 +30,9 @@ logging:
     root: info
 
 short-url:
+
+  base-path: /api/v1/url
+
   cache:
     popular-ttl-hours: 24
     default-ttl-minutes: 10
@@ -56,7 +59,7 @@ async:
     thread-name-prefix: UrlHashAsyncThread-
     core-pool-size: 10
     max-pool-size: 20
-    queue-capacity: 60
+    queue-capacity: 40
 
 thread:
   hash-cache:
