@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,5 +81,40 @@ class UrlControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.url").value("URL cannot be empty"))
                 .andExpect(content().string(containsString("URL cannot be empty")));
+    }
+
+    @Test
+    @DisplayName("Long URL returned success")
+    void test_getUrl_whenValidInput_ReturnsDto() throws Exception {
+        String shortUrl = "http:/srt.com/abc123";
+
+        when(urlService.getUrl(shortUrl)).thenReturn(longUrlDto);
+
+        mockMvc.perform(get("/api/v1/url")
+                        .param("shortUrl", shortUrl))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(jsonPath("$.url").value("http:/reallyReallyLongUrl.com/something"));
+    }
+
+    @Test
+    @DisplayName("Test get real URL fail - provided empty param")
+    void test_getUrl_WhenEmptyParam_ReturnsExceptionJson() throws Exception {
+        String shortUrl = "";
+
+        mockMvc.perform(get("/api/v1/url")
+                        .param("shortUrl", shortUrl))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("URL cannot be empty")));
+    }
+
+    @Test
+    @DisplayName("Test get real URL fail - no param provided")
+    void test_getUrl_WhenENullParam_ReturnsExceptionJson() throws Exception {
+        String shortUrl = null;
+
+        mockMvc.perform(get("/api/v1/url")
+                        .param("shortUrl", shortUrl))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Missed parameter")));
     }
 }
