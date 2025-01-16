@@ -22,13 +22,13 @@ public class HashGenerator {
     public List<String> getHashes(long count) {
         List<String> hashes = hashRepository.getHashBatch(count);
         if (hashes.size() < count) {
-            generateBatch();
+            generateHashes();
             hashes.addAll(hashRepository.getHashBatch(count - hashes.size()));
         }
         return hashes;
     }
 
-    public void generateBatch() {
+    public void generateHashes() {
         long newHashesCount = hashProperties.getDbCreateMaxCount();
         log.info("Generating new {} hashes for urls...", newHashesCount);
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(newHashesCount);

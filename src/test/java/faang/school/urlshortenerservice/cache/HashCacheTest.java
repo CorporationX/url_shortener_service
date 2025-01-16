@@ -95,7 +95,7 @@ class HashCacheTest {
         assertNotNull(freeHash);
         assertEquals("Ju", freeHash);
         verify(hashGenerator, times(1)).getHashes(anyLong());
-        verify(hashGenerator, times(1)).generateBatch();
+        verify(hashGenerator, times(1)).generateHashes();
     }
 
     private Queue<String> getHashCacheQueue() {

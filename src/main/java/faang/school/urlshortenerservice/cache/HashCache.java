@@ -59,7 +59,7 @@ public class HashCache {
             try {
                 List<String> freeHashes = hashGenerator.getHashes(hashProperties.getCacheCapacity() - freeHashesQueue.size());
                 freeHashesQueue.addAll(freeHashes);
-                hashGenerator.generateBatch();
+                hashGenerator.generateHashes();
             } finally {
                 isQueueBeingUpdated.set(false);
             }
