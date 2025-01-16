@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 
+import faang.school.urlshortenerservice.exeption.UrlNotFoundException;
+import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.model.UrlEntity;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -18,15 +20,28 @@ public class UrlService {
     private final HashGenerator hashGenerator;
 
     public String createShortUrl(String longUrl) {
-        String hashUrl = hashGenerator.generateHash();
+        String hash = hashGenerator.generateHash();
 
         UrlEntity urlEntity = new UrlEntity();
-        urlEntity.setHashUrl(hashUrl);
+        urlEntity.setHash(hash);
         urlEntity.setLongUrl(longUrl);
         urlRepository.save(urlEntity);
 
-        urlCacheRepository.save(hashUrl, longUrl);
+        urlCacheRepository.save(hash, longUrl);
 
-        return "http://short.url/" + hashUrl;
+        return "http://short.url/" + hash;
+    }
+
+    public String getLongUrl(String hash) {
+
+        String longUrl = urlCacheRepository.find(hash);
+        if (longUrl != null) {
+            return longUrl;
+        }
+
+
+        return urlRepository.findById(Long.valueOf(hash))
+                .map(UrlEntity::getLongUrl)
+                .orElseThrow(() -> new UrlNotFoundException("No URL found for hash: " + hash));
     }
 }

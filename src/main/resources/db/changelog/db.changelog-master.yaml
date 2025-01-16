@@ -1,40 +1,5 @@
 databaseChangeLog:
-  - changeSet:
-      id: 1
-      author: your_name
-      changes:
-        - createTable:
-            tableName: url_entity
-            columns:
-              - column:
-                  name: id
-                  type: BIGSERIAL
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: hash_url
-                  type: VARCHAR(255)
-              - column:
-                  name: long_url
-                  type: TEXT
-databaseChangeLog:
-  - changeSet:
-      id: 1
-      author: your_name
-      changes:
-        - createTable:
-            tableName: url_entity
-            columns:
-              - column:
-                  name: id
-                  type: BIGSERIAL
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: hash_url
-                  type: VARCHAR(255)
-              - column:
-                  name: long_url
-                  type: TEXT
+    - include:
+        file: db/changelog/changeset/V__001_url.sql
+    - include:
+        file: db/changelog/changeset/V__002_hash.sql

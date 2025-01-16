@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String hashUrl, String shortUrl) {
-        redisTemplate.opsForValue().set(hashUrl, shortUrl);
+    public void save(String hash, String longUrl) {
+        redisTemplate.opsForValue().set(hash, longUrl);
+    }
+    public String find(String hash) {
+        return redisTemplate.opsForValue().get(hash);
     }
 }
