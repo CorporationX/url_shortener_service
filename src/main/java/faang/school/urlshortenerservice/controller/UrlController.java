@@ -33,6 +33,6 @@ public class UrlController {
         String originalUrl = urlService.redirectToRealUrl(hash);
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.LOCATION, originalUrl);
-        return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Redirect
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }
