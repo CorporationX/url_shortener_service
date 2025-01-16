@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.exception.handler;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.exception.ErrorResponse;
+import faang.school.urlshortenerservice.exception.RedissonException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
         return buildResponse(e);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class, RedissonException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerExceptions(Exception e) {
         logException(e, LogLevel.ERROR);

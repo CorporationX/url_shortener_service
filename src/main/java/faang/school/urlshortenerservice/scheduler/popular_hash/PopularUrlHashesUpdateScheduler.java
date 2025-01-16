@@ -37,7 +37,7 @@ public class PopularUrlHashesUpdateScheduler {
             if (lock.tryLock(0, 10, TimeUnit.MINUTES)) {
                 log.info("Lock acquired, starting to update cache for popular short URLs.");
                 Set<String> popularUrlHashes = urlCacheRepository.getPopularUrlHashes();
-                urlCacheRepository.resetShortUrlRequestStats();
+                urlCacheRepository.resetPopularUrlHashes();
                 List<Url> urlEntities = urlService.findUrlEntities(popularUrlHashes);
                 urlEntities.forEach(url -> urlCacheRepository.savePopularUrl(url.getHash(), url.getUrl()));
                 log.info("Finished updating cache for popular short URLs.");

@@ -42,7 +42,7 @@ public class UrlCacheRepository {
         return redisTemplate.opsForZSet().reverseRange(shortUrlStatsZSetName, 0, topHashCount - 1);
     }
 
-    public void resetShortUrlRequestStats() {
+    public void resetPopularUrlHashes() {
         String shortUrlStatsZSetName = urlCacheProperties.getPopularCacheName();
         redisTemplate.delete(shortUrlStatsZSetName);
     }
