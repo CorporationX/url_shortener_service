@@ -51,8 +51,8 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5")
-    void test_getUniqueNumbers_Success() {
-        List<Long> result = hashRepository.getUniqueNumbers(5L);
+    void test_getUniqueNumbers_FromSequence_Success() {
+        List<Long> result = hashRepository.getUniqueNumbersFromSequence(5L);
         System.out.println(result);
 
         assertNotNull(result);
@@ -62,8 +62,8 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get empty list if queries amount < 1")
-    void test_getUniqueNumbers_Fail_EmptyList() {
-        List<Long> result = hashRepository.getUniqueNumbers(0L);
+    void test_getUniqueNumbers_FromSequence_Fail_EmptyList() {
+        List<Long> result = hashRepository.getUniqueNumbersFromSequence(0L);
         System.out.println(result);
 
         assertNotNull(result);
@@ -72,15 +72,15 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get list of unique numbers from sequence in DB: return first 5, then next 3")
-    void test_getUniqueNumbers_Success_DoubleRequest() {
-        List<Long> resultOne = hashRepository.getUniqueNumbers(5L);
+    void test_getUniqueNumbers_FromSequence_Success_DoubleRequest() {
+        List<Long> resultOne = hashRepository.getUniqueNumbersFromSequence(5L);
         System.out.println(resultOne);
 
         assertNotNull(resultOne);
         assertEquals(5, resultOne.size());
         assertEquals(1, resultOne.get(0));
 
-        List<Long> resultTwo = hashRepository.getUniqueNumbers(3L);
+        List<Long> resultTwo = hashRepository.getUniqueNumbersFromSequence(3L);
         System.out.println(resultTwo);
 
         assertNotNull(resultTwo);
@@ -90,12 +90,12 @@ class HashRepositoryTest {
 
     @Test
     @DisplayName("Get hashes in batch")
-    void test_getHashBatch_Success() {
+    void test_getHashes_Success() {
         int entriesAmount = 30;
         populateDb(entriesAmount);
 
-        List<Hash> result = hashRepository.getHashBatch(10);
-        result.forEach(x -> System.out.println(x.getShortUrl()));
+        List<Hash> result = hashRepository.getHashes(10);
+        result.forEach(x -> System.out.println(x.getHash()));
         Long remainingHashes = hashRepository.count();
 
         assertNotNull(result);
