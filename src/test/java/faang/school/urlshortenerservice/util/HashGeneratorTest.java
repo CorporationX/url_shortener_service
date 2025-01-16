@@ -40,14 +40,14 @@ class HashGeneratorTest {
     void test_uploadBatch_success() {
         Long amountFromSequence = 3L;
 
-        when(hashRepository.getUniqueNumbers(amountFromSequence)).thenReturn(Arrays.asList(1L, 10L, 62L));
+        when(hashRepository.getUniqueNumbersFromSequence(amountFromSequence)).thenReturn(Arrays.asList(1L, 10L, 62L));
         when(base62Encoder.encode(1L)).thenReturn("1");
         when(base62Encoder.encode(10L)).thenReturn("A");
         when(base62Encoder.encode(62L)).thenReturn("10");
 
         hashGenerator.uploadBatch(amountFromSequence);
 
-        verify(hashRepository, times(1)).getUniqueNumbers(amountFromSequence);
+        verify(hashRepository, times(1)).getUniqueNumbersFromSequence(amountFromSequence);
         verify(base62Encoder, times(3)).encode(anyLong());
         verify(hashRepository, times(1)).saveAll(captor.capture());
 
