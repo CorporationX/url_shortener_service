@@ -39,7 +39,7 @@ public class HashCache {
     }
 
     public Hash getHash() {
-        if (caches.size() <= batchSize * percent) {
+        if (caches.size() <= queueCapacity * percent) {
             if (closed.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
                     try {
