@@ -30,7 +30,7 @@ logging:
     root: info
 
 url:
-  domain: http://localhost:${server.port}${url.path}}
+  domain: http://localhost:${server.port}${url.path}
   path: /api/v1/urls/
 
 hash:

@@ -28,6 +28,6 @@ public class CleanerScheduler {
         log.info("{} hashes were retrieved from URL repository", hashes.size());
 
         hashRepository.saveHashes(hashes);
-        log.info("{} free hashes were saved to hash repository}", hashes.size());
+        log.info("{} free hashes were saved to hash repository", hashes.size());
     }
 }

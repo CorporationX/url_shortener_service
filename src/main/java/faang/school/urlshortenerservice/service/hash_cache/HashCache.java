@@ -1,9 +1,9 @@
-package faang.school.urlshortenerservice.service.hash_cashe;
+package faang.school.urlshortenerservice.service.hash_cache;
 
 import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
-import faang.school.urlshortenerservice.service.generatr.HashGenerator;
+import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import faang.school.urlshortenerservice.util.Util;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +30,11 @@ public class HashCache {
     private final Util util;
 
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
-    private Queue<String> queue;
+    private Queue<String> localHashCache;
 
     @PostConstruct
     public void init() {
-        queue = new LinkedBlockingQueue<>(queueProp.getMaxQueueSize());
+        localHashCache = new LinkedBlockingQueue<>(queueProp.getMaxQueueSize());
     }
 
     @PostConstruct
@@ -42,7 +42,7 @@ public class HashCache {
     public CompletableFuture<Void> fillCash() {
         int batchSize = queueProp.getMaxQueueSize() -
                 (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
-        log.info("Start filling local cash with {} elements", batchSize);
+        log.info("Start filling local cache with {} elements", batchSize);
 
         List<String> hashes = hashRepository.getHashBatch(batchSize);
         log.info("Got {} hashes from hash repository", hashes.size());
@@ -50,7 +50,7 @@ public class HashCache {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         List<List<String>> subBatches = util.getBatches(hashes, queueProp.getFillingBatchesQuantity());
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
-                queue.addAll(batch), threadPool.hashCacheFillExecutor())));
+                localHashCache.addAll(batch), threadPool.hashCacheFillExecutor())));
 
         hashGenerator.generateBatchHashes(queueProp.getMaxQueueSize());
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
@@ -66,18 +66,18 @@ public class HashCache {
                 threadPool.hashCacheFillExecutor().execute(() -> waitForFillEnding(future));
             }
         }
-        String hash = queue.poll();
-        log.info("Hash {} was got from local cash", hash);
+        String hash = localHashCache.poll();
+        log.info("Hash {} was got from local cache", hash);
         return hash;
     }
 
     private void waitForFillEnding(CompletableFuture<Void> future) {
         future.join();
         isFilling.set(false);
-        log.info("Finished filling local cash");
+        log.info("Finished filling local cache");
     }
 
     private boolean isNecessaryToFill() {
-        return queue.size() < (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+        return localHashCache.size() < (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
     }
 }

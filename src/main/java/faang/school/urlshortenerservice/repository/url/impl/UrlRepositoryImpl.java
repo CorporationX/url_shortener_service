@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository.url.impl;
 
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -25,8 +26,11 @@ public class UrlRepositoryImpl implements UrlRepository {
     public Optional<String> findOriginalUrlByHash(String hash) {
         String sql = "SELECT long_url FROM url WHERE hash = ?";
 
-        String url = jdbcTemplate.queryForObject(sql, new Object[]{hash}, String.class);
-        return Optional.ofNullable(url);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, hash));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

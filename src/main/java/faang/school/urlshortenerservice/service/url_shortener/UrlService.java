@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service.url_shortener;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.repository.url.impl.UrlRepositoryImpl;
 import faang.school.urlshortenerservice.repository.url_cash.impl.UrlCacheRepositoryImpl;
-import faang.school.urlshortenerservice.service.hash_cashe.HashCache;
+import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

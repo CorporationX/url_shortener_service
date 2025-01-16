@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service.generatr;
+package faang.school.urlshortenerservice.service.generator;
 
 import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
