@@ -43,8 +43,11 @@ logging:
 
 url-shortener:
   host-name: https:/shrt.com/
-  hash-amount-to-local-cache: 10_000
-  unique-numbers-from-sequence: 100_000
+  local-cache-capacity: 12
+  hash-amount-to-local-cache: 10
+  local-cache-threshold-ratio: 0.2
+  hash-amount-to-generate: 100
+  hash-database-threshold-ratio: 0.2
 
 local-cache:
   capacity: 12_000

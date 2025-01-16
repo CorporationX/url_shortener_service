@@ -58,7 +58,7 @@ class UrlServiceTest {
     @DisplayName("Test URL validation")
     void test_createShortUrl_urlValidation() {
 
-        when(hashCache.getShortUrlFromCache()).thenReturn(hash);
+        when(hashCache.getHashFromCache()).thenReturn(hash);
 
         urlService.createShortUrl(longUrlDto);
 
@@ -74,7 +74,7 @@ class UrlServiceTest {
     @Test
     @DisplayName("Test short URL created success")
     void test_createShortUrl_success() {
-        when(hashCache.getShortUrlFromCache()).thenReturn(hash);
+        when(hashCache.getHashFromCache()).thenReturn(hash);
 
         ShortUrlDto result = urlService.createShortUrl(longUrlDto);
 

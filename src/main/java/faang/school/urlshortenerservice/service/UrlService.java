@@ -34,7 +34,7 @@ public class UrlService {
         String url = longUrl.url();
         validateLongUrl(url);
 
-        String hash = hashCache.getShortUrlFromCache();
+        String hash = hashCache.getHashFromCache();
         ShortUrl shortLongUrlPair = new ShortUrl(url, hash);
 
         urlRepository.save(shortLongUrlPair);

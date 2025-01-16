@@ -19,5 +19,5 @@ public class Hash {
     @Id
     @Column(name = "hash")
     @BatchSize(size = 50)
-    private String shortUrl;
+    private String hash;
 }

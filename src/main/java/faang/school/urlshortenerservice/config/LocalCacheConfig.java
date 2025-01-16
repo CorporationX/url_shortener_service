@@ -10,7 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 @Configuration
 public class LocalCacheConfig {
 
-    @Value("${local-cache.capacity}")
+    @Value("${url-shortener.local-cache-capacity}")
     private int localCacheCapacity;
 
     @Bean
