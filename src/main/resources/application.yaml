@@ -37,4 +37,12 @@ hashCache:
   fillPercentage: 0.8
 
 hashRepository:
+  batchSize: 50
+
+hashGenerator:
   batchSize: 100
+
+AsyncConfig:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
