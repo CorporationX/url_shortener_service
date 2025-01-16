@@ -28,7 +28,7 @@ public class HashGenerator {
 
     @Transactional
     @Async(value = "hashGeneratorExecutor")
-    public void generateBatchHashes(int batchSize) {
+    public CompletableFuture<Void> generateBatchHashes(int batchSize) {
         log.info("Start generating {} hashes", batchSize);
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<List<Long>> batches = util.getBatches(uniqueNumbers, properties.getFillingBatchesQuantity());
@@ -42,5 +42,6 @@ public class HashGenerator {
         futures.forEach(future -> hashes.addAll(future.join()));
         hashRepository.saveHashes(hashes);
         log.info("Finished generating {} hashes", batchSize);
+        return CompletableFuture.completedFuture(null);
     }
 }

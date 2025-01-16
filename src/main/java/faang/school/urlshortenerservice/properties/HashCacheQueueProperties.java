@@ -16,4 +16,5 @@ public class HashCacheQueueProperties {
     private int maxQueueSize;
     private int percentageToStartFill;
     private int fillingBatchesQuantity;
+    private int countToStopGenerate;
 }

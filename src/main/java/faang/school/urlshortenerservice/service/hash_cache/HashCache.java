@@ -37,11 +37,9 @@ public class HashCache {
         localHashCache = new LinkedBlockingQueue<>(queueProp.getMaxQueueSize());
     }
 
-    @PostConstruct
     @Transactional
-    public CompletableFuture<Void> fillCash() {
-        int batchSize = queueProp.getMaxQueueSize() -
-                (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+    public CompletableFuture<Void> fillCache() {
+        int batchSize = getBatchSize();
         log.info("Start filling local cache with {} elements", batchSize);
 
         List<String> hashes = hashRepository.getHashBatch(batchSize);
@@ -52,7 +50,7 @@ public class HashCache {
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
                 localHashCache.addAll(batch), threadPool.hashCacheFillExecutor())));
 
-        hashGenerator.generateBatchHashes(queueProp.getMaxQueueSize());
+        generateHashes(batchSize);
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
@@ -61,9 +59,11 @@ public class HashCache {
         if (isNecessaryToFill()) {
             if (!isFilling.get()) {
                 isFilling.compareAndSet(false, true);
-                CompletableFuture<Void> future = CompletableFuture.runAsync(this::fillCash,
-                        threadPool.hashCacheFillExecutor());
-                threadPool.hashCacheFillExecutor().execute(() -> waitForFillEnding(future));
+
+                CompletableFuture.runAsync(() -> fillCache().thenRun(() -> {
+                    isFilling.set(false);
+                    log.info("Finished filling local cache");
+                }), threadPool.hashCacheFillExecutor());
             }
         }
         String hash = localHashCache.poll();
@@ -71,13 +71,21 @@ public class HashCache {
         return hash;
     }
 
-    private void waitForFillEnding(CompletableFuture<Void> future) {
-        future.join();
-        isFilling.set(false);
-        log.info("Finished filling local cache");
+    private boolean isNecessaryToFill() {
+        return localHashCache.size() < getPercentageToFill();
     }
 
-    private boolean isNecessaryToFill() {
-        return localHashCache.size() < (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+    private int getBatchSize() {
+        return queueProp.getMaxQueueSize() - getPercentageToFill();
+    }
+
+    private int getPercentageToFill() {
+        return (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+    }
+
+    private void generateHashes(int batchSize) {
+        if (hashRepository.getHashesCount() < queueProp.getCountToStopGenerate()) {
+            hashGenerator.generateBatchHashes(batchSize);
+        }
     }
 }

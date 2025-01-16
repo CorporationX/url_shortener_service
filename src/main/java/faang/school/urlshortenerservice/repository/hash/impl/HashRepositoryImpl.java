@@ -33,4 +33,10 @@ public class HashRepositoryImpl implements HashRepository {
 
         return jdbcTemplate.queryForList(deleteQuery, String.class, batchSize);
     }
+
+    public Long getHashesCount() {
+        String sql = "SELECT COUNT(*) FROM hash";
+
+        return jdbcTemplate.queryForObject(sql, Long.class);
+    }
 }
