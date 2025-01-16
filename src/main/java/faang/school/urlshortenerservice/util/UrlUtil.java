@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.validator;
+package faang.school.urlshortenerservice.util;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Value;

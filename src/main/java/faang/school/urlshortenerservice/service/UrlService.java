@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.validator.UrlUtil;
+import faang.school.urlshortenerservice.util.UrlUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
