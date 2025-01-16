@@ -26,3 +26,7 @@ server:
 logging:
   level:
     root: info
+
+encoder:
+  base62:
+    chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
