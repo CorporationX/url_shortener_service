@@ -42,7 +42,7 @@ batch:
   size: 1000
 
 cache:
-  max-size: 10
+  max-size: 10000
   threshold-percentage: 20
   check-interval: 43200000 # Каждые 12 часов
 
