@@ -29,13 +29,23 @@ server:
 
 logging:
   level:
-    root: trace
+    root: debug
 
 hash:
   batch-size:
-    unique-number: 2000
-    save: 1000
+    unique-number: 10
+    save: 2
   thread-pool:
-    core-pool-size: 1
-    max-pool-size: 1
-    queue-capacity: 1
+    producer:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 1
+    consumer:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 1
+  storage:
+    capacity: 5
+    refresh-threshold-percent: 0.2
+  db:
+    refresh-threshold-count: 5

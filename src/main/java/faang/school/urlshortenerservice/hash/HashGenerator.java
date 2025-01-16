@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,6 @@ public class HashGenerator {
     @Value("${hash.batch-size.save}")
     private int saveBatchSize;
 
-    @Async("hashGeneratorThreadPool")
     @Transactional
     public void generateBatch() {
         log.info("Beginning of hash generation: {}", Thread.currentThread().getName());
@@ -35,5 +33,25 @@ public class HashGenerator {
                 .toList();
         hashRepository.save(hashes, saveBatchSize, jdbcTemplate);
         log.info("Successful saving of generated hashes: {}", Thread.currentThread().getName());
+    }
+
+    @Transactional
+    public List<String> getHashBatch(int batchSize) {
+        return hashRepository.getHashBatch(batchSize);
+    }
+
+    @Transactional
+    public boolean tryLock() {
+        return hashRepository.tryLock() > 0;
+    }
+
+    @Transactional
+    public boolean isHashCountBelowThreshold(int requiredCount) {
+        return hashRepository.isHashCountBelowThreshold(requiredCount);
+    }
+
+    @Transactional
+    public void unlock() {
+        hashRepository.unlock();
     }
 }

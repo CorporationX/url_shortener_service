@@ -8,16 +8,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @Configuration
-public class HashGeneratorConfig {
-    @Value("${hash.thread-pool.core-pool-size}")
+public class HashConsumerThreadPoolConfig {
+    @Value("${hash.thread-pool.consumer.core-pool-size}")
     private int corePoolSize;
-    @Value("${hash.thread-pool.max-pool-size}")
+    @Value("${hash.thread-pool.consumer.max-pool-size}")
     private int maxPoolSize;
-    @Value("${hash.thread-pool.queue-capacity}")
+    @Value("${hash.thread-pool.consumer.queue-capacity}")
     private int queueCapacity;
 
     @Bean
-    public Executor hashGeneratorThreadPool() {
+    public Executor hashConsumerExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);

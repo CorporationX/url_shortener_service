@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,6 +37,28 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             SELECT hash FROM deleted_hashes;
             """)
     List<String> getHashBatch(@Param("batchSize") int batchSize);
+
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            UPDATE shortener_schema.hash_generation_lock
+            SET locked = true, locked_at = CURRENT_TIMESTAMP
+            WHERE id = 1 AND locked = false
+            """)
+    int tryLock();
+
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            UPDATE shortener_schema.hash_generation_lock
+            SET locked = false
+            WHERE id = 1
+            """)
+    void unlock();
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(*) <= :requiredCount AS not_enough
+            FROM shortener_schema.hash;
+            """)
+    boolean isHashCountBelowThreshold(@Param("requiredCount") long requiredCount);
 
     default void save(List<String> hashes, int batchSize, JdbcTemplate jdbcTemplate) {
         String sql = "INSERT INTO shortener_schema.hash (hash) VALUES (?)";
