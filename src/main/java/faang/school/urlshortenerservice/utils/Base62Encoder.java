@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.utils;
 
 import org.springframework.stereotype.Component;
 

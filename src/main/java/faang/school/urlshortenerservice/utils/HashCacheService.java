@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.utils;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +44,13 @@ public class HashCacheService {
         Long remainingHashes = redisTemplate.opsForList().size("hashes");
 
         if (remainingHashes == null || remainingHashes < HASH_BELOW_TWENTY_PERCENT) {
-            hashGenerator.generateAndSaveHashes(rangeSize);
-            List<String> newHashesForCache = fetchAndDeleteHashesFromDb(rangeSize);
-            cacheHashes(newHashesForCache);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(() -> {
+                hashGenerator.generateAndSaveHashes(rangeSize);
+                List<String> newHashesForCache = fetchAndDeleteHashesFromDb(rangeSize);
+                cacheHashes(newHashesForCache);
+            });
+            executor.shutdown();
         }
         String hash = redisTemplate.opsForList().leftPop("hashes");
 

@@ -1,11 +1,11 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.utils;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final EntityManager entityManager;
+    private final JdbcTemplate jdbcTemplate;
 
     public void generateAndSaveHashes(int rangeSize) {
         long count = hashRepository.countHashes();
@@ -36,27 +37,27 @@ public class HashGenerator {
 
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
 
+        String sql = "INSERT INTO hash (id, hash) VALUES (?, ?)";
+
+        List<Object[]> batchArgs = new ArrayList<>();
+
         for (int i = 0; i < hashes.size(); i++) {
-            Hash hash = new Hash(uniqueNumbers.get(i), hashes.get(i));
-            hashRepository.save(hash);
+            batchArgs.add(new Object[]{uniqueNumbers.get(i), hashes.get(i)});
         }
+
+        jdbcTemplate.batchUpdate(sql, batchArgs);
 
         log.info("Successfully generated and saved {} hashes", hashes.size());
     }
 
     private List<Long> generateUniqueNumbers(int rangeSize) {
-        List<Long> uniqueNumbers = new ArrayList<>();
+        Query query = entityManager.createNativeQuery(
+                "SELECT nextval('unique_number_seq') FROM generate_series(1, :rangeSize)",
+                Long.class
+        );
+        query.setParameter("rangeSize", rangeSize);
 
-        for (int i = 0; i < rangeSize; i++) {
-            Long uniqueNumber = getNextUniqueNumber();
-            uniqueNumbers.add(uniqueNumber);
-        }
-
+        List<Long> uniqueNumbers = query.getResultList();
         return uniqueNumbers;
-    }
-
-    public Long getNextUniqueNumber() {
-        Query query = entityManager.createNativeQuery("SELECT nextval('unique_number_seq')");
-        return ((Number) query.getSingleResult()).longValue();
     }
 }
