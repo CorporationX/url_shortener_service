@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @Column(length = 6)
+    @Column(length = 6, nullable = false, unique = true)
     private String hash;
 
-    @Column(name = "url")
+    @Column(name = "url", nullable = false)
     private String url;
 
     @CreationTimestamp

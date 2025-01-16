@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class HashGenerator {
     @Value("${hash.range}")
     private int maxRange;
 
-    @Async("hashGeneratorExecutor")
+    @Scheduled(cron = "0 6 16 * * *")
     @Transactional
     public void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);

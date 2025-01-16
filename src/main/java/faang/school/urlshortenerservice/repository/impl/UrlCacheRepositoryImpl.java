@@ -1,0 +1,39 @@
+package faang.school.urlshortenerservice.repository.impl;
+
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
+
+@Slf4j
+@Repository
+@RequiredArgsConstructor
+public class UrlCacheRepositoryImpl implements UrlCacheRepository {
+    private static final String CACHE_PREFIX = "URL - Hash : ";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private HashOperations<String, String, Object> hashOperations;
+
+    @PostConstruct
+    private void init() {
+        hashOperations = redisTemplate.opsForHash();
+    }
+
+    @Override
+    public void add(String url, String hash) {
+        hashOperations.put(CACHE_PREFIX, url, hash);
+        log.info("Added url: {} hash: {}", url, hash);
+    }
+
+    @Override
+    public String getUrl(String hash) {
+        return (String) hashOperations.get(CACHE_PREFIX, hash);
+    }
+
+    @Override
+    public String getHash(String url) {
+        return (String) hashOperations.get(CACHE_PREFIX, url);
+    }
+}
