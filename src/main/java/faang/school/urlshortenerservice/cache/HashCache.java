@@ -33,7 +33,7 @@ public class HashCache {
     }
 
     @PostConstruct
-    public void initQueue() {
+    public void initCache() {
         log.info("Initializing hash queue...");
         List<String> freeHashes = hashGenerator.getHashes(hashProperties.getCacheCapacity());
         freeHashesQueue.addAll(freeHashes);
@@ -41,7 +41,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (needToFillQueue()) {
+        if (needToFillCache()) {
             if (isQueueBeingUpdated.compareAndSet(false, true)) {
                 log.info("Queue size below threshold. Triggering async replenishment.");
                 runAsyncFillingQueue();
@@ -50,14 +50,15 @@ public class HashCache {
         return freeHashesQueue.poll();
     }
 
-    private boolean needToFillQueue() {
+    private boolean needToFillCache() {
         return freeHashesQueue.size() <= hashProperties.getCacheCapacity() * hashProperties.getMinPercentageThreshold() / 100;
     }
 
     private void runAsyncFillingQueue() {
         executorService.submit(() -> {
             try {
-                hashGenerator.getHashes(hashProperties.getCacheCapacity() - freeHashesQueue.size());
+                List<String> freeHashes = hashGenerator.getHashes(hashProperties.getCacheCapacity() - freeHashesQueue.size());
+                freeHashesQueue.addAll(freeHashes);
                 hashGenerator.generateBatch();
             } finally {
                 isQueueBeingUpdated.set(false);
