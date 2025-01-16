@@ -22,9 +22,9 @@ public class AsyncConfig {
     @Bean(name = "hashTaskExecutor")
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(100);
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(maxPoolSize);
+        executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix(threadNamePrefix);
         executor.initialize();
         return executor;
