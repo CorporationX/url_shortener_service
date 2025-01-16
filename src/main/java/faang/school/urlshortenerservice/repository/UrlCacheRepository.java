@@ -1,8 +1,14 @@
 package faang.school.urlshortenerservice.repository;
 
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import faang.school.urlshortenerservice.model.Url;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface UrlCacheRepository extends Red{
+public interface UrlCacheRepository extends JpaRepository<Url, String> {
+
+    Optional<Url> findByHash(String hash);
+
 }

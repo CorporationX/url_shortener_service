@@ -1,11 +1,11 @@
-CREATE TABLE url (
-                         hash VARCHAR(7) PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
+CREATE TABLE urls (
+                         hash VARCHAR(7) PRIMARY KEY,
                          url VARCHAR(255) NOT NULL UNIQUE,
                          created_at timestamptz DEFAULT current_timestamp,
 );
 
 CREATE TABLE hash (
-                     hash VARCHAR(7) PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
+                     hash VARCHAR(7) PRIMARY KEY,
 );
 
 CREATE SEQUENCE unique_hash_number_seq
