@@ -42,8 +42,9 @@ batch:
   size: 1000
 
 cache:
-  max-size: 10000
+  max-size: 10
   threshold-percentage: 20
+  check-interval: 43200000 # Каждые 12 часов
 
 thread:
   pool:

@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -54,6 +55,12 @@ public class HashCache {
             return getAndRemoveHash(cache);
         }
 
+        triggerAsyncFill();
+
+        return getAndRemoveHash(cache);
+    }
+
+    private void triggerAsyncFill() {
         if (isFetching.compareAndSet(false, true)) {
             executorService.submit(this::fillCacheAsync);
         }
@@ -63,10 +70,7 @@ public class HashCache {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Error while waiting for cache filling", e);
-            return null;
         }
-
-        return getAndRemoveHash(cache);
     }
 
     private String getAndRemoveHash(List<String> cache) {
@@ -100,6 +104,19 @@ public class HashCache {
         } finally {
             cacheFillingLatch.countDown();
             isFetching.set(false);
+        }
+    }
+
+    @Scheduled(fixedRateString = "${cache.check-interval}")
+    public void checkCacheSize() {
+        int currentSize = cache.size();
+        int threshold = maxSize * thresholdPercentage / 100;
+
+        log.info("Checking cache size: {} (threshold: {})", currentSize, threshold);
+
+        if (currentSize < threshold) {
+            log.warn("Cache size below threshold! Triggering cache refill...");
+            triggerAsyncFill();
         }
     }
 }
