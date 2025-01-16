@@ -14,6 +14,6 @@ import org.hibernate.validator.constraints.Length;
 public class UrlDto {
 
     @NotNull(message = "Original url must be specified")
-    @Length(min = 3, max = 512)
+    @Length(min = 3, max = 512, message = "Original URL length must be between 3 and 512 characters")
     private String url;
 }

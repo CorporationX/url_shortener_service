@@ -31,7 +31,7 @@ public class UrlController {
 
     @ResponseStatus(HttpStatus.MOVED_PERMANENTLY)
     @GetMapping("/{hash}")
-    public String redirectToOriginalUrl(@PathVariable @Length(max = 6) String hash) {
+    public String redirectToOriginalUrl(@PathVariable @Length(max = 6, message = "Short URL is too long") String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
         return "redirect:%s".formatted(originalUrl);
     }
