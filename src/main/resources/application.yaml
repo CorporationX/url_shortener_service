@@ -23,3 +23,14 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batch:
+      size: 10
+async:
+  executor:
+    core_pool_size: 10
+    max_pool_size: 20
+    queue_capacity: 100
+    thread_name_prefix: hash-task
