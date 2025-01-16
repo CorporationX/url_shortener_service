@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    private final String base62Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private final Base62Encoder  base62Encoder;
 
     @Value("${hash.generator.batch.size}")
     private int batchSize;
@@ -21,21 +21,8 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
 
-        List<String> hashes = uniqueNumbers.stream()
-                .map(this::applyBase62Encoding)
-                .toList();
+        List<String> hashes = base62Encoder.encode(uniqueNumbers);
 
         hashRepository.saveBatch(hashes);
-    }
-
-    private String applyBase62Encoding(long number) {
-        StringBuilder builder = new StringBuilder();
-
-        while (number > 0) {
-            builder.append(base62Characters.charAt((int) (number % base62Characters.length())));
-            number /= base62Characters.length();
-        }
-
-        return builder.toString();
     }
 }
