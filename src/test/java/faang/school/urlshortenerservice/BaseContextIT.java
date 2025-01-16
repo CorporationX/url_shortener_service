@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice;
 import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +21,6 @@ import java.time.Duration;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Testcontainers
-@AutoConfigureMockMvc
 @DirtiesContext
 public class BaseContextIT {
 

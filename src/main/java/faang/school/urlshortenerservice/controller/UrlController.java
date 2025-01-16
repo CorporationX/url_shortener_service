@@ -16,17 +16,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@RequestMapping("${short-url.base-path}")
-@Controller
 @RequiredArgsConstructor
 @Validated
+@RequestMapping("${short-url.base-path}")
+@Controller
 public class UrlController {
 
     private final UrlService urlService;
 
     @PostMapping
     public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlDto urlDto) {
-        return ResponseEntity.ok(urlService.createShortUrl(urlDto));
+        String shortUrl = urlService.createShortUrl(urlDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
     @ResponseStatus(HttpStatus.MOVED_PERMANENTLY)
