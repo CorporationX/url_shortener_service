@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.cache;
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,22 @@ public class HashCache {
     private Integer thresholdPercentage;
 
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
+
+    @PostConstruct
+    public void preloadCache() {
+        log.info("Starting cache warm-up...");
+
+        fillCacheAsync();
+
+        try {
+            cacheFillingLatch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Cache warm-up interrupted", e);
+        }
+
+        log.info("Cache warm-up completed, size: {}", cache.size());
+    }
 
     public String getHash() {
         if (cache.size() > maxSize * thresholdPercentage / 100) {
@@ -77,7 +94,7 @@ public class HashCache {
                 cache.addAll(newHashes);
             }
 
-            log.info("Cache size: {}", cache.size());
+            log.info("Cache size after filling: {}", cache.size());
         } catch (Exception e) {
             log.error("Error while adding hashes to cache", e);
         } finally {
