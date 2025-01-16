@@ -42,7 +42,7 @@ logging:
     root: info
 
 url-shortener:
-  host-name: http:/shrt.com/
+  host-name: https:/shrt.com/
   hash-amount-to-local-cache: 10_000
   unique-numbers-from-sequence: 100_000
 
