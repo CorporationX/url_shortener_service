@@ -58,7 +58,7 @@ public class UrlService {
     }
 
     public List<Url> findUrlEntities(Set<String> urlHashes) {
-        return urlRepository.findByHashSet(urlHashes);
+        return urlRepository.findByHashes(urlHashes);
     }
 
     private String getOriginalUrlFromDb(String hash) {

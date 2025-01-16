@@ -11,12 +11,28 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class UrlUtilTest {
 
     @InjectMocks
     private UrlUtil urlUtil;
+
+    @Test
+    void isValidUrlTrueTest() {
+        String validUrl = "http://example.com/valid";
+        assertTrue(urlUtil.isValidUrl(validUrl));
+    }
+
+    @Test
+    void isValidUrlFalseTest() {
+        String firstInvalidUrl = "http://example.com/valid^";
+        String secondInvalidUrl = "htps://example.com/valid";
+        assertFalse(urlUtil.isValidUrl(firstInvalidUrl));
+        assertFalse(urlUtil.isValidUrl(secondInvalidUrl));
+    }
 
     @Test
     public void testEnsureUrlHasProtocol() {

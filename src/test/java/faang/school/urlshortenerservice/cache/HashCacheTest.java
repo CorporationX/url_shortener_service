@@ -78,7 +78,7 @@ class HashCacheTest {
     }
 
     @Test
-    void testNeedToFillQueue() {
+    void getHashNeedToFillQueueTest() {
         int minPercentageThreshold = 30;
         Queue<String> cacheQueue = getHashCacheQueue();
         cacheQueue.add("Ju");

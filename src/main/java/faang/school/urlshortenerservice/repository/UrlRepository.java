@@ -20,7 +20,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             SELECT * FROM URL 
             WHERE hash in :urlHashes
             """, nativeQuery = true)
-    List<Url> findByHashSet(Set<String> urlHashes);
+    List<Url> findByHashes(Set<String> urlHashes);
 
     @Query(value = """
             DELETE FROM url 
