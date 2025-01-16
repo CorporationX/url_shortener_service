@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class HashGenerator {
     private int batchSize;
 
     @Async("hashTaskExecutor")
+    @Transactional
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
 
