@@ -8,16 +8,33 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class ThreadPoolConfig {
 
-    @Value("${spring.async.queue_capacity}")
+    @Value("${spring.async.core-pool-size}")
+    int corePoolSize;
+
+    @Value("${spring.async.max-pool-size}")
+    int maxPoolSize;
+
+    @Value("${spring.async.queue-capacity}")
     int queueCapacity;
 
-    @Bean
-    public ThreadPoolTaskExecutor taskExecutor() {
+    @Bean (name = "hashGeneratorExecutor")
+    public ThreadPoolTaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
-        taskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2);
+        taskExecutor.setCorePoolSize(corePoolSize);
+        taskExecutor.setMaxPoolSize(maxPoolSize);
         taskExecutor.setQueueCapacity(queueCapacity);
-        taskExecutor.setThreadNamePrefix("UrlShortenerExecutor-");
+        taskExecutor.setThreadNamePrefix("HashGenerator-");
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+
+    @Bean (name = "localCacheExecutor")
+    public ThreadPoolTaskExecutor localCacheExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(corePoolSize);
+        taskExecutor.setMaxPoolSize(maxPoolSize);
+        taskExecutor.setQueueCapacity(queueCapacity);
+        taskExecutor.setThreadNamePrefix("LocalCache-");
         taskExecutor.initialize();
         return taskExecutor;
     }

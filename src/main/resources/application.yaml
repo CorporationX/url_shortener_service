@@ -28,6 +28,12 @@ spring:
     max-pool-size: 10
     queue-capacity: 100
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl: 10
+
 server:
   port: 8080
 
