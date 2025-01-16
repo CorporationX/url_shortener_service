@@ -34,3 +34,7 @@ hash-generating:
     max-size: 10
     core-size: 6
     queue-capacity: 20
+hash-caching:
+  batch-size: 50
+  queue-size: 200
+  capacity-factor-for-update: 0.2
