@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -38,7 +37,7 @@ public class UrlService {
 
         String freeHash = hashCache.getHash();
         urlRepository.save(createUrlEntity(urlDto.getUrl(), freeHash));
-        String shortUrl = createShortUrl(freeHash);
+        String shortUrl = urlUtil.buildShortUrlFromContext(freeHash);
         urlCacheRepository.saveDefaultUrl(freeHash, urlDto.getUrl());
 
         log.info("Short URL={} for original URL={} was created!", shortUrl, urlDto.getUrl());
@@ -72,14 +71,6 @@ public class UrlService {
         if (!urlUtil.isValidUrl(urlWithProtocol)) {
             throw new DataValidationException("Invalid url!");
         }
-    }
-
-    private String createShortUrl(String hash) {
-        return ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("%s/{hash}".formatted(endpointBasePath))
-                .buildAndExpand(hash)
-                .toUriString();
     }
 
     private Url createUrlEntity(String url, String hash) {

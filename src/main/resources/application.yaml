@@ -42,8 +42,8 @@ short-url:
 
   hash:
     cache-capacity: 10000
-    db-create-max-count: 20000
-    db-create-batch-size: 1000
+    db-create-max-count: 50000
+    db-create-batch-size: 2500
     min-percentage-threshold: 20
 
 scheduler:
@@ -59,7 +59,7 @@ async:
     thread-name-prefix: UrlHashAsyncThread-
     core-pool-size: 10
     max-pool-size: 20
-    queue-capacity: 40
+    queue-capacity: 60
 
 thread:
   hash-cache:

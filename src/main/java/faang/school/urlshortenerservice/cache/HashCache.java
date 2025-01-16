@@ -20,7 +20,7 @@ public class HashCache {
     private final ExecutorService executorService;
     private final HashGenerator hashGenerator;
     private final HashProperties hashProperties;
-    public final Queue<String> freeHashesQueue;
+    private final Queue<String> freeHashesQueue;
     private final AtomicBoolean isQueueBeingUpdated = new AtomicBoolean(false);
 
     public HashCache(@Qualifier("hashCacheExecutorService") ExecutorService executorService,
@@ -51,7 +51,7 @@ public class HashCache {
     }
 
     private boolean needToFillQueue() {
-        return freeHashesQueue.size() < hashProperties.getCacheCapacity() * hashProperties.getMinPercentageThreshold() / 100;
+        return freeHashesQueue.size() <= hashProperties.getCacheCapacity() * hashProperties.getMinPercentageThreshold() / 100;
     }
 
     private void runAsyncFillingQueue() {
