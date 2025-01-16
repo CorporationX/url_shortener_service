@@ -5,10 +5,12 @@ import faang.school.urlshortenerservice.util.hash_generator.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +18,9 @@ import java.util.concurrent.ExecutorService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,68 +74,29 @@ class HashCacheTest {
         assertNotNull(freeHash);
         assertEquals("Ju", freeHash);
         assertEquals("W7E", cacheQueue.peek());
+        verify(executorService, never()).submit(any(Runnable.class));
     }
 
     @Test
     void testNeedToFillQueue() {
-        int minPercentageThreshold = 20;
+        int minPercentageThreshold = 30;
         Queue<String> cacheQueue = getHashCacheQueue();
         cacheQueue.add("Ju");
         cacheQueue.add("W7E");
-        List<String> hashes = List.of("hash1", "hash2", "hash3");
-        when(hashGenerator.getHashes(queueCapacity)).thenReturn(hashes);
+        when(hashGenerator.getHashes(anyLong())).thenReturn(new ArrayList<>());
         when(hashProperties.getMinPercentageThreshold()).thenReturn(minPercentageThreshold);
 
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         String freeHash = hashCache.getHash();
+
+        verify(executorService, times(1)).submit(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         assertNotNull(freeHash);
         assertEquals("Ju", freeHash);
-        assertEquals("W7E", cacheQueue.peek());
+        verify(hashGenerator, times(1)).getHashes(anyLong());
+        verify(hashGenerator, times(1)).generateBatch();
     }
-
-//    @Test
-//    void testRunAsyncFillingQueue() throws InterruptedException {
-//        // Подготовка моков
-//        when(hashProperties.getCacheCapacity()).thenReturn(10);
-//        when(hashProperties.getMinPercentageThreshold()).thenReturn(30);
-//
-//        // Инициализация очереди с мокированными хешами
-//        hashCache.freeHashesQueue.add("hash1");
-//
-//        // Мокируем асинхронное выполнение
-//        Future<?> future = mock(Future.class);
-//        when(executorService.submit(any(Runnable.class))).thenReturn(future);
-//
-//        // Вызов getHash, чтобы триггерить обновление очереди
-//        hashCache.getHash();
-//
-//        // Проверка того, что задача была отправлена в ExecutorService
-//        verify(executorService, times(1)).submit(any(Runnable.class));
-//    }
-//
-//    @Test
-//    void testAsyncQueueUpdate() throws InterruptedException {
-//        // Подготовка моков
-//        when(hashProperties.getCacheCapacity()).thenReturn(10);
-//        when(hashProperties.getMinPercentageThreshold()).thenReturn(30);
-//
-//        // Мокируем асинхронную работу
-//        Future<?> future = mock(Future.class);
-//        when(executorService.submit(any(Runnable.class))).thenReturn(future);
-//
-//        // Проверка асинхронной работы
-//        hashCache.runAsyncFillingQueue();
-//
-//        // Проверка того, что состояние isQueueBeingUpdated было сброшено
-//        assertFalse(hashCache.isQueueBeingUpdated.get());
-//    }
-//
-//    @Test
-//    void testQueueIsNotBeingUpdated() {
-//        // Проверка того, что флаг isQueueBeingUpdated устанавливается верно
-//        assertTrue(hashCache.isQueueBeingUpdated.compareAndSet(false, true));
-//        assertFalse(hashCache.isQueueBeingUpdated.compareAndSet(false, true));  // После первого вызова флаг не может быть изменен
-//    }
 
     private Queue<String> getHashCacheQueue() {
         try {
