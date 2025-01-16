@@ -30,3 +30,11 @@ server:
 logging:
   level:
     root: info
+
+hashCache:
+  maxSize: 1000
+  lowThreshold: 0.2
+  fillPercentage: 0.8
+
+hashRepository:
+  batchSize: 100
