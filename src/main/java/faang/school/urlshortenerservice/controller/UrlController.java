@@ -2,24 +2,26 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import faang.school.urlshortenerservice.validator.SecureUrlValidator;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
+@Slf4j
 @RestController
-@RequestMapping("api/v1/shorten")
+@RequestMapping
 @RequiredArgsConstructor
+@Validated
 public class UrlController {
-
     private final UrlService urlService;
-    private final SecureUrlValidator secureUrlValidator;
 
     @GetMapping("/health")
     public String health() {
@@ -27,17 +29,14 @@ public class UrlController {
     }
 
     @PostMapping("/url")
-    public UrlDto shorten(@RequestBody UrlDto dto){
-        secureUrlValidator.validate(dto.getUrl());
+    public UrlDto shorten(@RequestBody @Valid UrlDto dto){
+        log.info("Request to shorten url: {}", dto.getUrl());
         return urlService.shortenUrl(dto);
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirect(@PathVariable String hash) {
-        String url = urlService.getUrl(hash);
-        return ResponseEntity
-                .status(302)
-                .header(HttpHeaders.LOCATION, url)
-                .build();
+    public RedirectView redirect(@PathVariable @NotBlank String hash) {
+        log.info("Request to redirect url: {}", hash);
+        return new RedirectView(urlService.getUrl(hash));
     }
 }

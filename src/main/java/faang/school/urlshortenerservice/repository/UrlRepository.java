@@ -14,7 +14,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-            DELETE FROM url WHERE created_at < ? RETURNING hash
+            DELETE FROM url WHERE created_at < ? RETURNING *
             """)
     List<Url> deleteByCreatedAtAfter(LocalDateTime timeAgo);
 }
