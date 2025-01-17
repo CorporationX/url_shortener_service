@@ -47,8 +47,9 @@ short-url:
     min-percentage-threshold: 20
 
 scheduler:
-  cleaning-old-hash:
+  clean-old-hashes:
     cron: "0 0 0 * * ?"
+    ttl-months: 12
     batch-size: 500
   update-popular-url-hashes:
     cron: "0 0 */3 * * ?"

@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.properties.short_url.UrlCacheProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class UrlControllerIT extends BaseContextIT {
 
-    private static final String baseEndpointPath = "/api/v1/url";
+    @Value("${short-url.base-path}")
+    private String endpointBasePath;
 
     @Autowired
     private UrlCacheProperties urlCacheProperties;
@@ -74,7 +76,7 @@ public class UrlControllerIT extends BaseContextIT {
         UrlDto urlDto = new UrlDto(originalUrl);
         String urlRequest = objectMapper.writeValueAsString(urlDto);
 
-        MvcResult shortUrlResponse = mockMvc.perform(post(baseEndpointPath)
+        MvcResult shortUrlResponse = mockMvc.perform(post(endpointBasePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))
@@ -85,7 +87,7 @@ public class UrlControllerIT extends BaseContextIT {
         String hash = getHashFromUrl(shortUrl);
         String redisKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
 
-        MvcResult redirectUrlResponse = mockMvc.perform(get("%s/%s".formatted(baseEndpointPath, hash))
+        MvcResult redirectUrlResponse = mockMvc.perform(get("%s/%s".formatted(endpointBasePath, hash))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))
@@ -106,7 +108,7 @@ public class UrlControllerIT extends BaseContextIT {
     private void performCreatingShortUrlExpectBadRequest(UrlDto urlDto, long requesterId) throws Exception {
         String urlRequest = objectMapper.writeValueAsString(urlDto);
 
-        mockMvc.perform(post(baseEndpointPath)
+        mockMvc.perform(post(endpointBasePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))

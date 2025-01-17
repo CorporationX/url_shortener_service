@@ -1,0 +1,70 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+short-url:
+
+  base-path: /api/v1/url
+
+  cache:
+    popular-ttl-hours: 24
+    default-ttl-minutes: 10
+    default-cache-name: shortUrls
+    popular-cache-name: shortUrlStats
+    popular-hash-max-count: 10
+
+  hash:
+    cache-capacity: 10000
+    db-create-max-count: 50000
+    db-create-batch-size: 2500
+    min-percentage-threshold: 20
+
+scheduler:
+  clean-old-hashes:
+    cron: "0 0 0 * * ?"
+    ttl-months: 12
+    batch-size: 500
+  update-popular-url-hashes:
+    cron: "0 0 */3 * * ?"
+    rlock-name: popularUrlHashesUpdateLock
+
+async:
+  url-hash:
+    thread-name-prefix: UrlHashAsyncThread-
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 60
+
+thread:
+  hash-cache:
+    core-pool-size: 4
+    max-pool-size: 4
+    keep-alive-seconds: 60
+    queue-capacity: 10
