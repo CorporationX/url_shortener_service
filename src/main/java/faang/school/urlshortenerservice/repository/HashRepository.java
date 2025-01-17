@@ -12,9 +12,9 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = "SELECT nextval('hash_sequence') FROM generate_series(1, :count)")
-    List<Long> getUniqueSeqNumbers(long count);
+    List<Long> getUniqueSeqNumbers(Long count);
 
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM hash WHERE CTID IN (SELECT CTID FROM hash LIMIT :count) RETURNING *")
-    List<Hash> getHashBatchAndDelete(long count);
+    List<Hash> getAndDeleteHashBatch(Long count);
 }
