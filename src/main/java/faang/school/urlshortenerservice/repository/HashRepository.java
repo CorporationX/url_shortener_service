@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Object, Long> {
 
-    @Value("${app.hash.batchSize}")
+    @Value("${app.hash.batch-size}")
     int batchSize = 0;
 
     @Query(nativeQuery = true, value = """

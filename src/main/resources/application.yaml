@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+app:
+  hash:
+    batch-size: 1000
+    thread-pool:
+      core-size: 10
+      max-size: 20
+      queue-capacity: 10000
+      keep-alive: 60
