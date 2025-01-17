@@ -8,13 +8,13 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UrlService {
 
     private final UrlRepository urlRepository;
@@ -25,6 +25,7 @@ public class UrlService {
     @Transactional
     public String getUrlHash(UrlDto urlDto) {
         String longUrl = urlDto.getUrl();
+        log.debug("LongUrl: {}", longUrl);
         validator.validateUrl(urlDto.getUrl());
         String hash = hashCache.getHash();
         StringBuilder builder = new StringBuilder();
@@ -34,38 +35,31 @@ public class UrlService {
         url.setHash(hash);
         url.setUrl(longUrl);
         urlRepository.save(url);
+        log.info("LongUrl {} with hash {} was successful saved in base", longUrl, hash);
         urlCacheRepository.save(url);
+        log.info("LongUrl {} with hash {} was successful saved in cash", longUrl, hash);
         return builder.toString();
     }
 
     @Transactional
-    public String getOriginalUrl(String shortUrl) {
-        String hash = removePathBeforeThirdSlash(shortUrl);
-        Optional<Url> urlFromCache = urlCacheRepository.findByHash(hash);
-        StringBuilder builder = new StringBuilder();
-        builder.append(removePathAfterThirdSlash(shortUrl));
-        if (urlFromCache.isEmpty()) {
+    public String getOriginalUrl(String hash) {
+        log.debug("hash: {}", hash);
+        Url urlFromCache = urlCacheRepository.findByHash(hash);
+        if (urlFromCache == null) {
             Url urlFromRepository = urlRepository.findByHash(hash)
                     .orElseThrow(() -> new DataValidationException("Cannot find longUrl from hash: " + hash));
             urlCacheRepository.save(urlFromRepository);
-            builder.append(urlFromRepository.getUrl());
-            return builder.toString();
+            log.info("Url {} was become from base", urlFromRepository.getUrl());
+            return urlFromRepository.getUrl();
         }
-        return builder.append(urlFromCache.get().getUrl()).toString();
+        log.info("Url {} was become from cache", urlFromCache.getUrl());
+        return urlFromCache.getUrl();
     }
 
     private String removePathAfterThirdSlash(String urlString) {
         int thirdSlashIndex = getThirdSlashIndex(urlString);
         if (thirdSlashIndex != -1) {
             return urlString.substring(0, thirdSlashIndex + 1);
-        }
-        return urlString;
-    }
-
-    private String removePathBeforeThirdSlash(String urlString) {
-        int thirdSlashIndex = getThirdSlashIndex(urlString);
-        if (thirdSlashIndex != -1) {
-            return urlString.substring(thirdSlashIndex + 1);
         }
         return urlString;
     }

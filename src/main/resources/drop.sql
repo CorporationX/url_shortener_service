@@ -1,0 +1,2 @@
+DROP TABLE urls;
+DROP TABLE hash;

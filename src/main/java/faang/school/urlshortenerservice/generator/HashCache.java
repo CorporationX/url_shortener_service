@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HashCache {
 
     private final HashGenerator hashGenerator;
@@ -32,6 +34,8 @@ public class HashCache {
     public String getHash() {
         if (hashes.size() / (capacity / 100.0) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
+                log.debug("\n" +
+                        "Queue full of hashes is less than 20 percent");
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> filling.set(false));

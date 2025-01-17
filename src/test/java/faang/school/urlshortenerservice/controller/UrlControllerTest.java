@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,9 +53,14 @@ public class UrlControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void testGetUrl() throws Exception {
+        when(urlService.getOriginalUrl("adsads"))
+                .thenReturn("https://www.google.com/romats");
 
-
-
-
+        mockMvc.perform(get("/api/v1/urls/" + "adsads"))
+                .andExpect(status().isFound())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("https://www.google.com/romats"));
+    }
 
 }

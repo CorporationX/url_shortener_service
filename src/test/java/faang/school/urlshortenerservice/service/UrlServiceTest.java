@@ -53,7 +53,7 @@ public class UrlServiceTest {
                 "ved=2ahUKEwj6qPnaodf9AhWkgf0HHYwjBvwQ_AUoAXoECAEQAw&biw=1440&bih=789&dpr=2#imgrc=2F4KvjYofOuZIM").build();
         hash = new Hash();
         hash.setHash("romabest");
-        url = Url.builder().url("search?q=amsterdam+sights&rlz=1C5CHFA_enAM1020AM1022&sxsrf=AJOqlz" +
+        url = Url.builder().url("https://www.google.com/search?q=amsterdam+sights&rlz=1C5CHFA_enAM1020AM1022&sxsrf=AJOqlz" +
                 "VpeoKgccah6fWoJknYVkBsUzU26A:1678654067076&source=lnms&tbm=isch&sa=X&" +
                 "ved=2ahUKEwj6qPnaodf9AhWkgf0HHYwjBvwQ_AUoAXoECAEQAw&biw=1440&bih=789&dpr=2#imgrc=2F4KvjYofOuZIM")
                 .hash(hash.getHash()).build();
@@ -72,9 +72,9 @@ public class UrlServiceTest {
 
     @Test
     void testGetOriginalUrl() {
-        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(Optional.empty());
+        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(null);
         when(urlRepository.findByHash(hash.getHash())).thenReturn(Optional.of(url));
-        String ordinalUrl = urlService.getOriginalUrl("https://www.google.com/romabest");
+        String ordinalUrl = urlService.getOriginalUrl("romabest");
 
         verify(urlCacheRepository).save(urlCaptor.capture());
         assertEquals(ordinalUrl, "https://www.google.com/search?q=amsterdam+sights&rlz=1C5CHFA_enAM1020AM1022&sxsrf=AJOqlz" +
@@ -84,11 +84,11 @@ public class UrlServiceTest {
 
     @Test
     void testGetOriginalUrlWithException() {
-        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(Optional.empty());
+        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(null);
         when(urlRepository.findByHash(hash.getHash()))
                 .thenThrow(new DataValidationException("Cannot find longUrl from hash: " + hash.getHash()));
 
-        assertThrows(DataValidationException.class, () -> urlService.getOriginalUrl("https://www.google.com/romabest"));
+        assertThrows(DataValidationException.class, () -> urlService.getOriginalUrl("romabest"));
     }
 
 }
