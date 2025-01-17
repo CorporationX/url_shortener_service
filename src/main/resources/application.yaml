@@ -29,3 +29,9 @@ logging:
 
 encoder-values:
   characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+async-properties:
+  threads-count: 10
+
+batch-properties:
+  hash-generate-batch: 100000

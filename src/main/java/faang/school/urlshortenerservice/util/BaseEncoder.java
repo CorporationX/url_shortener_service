@@ -1,32 +1,31 @@
 package faang.school.urlshortenerservice.util;
 
+import faang.school.urlshortenerservice.model.Hash;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @AllArgsConstructor
 @RequiredArgsConstructor
+@Slf4j
 public class BaseEncoder {
 
     @Value("${encoder-values.characters}")
     private String characters;
 
-    public List<String> encodeList(List<Long> numbers) {
-        if (numbers == null || numbers.isEmpty()) {
-            throw new RuntimeException("The list of numbers to encode is null or empty");
-        }
-
-        List<String> hashes = new ArrayList<>();
-        numbers.forEach(number -> hashes.add(encode(number)));
-        return hashes;
+    public List<Hash> encodeList(List<Long> numbers) {
+        return  numbers.parallelStream()
+                .map(this::encode)
+                .map(hash -> Hash.builder().hash(hash).build())
+                .toList();
     }
 
-    private String encode(long number) {
+    private String encode(Long number) {
         var sb = new StringBuilder();
         int base = characters.length();
 
