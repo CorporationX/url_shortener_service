@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import faang.school.urlshortenerservice.util.Util;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
@@ -29,7 +29,7 @@ public class HashCache {
     private final ThreadPool threadPool;
     private final Util util;
 
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
+    @Getter
     private Queue<String> localHashCache;
 
     @PostConstruct
@@ -54,33 +54,12 @@ public class HashCache {
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
-    @Transactional
-    public String getHash() {
-        if (isNecessaryToFill()) {
-            if (!isFilling.get()) {
-                isFilling.compareAndSet(false, true);
-
-                CompletableFuture.runAsync(() -> fillCache().thenRun(() -> {
-                    isFilling.set(false);
-                    log.info("Finished filling local cache");
-                }), threadPool.hashCacheFillExecutor());
-            }
-        }
-        String hash = localHashCache.poll();
-        log.info("Hash {} was got from local cache", hash);
-        return hash;
-    }
-
-    private boolean isNecessaryToFill() {
-        return localHashCache.size() < getPercentageToFill();
-    }
-
     private int getBatchSize() {
-        return queueProp.getMaxQueueSize() - getPercentageToFill();
+        return queueProp.getMaxQueueSize() - (int) getPercentageToFill();
     }
 
-    private int getPercentageToFill() {
-        return (queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
+    private double getPercentageToFill() {
+        return ((double) queueProp.getMaxQueueSize() / 100) * queueProp.getPercentageToStartFill();
     }
 
     private void generateHashes(int batchSize) {

@@ -36,9 +36,9 @@ url:
 hash:
   cash:
     max-queue-size: 50
-    percentage-to-start-fill: 20
+    percentage-to-start-fill: 30
     filling-batches-quantity: 10
-    count-to-stop-generate: 500
+    count-to-stop-generate: 80
 
 async:
   generator:

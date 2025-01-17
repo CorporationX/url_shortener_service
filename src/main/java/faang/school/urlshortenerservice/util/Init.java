@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class Init {
     private final HashCacheQueueProperties properties;
 
     @PostConstruct
+    @Transactional
     public void init() {
         hashGenerator.generateBatchHashes(properties.getMaxQueueSize())
                 .thenRun(hashCache::fillCache);

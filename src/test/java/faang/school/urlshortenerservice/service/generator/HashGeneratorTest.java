@@ -85,7 +85,7 @@ class HashGeneratorTest {
         assertTrue(result.isDone());
 
         verify(hashRepository).saveHashes(anyList());
-        verify(base62Encoder, times(fillingBatchQuantity)).encode(anyList());
-        verify(util, times(1)).getBatches(uniqueElements, fillingBatchQuantity);
+        verify(base62Encoder, times((int)fillingBatchQuantity)).encode(anyList());
+        verify(util, times(1)).getBatches(uniqueElements, (int)fillingBatchQuantity);
     }
 }

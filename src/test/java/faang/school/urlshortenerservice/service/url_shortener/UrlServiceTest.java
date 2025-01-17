@@ -1,19 +1,28 @@
 package faang.school.urlshortenerservice.service.url_shortener;
 
+import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
+import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.url.impl.UrlRepositoryImpl;
 import faang.school.urlshortenerservice.repository.url_cash.impl.UrlCacheRepositoryImpl;
 import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,7 +37,13 @@ class UrlServiceTest {
     private UrlCacheRepositoryImpl urlCacheRepository;
 
     @Mock
+    private HashCacheQueueProperties queueProp;
+
+    @Mock
     private UrlRepositoryImpl urlRepository;
+
+    @Mock
+    private ThreadPool threadPool;
 
     @Mock
     private HashCache hashCache;
@@ -39,9 +54,12 @@ class UrlServiceTest {
     private String hash;
     private String url;
     private UrlDto urlDto;
+    private ThreadPoolTaskExecutor executor;
+    private Queue<String> localCacheQueue;
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        localCacheQueue = new LinkedBlockingQueue<>(10);
         String domain = "http://localhost:8080/api/v1/urls/";
         hash = "hash";
         url = domain + hash;
@@ -53,11 +71,28 @@ class UrlServiceTest {
         Field domainField = UrlService.class.getDeclaredField("domain");
         domainField.setAccessible(true);
         domainField.set(urlService, domain);
+
+        executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("async-hash-fill-exec-test");
+        executor.initialize();
+    }
+
+    @AfterEach
+    void tearDown() {
+        ThreadPoolTaskExecutor executor = threadPool.hashGeneratorExecutor();
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 
     @Test
     public void shortenUrlTest() {
-        when(hashCache.getHash()).thenReturn(hash);
+        localCacheQueue.addAll(List.of(hash, "hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
+
+        when(hashCache.getLocalHashCache()).thenReturn(localCacheQueue);
 
         String result = urlService.shortenUrl(urlDto);
 
@@ -65,6 +100,29 @@ class UrlServiceTest {
         verify(urlCacheRepository).saveUrl(hash, urlDto.getUrl());
 
         assertEquals(url, result);
+    }
+
+    @Test
+    public void shortenUrlStartFillingCacheTest() {
+        localCacheQueue.add(hash);
+
+        when(queueProp.getMaxQueueSize()).thenReturn(10);
+        when(queueProp.getPercentageToStartFill()).thenReturn(90);
+        when(hashCache.getLocalHashCache()).thenReturn(localCacheQueue);
+        when(threadPool.hashCacheFillExecutor()).thenReturn(executor);
+
+        String result = urlService.shortenUrl(urlDto);
+
+        Awaitility.await()
+                .atMost(30, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    verify(hashCache, times(1)).fillCache();
+                    verify(urlRepository, times(1)).save(hash, urlDto.getUrl());
+                    verify(urlCacheRepository, times(1)).saveUrl(hash, urlDto.getUrl());
+
+                    assertEquals(url, result);
+                    assertEquals(0, localCacheQueue.size());
+                });
     }
 
     @Test
