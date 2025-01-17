@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,8 +55,8 @@ public class UrlServiceTest {
         hash = new Hash();
         hash.setHash("romabest");
         url = Url.builder().url("https://www.google.com/search?q=amsterdam+sights&rlz=1C5CHFA_enAM1020AM1022&sxsrf=AJOqlz" +
-                "VpeoKgccah6fWoJknYVkBsUzU26A:1678654067076&source=lnms&tbm=isch&sa=X&" +
-                "ved=2ahUKEwj6qPnaodf9AhWkgf0HHYwjBvwQ_AUoAXoECAEQAw&biw=1440&bih=789&dpr=2#imgrc=2F4KvjYofOuZIM")
+                        "VpeoKgccah6fWoJknYVkBsUzU26A:1678654067076&source=lnms&tbm=isch&sa=X&" +
+                        "ved=2ahUKEwj6qPnaodf9AhWkgf0HHYwjBvwQ_AUoAXoECAEQAw&biw=1440&bih=789&dpr=2#imgrc=2F4KvjYofOuZIM")
                 .hash(hash.getHash()).build();
     }
 
@@ -65,18 +66,18 @@ public class UrlServiceTest {
         String shortUrl = urlService.getUrlHash(urlDto);
 
         verify(urlRepository).save(urlCaptor.capture());
-        verify(urlCacheRepository).save(urlCaptor.capture());
+        verify(urlCacheRepository).saveUrlInCache(anyString(), urlCaptor.capture());
 
         assertEquals(shortUrl, "https://www.google.com/romabest");
     }
 
     @Test
     void testGetOriginalUrl() {
-        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(null);
+        when(urlCacheRepository.getUrlFromCache(hash.getHash())).thenReturn(null);
         when(urlRepository.findByHash(hash.getHash())).thenReturn(Optional.of(url));
         String ordinalUrl = urlService.getOriginalUrl("romabest");
 
-        verify(urlCacheRepository).save(urlCaptor.capture());
+        verify(urlCacheRepository).saveUrlInCache(anyString(), urlCaptor.capture());
         assertEquals(ordinalUrl, "https://www.google.com/search?q=amsterdam+sights&rlz=1C5CHFA_enAM1020AM1022&sxsrf=AJOqlz" +
                 "VpeoKgccah6fWoJknYVkBsUzU26A:1678654067076&source=lnms&tbm=isch&sa=X&" +
                 "ved=2ahUKEwj6qPnaodf9AhWkgf0HHYwjBvwQ_AUoAXoECAEQAw&biw=1440&bih=789&dpr=2#imgrc=2F4KvjYofOuZIM");
@@ -84,7 +85,7 @@ public class UrlServiceTest {
 
     @Test
     void testGetOriginalUrlWithException() {
-        when(urlCacheRepository.findByHash(hash.getHash())).thenReturn(null);
+        when(urlCacheRepository.getUrlFromCache(hash.getHash())).thenReturn(null);
         when(urlRepository.findByHash(hash.getHash()))
                 .thenThrow(new DataValidationException("Cannot find longUrl from hash: " + hash.getHash()));
 

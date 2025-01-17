@@ -36,7 +36,7 @@ public class UrlService {
         url.setUrl(longUrl);
         urlRepository.save(url);
         log.info("LongUrl {} with hash {} was successful saved in base", longUrl, hash);
-        urlCacheRepository.save(url);
+        urlCacheRepository.saveUrlInCache(hash, url);
         log.info("LongUrl {} with hash {} was successful saved in cash", longUrl, hash);
         return builder.toString();
     }
@@ -44,11 +44,11 @@ public class UrlService {
     @Transactional
     public String getOriginalUrl(String hash) {
         log.debug("hash: {}", hash);
-        Url urlFromCache = urlCacheRepository.findByHash(hash);
+        Url urlFromCache = urlCacheRepository.getUrlFromCache(hash);
         if (urlFromCache == null) {
             Url urlFromRepository = urlRepository.findByHash(hash)
                     .orElseThrow(() -> new DataValidationException("Cannot find longUrl from hash: " + hash));
-            urlCacheRepository.save(urlFromRepository);
+            urlCacheRepository.saveUrlInCache(hash, urlFromRepository);
             log.info("Url {} was become from base", urlFromRepository.getUrl());
             return urlFromRepository.getUrl();
         }
