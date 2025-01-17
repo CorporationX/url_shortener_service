@@ -27,6 +27,6 @@ public class Hash {
     @NotEmpty
     private String hash;
 
-    @OneToOne(mappedBy = "hash", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "hashEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Url url;
 }
