@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config;
+package faang.school.urlshortenerservice.config.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
