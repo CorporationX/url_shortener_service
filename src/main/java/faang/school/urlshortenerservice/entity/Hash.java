@@ -19,6 +19,7 @@ public class Hash {
     @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_auto_gen")
     private long id;
+
     @Column(nullable = false)
     private String hash;
 

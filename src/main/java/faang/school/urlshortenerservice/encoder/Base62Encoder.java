@@ -15,21 +15,18 @@ import java.util.List;
 public class Base62Encoder {
     @Value("${base62.chars}")
     private String base62Chars;
+
     @Value("${base62.length}")
     private int base62Length;
+
     private final Base62Validator validator;
 
     public List<String> encode(List<Long> numbers) {
-        log.info("Validate list for null");
         validator.checkList(numbers);
 
         List<String> resultList = new ArrayList<>();
 
-        log.info("""
-                divide by base62.length and getting chat an position base62.chars 
-                may be produced arithmetic exception  and IndexOutOfBoundsException 
-                check values at application.yml
-                """);
+        log.info("generate new hash using given list of numbers");
         for (Long number : numbers) {
             StringBuilder result = new StringBuilder();
             while (number > 0) {

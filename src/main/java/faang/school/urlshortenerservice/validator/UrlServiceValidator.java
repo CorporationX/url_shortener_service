@@ -1,17 +1,19 @@
 package faang.school.urlshortenerservice.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-@Component
-public class UrlServiceValidator {
-    public void checkUrl(String url) {
-        try {
-            URL netUrl = new URL(url);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("invalid url");
-        }
 
+@Component
+@Slf4j
+public class UrlServiceValidator {
+
+    public void validateHash(String hash) {
+        if (hash == null || hash.isBlank() || hash.length() > 7) {
+            log.error("hash was null or blank or with incorrect length");
+            throw new IllegalArgumentException("incorrect given hash: " + hash);
+        }
     }
 }

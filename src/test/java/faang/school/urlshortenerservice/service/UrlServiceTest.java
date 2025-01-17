@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,6 +63,24 @@ public class UrlServiceTest {
     }
 
     @Test
+    public void testCreateNewShortUrlExistDb() throws Exception {
+        URL originalUrl = new URL("http://original.url");
+        String hash = "abc123";
+
+        Url url = new Url();
+        url.setUrl(originalUrl);
+        url.setHash(hash);
+
+        when(urlRepository.findByUrl(originalUrl)).thenReturn(Optional.of(url));
+
+        URL shortUrl = urlService.createNewShortUrl(originalUrl);
+
+        assertEquals(new URL(link + hash), shortUrl);
+        verify(urlRepository, times(0)).save(any(Url.class));
+        verify(urlCacheRepository, times(0)).saveAtRedis(any(Url.class));
+    }
+
+    @Test
     public void testGetUrlFromRedis() throws MalformedURLException {
         String hash = "abc123";
         URL expectedUrl = new URL("http://original.url");
@@ -71,16 +90,37 @@ public class UrlServiceTest {
 
         assertEquals(expectedUrl, actualUrl);
         verify(urlCacheRepository, times(1)).getFromRedis(hash);
-        verify(urlRepository, times(0)).findByHash(hash); // убедитесь, что не вызывается findByHash
+        verify(urlRepository, times(0)).findByHash(hash);
     }
+
+    @Test
+    public void testGetUrlFromDb() throws MalformedURLException {
+        String hash = "abc123";
+        URL expectedUrl = new URL("http://original.url");
+
+        Url url = new Url();
+        url.setUrl(expectedUrl);
+        url.setHash(hash);
+
+        when(urlCacheRepository.getFromRedis(hash)).thenReturn(null);
+        when(urlRepository.findByHash(hash)).thenReturn(url);
+
+        URL actualUrl = urlService.getUrl(hash);
+
+        assertEquals(expectedUrl, actualUrl);
+        verify(urlCacheRepository, times(1)).getFromRedis(hash);
+        verify(urlRepository, times(1)).findByHash(hash);
+        verify(urlCacheRepository, times(1)).saveAtRedis(any());
+    }
+
     @Test
     public void testGetUrlFromDb_UrlNotFound() {
         String hash = "nonexistent_hash";
         when(urlCacheRepository.getFromRedis(hash)).thenReturn(null);
-        when(urlRepository.findByHash(hash)).thenThrow(new RuntimeException("Not found"));
+        when(urlRepository.findByHash(hash)).thenReturn(null);
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> urlService.getUrl(hash));
-        assertEquals("can't redirect to main ulr , incorrect hash", thrown.getMessage());
+        assertEquals("can't redirect to main ulr , incorrect hash: " + hash, thrown.getMessage());
         verify(urlRepository, times(1)).findByHash(hash);
     }
 }

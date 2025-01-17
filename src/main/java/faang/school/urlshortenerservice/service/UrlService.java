@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,12 @@ public class UrlService {
     @Value("${link}")
     private String link;
 
-    //тут вопрос если одна и та же ссылка приходит мы что делает ? просто возвращаем из бд или новый hash ?
-    @Transactional
     public URL createNewShortUrl(URL url) {
+        Optional<Url> urlFromDb = findByUrl(url);
+        if (urlFromDb.isPresent()) {
+            return createShortURLWithHash(urlFromDb.get().getHash());
+        }
+
         log.info("calling localCache to get hash");
         String hash = localCache.getCache();
 
@@ -43,6 +47,9 @@ public class UrlService {
     }
 
     public URL getUrl(String hash) {
+        log.info("validate hash");
+        urlServiceValidator.validateHash(hash);
+
         log.info("trying to find url at redis");
         URL result = urlCacheRepository.getFromRedis(hash);
 
@@ -50,15 +57,24 @@ public class UrlService {
             return result;
         }
 
-        try {
-            log.info("trying to find url at db");
-            Url url = urlRepository.findByHash(hash);
+        log.info("trying to find url at db");
+        Url url = urlRepository.findByHash(hash);
+
+        if (url != null) {
+            log.info("calling urlCacheRepository to save at redis");
+            urlCacheRepository.saveAtRedis(url);
             return url.getUrl();
-        } catch (Exception e) {
-            log.error("cant fiend url at redis and db", e);
-            throw new IllegalArgumentException("can't redirect to main ulr , incorrect hash", e);
         }
+
+        log.error("cant fiend url at redis and db with given hash:" + hash);
+        throw new IllegalArgumentException("can't redirect to main ulr , incorrect hash: " + hash);
+
     }
+
+    private Optional<Url> findByUrl(URL url) {
+        return urlRepository.findByUrl(url);
+    }
+
 
     private URL createShortURLWithHash(String hash) {
         String fullUrl = link.concat(hash);
@@ -66,7 +82,7 @@ public class UrlService {
             log.info("trying to create new short url");
             return new URL(fullUrl);
         } catch (MalformedURLException e) {
-            log.error("cant create url with given link and hash, check properties");
+            log.error("cant create url with given link and hash, check properties. hash: " + hash, e);
             throw new IllegalArgumentException("Something went wrong when creating shortUrl", e);
         }
     }

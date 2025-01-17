@@ -18,13 +18,14 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
+
     @PostMapping("/shortUrl/new")
-    public java.net.URL createShortUrl(@RequestBody CreateNewUrlDto dto){
+    public java.net.URL createShortUrl(@RequestBody CreateNewUrlDto dto) {
         return urlService.createNewShortUrl(dto.getUrl());
     }
 
     @GetMapping("/redirect/{hash}")
-    public RedirectView getUrl(@PathVariable String hash){
+    public RedirectView getUrl(@PathVariable String hash) {
         return new RedirectView(urlService.getUrl(hash).toString());
     }
 }

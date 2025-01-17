@@ -19,10 +19,13 @@ public class Url {
     @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_auto_gen")
     private long id;
+
     @Column(nullable = false)
     private String hash;
+
     @Column(nullable = false)
     private URL url;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }

@@ -35,10 +35,8 @@ public class LocalCache {
 
     @PostConstruct
     public void init() {
-        for (int i = 0; i < 2; i++) {
-            log.info("add new hash from db to local hash as initialization");
-            addNewHash();
-        }
+        log.info("add new hash from db to local hash as initialization");
+        addNewHash();
     }
 
     public String getCache() {
