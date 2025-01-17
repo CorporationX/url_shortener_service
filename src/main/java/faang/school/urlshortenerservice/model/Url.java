@@ -18,7 +18,6 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@RedisHash("Url")
 @Table(name = "urls")
 public class Url {
 

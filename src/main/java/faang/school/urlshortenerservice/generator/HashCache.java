@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private final HashGenerator hashGenerator;
-    private AtomicBoolean filling = new AtomicBoolean(false);
+    private final AtomicBoolean filling = new AtomicBoolean(false);
 
     @Value("${range_capacity.queue}")
     private int capacity;
