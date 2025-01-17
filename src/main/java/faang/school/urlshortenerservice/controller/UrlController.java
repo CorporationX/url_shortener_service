@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.RequestDto;
+import faang.school.urlshortenerservice.dto.HashResponseDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,13 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public String getUrl(@RequestBody @Valid UrlDto dto) {
+    public HashResponseDto getHash(@RequestBody @Valid RequestDto dto) {
         return urlService.getHash(dto);
+    }
+
+    @GetMapping("/{hash}")
+    public UrlResponseDto getUrl(@PathVariable("hash") String hash) {
+        return urlService.getUrl(hash);
     }
 
 }

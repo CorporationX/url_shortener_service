@@ -8,6 +8,9 @@ spring:
     redis:
       port: 6379
       host: localhost
+  mvc:
+    servlet:
+      path: /api/v1
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

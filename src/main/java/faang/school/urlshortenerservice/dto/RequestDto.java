@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.URL;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UrlDto {
+public class RequestDto {
 
     @NotNull
     @URL(message = "Invalid url")

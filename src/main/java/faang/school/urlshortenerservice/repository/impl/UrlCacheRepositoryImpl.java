@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
-    private static final String CACHE_PREFIX = "URL - Hash : ";
+    private static final String HASH_TO_URL = "HASH_TO_URL";
+    private static final String URL_TO_HASH = "URL_TO_HASH";
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, Object> hashOperations;
 
@@ -23,17 +24,31 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
 
     @Override
     public void add(String url, String hash) {
-        hashOperations.put(CACHE_PREFIX, url, hash);
-        log.info("Added url: {} hash: {}", url, hash);
+        hashOperations.put(HASH_TO_URL, hash, url);
+        hashOperations.put(URL_TO_HASH, url, hash);
+        log.info("Added hash: {} and url: {} into Redis", hash, url);
     }
 
     @Override
     public String getUrl(String hash) {
-        return (String) hashOperations.get(CACHE_PREFIX, hash);
+        String url = (String) hashOperations.get(HASH_TO_URL, hash);
+        if (url != null) {
+            log.info("Found url: {} for hash: {}", url, hash);
+        } else {
+            log.warn("No url found for hash: {}", hash);
+        }
+        return url;
     }
 
     @Override
     public String getHash(String url) {
-        return (String) hashOperations.get(CACHE_PREFIX, url);
+        String hash = (String) hashOperations.get(URL_TO_HASH, url);
+        if (hash != null) {
+            log.info("Found hash: {} for url: {}", hash, url);
+        } else {
+            log.warn("No hash found for url: {}", url);
+        }
+        return hash;
     }
+
 }
