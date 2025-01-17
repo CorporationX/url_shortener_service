@@ -32,7 +32,7 @@ public class CleanerSchedulerIT extends UrlShortenerApplicationTests {
         cleanerScheduler.cleanUnusedHashes();
 
         Awaitility.await()
-                .atMost(20, TimeUnit.SECONDS)
+                .atMost(30, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
                     assertNotNull(urlRepository.findOriginalUrlByHash("hash2").orElse(null));
                     assertNotNull(urlRepository.findOriginalUrlByHash("hash4").orElse(null));

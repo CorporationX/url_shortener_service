@@ -30,7 +30,7 @@ public class UrlServiceIT extends UrlShortenerApplicationTests {
     @BeforeEach
     public void setUp() {
         hash = "hash";
-        originalUrl = "https://chatgpt.com/c/6788dd3b-ebd0-800a-877d";
+        originalUrl = "https://github.com/CorporationX/url_shortener_service/pull/733/files#diff";
         domain = "http://localhost:8080/api/v1/urls/";
 
         String deleteFromUrlQuery = "DELETE FROM url";
