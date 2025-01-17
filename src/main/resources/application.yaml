@@ -5,7 +5,13 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
@@ -13,9 +19,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 1000
+          batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  task:
+    executor:
+      pool:
+        core-size: 5
+        max-size: 10
+        keep-alive-time: 60
+        queue-capacity: 25
 
 server:
   port: 8080
@@ -23,3 +42,23 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  cron: 0 0 0 * * *
+  max-range: 100000
+  cache:
+    capacity: 10000
+    queue-percentage: 20
+
+cleaner:
+  scheduler:
+    cron: 0 0 0 * * *
+
+
+api:
+  version: "/api/v1"
+  base-url: "https://corp.x/"
+
+base-encoder:
+  base: 62
+  characters: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
