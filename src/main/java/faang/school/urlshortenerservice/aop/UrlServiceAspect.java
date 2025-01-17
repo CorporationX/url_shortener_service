@@ -22,6 +22,11 @@ public class UrlServiceAspect {
         //TODO
     }
 
+    @Pointcut(value = "execution(* faang.school.urlshortenerservice.service.UrlService.searchUrl(*))")
+    public void searchUrlPointCut() {
+        //TODO
+    }
+
     @Before(value = "saveNewHashPointCut(faang.school.urlshortenerservice.dto.UrlDto) && args(urlDto)",
             argNames = "urlDto")
     public void saveNewHashBefore(UrlDto urlDto) {
@@ -32,5 +37,10 @@ public class UrlServiceAspect {
             log.error("Валидация НЕ пройдена!");
             throw new RuntimeException(e);
         }
+    }
+
+    @Before(value = "searchUrlPointCut()")
+    public void searchUrlBefore() {
+        log.info("Начали поиск УРЛ в кеше ");
     }
 }

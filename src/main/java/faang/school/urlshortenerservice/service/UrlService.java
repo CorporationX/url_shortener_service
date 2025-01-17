@@ -34,10 +34,8 @@ public class UrlService {
     }
 
     public String searchUrl(String hash) {
-        log.info("Начали поиск УРЛ в кеше ");
         String url = urlCacheRepository.searchInRedis(hash);
         if (url == null) {
-            log.info("УРЛ не нашли в кеше, ищем в БД");
             Url urlFromDb = urlRepository.findById(hash).orElseThrow(() -> new EntityNotFoundException("Урл не найден"));
             url = urlFromDb.getUrl();
         }

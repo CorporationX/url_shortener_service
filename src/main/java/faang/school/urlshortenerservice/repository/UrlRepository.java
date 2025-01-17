@@ -11,10 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url,String> {
-
+public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM url WHERE created_at < :dateTime RETURNING hash")
     List<String> removeOldLinks(@Param("dateTime") LocalDateTime dateTime);
-
 }
