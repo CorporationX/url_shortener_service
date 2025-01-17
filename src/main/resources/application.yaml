@@ -29,7 +29,7 @@ server:
 
 logging:
   level:
-    root: debug
+    root: info
 
 hash:
   batch-size:
@@ -44,8 +44,16 @@ hash:
       core-pool-size: 1
       max-pool-size: 1
       queue-capacity: 1
+    cleaner:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 1
   storage:
     capacity: 5
     refresh-threshold-percent: 0.2
   db:
     refresh-threshold-count: 5
+  scheduler:
+    cleaner:
+      cron: 0 0 0 * * *
+      retentionPeriodYears: 1
