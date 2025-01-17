@@ -41,8 +41,8 @@ class Base62EncoderTest {
         assertEquals("0", result0);
         assertEquals("A", result10);
         assertEquals("z", result61);
-        assertEquals("10", result62);
-        assertEquals("21", result125);
+        assertEquals("01", result62);
+        assertEquals("12", result125);
     }
 
 }

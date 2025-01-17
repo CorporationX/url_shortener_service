@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Base62Encoder {
 
-    private final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final int base = alphabet.length();
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final int base = ALPHABET.length();
 
     public String encode(Long number) {
         if (number == 0) {
@@ -17,7 +17,7 @@ public class Base62Encoder {
 
         while (number > 0) {
             int remainder = (int) (number % base);
-            hash.insert(0, alphabet.charAt(remainder));
+            hash.append(ALPHABET.charAt(remainder));
             number /= base;
         }
 
