@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -61,6 +62,11 @@ public class UrlService {
         Objects.requireNonNull(cacheManager.getCache("urlCache")).put(hash, url.getUrl());
 
         return toDto(url);
+    }
+
+    @Transactional
+    public List<String> getExpiredHashAndDeleteUrl() {
+        return urlRepository.getExpiredHashAndDeleteUrl();
     }
 
     public Url findUrlByHash(String hash) {

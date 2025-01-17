@@ -38,6 +38,8 @@ logging:
 
 app:
   root_path: http://localhost:8087/api/v1/url-shortener/
+  cron:
+    clean_url: 0 0 * * *
   url_retention_period_month: 6
   cache_ttl_hour: 24
   count_of_generated_hashes: 10000
