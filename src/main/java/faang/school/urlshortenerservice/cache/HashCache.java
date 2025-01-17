@@ -32,7 +32,7 @@ public class HashCache {
     public void init() {
         this.hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
-        log.info(String.valueOf(hashes.size()));
+        log.info("Current queue size is : " + hashes.size());
     }
 
     public String getHash() {
@@ -42,6 +42,7 @@ public class HashCache {
                         .thenRun(() -> filling.set(false));
             }
         }
+        log.info("Queue size after polling is : " + hashes.size());
         return hashes.poll();
     }
 

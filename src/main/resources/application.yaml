@@ -16,10 +16,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         jdbc:
           batch_size: 10000
 
@@ -36,8 +36,10 @@ logging:
 hash:
   range: 1000
   cache:
-    capacity: 1000
+    capacity: 100
     fill-percentage: 20
+  clean-scheduler:
+    cron: 0 0 0 * * ?
 
 async:
   thread-name-prefix: AsyncThread-

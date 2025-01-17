@@ -1,17 +1,21 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.dto.RequestDto;
 import faang.school.urlshortenerservice.dto.HashResponseDto;
+import faang.school.urlshortenerservice.dto.RequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.impl.UrlCacheRepositoryImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -20,6 +24,7 @@ public class UrlService {
 
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
     private final UrlCacheRepositoryImpl urlCacheRepositoryImpl;
 
     @Transactional
@@ -32,6 +37,7 @@ public class UrlService {
         url.setUrl(dto.getUrl());
         url.setHash(hash);
         urlRepository.save(url);
+        log.info("saved data to url table : {}", url);
         urlCacheRepositoryImpl.add(dto.getUrl(), hash);
         return new HashResponseDto(hash);
     }
@@ -51,6 +57,15 @@ public class UrlService {
         }
         log.warn("Url for this hash does not exist: {}", hash);
         throw new UrlNotFoundException("URL not found for hash: " + hash);
+    }
+
+    @Transactional
+    public void clean() {
+        List<String> freeHashes = urlRepository.getAndDeleteExpiredData();
+        List<Hash> hashes = freeHashes.stream()
+                .map(Hash::new)
+                .toList();
+        hashRepository.saveAll(hashes);
     }
 
     private String getExistingHashByUrl(String url) {

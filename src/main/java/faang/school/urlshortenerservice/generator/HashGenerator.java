@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -26,13 +28,10 @@ public class HashGenerator {
     @Transactional
     public void generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
-
         List<String> encodedHashes = base62Encoder.encode(range);
-
         List<Hash> hashes = encodedHashes.stream()
                 .map(Hash::new)
                 .toList();
-
         hashRepository.saveAll(hashes);
     }
 

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 public class CleanerScheduler {
     private final UrlService urlService;
 
-//    @Scheduled(cron = "${clear-hash.scheduler.cron}")
+    @Scheduled(cron = "${hash.clean-scheduler.cron}")
+    public void clean() {
+        urlService.clean();
+    }
 
 }
