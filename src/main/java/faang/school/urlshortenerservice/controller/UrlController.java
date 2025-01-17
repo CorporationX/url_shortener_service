@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.RedirectException;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class UrlController {
             response.sendRedirect(url);
         } catch (IOException e) {
             log.error("Redirect error", e);
-            throw new RuntimeException("Internal server error");
+            throw new RedirectException("Internal server error");
         }
     }
 

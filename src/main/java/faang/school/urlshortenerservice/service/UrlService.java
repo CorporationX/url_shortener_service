@@ -2,8 +2,10 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.NotFoundException;
 import faang.school.urlshortenerservice.repository.jpa.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +14,13 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "urlCache")
 public class UrlService {
@@ -29,7 +33,13 @@ public class UrlService {
     private int urlRetentionPeriod;
 
     @Cacheable(key = "#hash")
-    public String getOriginalUrl(String hash) {
+    public String getOriginalUrl(
+            @Size(
+                    min = 4,
+                    max = 8,
+                    message = "Hash size should be between 4 and 8 characters inclusive"
+            )
+            String hash) {
         Url url = findUrlByHash(hash);
         return url.getUrl();
     }
@@ -55,7 +65,7 @@ public class UrlService {
 
     public Url findUrlByHash(String hash) {
         return urlRepository.findById(hash)
-                .orElseThrow(() -> new IllegalArgumentException("Hash is invalid"));
+                .orElseThrow(() -> new NotFoundException("Url not found"));
     }
 
     public LocalDateTime validateExpiresAt(UrlDto dto, LocalDateTime now) {
