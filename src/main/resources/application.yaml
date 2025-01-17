@@ -28,9 +28,16 @@ hash:
   generator:
     batch:
       size: 10
+  cache:
+    executor:
+      pool_size: 10
+    refill_threshold: 0.2
+    max_size: 1000
+
 async:
   executor:
     core_pool_size: 10
     max_pool_size: 20
     queue_capacity: 100
     thread_name_prefix: hash-task
+
