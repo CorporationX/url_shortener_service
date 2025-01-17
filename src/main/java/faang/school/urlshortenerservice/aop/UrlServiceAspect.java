@@ -25,9 +25,8 @@ public class UrlServiceAspect {
     @Before(value = "saveNewHashPointCut(faang.school.urlshortenerservice.dto.UrlDto) && args(urlDto)",
             argNames = "urlDto")
     public void saveNewHashBefore(UrlDto urlDto) {
-        URL url = null;
         try {
-            url = new URL(urlDto.url());
+            URL url = new URL(urlDto.url());
             url.toURI();
         } catch (MalformedURLException | URISyntaxException e) {
             log.error("Валидация НЕ пройдена!");
