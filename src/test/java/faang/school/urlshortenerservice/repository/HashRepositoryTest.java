@@ -94,7 +94,7 @@ class HashRepositoryTest {
         int entriesAmount = 30;
         populateDb(entriesAmount);
 
-        List<Hash> result = hashRepository.getHashes(10);
+        List<Hash> result = hashRepository.getHashes(10L);
         result.forEach(x -> System.out.println(x.getHash()));
         Long remainingHashes = hashRepository.count();
 
