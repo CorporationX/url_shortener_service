@@ -79,18 +79,29 @@ public class HashCache {
         if (count <= cachePropertiesConfig.dbSizeToTriggerUpdate() && !dbUpdateInProgress.get()) {
             log.info("Database update triggered. Generating hashes in background thread");
             dbUpdateInProgress.set(true);
-            try {
-                hashGenerator.generateBatch();
-            } finally {
-                dbUpdateInProgress.set(false);
-            }
+            threadPoolTaskExecutor.execute(() -> {
+                try {
+                    hashGenerator.generateBatch();
+                } finally {
+                    dbUpdateInProgress.set(false);
+                }
+            });
+        }
+    }
+
+    private void warmUpDatabaseHashes() {
+        dbUpdateInProgress.set(true);
+        try {
+            hashGenerator.generateBatch();
+        } finally {
+            dbUpdateInProgress.set(false);
         }
     }
 
     private void cacheWarmUp() {
         if (hashRepository.count() <= cachePropertiesConfig.size()) {
             log.info("Database is not yet warmed up. Generating hashes");
-            CompletableFuture<Void> future = CompletableFuture.runAsync(this::generateHashInDatabaseIfNeeded, threadPoolTaskExecutor);
+            CompletableFuture<Void> future = CompletableFuture.runAsync(this::warmUpDatabaseHashes, threadPoolTaskExecutor);
             future.join();
         }
         updateCacheIfNeeded();
