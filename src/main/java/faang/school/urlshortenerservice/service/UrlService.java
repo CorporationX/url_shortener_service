@@ -21,11 +21,12 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     @Transactional
-    public void saveNewHash(UrlDto urlDto) {
+    public String saveNewHash(UrlDto urlDto) {
         Hash newHash = hashCache.getHash();
         Url newUrl = Url.builder().hash(newHash.getHash()).url(urlDto.url()).build();
         saveToDb(newUrl);
         urlCacheRepository.addToRedis(newUrl);
+        return newUrl.getHash();
     }
 
     public void saveToDb(Url url) {
