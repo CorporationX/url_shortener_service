@@ -20,7 +20,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6739
+      port: 6379
 
 server:
   port: 8080
@@ -46,6 +46,7 @@ batchSize: 500
 
 scheduler:
   cron: 0 0 0 * * ?
+  year: 1
 
 hashCash:
   queueCapacity: 500

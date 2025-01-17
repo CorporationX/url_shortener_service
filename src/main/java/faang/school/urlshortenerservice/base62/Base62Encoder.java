@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.base62;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Setter
 public class Base62Encoder {
 
     @Value("${alphabet}")
@@ -22,7 +24,7 @@ public class Base62Encoder {
     private Hash applyBase62Encoder(long number) {
         StringBuilder stringBuilder = new StringBuilder();
         while (number > 0) {
-            stringBuilder.append(alphabetBase62.charAt((int) (number % alphabetBase62.length())));
+            stringBuilder.insert(0, alphabetBase62.charAt((int) (number % alphabetBase62.length())));
             number /= alphabetBase62.length();
         }
 

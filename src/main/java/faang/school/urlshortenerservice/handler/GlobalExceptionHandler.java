@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cache.CacheException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,6 +14,13 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.error("Validation error: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(400)
+                .body(new ErrorResponse("Validation Error", ex.getMessage(), LocalDateTime.now()));
+    }
+
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException ex) {
         log.warn("URL not found: {}", ex.getMessage());
