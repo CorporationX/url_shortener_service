@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class UrlService {
     @Value("${server.url}")
     private String domain;
 
+    @Transactional
     public String createShortUrl(String longUrl) {
         String hash = hashCache.getHash();
 

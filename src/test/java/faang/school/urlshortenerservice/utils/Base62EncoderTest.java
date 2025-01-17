@@ -6,27 +6,51 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class Base62EncoderTest {
     @InjectMocks
     private Base62Encoder base62Encoder;
 
+    private static final String BASE62_CHARSET = "4fC8IsoSdr2L79TQiOaek5uNZh1ztmGUvjPwAVpXy3JYclnB0EKqHMxWFDg6Rb";
+
     @Test
-    void testEncode() {
-        List<Long> numbers = Arrays.asList(1L, 62L, 123L, 999L);
-        List<String> expectedEncoded = Arrays.asList("f", "f4", "fb", "iS");
+    void shouldEncodeNumbersToBase62() {
+        List<Long> numbers = List.of(1L, 123L, 456789L, 987654321L, Long.MAX_VALUE);
+        List<HashEntity> encodedHashes = base62Encoder.encode(numbers);
 
-        List<HashEntity> encodedEntities = base62Encoder.encode(numbers);
+        assertThat(encodedHashes).hasSize(numbers.size());
 
-        assertEquals(numbers.size(), encodedEntities.size());
+        for (HashEntity hashEntity : encodedHashes) {
+            String hash = hashEntity.getHash();
+            assertThat(hash).isNotBlank();
+            assertThat(hash).matches("[" + BASE62_CHARSET + "]+");
+        }
+    }
 
-        for (int i = 0; i < numbers.size(); i++) {
-            assertEquals(expectedEncoded.get(i), encodedEntities.get(i).getHash());
+    @Test
+    void shouldGenerateUniqueHashesForUniqueNumbers() {
+        List<Long> numbers = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+        List<HashEntity> encodedHashes = base62Encoder.encode(numbers);
+
+        Set<String> uniqueHashes = encodedHashes.stream()
+                .map(HashEntity::getHash)
+                .collect(Collectors.toSet());
+
+        assertThat(uniqueHashes).hasSize(numbers.size());
+    }
+
+    @Test
+    void shouldNotReturnEmptyHash() {
+        List<HashEntity> encoded = base62Encoder.encode(List.of(100L, 1000L, 10000L));
+
+        for (HashEntity hashEntity : encoded) {
+            assertThat(hashEntity.getHash()).isNotBlank();
         }
     }
 }

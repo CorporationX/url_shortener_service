@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.entity.HashEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,11 +20,18 @@ public class Base62Encoder {
     }
 
     private String encodeBase62(Long number) {
-        StringBuilder encoded = new StringBuilder();
+        if (number == 0) return String.valueOf(BASE62_CHARSET.charAt(0));
+
+        char[] buffer = new char[11];
+        int index = buffer.length;
+
         while (number > 0) {
-            encoded.insert(0, BASE62_CHARSET.charAt((int) (number % BASE)));
+            buffer[--index] = BASE62_CHARSET.charAt((int) (number % BASE));
             number /= BASE;
         }
-        return encoded.toString();
+
+        char randomPrefix = BASE62_CHARSET.charAt(ThreadLocalRandom.current().nextInt(BASE));
+
+        return randomPrefix + new String(buffer, index, buffer.length - index);
     }
 }

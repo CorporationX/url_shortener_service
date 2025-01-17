@@ -11,8 +11,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
+import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -20,11 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-    private final List<String> cache = new CopyOnWriteArrayList<>();
+    private final Queue<String> cache = new ConcurrentLinkedQueue<>();
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
     private final ExecutorService executorService;
-    private final CountDownLatch cacheFillingLatch = new CountDownLatch(1);
 
     @Value("${cache.max-size}")
     private Integer maxSize;
@@ -33,19 +33,13 @@ public class HashCache {
     private Integer thresholdPercentage;
 
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
+    private volatile CompletableFuture<Void> cacheFillFuture = CompletableFuture.completedFuture(null);
 
     @PostConstruct
     public void preloadCache() {
         log.info("Starting cache warm-up...");
 
-        fillCacheAsync();
-
-        try {
-            cacheFillingLatch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Cache warm-up interrupted", e);
-        }
+        triggerAsyncFill().join();
 
         log.info("Cache warm-up completed, size: {}", cache.size());
     }
@@ -60,26 +54,37 @@ public class HashCache {
         return getAndRemoveHash(cache);
     }
 
-    private void triggerAsyncFill() {
-        if (isFetching.compareAndSet(false, true)) {
-            executorService.submit(this::fillCacheAsync);
-        }
+    @Scheduled(fixedRateString = "${cache.check-interval}")
+    public void checkCacheSize() {
+        int currentSize = cache.size();
+        int threshold = maxSize * thresholdPercentage / 100;
 
-        try {
-            cacheFillingLatch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Error while waiting for cache filling", e);
+        log.info("Checking cache size: {} (threshold: {})", currentSize, threshold);
+
+        if (currentSize < threshold) {
+            log.warn("Cache size below threshold! Triggering cache refill...");
+            triggerAsyncFill();
         }
     }
 
-    private String getAndRemoveHash(List<String> cache) {
-        String hash = cache.get(0);
-        cache.remove(0);
+    private CompletableFuture<Void> triggerAsyncFill() {
+        if (isFetching.compareAndSet(false, true)) {
+            cacheFillFuture = CompletableFuture.runAsync(this::fillCacheAsync, executorService)
+                    .whenComplete((result, error) -> isFetching.set(false));
+        }
+        return cacheFillFuture;
+    }
+
+    private String getAndRemoveHash(Queue<String> cache) {
+        String hash = cache.poll();
 
         HashEntity hashEntity = hashRepository.findByHash(hash);
-        hashEntity.setIsUsed(true);
-        hashRepository.save(hashEntity);
+        if (hashEntity != null) {
+            hashEntity.setIsUsed(true);
+            hashRepository.save(hashEntity);
+        } else {
+            log.warn("Hash not found in database: {}", hash);
+        }
 
         log.info("Hash removed from cache: {}", hash);
         log.info("Cache size: {}", cache.size());
@@ -101,22 +106,7 @@ public class HashCache {
             log.info("Cache size after filling: {}", cache.size());
         } catch (Exception e) {
             log.error("Error while adding hashes to cache", e);
-        } finally {
-            cacheFillingLatch.countDown();
-            isFetching.set(false);
-        }
-    }
-
-    @Scheduled(fixedRateString = "${cache.check-interval}")
-    public void checkCacheSize() {
-        int currentSize = cache.size();
-        int threshold = maxSize * thresholdPercentage / 100;
-
-        log.info("Checking cache size: {} (threshold: {})", currentSize, threshold);
-
-        if (currentSize < threshold) {
-            log.warn("Cache size below threshold! Triggering cache refill...");
-            triggerAsyncFill();
         }
     }
 }
+
