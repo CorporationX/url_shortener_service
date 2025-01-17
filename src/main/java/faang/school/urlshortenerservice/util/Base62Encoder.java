@@ -8,6 +8,10 @@ public class Base62Encoder {
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public String encode(long seed) {
+        if (seed <= 0) {
+            throw new IllegalArgumentException("Invalid encoder seed: " + seed);
+        }
+
         StringBuilder result = new StringBuilder();
         while (seed > 0) {
             result.append(ALPHABET.charAt((int) (seed % ALPHABET.length())));
