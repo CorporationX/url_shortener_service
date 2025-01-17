@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.dto;
+package faang.school.urlshortenerservice.dto.url;
 
 import lombok.Data;
 

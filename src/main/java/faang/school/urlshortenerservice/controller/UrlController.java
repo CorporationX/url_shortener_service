@@ -1,15 +1,13 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.CreateNewUrlDto;
+import faang.school.urlshortenerservice.dto.url.CreateNewUrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.URL;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 

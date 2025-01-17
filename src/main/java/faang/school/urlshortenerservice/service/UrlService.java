@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.local_cache.LocalCache;
 import faang.school.urlshortenerservice.validator.UrlServiceValidator;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +69,7 @@ public class UrlService {
         }
 
         log.error("cant fiend url at redis and db with given hash:" + hash);
-        throw new IllegalArgumentException("can't redirect to main ulr , incorrect hash: " + hash);
+        throw new EntityNotFoundException("can't redirect to main ulr , incorrect hash: " + hash);
 
     }
 
@@ -83,7 +85,7 @@ public class UrlService {
             return new URL(fullUrl);
         } catch (MalformedURLException e) {
             log.error("cant create url with given link and hash, check properties. hash: " + hash, e);
-            throw new IllegalArgumentException("Something went wrong when creating shortUrl", e);
+            throw new InvalidUrlException("Something went wrong when creating shortUrl");
         }
     }
 }
