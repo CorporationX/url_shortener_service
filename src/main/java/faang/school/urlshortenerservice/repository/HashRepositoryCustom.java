@@ -9,4 +9,3 @@ public interface HashRepositoryCustom {
 
     List<String> getHashBatch(int count);
 }
-

@@ -23,9 +23,8 @@ public class UrlController {
         return ResponseEntity.ok(shortUrl);
     }
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToLongUrl(@PathVariable String hash) {
+    public ResponseEntity<String> redirectToLongUrl(@PathVariable String hash) {
         String longUrl = urlService.getLongUrl(hash);
-        return ResponseEntity.status(302).header("Location", longUrl).build();
+        return ResponseEntity.status(302).header("Location", longUrl).body("Redirecting to: " + longUrl);
     }
-    //Tut nado proverit url
 }

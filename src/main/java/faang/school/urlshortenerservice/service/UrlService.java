@@ -8,6 +8,9 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,21 +42,14 @@ public class UrlService {
         hashRepository.save(hashEntity);
 
         urlCacheRepository.save(hash, longUrl);
-
+        cacheLongUrl(hash, longUrl);
         return "http://short.url/" + hash;
     }
 
+    @Cacheable(cacheNames = "shortenedUrls", key = "#hash")
     public String getLongUrl(String hash) {
-        String cachedUrl = urlCacheRepository.find(hash);
-        if (cachedUrl != null) {
-            return cachedUrl;
-        }
-
         Url url = urlRepository.findById(hash)
                 .orElseThrow(() -> new UrlNotFoundException("No URL found for hash: " + hash));
-
-        urlCacheRepository.save(hash, url.getUrl());
-
         return url.getUrl();
     }
 
@@ -62,8 +58,14 @@ public class UrlService {
             throw new IllegalArgumentException("Invalid URL format.");
         }
     }
-}
 
-//a esli https
-//nuzen cashe
-//aop
+    @CachePut(cacheNames = "shortenedUrls", key = "#hash")
+    public void cacheLongUrl(String hash, String longUrl) {
+
+    }
+
+    @CacheEvict(cacheNames = "shortenedUrls", key = "#hash")
+    public void removeCachedUrl(String hash) {
+
+    }
+}

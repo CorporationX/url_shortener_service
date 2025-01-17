@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.repository.HashCacheRepository;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.RequiredArgsConstructor;
@@ -7,9 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,12 +21,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
+    private final HashCacheRepository hashCacheRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Qualifier("hashCacheExecutor")
     private final ExecutorService executorService;
 
-    private final ConcurrentLinkedDeque<String> hashQueue = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
+
 
     @Value("${hash.cache.max-size}")
     private int maxSize;
@@ -33,13 +37,11 @@ public class HashCache {
     private int refillThreshold;
 
     public String getHash() {
-        if (hashQueue.size() < (maxSize * refillThreshold / 100)) {
-            triggerAsyncRefill();
-        }
+        String hash = hashCacheRepository.getAndRemoveHash();
 
-        String hash = hashQueue.poll();
         if (hash == null) {
-            log.warn("Cache is empty! Unable to retrieve a hash.");
+            log.warn("Hash cache is empty! Triggering async refill.");
+            triggerAsyncRefill();
             throw new IllegalStateException("Hash cache is empty!");
         }
         return hash;
@@ -56,7 +58,9 @@ public class HashCache {
 
     private void refillCache() {
         try {
-            int needed = maxSize - hashQueue.size();
+            int currentCacheSize = hashCacheRepository.size();
+            int needed = maxSize - currentCacheSize;
+
             if (needed <= 0) {
                 log.info("Hash cache is already full. No refill needed.");
                 return;
@@ -64,10 +68,12 @@ public class HashCache {
 
             List<String> hashes = hashRepository.getHashBatch(needed);
             log.info("Fetched {} hashes from the database.", hashes.size());
-            hashQueue.addAll(hashes);
+
+            hashCacheRepository.saveHashes(hashes);
 
             if (hashes.size() < needed) {
-                log.info("Generating additional hashes to meet the cache size.");
+                int toGenerate = needed - hashes.size();
+                log.info("Generating {} additional hashes.", toGenerate);
                 hashGenerator.generatedBatch();
             }
         } catch (Exception e) {

@@ -17,6 +17,7 @@ public class LoggingAspect {
     @Pointcut("execution(* faang.school.urlshortenerservice.service.UrlService.*(..)) || execution(* faang.school.urlshortenerservice.repository..*(..))")
     public void loggingPointcut() {
     }
+
     @Before("loggingPointcut()")
     public void logBefore(JoinPoint joinPoint) {
         log.info("Executing method: {} with arguments: {}", joinPoint.getSignature(), joinPoint.getArgs());
@@ -31,5 +32,4 @@ public class LoggingAspect {
     public void logMethodException(JoinPoint joinPoint, Throwable exception) {
         log.error("Exception in method: {} with message: {}", joinPoint.getSignature(), exception.getMessage(), exception);
     }
-
 }

@@ -11,6 +11,7 @@ public class HashConfig {
     public HashConfig() {
         System.out.println("HashConfig created");
     }
+
     private int batchSize = 100;
     private ThreadPoolConfig threadPoolConfig = new ThreadPoolConfig();
 

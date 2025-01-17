@@ -14,7 +14,7 @@ public class FeignUserInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        try{
+        try {
             Long userId = userContext.getUserId();
             template.header("x-user-id", String.valueOf(userId));
         } catch (IllegalArgumentException ex) {

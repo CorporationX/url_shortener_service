@@ -25,9 +25,10 @@ public class HashGenerator {
     public String generateHash() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
+
     @Async("hashGeneratorTaskExecutor")
     public void generatedBatch() {
-        try{
+        try {
             log.info("Starting batch hash generation");
 
             long start = hashRepository.getNextSequenceValue(hashConfig.getBatchSize());
@@ -35,7 +36,7 @@ public class HashGenerator {
 
             List<String> hashes = uniqueNumbers.stream().map(base62Encoder::encode).collect(Collectors.toList());
 
-            List<Hash> hashEntities = hashes.stream().map(hash-> Hash.builder().hash(hash).build()).collect(Collectors.toList());
+            List<Hash> hashEntities = hashes.stream().map(hash -> Hash.builder().hash(hash).build()).collect(Collectors.toList());
 
             hashRepository.saveAll(hashEntities);
 

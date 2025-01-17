@@ -4,7 +4,7 @@ package faang.school.urlshortenerservice.config.context;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserContext implements AutoCloseable{
+public class UserContext implements AutoCloseable {
 
     private final ThreadLocal<Long> userIdHolder = new ThreadLocal<>();
 
@@ -19,10 +19,12 @@ public class UserContext implements AutoCloseable{
         }
         return userId;
     }
+
     @Override
     public void close() {
         userIdHolder.remove();
     }
+
     public void clear() {
         userIdHolder.remove();
     }

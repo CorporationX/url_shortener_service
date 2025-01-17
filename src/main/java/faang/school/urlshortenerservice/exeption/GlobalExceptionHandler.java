@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import faang.school.urlshortenerservice.dto.ErrorResponse;
-import org.springframework.validation.FieldError;
 
 import java.util.List;
 
@@ -49,11 +48,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        log.error("Validation exception: {}", ex.getMessage());
-        List<String> details = ex.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+        List<String> details = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(fieldError -> String.format("Field '%s': %s", fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
-        return new ErrorResponse("Validation Failed", "Invalid input data");
+        return new ErrorResponse("Validation Failed", details.toString());
     }
 
     @ExceptionHandler(DataAccessException.class)
@@ -70,7 +69,3 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Internal Server Error", "An unexpected error occurred.");
     }
 }
-
-
-//Map ne nuzen posmotry starie reshenija
-//Novaja struktura dannych i eto ploch nuzno hto by bylo 1

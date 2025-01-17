@@ -14,6 +14,7 @@ public class AsyncConfig {
     public AsyncConfig(HashConfig hashConfig) {
         this.hashConfig = hashConfig;
     }
+
     @Bean(name = "hashGeneratorTaskExecutor")
     public Executor hashGenaratorTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -25,4 +26,3 @@ public class AsyncConfig {
         return executor;
     }
 }
-//kak one ispolzujetsya

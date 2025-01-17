@@ -15,6 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class HashRepositoryCustomImpl implements HashRepositoryCustom {
+
     private final JdbcTemplate jdbcTemplate;
     private final HashConfig hashConfig;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -53,4 +54,3 @@ public class HashRepositoryCustomImpl implements HashRepositoryCustom {
         return jdbcTemplate.query(sql, ps -> ps.setInt(1, batchSize), (rs, rowNum) -> rs.getString(1));
     }
 }
-//Lutshe cherez spring batch jdbc
