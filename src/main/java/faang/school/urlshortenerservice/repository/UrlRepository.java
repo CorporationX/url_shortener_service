@@ -1,39 +1,39 @@
 package faang.school.urlshortenerservice.repository;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
+import faang.school.urlshortenerservice.entity.Url;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
-public class UrlRepository {
-    private final JdbcTemplate jdbcTemplate;
+public interface UrlRepository extends JpaRepository<Url, String> {
 
-    public List<String> deleteOldLinks() {
-        String sql = """
-                DELETE FROM URL
-                WHERE created_at<?
-                RETURNING hash
-                """;
-        return jdbcTemplate.queryForList(sql, String.class, LocalDateTime.now().minusYears(1));
-    }
+    @Modifying
+    @Transactional
+    @Query(value = """
+            DELETE FROM url
+            WHERE created_at < (CURRENT_TIMESTAMP - INTERVAL '1 year')
+            RETURNING hash
+            """, nativeQuery = true)
+    List<String> deleteOldLinks();
 
-    public String getUrlByHash(String hash) {
-        String sql = """
-                SELECT url FROM url
-                WHERE hash = ?
-                """;
-        return jdbcTemplate.queryForObject(sql, String.class, hash);
-    }
+    @Query(value = """
+            SELECT u.url FROM Url u
+            WHERE u.hash = :hash
+            """)
+    String getUrlByHash(@Param("hash") String hash);
 
-    public void saveUrlWithNewHash(String hash, String url) {
-        String sql = """
-                INSERT INTO url
-                VALUES ( ?, ?)
-                """;
-        jdbcTemplate.update(sql, hash, url);
-    }
+    @Modifying
+    @Transactional
+    @Query(value = """
+            INSERT INTO url (hash, url, created_at)
+            VALUES (:hash, :url, CURRENT_TIMESTAMP)
+            """, nativeQuery = true)
+    void saveUrlWithNewHash(@Param("hash") String hash, @Param("url") String url);
 }
+

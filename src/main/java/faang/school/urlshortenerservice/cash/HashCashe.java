@@ -26,12 +26,14 @@ public class HashCashe {
     private int queueSize;
     @Value("${queue.percentage-multiplier}")
     private double percentageMultiplier;
+    @Value("${hash.batch-size}")
+    private int batchSize;
 
     @PostConstruct
     private void init() {
         freeCashes = new ArrayBlockingQueue<>(queueSize);
         hashGenerator.generateBatch();
-        freeCashes.addAll(hashRepository.getHashBatch());
+        freeCashes.addAll(hashRepository.getHashBatch(batchSize));
         log.info("HashCache initialized, queue is filled");
     }
 
@@ -40,8 +42,8 @@ public class HashCashe {
                 && isCashing.compareAndSet(false, true)) {
             queueTaskThreadPool.execute(() -> {
                 try {
-                    freeCashes.addAll(hashRepository.getHashBatch());
-                    hashRepository.getHashBatch();
+                    freeCashes.addAll(hashRepository.getHashBatch(batchSize));
+                    hashRepository.getHashBatch(batchSize);
                     log.info("Hash cache will be refilled by {}", Thread.currentThread().getName());
                 } finally {
                     isCashing.set(false);
