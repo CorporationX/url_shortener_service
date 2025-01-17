@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository.hash;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HashJpaRepository extends CrudRepository<Hash, Long> {
+public interface HashJpaRepository extends CrudRepository<String, String> {
 
     @Query(nativeQuery = true, value = """
                 SELECT nextval ('unique_number_seq')
@@ -22,5 +21,5 @@ public interface HashJpaRepository extends CrudRepository<Hash, Long> {
                 SELECT id FROM hash ORDER BY id ASC LIMIT :amount
             ) RETURNING *
             """)
-    List<Hash> getAndDeleteHashes(int amount);
+    List<String> getAndDeleteHashes(int amount);
 }

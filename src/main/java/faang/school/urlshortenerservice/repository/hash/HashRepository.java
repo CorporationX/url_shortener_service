@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.repository.hash;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,15 +19,11 @@ public class HashRepository {
         return hashJpaRepository.getNumbersFromSequence(uniqueNumbersAmount);
     }
 
-    public List<Hash> save(List<Hash> hashes) {
-       Iterable<Hash> iterable = hashJpaRepository.saveAll(hashes);
-       List<Hash> result = new ArrayList<>();
-       iterable.forEach(result::add);
-
-       return result;
+    public void save(List<String> hashes) {
+       hashJpaRepository.saveAll(hashes);
     }
 
-    public List<Hash> getHashBatch() {
+    public List<String> getHashBatch() {
         return hashJpaRepository.getAndDeleteHashes(hashAmount);
     }
 }
