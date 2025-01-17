@@ -55,3 +55,5 @@ hash:
     generate_hash_time: 0 0,12 * * * *
 
 link: http://localhost:8080/api/v1/shorter/redirect/
+
+remove_old_url_cron: 0 0 0 * * *
