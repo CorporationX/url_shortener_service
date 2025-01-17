@@ -1,3 +1,6 @@
+app:
+  batch-size: 50
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
