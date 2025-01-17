@@ -17,7 +17,7 @@ public class ThreadPoolConfig {
     @Value("${spring.async.queue-capacity}")
     int queueCapacity;
 
-    @Bean (name = "hashGeneratorExecutor")
+    @Bean (name = "hashServiceExecutor")
     public ThreadPoolTaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(corePoolSize);

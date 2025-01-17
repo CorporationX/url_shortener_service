@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exception.InvalidURLException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.util.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,7 +23,7 @@ import java.util.Optional;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheService urlCacheService;
-    private final HashCache hashCache;
+    private final HashCacheService hashCacheService;
 
     @Setter
     @Value("${url-shortener.host-name}")
@@ -34,7 +33,7 @@ public class UrlService {
         String url = longUrl.url();
         validateLongUrl(url);
 
-        String hash = hashCache.getHashFromCache();
+        String hash = hashCacheService.getHashFromCache();
         ShortUrl shortLongUrlPair = new ShortUrl(url, hash);
 
         urlRepository.save(shortLongUrlPair);

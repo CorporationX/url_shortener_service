@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exception.InvalidURLException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.util.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +37,7 @@ class UrlServiceTest {
     UrlCacheService urlCacheService;
 
     @Mock
-    HashCache hashCache;
+    HashCacheService hashCacheService;
 
     @InjectMocks
     private UrlService urlService;
@@ -58,7 +57,7 @@ class UrlServiceTest {
     @DisplayName("Test URL validation")
     void test_createShortUrl_urlValidation() {
 
-        when(hashCache.getHashFromCache()).thenReturn(hash);
+        when(hashCacheService.getHashFromCache()).thenReturn(hash);
 
         urlService.createShortUrl(longUrlDto);
 
@@ -74,7 +73,7 @@ class UrlServiceTest {
     @Test
     @DisplayName("Test short URL created success")
     void test_createShortUrl_success() {
-        when(hashCache.getHashFromCache()).thenReturn(hash);
+        when(hashCacheService.getHashFromCache()).thenReturn(hash);
 
         ShortUrlDto result = urlService.createShortUrl(longUrlDto);
 

@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @ConfigurationProperties(prefix = "url-shortener")
 public record UrlShortenerProperties(String hostName,
-                                     int localCacheCapacity,
-                                     int hashAmountToLocalCache,
+                                     long localCacheCapacity,
+                                     long hashAmountToLocalCache,
                                      double localCacheThresholdRatio,
-                                     int hashAmountToGenerate,
+                                     long hashAmountToGenerate,
                                      double hashDatabaseThresholdRatio) {
 }
