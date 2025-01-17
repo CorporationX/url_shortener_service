@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.HashResponseDto;
 import faang.school.urlshortenerservice.dto.RequestDto;
-import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
@@ -43,17 +42,17 @@ public class UrlService {
     }
 
     @Transactional
-    public UrlResponseDto getUrl(String hash) {
+    public String getUrl(String hash) {
         String resultFromCache = urlCacheRepositoryImpl.getUrl(hash);
         if (resultFromCache != null) {
             log.info("Result found from Redis cache: {}", hash);
-            return new UrlResponseDto(resultFromCache);
+            return resultFromCache;
         }
 
         String resultFromDB = urlRepository.getByHash(hash);
         if (resultFromDB != null) {
             log.info("Url found in the database: {}", hash);
-            return new UrlResponseDto(resultFromDB);
+            return resultFromDB;
         }
         log.warn("Url for this hash does not exist: {}", hash);
         throw new UrlNotFoundException("URL not found for hash: " + hash);
