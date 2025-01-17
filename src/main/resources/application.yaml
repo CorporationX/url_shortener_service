@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -25,13 +30,16 @@ spring:
 server:
   port: 8087
   servlet:
-    context-path: /api/v1/url-shortener
+    context-path: /api/v1
 
 logging:
   level:
     root: info
 
 app:
+  root_path: http://localhost:8087/api/v1/url-shortener/
+  url_retention_period_month: 6
+  cache_ttl_hour: 24
   count_of_generated_hashes: 10000
   cache_capacity: 1000
   cache_to_store_coefficient: 3

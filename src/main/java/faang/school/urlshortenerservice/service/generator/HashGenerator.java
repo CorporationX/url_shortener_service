@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
     private final HashService hashService;
     private final Base62Encoder base62Encoder;
-    @Value("${app.count_of_generated_hashes:100}")
+    @Value("${app.count_of_generated_hashes:10000}")
     private int countOfGeneratedHashes;
 
     @Async("hashGeneratorThreadPool")
