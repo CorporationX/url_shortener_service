@@ -15,19 +15,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCache {
 
-    private final HashGenerator hashGenerator;
-    private final AtomicBoolean filling = new AtomicBoolean(false);
-
     @Value("${range_capacity.queue}")
     private int capacity;
 
     @Value("${fill_percent.percent}")
     private int fillPercent;
 
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private final HashGenerator hashGenerator;
+    private final AtomicBoolean filling = new AtomicBoolean(false);
+    private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
     }
 
