@@ -18,7 +18,13 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 hash:
   batch-size: 4
-
+  sequence-amount: 8
+  cash:
+      size: 15
+      low-threshold: 0.2
+base62:
+  alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  length: 62
 server:
   port: 8080
 
