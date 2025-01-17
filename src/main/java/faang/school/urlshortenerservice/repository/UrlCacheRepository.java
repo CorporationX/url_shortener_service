@@ -17,17 +17,15 @@ public class UrlCacheRepository {
     private final UrlCacheProperties urlCacheProperties;
 
     public void saveDefaultUrl(String hash, String originalUrl) {
-        String shortUrlKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
-        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, urlCacheProperties.getDefaultTtlMinutes(), TimeUnit.MINUTES);
+        saveUrlWithTtl(hash, originalUrl, urlCacheProperties.getDefaultTtlMinutes(), TimeUnit.MINUTES);
     }
 
     public void savePopularUrl(String hash, String originalUrl) {
-        String shortUrlKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
-        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, urlCacheProperties.getPopularTtlHours(), TimeUnit.HOURS);
+        saveUrlWithTtl(hash, originalUrl, urlCacheProperties.getPopularTtlHours(), TimeUnit.HOURS);
     }
 
     public Optional<String> getOriginalUrl(String hash) {
-        String shortUrlKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
+        String shortUrlKey = buildOriginalUrlKey(hash);
         return Optional.ofNullable(redisTemplate.opsForValue().get(shortUrlKey));
     }
 
@@ -45,5 +43,14 @@ public class UrlCacheRepository {
     public void resetPopularUrlHashes() {
         String shortUrlStatsZSetName = urlCacheProperties.getPopularCacheName();
         redisTemplate.delete(shortUrlStatsZSetName);
+    }
+
+    private void saveUrlWithTtl(String hash, String originalUrl, long ttl, TimeUnit timeUnit) {
+        String shortUrlKey = buildOriginalUrlKey(hash);
+        redisTemplate.opsForValue().set(shortUrlKey, originalUrl, ttl, timeUnit);
+    }
+
+    private String buildOriginalUrlKey(String hash) {
+        return "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
     }
 }
