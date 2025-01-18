@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.UrlUtil;
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -27,9 +29,10 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final HashRepository hashRepository;
 
-    @Value("${short-url.base-path}")
-    private String endpointBasePath;
+    @Value("${scheduler.clean-old-urls.ttl-months}")
+    private int oldUrlsTtlMonths;
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
@@ -49,6 +52,15 @@ public class UrlService {
     public String getOriginalUrl(String hash) {
         return urlRepository.findOriginalUrlByHash(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Original URL not found for hash: %s".formatted(hash)));
+    }
+
+    @Transactional
+    public void deleteOldUrls() {
+        log.info("Starting removing old urls and moving their hashes to free hashes");
+        LocalDateTime oldHashesThresholdDate = LocalDateTime.now().minusMonths(oldUrlsTtlMonths);
+        List<String> oldHashes = urlRepository.deleteOldUrls(oldHashesThresholdDate);
+        hashRepository.save(oldHashes);
+        log.info("Finished removing old hashes and moving their hashes to free hashes: {}", oldHashes);
     }
 
     public List<Url> findUrlEntities(Set<String> urlHashes) {

@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.UrlUtil;
@@ -19,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +37,9 @@ class UrlServiceTest {
 
     @Mock
     private HashCache hashCache;
+
+    @Mock
+    HashRepository hashRepository;
 
     @Mock
     private UrlRepository urlRepository;
@@ -112,5 +117,13 @@ class UrlServiceTest {
 
         List<Url> urlEntities = urlService.findUrlEntities(new HashSet<>());
         assertEquals(urlEntitiesFromDb, urlEntities);
+    }
+
+    @Test
+    void deleteOldUrlsTest() {
+        assertDoesNotThrow(() -> urlService.deleteOldUrls());
+
+        verify(urlRepository, times(1)).deleteOldUrls(any());
+        verify(hashRepository, times(1)).save(any());
     }
 }

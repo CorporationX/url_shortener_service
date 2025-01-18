@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.BaseContextIT;
-import faang.school.urlshortenerservice.scheduler.hash_cleaner.HashCleanerScheduler;
+import faang.school.urlshortenerservice.scheduler.hash_cleaner.UrlCleanerScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Sql("/db/test_sql/insert_url_records.sql")
-public class HashCleanerSchedulerIT extends BaseContextIT {
+public class UrlCleanerSchedulerIT extends BaseContextIT {
 
     @Autowired
-    private HashCleanerScheduler scheduler;
+    private UrlCleanerScheduler scheduler;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
