@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.scheduler.popular_hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.RedissonException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.service.url_service.UrlService;
+import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;

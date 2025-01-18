@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableCaching
 @EnableScheduling
-@EnableCaching
 @EnableConfigurationProperties
 @EnableFeignClients("school.faang.servicetemplate.client")
 public class ServiceTemplateApplication {

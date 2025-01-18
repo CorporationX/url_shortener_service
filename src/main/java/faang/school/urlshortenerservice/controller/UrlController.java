@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.service.url_service.UrlServiceProxy;
+import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -22,18 +22,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class UrlController {
 
-    private final UrlServiceProxy urlServiceProxy;
+    private final UrlService urlService;
 
     @PostMapping
     public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlDto urlDto) {
-        String shortUrl = urlServiceProxy.createShortUrl(urlDto);
+        String shortUrl = urlService.createShortUrl(urlDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
     @ResponseStatus(HttpStatus.MOVED_PERMANENTLY)
     @GetMapping("/{hash}")
     public String redirectToOriginalUrl(@PathVariable @Length(max = 6, message = "Short URL is too long") String hash) {
-        String originalUrl = urlServiceProxy.getOriginalUrl(hash);
+        String originalUrl = urlService.getOriginalUrl(hash);
         return "redirect:%s".formatted(originalUrl);
     }
 }
