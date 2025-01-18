@@ -89,51 +89,21 @@ class UrlServiceTest {
     @Test
     void getOriginalUrlNotFoundTest() {
         String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.empty());
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.empty());
-
         assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrl(hash));
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-    }
-
-    @Test
-    void getOriginalUrlCacheFoundTest() {
-        String originalUrl = "youtube.com";
-        String originalUrlWithProtocol = "http://%s".formatted(originalUrl);
-        String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.of(originalUrl));
-        when(urlUtil.ensureUrlHasProtocol(anyString())).thenReturn(originalUrlWithProtocol);
-
-        String resultUrl = urlService.getOriginalUrl(hash);
-
-        assertEquals(originalUrlWithProtocol, resultUrl);
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
-        verify(urlCacheRepository, times(1)).updateShortUrlRequestStats(hash);
-        verify(urlRepository, never()).findOriginalUrlByHash(hash);
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(anyString());
     }
 
     @Test
     void getOriginalUrlDbFoundTest() {
         String originalUrl = "youtube.com";
-        String originalUrlWithProtocol = "http://%s".formatted(originalUrl);
         String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.empty());
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.of(originalUrl));
-        when(urlUtil.ensureUrlHasProtocol(anyString())).thenReturn(originalUrlWithProtocol);
 
         String resultUrl = urlService.getOriginalUrl(hash);
 
-        assertEquals(originalUrlWithProtocol, resultUrl);
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
-        verify(urlCacheRepository, times(1)).updateShortUrlRequestStats(hash);
-        verify(urlCacheRepository, times(1)).saveDefaultUrl(hash, originalUrl);
+        assertEquals(originalUrl, resultUrl);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(anyString());
     }
 
     @Test

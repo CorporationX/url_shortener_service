@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -70,26 +71,41 @@ public class UrlControllerIT extends BaseContextIT {
     }
 
     @Test
-    void createShortUrlAndGetRedirectedValidTest() throws Exception {
+    void createShortUrlTest() throws Exception {
         long requesterId = 11L;
         String originalUrl = "youtube.com";
         UrlDto urlDto = new UrlDto(originalUrl);
         String urlRequest = objectMapper.writeValueAsString(urlDto);
 
-        MvcResult shortUrlResponse = mockMvc.perform(post(endpointBasePath)
+        MvcResult result = mockMvc.perform(post(endpointBasePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        String shortUrl = shortUrlResponse.getResponse().getContentAsString();
+        String shortUrl = result.getResponse().getContentAsString();
         String hash = getHashFromUrl(shortUrl);
+        String redisKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
+        System.out.println("REDIS KEY:" + redisKey);
+
+        assertTrue(existsByHash("url", hash));
+        assertFalse(existsByHash("hash", hash));
+        assertEquals(Boolean.TRUE, redisTemplate.hasKey(redisKey));
+        assertTrue(Objects.requireNonNullElse(redisTemplate.getExpire(redisKey), 0L)
+                <= urlCacheProperties.getDefaultTtlMinutes() * 60L);
+    }
+
+    @Test
+    @Sql("/db/test_sql/insert_url_records.sql")
+    void redirectValidTest() throws Exception {
+        long requesterId = 11L;
+        String originalUrl = "youtube.com";
+        String hash = "hash1";
         String redisKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
 
         MvcResult redirectUrlResponse = mockMvc.perform(get("%s/%s".formatted(endpointBasePath, hash))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(urlRequest)
                         .header("x-user-id", requesterId))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();

@@ -24,11 +24,6 @@ public class UrlCacheRepository {
         saveUrlWithTtl(hash, originalUrl, urlCacheProperties.getPopularTtlHours(), TimeUnit.HOURS);
     }
 
-    public Optional<String> getOriginalUrl(String hash) {
-        String shortUrlKey = buildOriginalUrlKey(hash);
-        return Optional.ofNullable(redisTemplate.opsForValue().get(shortUrlKey));
-    }
-
     public void updateShortUrlRequestStats(String hash) {
         String shortUrlStatsZSetName = urlCacheProperties.getPopularCacheName();
         redisTemplate.opsForZSet().incrementScore(shortUrlStatsZSetName, hash,1);

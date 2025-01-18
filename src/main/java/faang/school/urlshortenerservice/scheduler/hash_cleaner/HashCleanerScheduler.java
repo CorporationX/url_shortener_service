@@ -21,9 +21,6 @@ public class HashCleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${scheduler.clean-old-hashes.batch-size}")
-    private int oldHashesBatchSize;
-
     @Value("${scheduler.clean-old-hashes.ttl-months}")
     private int oldHashesTtlMonths;
 
