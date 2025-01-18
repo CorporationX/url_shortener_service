@@ -10,9 +10,16 @@ app:
     generator:
       batch-size: 1000
       cron: 0 0 0 * * *
+  cleaner:
+    url-lifetime: 365
+    cron: 0 0 0 * * *
   batch-size: 50
 
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 2
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
