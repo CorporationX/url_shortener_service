@@ -24,7 +24,7 @@ public class HashCleaner {
     private final UrlRepository urlRepository;
 
     @Value("${scheduler.interval-to-clean}")
-    private final Duration intervalToClean;
+    private Duration intervalToClean;
 
     @Transactional
     @Scheduled(cron = "${scheduler.hash-cleaner-schedule}")

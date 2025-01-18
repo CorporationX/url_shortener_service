@@ -38,7 +38,7 @@ spring:
     redis:
       port: 6379
       host: localhost
-      ttl: 10
+      ttl-seconds: 7200
 
 server:
   port: 8080
@@ -48,13 +48,13 @@ logging:
     root: info
 
 url-shortener:
-  host-name: https:/shrt.com/
-  local-cache-capacity: 12
-  hash-amount-to-local-cache: 10
+  host-name: https://shrt.com/
+  local-cache-capacity: 12_000
+  hash-amount-to-local-cache: 10_000
   local-cache-threshold-ratio: 0.2
-  hash-amount-to-generate: 100
+  hash-amount-to-generate: 100_000
   hash-database-threshold-ratio: 0.2
 
-local-cache:
-  capacity: 12_000
-  upload-treshold: 2_000
+scheduler:
+  hash-cleaner-schedule: 0 0 0 * * *
+  interval-to-clean: 365d

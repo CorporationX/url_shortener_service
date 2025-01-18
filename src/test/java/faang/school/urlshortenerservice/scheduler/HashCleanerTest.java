@@ -2,12 +2,13 @@ package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.util.List;
@@ -26,16 +27,13 @@ class HashCleanerTest {
     @Mock
     private UrlRepository urlRepository;
 
+    @InjectMocks
     private HashCleaner hashCleaner;
-
-    @BeforeEach
-    void setUp() {
-        hashCleaner = new HashCleaner(hashRepository, urlRepository, Duration.ofDays(3));
-    }
 
     @Test
     @DisplayName("Test remove of expired links and hash move to hash repo")
     void test_cleanExpiredHashes_success() {
+        ReflectionTestUtils.setField(hashCleaner, "intervalToClean", Duration.ofDays(2));
         List<String> hashStrings = List.of("a", "b", "c");
 
         when(urlRepository.getExpiredHashes(any())).thenReturn(hashStrings);

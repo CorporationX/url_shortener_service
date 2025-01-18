@@ -33,7 +33,7 @@ public class HashCacheService {
 
     public void addHashToLocalCacheIfNecessary() {
         if (!isEnoughLocalCacheCapacity() && !uploadInProgressFlag.get()) {
-            log.info("{} hashes left in local cache (threshold is {}). Update started", localCache.size(), (long) (urlShortenerProperties.localCacheCapacity() * urlShortenerProperties.localCacheThresholdRatio()));
+            log.info("{} hashes left in local cache (threshold is {}). Update started", localCache.size(), (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio()));
             localCacheExecutor.execute(() -> {
                 uploadInProgressFlag.set(true);
                 try {
