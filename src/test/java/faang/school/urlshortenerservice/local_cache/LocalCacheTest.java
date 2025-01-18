@@ -8,11 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +33,8 @@ class LocalCacheTest {
     private Queue<Hash> queue;
     @Mock
     private AtomicBoolean aBoolean;
+    @Mock
+    private ExecutorService executorService;
 
     private long getSize = 2700;
     private long minSize = 2500;
@@ -42,7 +46,7 @@ class LocalCacheTest {
     }
 
     @Test
-    void testGetCache_whenCacheIsEmpty_thenShouldAddNewHash() {
+    void testGetCache_whenCacheIsNotEmpty_thenShouldNotAddNewHash() {
         when(queue.poll()).thenReturn(new Hash("hash1"));
         when(queue.size()).thenReturn(7000);
 
@@ -50,7 +54,19 @@ class LocalCacheTest {
 
         assertEquals("hash1", result);
 
-       // verify(aBoolean,times(0)).compareAndExchange(false,true);
+       verify(executorService,times(0)).execute(any(Runnable.class));
+    }
+    @Test
+    void testGetCache_whenCacheEmpty_thenShouldAddNewHash() {
+        when(queue.poll()).thenReturn(new Hash("hash1"));
+        when(queue.size()).thenReturn(1);
+        aBoolean.set(true);
+
+        String result = localCache.getCache();
+
+        assertEquals("hash1", result);
+
+        verify(executorService,times(1)).execute(any(Runnable.class));
     }
 
     @Test

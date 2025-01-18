@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -24,6 +25,8 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final HashRepository hashRepository;
     private final AtomicBoolean aBoolean;
+    private final ExecutorService executorService;
+
     @Value("${hash.generate_size:5000}")
     private long generateSize;
     @Value("${hash.get_size:2700}")
@@ -34,10 +37,12 @@ public class HashGenerator {
     private long hashForSchedulerSize;
 
     public HashGenerator(Base62Encoder base62Encoder, HashRepository hashRepository,
-                         @Qualifier("hashGeneratorAtomicBoolean") AtomicBoolean aBoolean) {
+                         @Qualifier("hashGeneratorAtomicBoolean") AtomicBoolean aBoolean,
+                         ExecutorService executorService) {
         this.base62Encoder = base62Encoder;
         this.hashRepository = hashRepository;
         this.aBoolean = aBoolean;
+        this.executorService=executorService;
     }
 
     @PostConstruct
@@ -69,13 +74,16 @@ public class HashGenerator {
         List<Hash> hashes = hashRepository.findAndDelete(getSize);
 
         if (hashRepository.count() <= minSize) {
-            if (aBoolean.compareAndExchange(false, true)) {
+            if (aBoolean.compareAndExchange(true, false)) {
 
                 log.info("start generating new hash");
-                CompletableFuture.runAsync(() -> {
+                executorService.execute(()->{
+
                     log.info("start new Thread to generate hash");
                     generateHash();
-                }).thenRun(() -> aBoolean.set(false));
+                    aBoolean.set(true);
+
+                });
             }
         }
 

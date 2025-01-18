@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.schedul;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,9 @@ class CleanerSchedulerTest {
 
     @Mock
     private UrlRepository urlRepository;
+
+    @Mock
+    private UrlCacheRepository urlCacheRepository;
 
     @Captor
     private ArgumentCaptor<List<Hash>> captor;

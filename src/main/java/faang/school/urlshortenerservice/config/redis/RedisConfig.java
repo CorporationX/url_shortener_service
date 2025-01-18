@@ -5,13 +5,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.net.URL;
+import java.time.Duration;
 
 @Configuration
 public class RedisConfig {
@@ -45,6 +51,21 @@ public class RedisConfig {
         RedisTemplate<String, URL> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(configuration());
         redisTemplate.setDefaultSerializer(serializer);
+        redisTemplate.setValueSerializer(serializer);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
         return redisTemplate;
+    }
+
+    @Bean
+    public RedisCacheManager cacheManager(RedisConnectionFactory jedisConnectionFactory,
+                                          Jackson2JsonRedisSerializer<URL> serializer) {
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofDays(1))
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.string()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+
+        return RedisCacheManager.builder(jedisConnectionFactory)
+                .cacheDefaults(config)
+                .build();
     }
 }

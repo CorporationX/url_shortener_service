@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -43,38 +45,31 @@ public class UrlService {
 
         log.info("saving hash and url at db and redis");
         urlRepository.save(entityUrl);
-        urlCacheRepository.saveAtRedis(entityUrl);
+        urlCacheRepository.saveAtRedis(hash,url);
 
         return createShortURLWithHash(hash);
     }
 
+    @Cacheable(value = "url", key = "#hash", cacheManager = "cacheManager")
     public URL getUrl(String hash) {
         log.info("validate hash");
         urlServiceValidator.validateHash(hash);
 
-        log.info("trying to find url at redis");
-        URL result = urlCacheRepository.getFromRedis(hash);
-
-        if (result != null) {
-            return result;
-        }
-
         log.info("trying to find url at db");
-        Url url = urlRepository.findByHash(hash);
-
-        if (url != null) {
-            log.info("calling urlCacheRepository to save at redis");
-            urlCacheRepository.saveAtRedis(url);
-            return url.getUrl();
-        }
-
-        log.error("cant fiend url at redis and db with given hash:" + hash);
-        throw new EntityNotFoundException("can't redirect to main ulr , incorrect hash: " + hash);
-
+        return findByHash(hash).getUrl();
     }
 
     private Optional<Url> findByUrl(URL url) {
+        log.info("getting optional url from db");
         return urlRepository.findByUrl(url);
+    }
+
+    private Url findByHash(String hash){
+       return urlRepository.findByHash(hash).orElseThrow(
+                ()->{
+                    log.error("cant fiend url at redis and db with given hash:" + hash);
+                    return new EntityNotFoundException("can't redirect to main ulr , incorrect hash: " + hash);
+                });
     }
 
 

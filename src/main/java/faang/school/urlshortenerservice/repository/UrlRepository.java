@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    Url findByHash(@Param("hash") String hash);
+    Optional<Url> findByHash(@Param("hash") String hash);
 
     Optional<Url> findByUrl(@Param("url") URL url);
 

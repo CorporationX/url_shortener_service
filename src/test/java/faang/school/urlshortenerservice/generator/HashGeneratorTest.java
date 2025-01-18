@@ -19,7 +19,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +41,12 @@ class HashGeneratorTest {
 
     @Mock
     private HashRepository hashRepository;
+
+    @Mock
+    private ExecutorService executorService;
+
+    @Spy
+    private AtomicBoolean aBoolean;
 
     private long generateSize = 5000;
     private long getSize = 2700;
@@ -87,5 +95,20 @@ class HashGeneratorTest {
         verify(hashRepository, times(1)).findAndDelete(getSize);
         verify(hashRepository, times(1)).count();
         verify(hashRepository, never()).getUniqueNumbers(generateSize);
+    }
+
+    @Test
+    void testFindAndDeleteReturnsHashesAndGenerateNewHash() {
+        List<Hash> expectedHashes = Arrays.asList(new Hash("2"), new Hash("3"));
+        when(hashRepository.findAndDelete(getSize)).thenReturn(expectedHashes);
+        when(hashRepository.count()).thenReturn(minSize - 10);
+        aBoolean.set(true);
+
+        List<Hash> result = hashGenerator.findAndDelete();
+
+        assertEquals(expectedHashes, result);
+        verify(hashRepository, times(1)).findAndDelete(getSize);
+        verify(hashRepository, times(1)).count();
+        verify(executorService,times(1)).execute(any(Runnable.class));
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -21,16 +22,20 @@ public class LocalCache {
     private final HashGenerator hashGenerator;
     private final Queue<Hash> cache;
     private final AtomicBoolean aBoolean;
+    private final ExecutorService executorService;
+
     @Value("${hash.get_size}")
     private long getSize;
     @Value("${hash.min_cache_rep_size}")
     private long minSize;
 
     public LocalCache(HashGenerator hashGenerator, Queue<Hash> cache,
-                      @Qualifier("localHashAtomicBoolean") AtomicBoolean aBoolean) {
+                      @Qualifier("localHashAtomicBoolean") AtomicBoolean aBoolean,
+                      ExecutorService executorService) {
         this.hashGenerator = hashGenerator;
         this.cache = cache;
         this.aBoolean = aBoolean;
+        this.executorService = executorService;
     }
 
     @PostConstruct
@@ -41,11 +46,15 @@ public class LocalCache {
 
     public String getCache() {
         if (cache.size() - 1 < minSize) {
-            if (aBoolean.compareAndExchange(false, true)) {
-                CompletableFuture.runAsync(() -> {
+            if (aBoolean.compareAndExchange(true, false)) {
+
+                executorService.execute(()->{
+
                     log.info("start new Thread to generate local hash");
                     addNewHash();
-                }).thenRun(() -> aBoolean.set(false));
+                    aBoolean.set(true);
+
+                });
             }
         }
         return cache.poll().getHash();
