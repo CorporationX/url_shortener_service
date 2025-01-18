@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,7 +25,7 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private Queue<String> hashes;
+    private BlockingQueue<String> hashes;
 
     private final HashGenerator hashGenerator;
 
@@ -46,7 +46,12 @@ public class HashCache {
                         .thenRun(() -> filling.set(false));
             }
         }
-        return hashes.poll();
+        try {
+            return hashes.take();
+        } catch (InterruptedException e) {
+            log.error("Error getting hash from cache: {}", e.getMessage());
+            throw new RuntimeException("Error getting hash from cache: " + e.getMessage());
+        }
     }
 
     @Async("hashGeneratorExecutor")
