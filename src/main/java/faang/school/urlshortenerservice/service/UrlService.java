@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.UrlAssociation;
+import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validate.UrlValidate;
@@ -15,15 +17,21 @@ import java.net.URL;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlValidate validator;
-    private final HashGenerator hashGenerator;
+    private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
     public String generateShortUrl(String originalUrl) {
         URL url = validator.getValidUrl(originalUrl);
-      // String hash = hashGenerator.getHash();
-      // return url.getProtocol() + "://" + url.getHost() + "/" + hash;
 
-        return "";
+        Hash hash = hashCache.getHash();
+
+        UrlAssociation urlAssociation = new UrlAssociation();
+        urlAssociation.setUrl(originalUrl);
+        urlAssociation.setHash(hash.getHash());
+
+        urlRepository.save(urlAssociation);
+
+       return url.getProtocol() + "://" + url.getHost() + "/" + hash;
     }
 
     public String returnFullUrl(String shortUrl) {
