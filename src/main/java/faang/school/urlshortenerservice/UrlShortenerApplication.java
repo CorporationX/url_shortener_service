@@ -13,9 +13,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 @ConfigurationPropertiesScan
-public class ServiceTemplateApplication {
+public class UrlShortenerApplication {
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ServiceTemplateApplication.class)
+        new SpringApplicationBuilder(UrlShortenerApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }

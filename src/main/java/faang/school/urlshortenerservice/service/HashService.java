@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashService {
@@ -27,6 +29,7 @@ public class HashService {
             List<Hash> hashes = generateBatch(urlShortenerProperties.hashAmountToGenerate());
             hashRepository.saveAll(hashes);
             uploadInProgressFlag.set(false);
+            log.info("{} hashes added to database", hashes.size());
         }
         return CompletableFuture.completedFuture(null);
     }

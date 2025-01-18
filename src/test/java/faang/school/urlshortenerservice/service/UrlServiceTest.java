@@ -166,7 +166,7 @@ class UrlServiceTest {
         when(urlRepository.findById(anyString())).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> urlService.getUrl(shortUrl));
-        assertEquals("URL matching hash abc not found", ex.getMessage());
+        assertEquals("URL matching provided hash 'abc' not found", ex.getMessage());
 
         verify(urlCacheService, times(1)).getFromCache(anyString());
         verify(urlRepository, times(1)).findById(anyString());

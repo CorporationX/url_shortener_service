@@ -51,7 +51,7 @@ public class UrlService {
 
         Optional<String> urlFromCache = urlCacheService.getFromCache(hash);
         if (urlFromCache.isPresent()) {
-            log.debug("Long URL {} returned from cache", urlFromCache.get());
+            log.info("Long URL {} returned from cache", urlFromCache.get());
             return new LongUrlDto(urlFromCache.get());
         }
 
@@ -59,7 +59,7 @@ public class UrlService {
 
         urlCacheService.saveToCache(hash, urlFromDB);
 
-        log.debug("Long URL {} returned from DataBase", urlFromDB);
+        log.info("Long URL {} returned from DataBase", urlFromDB);
         return new LongUrlDto(urlFromDB);
     }
 
@@ -99,7 +99,7 @@ public class UrlService {
 
     private String getUrlFromDataBase(String hash) {
         ShortUrl url = urlRepository.findById(hash).orElseThrow(() ->
-                new EntityNotFoundException(String.format("URL matching hash %s not found", hash)));
+                new EntityNotFoundException(String.format("URL matching provided hash '%s' not found", hash)));
         return url.getUrl();
     }
 }

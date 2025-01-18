@@ -28,12 +28,12 @@ public class HashCacheService {
         Hash hash = Optional.ofNullable(localCache.poll()).orElseThrow(this::createLocalCacheException);
 
         addHashToLocalCacheIfNecessary();
-
         return hash.getHash();
     }
 
     public void addHashToLocalCacheIfNecessary() {
         if (!isEnoughLocalCacheCapacity() && !uploadInProgressFlag.get()) {
+            log.info("{} hashes left in local cache (threshold is {}). Update started", localCache.size(), (long) (urlShortenerProperties.localCacheCapacity() * urlShortenerProperties.localCacheThresholdRatio()));
             localCacheExecutor.execute(() -> {
                 uploadInProgressFlag.set(true);
                 try {
@@ -49,6 +49,7 @@ public class HashCacheService {
         try {
             List<Hash> hashes = hashService.getHashesFromDatabase().get();
             localCache.addAll(hashes);
+            log.info("{} hashes added to local cache successfully", hashes.size());
             hashService.uploadHashInDatabaseIfNecessary();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error during hash download from database. Error: {}", e.getMessage());

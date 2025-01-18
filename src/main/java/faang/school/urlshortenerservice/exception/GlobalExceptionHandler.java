@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,5 +58,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleLocalCacheException(LocalCacheException ex) {
         log.error("Queue in local cache is empty: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityMotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found error occurred: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

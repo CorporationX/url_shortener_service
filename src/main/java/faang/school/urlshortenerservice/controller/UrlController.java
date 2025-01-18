@@ -38,7 +38,7 @@ public class UrlController {
     @GetMapping()
     @Operation(summary = "Get real url matching provided short url")
     public ResponseEntity<LongUrlDto> getUrl(@RequestParam(name = "shortUrl") @NotBlank(message = "URL cannot be empty") String shortUrl) {
-        log.info("Request to get real URL matching short link '{}' received", shortUrl);
+        log.debug("Request to get real URL matching short link '{}' received", shortUrl);
         return ResponseEntity.status(HttpStatusCode.valueOf(302)).body(urlService.getUrl(shortUrl));
     }
 }

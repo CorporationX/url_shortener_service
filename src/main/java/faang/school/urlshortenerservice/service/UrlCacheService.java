@@ -18,14 +18,13 @@ public class UrlCacheService {
 
     public void saveToCache(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url);
-        redisTemplate.expire(hash, Duration.ofSeconds(redisProperties.ttl()));
-        log.debug("Short url pair {} : {} saved to Redis cache", hash, url);
+        redisTemplate.expire(hash, Duration.ofSeconds(redisProperties.ttlSeconds()));
+        log.info("Short url pair {} : {} saved to Redis cache", hash, url);
     }
 
     public Optional<String> getFromCache(String hash) {
         String url = redisTemplate.opsForValue().get(hash);
 
-        log.debug("Real URL '{}' retrieved from cache", url);
         return Optional.ofNullable(url);
     }
 }

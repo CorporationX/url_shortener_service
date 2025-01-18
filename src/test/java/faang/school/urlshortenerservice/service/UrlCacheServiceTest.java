@@ -54,7 +54,7 @@ class UrlCacheServiceTest {
 
         urlCacheService.saveToCache(hash, url);
 
-        int timeout = redisProperties.ttl();
+        int timeout = redisProperties.ttlSeconds();
 
         verify(redisTemplate, times(1)).opsForValue();
         verify(valueOperations, times(1)).set(anyString(), anyString());
