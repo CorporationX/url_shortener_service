@@ -48,4 +48,10 @@ public class HashGeneratorImpl implements HashGenerator {
         log.info("Generated hashes: {}", hashes);
         return CompletableFuture.completedFuture(hashRepository.saveAll(hashes));
     }
+
+    @Override
+    @Transactional
+    public List<String> getHashes(int limit) {
+        return hashRepository.getHashBatch(limit);
+    }
 }
