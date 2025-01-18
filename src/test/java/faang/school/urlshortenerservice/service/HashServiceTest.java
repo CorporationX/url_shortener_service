@@ -13,10 +13,12 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,7 +58,7 @@ class HashServiceTest {
 
     @Test
     @DisplayName("Upload batch of hashes: not enough in database - upload needed")
-    void test_uploadHashesInDatabaseIfNecessary_NotEnoughInDatabase_Uploads() throws Exception {
+    void test_uploadHashInDatabaseIfNecessary_NotEnoughInDatabase_Uploads() throws Exception {
 
         when(hashRepository.count()).thenReturn(0L);
         when(hashRepository.getUniqueNumbersFromSequence(urlShortenerProperties.hashAmountToGenerate())).thenReturn(Arrays.asList(1L, 10L, 62L));
@@ -64,7 +66,7 @@ class HashServiceTest {
         when(base62Encoder.encode(10L)).thenReturn("A");
         when(base62Encoder.encode(62L)).thenReturn("01");
 
-        CompletableFuture<Void> result = hashService.uploadHashesInDatabaseIfNecessary();
+        CompletableFuture<Void> result = hashService.uploadHashInDatabaseIfNecessary();
 
         verify(hashRepository, times(1)).count();
         verify(hashRepository, times(1)).getUniqueNumbersFromSequence(urlShortenerProperties.hashAmountToGenerate());
@@ -78,12 +80,30 @@ class HashServiceTest {
     }
 
     @Test
+    @DisplayName("Upload batch of hashes: not enough in database - upload in progress - nothing happens")
+    void test_uploadHashInDatabaseIfNecessary_NotEnoughInDatabaseUploadInProgress_DoNothing() throws Exception {
+
+        ReflectionTestUtils.setField(hashService, "uploadInProgressFlag", new AtomicBoolean(true));
+        when(hashRepository.count()).thenReturn(0L);
+
+        CompletableFuture<Void> result = hashService.uploadHashInDatabaseIfNecessary();
+
+        verify(hashRepository, times(1)).count();
+        verify(hashRepository, never()).getUniqueNumbersFromSequence(urlShortenerProperties.hashAmountToGenerate());
+        verify(base62Encoder, never()).encode(anyLong());
+        verify(hashRepository, never()).saveAll(captor.capture());
+
+        assertNotNull(result);
+        assertNull(result.get());
+    }
+
+    @Test
     @DisplayName("Upload batch of hashes: enough in database - upload not needed")
-    void test_uploadHashesInDatabaseIfNecessary_EnoughInDatabase_DoNotUploads() throws Exception {
+    void test_uploadHashInDatabaseIfNecessary_EnoughInDatabase_DoNotUploads() throws Exception {
 
         when(hashRepository.count()).thenReturn(10L);
 
-        CompletableFuture<Void> result = hashService.uploadHashesInDatabaseIfNecessary();
+        CompletableFuture<Void> result = hashService.uploadHashInDatabaseIfNecessary();
 
         verify(hashRepository, times(1)).count();
         verify(hashRepository, never()).getUniqueNumbersFromSequence(urlShortenerProperties.hashAmountToGenerate());

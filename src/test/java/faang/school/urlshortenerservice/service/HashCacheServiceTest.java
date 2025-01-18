@@ -102,6 +102,7 @@ class HashCacheServiceTest {
 
         verify(hashService, times(1)).getHashesFromDatabase();
         verify(localCache, times(1)).addAll(hashes);
+        verify(hashService,times(1)).uploadHashInDatabaseIfNecessary();
     }
 
     @Test
@@ -118,6 +119,7 @@ class HashCacheServiceTest {
 
         verify(hashService, times(1)).getHashesFromDatabase();
         verify(localCache, never()).addAll(any());
+        verify(hashService,never()).uploadHashInDatabaseIfNecessary();
 
         assertTrue(ex.getMessage().contains("Error during hash download from database. Error:"));
     }

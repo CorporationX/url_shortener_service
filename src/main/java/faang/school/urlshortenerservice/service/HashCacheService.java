@@ -33,7 +33,7 @@ public class HashCacheService {
     }
 
     public void addHashToLocalCacheIfNecessary() {
-        if (!isEnoughLocalCacheCapacity() && uploadInProgressFlag.get() == false) {
+        if (!isEnoughLocalCacheCapacity() && !uploadInProgressFlag.get()) {
             localCacheExecutor.execute(() -> {
                 uploadInProgressFlag.set(true);
                 try {
@@ -49,6 +49,7 @@ public class HashCacheService {
         try {
             List<Hash> hashes = hashService.getHashesFromDatabase().get();
             localCache.addAll(hashes);
+            hashService.uploadHashInDatabaseIfNecessary();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error during hash download from database. Error: {}", e.getMessage());
             Thread.currentThread().interrupt();

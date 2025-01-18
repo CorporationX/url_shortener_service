@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
@@ -17,12 +18,15 @@ public class HashService {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final UrlShortenerProperties urlShortenerProperties;
+    private final AtomicBoolean uploadInProgressFlag = new AtomicBoolean();
 
     @Async("hashServiceExecutor")
-    public CompletableFuture<Void> uploadHashesInDatabaseIfNecessary() {
-        if (!isEnoughHashCapacity()) {
+    public CompletableFuture<Void> uploadHashInDatabaseIfNecessary() {
+        if (!isEnoughHashCapacity() && !uploadInProgressFlag.get()) {
+            uploadInProgressFlag.set(true);
             List<Hash> hashes = generateBatch(urlShortenerProperties.hashAmountToGenerate());
             hashRepository.saveAll(hashes);
+            uploadInProgressFlag.set(false);
         }
         return CompletableFuture.completedFuture(null);
     }
