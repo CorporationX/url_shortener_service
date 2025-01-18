@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service.url_service;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
@@ -45,18 +45,14 @@ public class UrlService {
         return shortUrl;
     }
 
-    @Cacheable(value = "shortUrls", key = "#hash", cacheManager = "urlCacheManager")
+    @Cacheable(value = "shortUrls", key = "#hash", cacheManager = "urlHashCacheManager")
     public String getOriginalUrl(String hash) {
-        return urlUtil.ensureUrlHasProtocol(getOriginalUrlFromDb(hash));
+        return urlRepository.findOriginalUrlByHash(hash)
+                .orElseThrow(() -> new EntityNotFoundException("Original URL not found for hash: %s".formatted(hash)));
     }
 
     public List<Url> findUrlEntities(Set<String> urlHashes) {
         return urlRepository.findByHashes(urlHashes);
-    }
-
-    private String getOriginalUrlFromDb(String hash) {
-        return urlRepository.findOriginalUrlByHash(hash)
-                .orElseThrow(() -> new EntityNotFoundException("Original URL not found for hash: %s".formatted(hash)));
     }
 
     private void validateUrl(String url) {

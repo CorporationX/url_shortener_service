@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.service.url_service.UrlService;
 import faang.school.urlshortenerservice.util.UrlUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -24,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,7 +44,7 @@ class UrlServiceTest {
     private UrlCacheRepository urlCacheRepository;
 
     @InjectMocks
-    private UrlService urlService;
+    private faang.school.urlshortenerservice.service.UrlService urlService;
 
     @Test
     void createShortUrlInvalidOriginalTest() {
@@ -97,16 +97,13 @@ class UrlServiceTest {
     @Test
     void getOriginalUrlDbFoundTest() {
         String originalUrl = "youtube.com";
-        String originalUrlWithProtocol = "http://%s".formatted(originalUrl);
         String hash = "214kj";
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.of(originalUrl));
-        when(urlUtil.ensureUrlHasProtocol(anyString())).thenReturn(originalUrlWithProtocol);
 
         String resultUrl = urlService.getOriginalUrl(hash);
 
-        assertEquals(originalUrlWithProtocol, resultUrl);
+        assertEquals(originalUrl, resultUrl);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(anyString());
     }
 
     @Test
