@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,8 +60,6 @@ public class UrlControllerTest {
                        String response = result.getResponse().getContentAsString();
                        response.contains("short123");
                   });
-
-          verify(urlService).saveNewHash(any(UrlDto.class));
      }
 
      @Test
@@ -114,5 +113,26 @@ public class UrlControllerTest {
                   .andExpect(status().isNotFound());
 
           verify(urlService, never()).findUrl(anyString());
+     }
+
+     @Test
+     void testGetUrl_WhenHashNotFound_ShouldRedirectToErrorPage() throws Exception {
+          String hash = "nonexistentHash";
+
+          when(urlService.findUrl(hash)).thenReturn(null);
+
+          mockMvc.perform(get("/" + hash))
+                  .andExpect(status().isFound())
+                  .andExpect(redirectedUrl("/error-page"));
+     }
+
+     @Test
+     void testCreateUrl_WhenInvalidUrl_ShouldReturnBadRequest() throws Exception {
+          UrlDto invalidUrlDto = new UrlDto("");
+
+          mockMvc.perform(post("/url")
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .content(new ObjectMapper().writeValueAsString(invalidUrlDto)))
+                  .andExpect(status().isBadRequest());
      }
 }

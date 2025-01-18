@@ -40,16 +40,14 @@ batch-size:
 
 alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
-baseUrl: http://localhost:8080/url
-uniqueNumber: 500
-
-batchSize: 500
+base-url: http://localhost:8080/
+unique-number: 100
 
 scheduler:
   cron: 0 0 0 * * ?
   year: 1
 
-hashCash:
-  queueCapacity: 500
+hash-cache:
+  queue-capacity: 500
   percent: 0.2
-  redisBatchSize: 200
+  redis-batch-size: 240

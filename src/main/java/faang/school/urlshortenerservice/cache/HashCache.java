@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HashCache {
-    @Value("${hashCash.queueCapacity}")
+    @Value("${hash-cache.queue-capacity}")
     private int queueCapacity;
-    @Value("${hashCash.percent}")
+    @Value("${hash-cache.percent}")
     private double percent;
-    @Value("${hashCash.redisBatchSize}")
+    @Value("${hash-cache.redis-batch-size}")
     private int redisBatchSize;
 
     private final AtomicBoolean isCacheFilling = new AtomicBoolean(false);
@@ -35,8 +37,13 @@ public class HashCache {
     @PostConstruct
     public void init() {
         caches = new ArrayBlockingQueue<>(queueCapacity);
-        hashGenerator.generateBatch();
-        caches.addAll(hashRepository.getHashBatch(redisBatchSize));
+        try {
+            hashGenerator.generateBatch();
+            caches.addAll(hashRepository.getHashBatch(redisBatchSize));
+        } catch (Exception e) {
+            log.error("Failed to initialize cache during startup", e);
+            throw new IllegalStateException("Failed to initialize cache during startup", e);
+        }
     }
 
     public Hash getHash() {

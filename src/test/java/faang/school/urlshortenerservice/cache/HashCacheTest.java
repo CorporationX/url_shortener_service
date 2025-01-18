@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.CacheUpdateException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +16,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 public class HashCacheTest {
@@ -79,5 +85,16 @@ public class HashCacheTest {
         assertNotNull(result);
 
         assertEquals(9, mockCache.size());
+    }
+
+
+    @Test
+    void testCacheUpdateThrowsCacheUpdateExceptionWhenErrorOccurs() {
+        doThrow(new CacheUpdateException("Error updating cache", new RuntimeException())).when(taskExecutor).execute(any(Runnable.class));
+
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> hashCache.getHash());
+
+        Throwable throwable = assertThrows(CompletionException.class, future::join).getCause();
+        assertInstanceOf(CacheUpdateException.class, throwable);
     }
 }

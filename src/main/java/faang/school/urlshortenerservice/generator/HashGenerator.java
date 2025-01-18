@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    @Value("${uniqueNumber}")
+    @Value("${unique-number}")
     private long uniqueNumber;
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
