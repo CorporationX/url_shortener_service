@@ -10,17 +10,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+
     private final Queue<String> cache = new ConcurrentLinkedQueue<>();
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
@@ -38,10 +41,8 @@ public class HashCache {
     @PostConstruct
     public void preloadCache() {
         log.info("Starting cache warm-up...");
-
-        triggerAsyncFill().join();
-
-        log.info("Cache warm-up completed, size: {}", cache.size());
+        triggerAsyncFill();
+        log.info("Cache warm-up triggered");
     }
 
     public String getHash() {
@@ -50,7 +51,6 @@ public class HashCache {
         }
 
         triggerAsyncFill();
-
         return getAndRemoveHash(cache);
     }
 
@@ -69,8 +69,33 @@ public class HashCache {
 
     private CompletableFuture<Void> triggerAsyncFill() {
         if (isFetching.compareAndSet(false, true)) {
-            cacheFillFuture = CompletableFuture.runAsync(this::fillCacheAsync, executorService)
-                    .whenComplete((result, error) -> isFetching.set(false));
+            cacheFillFuture = CompletableFuture.supplyAsync(() -> {
+                if (cache.isEmpty()) {
+                    log.info("Cache is empty, generating new hashes...");
+                    List<String> newHashes = hashGenerator.generateBatch(maxSize);
+
+                    List<String> unusedHashes = hashRepository.getAvailableHashes();
+
+                    List<String> hashesToSave = newHashes.stream()
+                            .filter(unusedHashes::contains)
+                            .collect(Collectors.toList());
+
+                    if (!hashesToSave.isEmpty()) {
+                        log.info("Saving new hashes to database...");
+                        hashRepository.saveAll(hashesToSave.stream()
+                                .map(hash -> HashEntity.builder().hash(hash).isUsed(false).build())
+                                .collect(Collectors.toList()));
+                    }
+
+                    return hashesToSave;
+                }
+                return List.of();
+            }, executorService).thenAcceptAsync(newHashes -> {
+                if (!newHashes.isEmpty()) {
+                    cache.addAll((Collection<? extends String>) newHashes);
+                }
+                fillCacheAsync();
+            }, executorService).whenComplete((result, error) -> isFetching.set(false));
         }
         return cacheFillFuture;
     }
@@ -78,16 +103,20 @@ public class HashCache {
     private String getAndRemoveHash(Queue<String> cache) {
         String hash = cache.poll();
 
-        HashEntity hashEntity = hashRepository.findByHash(hash);
-        if (hashEntity != null) {
-            hashEntity.setIsUsed(true);
-            hashRepository.save(hashEntity);
-        } else {
-            log.warn("Hash not found in database: {}", hash);
+        if (hash == null) {
+            log.warn("Failed to retrieve hash from cache");
+            return null;
         }
 
-        log.info("Hash removed from cache: {}", hash);
-        log.info("Cache size: {}", cache.size());
+        CompletableFuture.runAsync(() -> {
+            HashEntity hashEntity = hashRepository.findByHash(hash);
+            if (hashEntity != null) {
+                hashRepository.markHashAsUsed(hash);
+            } else {
+                log.warn("Hash not found in the database for hash: {}", hash);
+            }
+        }, executorService);
+
         return hash;
     }
 
@@ -95,7 +124,6 @@ public class HashCache {
         try {
             log.info("Adding hashes to cache...");
             List<String> hashes = hashRepository.getAvailableHashes();
-
             cache.addAll(hashes);
 
             if (cache.size() < maxSize) {
@@ -109,4 +137,3 @@ public class HashCache {
         }
     }
 }
-

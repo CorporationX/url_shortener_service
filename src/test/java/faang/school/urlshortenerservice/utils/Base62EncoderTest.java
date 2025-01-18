@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +36,8 @@ class Base62EncoderTest {
 
     @Test
     void shouldGenerateUniqueHashesForUniqueNumbers() {
-        List<Long> numbers = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+        List<Long> numbers = LongStream.rangeClosed(1, 1_000_000).boxed().collect(Collectors.toList());
+
         List<HashEntity> encodedHashes = base62Encoder.encode(numbers);
 
         Set<String> uniqueHashes = encodedHashes.stream()
