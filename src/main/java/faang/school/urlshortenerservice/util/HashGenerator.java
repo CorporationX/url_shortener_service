@@ -2,16 +2,18 @@ package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UniqueIdRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -26,6 +28,7 @@ public class HashGenerator {
     @Transactional
     @Scheduled(cron = "${app.hash.generator.cron:0 0 0 * * *}")
     public void generateBatch() {
+        log.info("Generating batch of {} hashes", generationBatch);
         List<Long> seeds = uniqueIdRepository.getNextRange(generationBatch);
         List<String> hashes = seeds.stream()
                 .map(encoder::encode)
@@ -37,11 +40,12 @@ public class HashGenerator {
     public List<String> getHashes(int amount) {
         List<String> hashes = hashRepository.getHashes(amount);
         if (hashes.size() < amount) {
+            log.warn("All pregenerated hashes were used");
             generateBatch();
             hashes.addAll(hashRepository.getHashes(amount - hashes.size()));
         }
 
-        return hashRepository.getHashes(amount);
+        return hashes;
     }
 
     @Transactional

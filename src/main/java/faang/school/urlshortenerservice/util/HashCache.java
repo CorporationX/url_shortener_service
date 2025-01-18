@@ -18,13 +18,14 @@ public class HashCache {
 
     @Value("${app.hash.cache.min-fill-percent:20}")
     private int fillPercent;
+    private Queue<String> cache;
 
     private final HashGenerator hashGenerator;
-    private final Queue<String> cache = new ArrayBlockingQueue<>(cacheCapacity);
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
     @PostConstruct
     private void init() {
+        cache = new ArrayBlockingQueue<>(cacheCapacity);
         cache.addAll(hashGenerator.getHashes(cacheCapacity));
     }
 
