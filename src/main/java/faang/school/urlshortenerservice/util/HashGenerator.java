@@ -30,4 +30,9 @@ public class HashGenerator {
                 .toList();
         hashRepository.saveHashes(hashes);
     }
+
+    @Transactional
+    public List<String> getHashes(int amount) {
+        return hashRepository.getHashes(amount);
+    }
 }
