@@ -31,7 +31,7 @@ public class UrlService {
     }
 
    @Transactional
-    public void saveNewHash(UrlDto urlDto) {
+    public String saveNewHash(UrlDto urlDto) {
        Hash newHash = hashCache.getHash();
        Url newUrl = Url.builder()
                .hash(newHash.getHash())
@@ -40,6 +40,8 @@ public class UrlService {
 
        saveToDataBase(newUrl);
        urlCacheRepository.saveToCache(newUrl);
+
+       return newHash.getHash();
    }
 
    public void saveToDataBase(Url url) {

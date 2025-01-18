@@ -8,16 +8,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class HashGeneratorTest {
@@ -60,13 +62,15 @@ public class HashGeneratorTest {
     void testGenerateBatch_Failure() {
         List<Long> mockNumbers = List.of(1001L, 1002L, 1003L);
 
-        when(hashRepository.getUniqueNumbers(1000L)).thenReturn(mockNumbers);
+        when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(mockNumbers);
         when(base62Encoder.encode(mockNumbers)).thenThrow(new RuntimeException("Encoding failed"));
 
-        assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch());
+        Exception ex = assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch());
 
-        verify(hashRepository).getUniqueNumbers(1000L);
+        verify(hashRepository).getUniqueNumbers(anyLong());
         verify(base62Encoder).encode(mockNumbers);
         verify(hashRepository, never()).saveAll(anyList());
+
+        assertEquals("Encoding failed", ex.getMessage());
     }
 }

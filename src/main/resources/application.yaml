@@ -40,6 +40,7 @@ batch-size:
 
 alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
+baseUrl: http://localhost:8080/url
 uniqueNumber: 500
 
 batchSize: 500
