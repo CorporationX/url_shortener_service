@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.base62encoder;
 
-import faang.school.urlshortenerservice.service.base62encoder.Base62EncoderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class Base62EncoderImplTest {
 
     private static String BASE62_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private final static int BASE = 62;
     @Spy
     private Base62EncoderImpl base62Encoder;
 

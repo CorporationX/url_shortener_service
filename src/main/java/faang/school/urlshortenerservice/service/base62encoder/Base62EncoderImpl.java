@@ -2,18 +2,16 @@ package faang.school.urlshortenerservice.service.base62encoder;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.utility.nullability.NeverNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
+@Primary
 @Service
 @RequiredArgsConstructor
 public class Base62EncoderImpl implements Base62Encoder {
@@ -36,7 +34,7 @@ public class Base62EncoderImpl implements Base62Encoder {
     }
 
     @Override
-    public List<String> encodeListNumbers(@NotNull Set<Long> numbers) {
+    public List<String> encodeListNumbers(@NotNull List<Long> numbers) {
         return numbers.stream()
                 .map(this::encode)
                 .toList();

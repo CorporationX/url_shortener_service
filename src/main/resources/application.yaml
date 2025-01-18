@@ -30,3 +30,9 @@ logging:
 encoder:
   base62:
     chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+
+hash:
+  generation:
+    batch-size: 50
+    thread-pool: 2
+    batch-partition: 5
