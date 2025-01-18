@@ -17,9 +17,36 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    redis:
+      time-to-live: 86400000
+      size: 100
+      threshold: 0.2
+      namespace:
+        hash: hash
+
+  retry:
+    max-attempts: 5
+    backoff:
+      multiplier: 2.0
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash-generator:
+  batch-size: 200
+
+scheduled:
+  cron:
+    clean-old-urls: 0 0 0 * * *
+
+url: https://corp-x.com/
