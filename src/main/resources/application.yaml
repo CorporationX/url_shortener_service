@@ -3,8 +3,14 @@ app:
     core-pool-size: 5
     max-pool-size: 10
     queue-capacity: 25
+  hash:
+    cache:
+      capacity: 1000
+      min-fill-percent: 20
+    generator:
+      batch-size: 1000
+      cron: 0 0 0 * * *
   batch-size: 50
-  generation-batch-size: 100
 
 spring:
   datasource:
