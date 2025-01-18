@@ -13,13 +13,43 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channel:
+        hashes: hashes_channel
+
 server:
-  port: 8080
+  url: http://localhost:8093/api/v1/url
+  port: 8093
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
     root: info
+
+batch:
+  size: 1000
+
+cache:
+  max-size: 10000
+  threshold-percentage: 20
+  check-interval: 43200000 # Каждые 12 часов
+
+thread:
+  pool:
+    size: 10
+
+scheduler:
+  cleaner:
+    cron: 0 0 */12 * * ?
