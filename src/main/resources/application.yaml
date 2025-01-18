@@ -1,5 +1,10 @@
 app:
+  task-executor:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 25
   batch-size: 50
+  generation-batch-size: 100
 
 spring:
   datasource:
