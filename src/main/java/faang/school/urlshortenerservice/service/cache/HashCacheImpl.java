@@ -29,12 +29,9 @@ public class HashCacheImpl implements HashCache {
     private ReentrantLock lock = new ReentrantLock();
 
     @PostConstruct
-    public void init() throws ExecutionException, InterruptedException {
+    public void init() {
         hashes = new LinkedBlockingQueue<>(MAX_CACHE_SIZE);
-        hashes.addAll(hashGenerator.generateBatch(1000).get()
-                .stream()
-                .map(Hash::getHash)
-                .toList());
+        addHashes();
     }
 
     @Override
@@ -55,13 +52,7 @@ public class HashCacheImpl implements HashCache {
 
     private CompletableFuture<LinkedBlockingQueue<String>> addHashes() {
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                hashes.addAll(hashGenerator.generateBatch(MAX_CACHE_SIZE - hashes.size()).get().stream()
-                        .map(Hash::getHash)
-                        .toList());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+            hashes.addAll(hashGenerator.getHashes(MAX_CACHE_SIZE - hashes.size()));
             return hashes;
         }, Executors.newSingleThreadExecutor());
     }

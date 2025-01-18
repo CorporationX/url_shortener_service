@@ -9,4 +9,6 @@ import java.util.concurrent.ExecutionException;
 public interface HashGenerator {
 
     CompletableFuture<List<Hash>> generateBatch(int batchSize) throws ExecutionException, InterruptedException;
+
+    List<String> getHashes(int limit);
 }

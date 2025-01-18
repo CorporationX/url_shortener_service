@@ -14,9 +14,9 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             DELETE FROM hash h WHERE
-            EXISTS (SELECT * FROM hash LIMIT :limit)
-            RETURNING *
+            EXISTS (SELECT * FROM hash h2 LIMIT :limit)
+            RETURNING h.hash
             """)
     @Modifying
-    List<Hash> getHashBatch(@Param("limit") int limit);
+    List<String> getHashBatch(@Param("limit") int limit);
 }
