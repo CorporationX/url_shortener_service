@@ -1,0 +1,13 @@
+CREATE TABLE url (
+	hash VARCHAR(6) PRIMARY KEY,
+	url VARCHAR,
+	created_at TIMESTAMP
+);
+
+CREATE TABLE hash (
+	hash VARCHAR PRIMARY KEY
+);
+
+CREATE sequence unique_number_seq
+START WITH 1
+INCREMENT BY 1
