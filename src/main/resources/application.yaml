@@ -17,6 +17,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  properties:
+    batch-size: 10000
+
 server:
   port: 8080
 
