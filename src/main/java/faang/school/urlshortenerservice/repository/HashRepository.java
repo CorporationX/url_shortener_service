@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,5 +26,9 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                     )
                     RETURNING *
                     """)
-    List<Hash> findAndDelete(long amount);
+    List<Hash> getHashBatch(long amount);
+
+    @Modifying
+    @Query(nativeQuery = true, value = "INSERT INTO hash (hash) VALUES (:hashes)")
+    void saveBatch(@Param("hashes") List<String> hashes);
 }

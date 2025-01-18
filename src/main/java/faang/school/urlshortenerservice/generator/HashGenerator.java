@@ -30,17 +30,17 @@ public class HashGenerator {
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(maxRange);
-        List<Hash> hashes = base62Encoder.encode(uniqueNumbers).stream().map(Hash::new).toList();
-        hashRepository.saveAll(hashes);
+        List<String> hashes = base62Encoder.encode(uniqueNumbers);
+        hashRepository.saveBatch(hashes);
     }
 
     @Transactional
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<Hash>> getHashBatch() {
-        List<Hash> hashes = hashRepository.findAndDelete(hashButhSize);
+        List<Hash> hashes = hashRepository.getHashBatch(hashButhSize);
         if (hashes.size() < hashButhSize) {
             generateBatch();
-            hashes.addAll(hashRepository.findAndDelete(hashButhSize));
+            hashes.addAll(hashRepository.getHashBatch(hashButhSize));
         }
         return CompletableFuture.completedFuture(hashes);
     }
