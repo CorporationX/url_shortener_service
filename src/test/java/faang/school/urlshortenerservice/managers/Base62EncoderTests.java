@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.managers;
 
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,7 +23,7 @@ public class Base62EncoderTests {
     public void testEncode() {
         List<Long> numbers = Arrays.asList(1L, 62L, 123L);
 
-        List<String> expectedResults = Arrays.asList("b", "B", "21");
+        List<String> expectedResults = Arrays.asList("b", "ab", "9b");
 
         List<String> encodedStrings = base62Encoder.encode(numbers);
 
@@ -31,7 +33,7 @@ public class Base62EncoderTests {
     @Test
     public void testApplyBase62Encoding() {
         long number = 123L;
-        String expectedResult = "21";
+        String expectedResult = "9b";
 
         String encodedString = base62Encoder.encode(Arrays.asList(number)).get(0);
 

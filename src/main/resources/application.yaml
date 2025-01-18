@@ -29,6 +29,10 @@ logging:
     root: info
 
 hash:
+  cache:
+    capacity: 2000
+    pool_size: 10
+    refill_threshold: 0.2
   generator:
     max-range: 10000
     cron: 0 0 0 * * ?
@@ -36,6 +40,6 @@ hash:
 
 thread:
   pool:
-    core-size: 10
-    max-size: 20
+    core-pool-size: 10
+    max-pool-size: 20
     queue-capacity: 50

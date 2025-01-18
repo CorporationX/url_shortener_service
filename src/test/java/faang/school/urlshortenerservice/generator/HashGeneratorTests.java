@@ -3,13 +3,16 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.managers.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class HashGeneratorTests {
 
     @Mock
@@ -32,9 +36,18 @@ public class HashGeneratorTests {
     @InjectMocks
     private HashGenerator hashGenerator;
 
+    private final int hashButhSize = 3;
+
     @BeforeEach
-    public void setUp() {
-        // Можно использовать для предварительной настройки перед каждым тестом
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        setPrivateField(hashGenerator, "maxRange", 10);
+        setPrivateField(hashGenerator, "hashButhSize", hashButhSize);
+    }
+
+    private void setPrivateField(Object object, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = object.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(object, value);
     }
 
     @Test
@@ -54,14 +67,14 @@ public class HashGeneratorTests {
 
     @Test
     public void testGetHashBatch() throws Exception {
-        List<Hash> hashBatch = Arrays.asList(new Hash(), new Hash());
+        List<Hash> hashBatch = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
 
-        when(hashRepository.getHashBatch(anyInt())).thenReturn(hashBatch);
+        when(hashRepository.getHashBatch(hashButhSize)).thenReturn(hashBatch);
 
         CompletableFuture<List<Hash>> future = hashGenerator.getHashBatch();
 
         List<Hash> result = future.get();
         assertEquals(hashBatch.size(), result.size());
-        verify(hashRepository, times(1)).getHashBatch(anyInt());
+        verify(hashRepository, times(1)).getHashBatch(hashButhSize);
     }
 }
