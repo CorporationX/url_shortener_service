@@ -28,6 +28,7 @@ public class UrlService {
         urlCacheRepository.saveToCache(urlHash);
         String urlShort = buildUri(hash);
         log.info("Got short url: {}", urlShort);
+
         return new UrlDto(urlShort);
     }
 

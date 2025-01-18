@@ -16,12 +16,10 @@ public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveToCache(Url url) {
-        log.info("Saving url to cache: {}", url);
         redisTemplate.opsForValue().set(url.getHash(), url.getUrl());
     }
 
     public String getUrlByHash(String hash) {
-        log.info("Getting url by hash: {}", hash);
         String url = redisTemplate.opsForValue().get(hash);
         if (url == null) {
             log.info("Url not found in cache, getting from BD: {}", hash);
@@ -36,7 +34,6 @@ public class UrlCacheRepository {
             redisTemplate.opsForValue().set(hash, existingUrl);
             return existingUrl;
         }
-        log.info("Got url from cache: {}", url);
         return url;
     }
 }

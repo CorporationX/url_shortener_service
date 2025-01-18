@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
+//    id ("io.freefair.aspectj.post-compile-weaving") version "5.0.0"
 }
 
 group = "faang.school"
@@ -23,6 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation ("org.springframework:spring-aspects")
 
     /**
      * Database
@@ -57,7 +59,14 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    /**
+     * AspectJ
+     */
+    implementation("org.aspectj:aspectjweaver:1.9.8")
+//    implementation ("org.aspectj:aspectjrt")
 }
+
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -67,4 +76,8 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+tasks.bootRun {
+    jvmArgs = listOf("-javaagent:build/libs/aspectjweaver-1.9.8.jar")
 }
