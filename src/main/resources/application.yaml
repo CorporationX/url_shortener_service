@@ -19,6 +19,7 @@ spring:
 
   properties:
     batch-size: 10000
+    thread-pool-size: 5
 
 server:
   port: 8080
