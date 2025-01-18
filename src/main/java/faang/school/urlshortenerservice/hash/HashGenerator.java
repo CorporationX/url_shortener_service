@@ -26,13 +26,13 @@ public class HashGenerator {
 
     @Transactional
     public void generateBatch() {
-        log.info("Beginning of hash generation: {}", Thread.currentThread().getName());
+        log.info("Beginning of hash generation.");
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(uniqueNumberBatchSize);
         List<String> hashes = uniqueNumbers.stream()
                 .map(base62Encoder::encode)
                 .toList();
         hashRepository.save(hashes, saveBatchSize, jdbcTemplate);
-        log.info("Successful saving of generated hashes: {}", Thread.currentThread().getName());
+        log.info("Successful saving of generated hashes.");
     }
 
     @Transactional
