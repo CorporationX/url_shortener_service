@@ -11,7 +11,7 @@ public class Base62Encoder {
 
     @Value("${base62.alphabet}")
     private String base62;
-    @Value("${base62.length")
+    @Value("${base62.length}")
     private int base62length;
 
     public List<String> encode(List<Long> numbers) {

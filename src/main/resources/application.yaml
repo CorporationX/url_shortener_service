@@ -19,12 +19,23 @@ spring:
 hash:
   batch-size: 4
   sequence-amount: 8
-  cash:
-      size: 15
-      low-threshold: 0.2
+  thread:
+    fixed:
+      pool-size: 3
+    task:
+      pool-size: 3
+      max-pool-size: 3
+      capacity: 100
+      prefix: queueTaskExecutor-
+  queue:
+    size: 15
+    percentage-multiplier: 0.2
 base62:
   alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   length: 62
+
+url:
+  original-path: http://localhost:8080/api/v1/url/
 server:
   port: 8080
 

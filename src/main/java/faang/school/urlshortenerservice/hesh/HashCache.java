@@ -18,9 +18,9 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final ExecutorService executorService;
 
-    @Value("${hash.cash.size}")
+    @Value("${hash.queue.size}")
     private int maxCashSize;
-    @Value("${hash.cash.low-threshold}")
+    @Value("${hash.queue.percentage-multiplier}")
     private double lowThresholdPercentage;
 
     private BlockingDeque<String> cache;

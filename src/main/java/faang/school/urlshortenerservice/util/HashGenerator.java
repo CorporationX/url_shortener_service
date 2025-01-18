@@ -17,7 +17,7 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    @Value("${hash.sequence-amount")
+    @Value("${hash.sequence-amount}")
     private int batchSize;
 
     @Async("hashGeneratorExecutor")
