@@ -42,7 +42,6 @@ class UrlControllerTest {
                 .andExpect(redirectedUrl("https://www.example.com"));
     }
 
-
     @Test
     void positiveGetShortUrl() throws Exception {
         UrlDto urlDto = new UrlDto("http://yandex.ru");
