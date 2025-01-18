@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -18,8 +18,24 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: http://localhost
   port: 8080
 
 logging:
   level:
     root: info
+
+url:
+  shortener:
+    hash:
+      batch-size: 10000
+    cache:
+      refill-threshold: 20
+      capacity: 10000
+  validation:
+    allowed-protocols: http,https
+    max-length: 2048
+
+  cleaner:
+    cron: 0 0 0 * * *
+    batch-size: 100
