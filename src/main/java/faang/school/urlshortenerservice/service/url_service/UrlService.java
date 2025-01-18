@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.url_service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,17 +45,9 @@ public class UrlService {
         return shortUrl;
     }
 
+    @Cacheable(value = "shortUrls", key = "#hash", cacheManager = "urlCacheManager")
     public String getOriginalUrl(String hash) {
-        log.info("Received request to get original URL for hash={}", hash);
-        String originalUrl = urlCacheRepository.getOriginalUrl(hash)
-                .orElseGet(() -> {
-                    String originalUrlFromDb = getOriginalUrlFromDb(hash);
-                    urlCacheRepository.saveDefaultUrl(hash, originalUrlFromDb);
-                    return originalUrlFromDb;
-                });
-        urlCacheRepository.updateShortUrlRequestStats(hash);
-        log.info("Found original URL={} for hash={}", originalUrl, hash);
-        return urlUtil.ensureUrlHasProtocol(originalUrl);
+        return urlUtil.ensureUrlHasProtocol(getOriginalUrlFromDb(hash));
     }
 
     public List<Url> findUrlEntities(Set<String> urlHashes) {

@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.url_service.UrlService;
 import faang.school.urlshortenerservice.util.UrlUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,31 +89,9 @@ class UrlServiceTest {
     @Test
     void getOriginalUrlNotFoundTest() {
         String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.empty());
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.empty());
-
         assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrl(hash));
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-    }
-
-    @Test
-    void getOriginalUrlCacheFoundTest() {
-        String originalUrl = "youtube.com";
-        String originalUrlWithProtocol = "http://%s".formatted(originalUrl);
-        String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.of(originalUrl));
-        when(urlUtil.ensureUrlHasProtocol(anyString())).thenReturn(originalUrlWithProtocol);
-
-        String resultUrl = urlService.getOriginalUrl(hash);
-
-        assertEquals(originalUrlWithProtocol, resultUrl);
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
-        verify(urlCacheRepository, times(1)).updateShortUrlRequestStats(hash);
-        verify(urlRepository, never()).findOriginalUrlByHash(hash);
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(anyString());
     }
 
     @Test
@@ -121,17 +99,12 @@ class UrlServiceTest {
         String originalUrl = "youtube.com";
         String originalUrlWithProtocol = "http://%s".formatted(originalUrl);
         String hash = "214kj";
-        when(urlCacheRepository.getOriginalUrl(hash)).thenReturn(Optional.empty());
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.of(originalUrl));
         when(urlUtil.ensureUrlHasProtocol(anyString())).thenReturn(originalUrlWithProtocol);
 
         String resultUrl = urlService.getOriginalUrl(hash);
 
         assertEquals(originalUrlWithProtocol, resultUrl);
-
-        verify(urlCacheRepository, times(1)).getOriginalUrl(hash);
-        verify(urlCacheRepository, times(1)).updateShortUrlRequestStats(hash);
-        verify(urlCacheRepository, times(1)).saveDefaultUrl(hash, originalUrl);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
         verify(urlUtil, times(1)).ensureUrlHasProtocol(anyString());
     }

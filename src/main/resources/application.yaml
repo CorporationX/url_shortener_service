@@ -31,7 +31,7 @@ logging:
 
 short-url:
 
-  base-path: /api/v1/url
+  base-path: /api/v1/urls
 
   cache:
     popular-ttl-hours: 24
@@ -50,7 +50,6 @@ scheduler:
   clean-old-hashes:
     cron: "0 0 0 * * ?"
     ttl-months: 12
-    batch-size: 500
   update-popular-url-hashes:
     cron: "0 0 */3 * * ?"
     rlock-name: popularUrlHashesUpdateLock

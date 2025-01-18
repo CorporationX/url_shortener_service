@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -22,11 +21,6 @@ public class UrlCacheRepository {
 
     public void savePopularUrl(String hash, String originalUrl) {
         saveUrlWithTtl(hash, originalUrl, urlCacheProperties.getPopularTtlHours(), TimeUnit.HOURS);
-    }
-
-    public Optional<String> getOriginalUrl(String hash) {
-        String shortUrlKey = buildOriginalUrlKey(hash);
-        return Optional.ofNullable(redisTemplate.opsForValue().get(shortUrlKey));
     }
 
     public void updateShortUrlRequestStats(String hash) {
