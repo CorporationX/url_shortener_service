@@ -8,5 +8,5 @@ import java.util.concurrent.ExecutionException;
 
 public interface HashGenerator {
 
-    CompletableFuture<List<Hash>> generateBatch() throws ExecutionException, InterruptedException;
+    CompletableFuture<List<Hash>> generateBatch(int batchSize) throws ExecutionException, InterruptedException;
 }

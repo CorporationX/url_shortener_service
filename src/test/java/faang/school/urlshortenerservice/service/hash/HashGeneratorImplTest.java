@@ -40,12 +40,10 @@ class HashGeneratorImplTest {
 
     @InjectMocks
     private HashGeneratorImpl hashGenerator;
-    private static final int BATCH_SIZE = 50;
     private static final int BATCH_PARTITION = 5;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "BATCH_SIZE", BATCH_SIZE);
         ReflectionTestUtils.setField(hashGenerator, "BATCH_PARTITION", BATCH_PARTITION);
     }
 
@@ -59,7 +57,7 @@ class HashGeneratorImplTest {
         when(base62Encoder.encodeListNumbers(anyList())).thenReturn(encodedNumbers);
         when(hashRepository.saveAll(anyList())).thenReturn(hashes);
 
-        CompletableFuture<List<Hash>> result = hashGenerator.generateBatch();
+        CompletableFuture<List<Hash>> result = hashGenerator.generateBatch(10);
 
         assertTrue(result.isDone());
         assertEquals(hashes, result.join());
@@ -74,7 +72,7 @@ class HashGeneratorImplTest {
 
         when(uniqueNumberSequenceRepository.getUniqueNumbers(anyInt())).thenReturn(numbers);
 
-        assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch());
+        assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch(10));
 
         verify(uniqueNumberSequenceRepository).getUniqueNumbers(anyInt());
     }
@@ -83,7 +81,7 @@ class HashGeneratorImplTest {
     void generateBatchWithException() {
         when(uniqueNumberSequenceRepository.getUniqueNumbers(anyInt())).thenThrow(new RuntimeException("Database error"));
 
-        assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch());
+        assertThrows(RuntimeException.class, () -> hashGenerator.generateBatch(10));
 
         verify(uniqueNumberSequenceRepository).getUniqueNumbers(anyInt());
     }

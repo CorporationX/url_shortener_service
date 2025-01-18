@@ -36,3 +36,6 @@ hash:
     batch-size: 50
     thread-pool: 2
     batch-partition: 5
+  cache:
+    min-percent: 20
+    max-size: 10000

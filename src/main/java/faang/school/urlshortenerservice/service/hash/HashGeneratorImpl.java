@@ -21,8 +21,6 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 public class HashGeneratorImpl implements HashGenerator {
 
-    @Value("${hash.generation.batch-size:50}")
-    private static int BATCH_SIZE;
     @Value("${hash.generation.batch-partition:5}")
     private static int BATCH_PARTITION;
 
@@ -33,8 +31,8 @@ public class HashGeneratorImpl implements HashGenerator {
     @Override
     @Transactional
     @Async("hashGenerationExecutor")
-    public CompletableFuture<List<Hash>> generateBatch() {
-        List<Long> numbers = uniqueNumberSequenceRepository.getUniqueNumbers(BATCH_SIZE);
+    public CompletableFuture<List<Hash>> generateBatch(int batchSize) {
+        List<Long> numbers = uniqueNumberSequenceRepository.getUniqueNumbers(batchSize);
 
         if(numbers.isEmpty()) {
             log.info("No numbers to generate hashes");
