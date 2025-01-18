@@ -29,4 +29,5 @@ public class UserHeaderFilter implements Filter {
             userContext.clear();
         }
     }
+
 }
