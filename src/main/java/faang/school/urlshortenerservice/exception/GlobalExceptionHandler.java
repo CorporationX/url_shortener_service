@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("Validation error occurred: ", ex.getMessage(), ex);
+        log.error("Validation error occurred: {}", ex.getMessage(), ex);
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -49,7 +49,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidURLException.class)
     public ResponseEntity<String> handleInvalidURLException(InvalidURLException ex) {
-        log.error("Invalid URL exception occurred: ", ex.getMessage(), ex);
+        log.error("Invalid URL exception occurred: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(LocalCacheException.class)
+    public ResponseEntity<String> handleLocalCacheException(LocalCacheException ex) {
+        log.error("Queue in local cache is empty: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
     }
 }
