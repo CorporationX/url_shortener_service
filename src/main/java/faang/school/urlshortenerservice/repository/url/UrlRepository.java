@@ -10,5 +10,5 @@ public interface UrlRepository {
 
     void save(String hash, String longUrl);
     Optional<String> findOriginalUrlByHash(String hash);
-    List<String> deleteUrlsOlderThanOneYear();
+    List<String> deleteOldUrls();
 }

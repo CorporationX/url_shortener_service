@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.url.impl.UrlRepositoryImpl;
-import faang.school.urlshortenerservice.repository.url_cash.impl.UrlCacheRepositoryImpl;
 import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import org.awaitility.Awaitility;
@@ -15,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.Cache;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Field;
@@ -26,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,19 +37,22 @@ import static org.mockito.Mockito.when;
 class UrlServiceTest {
 
     @Mock
-    private UrlCacheRepositoryImpl urlCacheRepository;
-
-    @Mock
     private HashCacheQueueProperties queueProp;
 
     @Mock
     private UrlRepositoryImpl urlRepository;
 
     @Mock
+    private RedisCacheManager cacheManager;
+
+    @Mock
     private ThreadPool threadPool;
 
     @Mock
     private HashCache hashCache;
+
+    @Mock
+    private Cache hashCacheMock;
 
     @InjectMocks
     private UrlService urlService;
@@ -93,13 +99,16 @@ class UrlServiceTest {
         localCacheQueue.addAll(List.of(hash, "hash1", "hash2", "hash3", "hash4", "hash5", "hash6"));
 
         when(hashCache.getLocalHashCache()).thenReturn(localCacheQueue);
+        doNothing().when(urlRepository).save(hash, urlDto.getUrl());
+        when(cacheManager.getCache(hash)).thenReturn(hashCacheMock);
+        doNothing().when(hashCacheMock).put(eq(hash), eq(urlDto.getUrl()));
 
-        String result = urlService.shortenUrl(urlDto);
+        String shortenedUrl = urlService.shortenUrl(urlDto);
 
-        verify(urlRepository).save(hash, urlDto.getUrl());
-        verify(urlCacheRepository).saveUrl(hash, urlDto.getUrl());
+        verify(hashCacheMock, times(1)).put(eq(hash), eq(urlDto.getUrl()));
+        verify(hashCache, times(2)).getLocalHashCache();
 
-        assertEquals(url, result);
+        assertEquals(url, shortenedUrl);
     }
 
     @Test
@@ -110,6 +119,8 @@ class UrlServiceTest {
         when(queueProp.getPercentageToStartFill()).thenReturn(90);
         when(hashCache.getLocalHashCache()).thenReturn(localCacheQueue);
         when(threadPool.hashCacheFillExecutor()).thenReturn(executor);
+        when(cacheManager.getCache(hash)).thenReturn(hashCacheMock);
+        doNothing().when(hashCacheMock).put(eq(hash), eq(urlDto.getUrl()));
 
         String result = urlService.shortenUrl(urlDto);
 
@@ -118,7 +129,6 @@ class UrlServiceTest {
                 .untilAsserted(() -> {
                     verify(hashCache, times(1)).fillCache();
                     verify(urlRepository, times(1)).save(hash, urlDto.getUrl());
-                    verify(urlCacheRepository, times(1)).saveUrl(hash, urlDto.getUrl());
 
                     assertEquals(url, result);
                     assertEquals(0, localCacheQueue.size());
@@ -126,41 +136,22 @@ class UrlServiceTest {
     }
 
     @Test
-    public void getOriginalUrlPresentInCacheRepositoryTest() {
-        when(urlCacheRepository.getUrl(hash)).thenReturn(urlDto.getUrl());
-
-        String originalUrl = urlService.getOriginalUrl(hash);
-
-        verify(urlCacheRepository, times(1)).getUrl(hash);
-        verify(urlRepository, times(0)).findOriginalUrlByHash(hash);
-        verify(urlCacheRepository, times(0)).saveUrl(hash, originalUrl);
-
-        assertEquals(urlDto.getUrl(), originalUrl);
-    }
-
-    @Test
     public void getOriginalUrlNotPresentInCacheRepositoryTest() {
-        when(urlCacheRepository.getUrl(hash)).thenReturn(null);
         when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(Optional.ofNullable(urlDto.getUrl()));
 
         String originalUrl = urlService.getOriginalUrl(hash);
 
-        verify(urlCacheRepository, times(1)).getUrl(hash);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-        verify(urlCacheRepository, times(1)).saveUrl(hash, originalUrl);
 
         assertEquals(urlDto.getUrl(), originalUrl);
     }
 
     @Test
     public void shortenUrlThrowsExceptionTest() {
-        when(urlCacheRepository.getUrl(hash)).thenReturn(null);
         when(urlRepository.findOriginalUrlByHash(hash)).thenThrow(EntityNotFoundException.class);
 
         assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrl(hash));
 
-        verify(urlCacheRepository, times(1)).getUrl(hash);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-        verify(urlCacheRepository, times(0)).saveUrl(hash, urlDto.getUrl());
     }
 }

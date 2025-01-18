@@ -4,15 +4,17 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.url.impl.UrlRepositoryImpl;
-import faang.school.urlshortenerservice.repository.url_cash.impl.UrlCacheRepositoryImpl;
 import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private final UrlCacheRepositoryImpl urlCacheRepository;
     private final HashCacheQueueProperties queueProp;
     private final UrlRepositoryImpl urlRepository;
+    private final CacheManager cacheManager;
     private final ThreadPool threadPool;
     private final HashCache hashCache;
 
@@ -38,7 +40,7 @@ public class UrlService {
         urlRepository.save(hash, urlDto.getUrl());
         log.info("Hash - {}, Url - {} was saved to Url repository", hash, urlDto.getUrl());
 
-        urlCacheRepository.saveUrl(hash, urlDto.getUrl());
+        Objects.requireNonNull(cacheManager.getCache("hash")).put(hash, urlDto.getUrl());
         log.info("Hash - {}, Url - {} was saved to UrlCache repository", hash, urlDto.getUrl());
 
         String shortenedUrl = domain + hash;
@@ -47,18 +49,10 @@ public class UrlService {
     }
 
     @Transactional
+    @Cacheable(value = "hash", key = "#hash")
     public String getOriginalUrl(String hash) {
-        String originalUrl = urlCacheRepository.getUrl(hash);
-
-        if (originalUrl == null) {
-            originalUrl = urlRepository.findOriginalUrlByHash(hash).
-                    orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash));
-            urlCacheRepository.saveUrl(hash, originalUrl);
-            log.info("Hash - {}, Url - {} was saved to UrlCache repository", hash, originalUrl);
-        }
-
-        log.info("Got original Url - {} related to Hash - {}", originalUrl, hash);
-        return originalUrl;
+        return urlRepository.findOriginalUrlByHash(hash).
+                orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash));
     }
 
     private String getHash() {
@@ -82,6 +76,6 @@ public class UrlService {
     }
 
     private double getPercentageToStartFill() {
-        return (((double)queueProp.getMaxQueueSize()) / 100.00) * queueProp.getPercentageToStartFill();
+        return (((double) queueProp.getMaxQueueSize()) / 100.00) * queueProp.getPercentageToStartFill();
     }
 }

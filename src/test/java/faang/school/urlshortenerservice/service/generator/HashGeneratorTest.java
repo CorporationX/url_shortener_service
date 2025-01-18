@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.encoder.Base62Encoder;
-import faang.school.urlshortenerservice.util.Util;
+import faang.school.urlshortenerservice.util.BatchCreator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class HashGeneratorTest {
     private ThreadPool threadPool;
 
     @Spy
-    private Util util;
+    private BatchCreator batchCreator;
 
     @InjectMocks
     private HashGenerator hashGenerator;
@@ -85,7 +85,7 @@ class HashGeneratorTest {
         assertTrue(result.isDone());
 
         verify(hashRepository).saveHashes(anyList());
-        verify(base62Encoder, times((int)fillingBatchQuantity)).encode(anyList());
-        verify(util, times(1)).getBatches(uniqueElements, (int)fillingBatchQuantity);
+        verify(base62Encoder, times(fillingBatchQuantity)).encode(anyList());
+        verify(batchCreator, times(1)).getBatches(uniqueElements, fillingBatchQuantity);
     }
 }

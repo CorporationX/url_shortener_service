@@ -24,7 +24,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${scheduler.cron.clean-hashes}")
     public void cleanUnusedHashes() {
         log.info("Start cleaning hashes elder one year");
-        List<String> hashes = urlRepository.deleteUrlsOlderThanOneYear();
+        List<String> hashes = urlRepository.deleteOldUrls();
         log.info("{} hashes were retrieved from URL repository", hashes.size());
 
         hashRepository.saveHashes(hashes);

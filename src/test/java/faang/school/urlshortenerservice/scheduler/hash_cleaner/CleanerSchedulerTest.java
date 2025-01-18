@@ -31,22 +31,22 @@ class CleanerSchedulerTest {
     @Test
     public void cleanUnusedHashesTest() {
         List<String> hashes = new ArrayList<>(List.of("hash1", "hash2", "hash3"));
-        when(urlRepository.deleteUrlsOlderThanOneYear()).thenReturn(hashes);
+        when(urlRepository.deleteOldUrls()).thenReturn(hashes);
 
         cleanerScheduler.cleanUnusedHashes();
 
-        verify(urlRepository, times(1)).deleteUrlsOlderThanOneYear();
+        verify(urlRepository, times(1)).deleteOldUrls();
         verify(hashRepository,times(1)).saveHashes(hashes);
     }
 
     @Test
     void cleanUnusedHashesWithNoHashesTest() {
         List<String> mockHashes = Collections.emptyList();
-        when(urlRepository.deleteUrlsOlderThanOneYear()).thenReturn(mockHashes);
+        when(urlRepository.deleteOldUrls()).thenReturn(mockHashes);
 
         cleanerScheduler.cleanUnusedHashes();
 
-        verify(urlRepository, times(1)).deleteUrlsOlderThanOneYear();
+        verify(urlRepository, times(1)).deleteOldUrls();
         verify(hashRepository, times(1)).saveHashes(mockHashes);
     }
 }

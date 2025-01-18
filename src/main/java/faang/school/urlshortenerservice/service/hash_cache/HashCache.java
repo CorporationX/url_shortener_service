@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
-import faang.school.urlshortenerservice.util.Util;
+import faang.school.urlshortenerservice.util.BatchCreator;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class HashCache {
     private final HashRepositoryImpl hashRepository;
     private final HashGenerator hashGenerator;
     private final ThreadPool threadPool;
-    private final Util util;
+    private final BatchCreator batchCreator;
 
     @Getter
     private Queue<String> localHashCache;
@@ -46,7 +46,7 @@ public class HashCache {
         log.info("Got {} hashes from hash repository", hashes.size());
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-        List<List<String>> subBatches = util.getBatches(hashes, queueProp.getFillingBatchesQuantity());
+        List<List<String>> subBatches = batchCreator.getBatches(hashes, queueProp.getFillingBatchesQuantity());
         subBatches.forEach(batch -> futures.add(CompletableFuture.runAsync(() ->
                 localHashCache.addAll(batch), threadPool.hashCacheFillExecutor())));
 

@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.encoder.Base62Encoder;
-import faang.school.urlshortenerservice.util.Util;
+import faang.school.urlshortenerservice.util.BatchCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -24,14 +24,14 @@ public class HashGenerator {
     private final HashRepositoryImpl hashRepository;
     private final Base62Encoder base62Encoder;
     private final ThreadPool threadPool;
-    private final Util util;
+    private final BatchCreator batchCreator;
 
     @Transactional
     @Async(value = "hashGeneratorExecutor")
     public CompletableFuture<Void> generateBatchHashes(int batchSize) {
         log.info("Start generating {} hashes", batchSize);
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-        List<List<Long>> batches = util.getBatches(uniqueNumbers, properties.getFillingBatchesQuantity());
+        List<List<Long>> batches = batchCreator.getBatches(uniqueNumbers, properties.getFillingBatchesQuantity());
 
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         batches.forEach(batch -> futures.add(CompletableFuture.supplyAsync(() ->

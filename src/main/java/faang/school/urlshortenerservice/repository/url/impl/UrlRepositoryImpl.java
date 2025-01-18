@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository.url.impl;
 
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,9 @@ import java.util.Optional;
 public class UrlRepositoryImpl implements UrlRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    @Value(value = "${url.interval-to-delete-old-url-month}")
+    private int intervalToDeleteOldUrlMonths;
 
     @Override
     public void save(String hash, String longUrl) {
@@ -34,12 +38,12 @@ public class UrlRepositoryImpl implements UrlRepository {
     }
 
     @Override
-    public List<String> deleteUrlsOlderThanOneYear() {
-        String sql = """
+    public List<String> deleteOldUrls() {
+        String sql = String.format("""
                 DELETE FROM url
-                WHERE created_at < (CURRENT_TIMESTAMP - INTERVAL '1 year')
+                WHERE created_at < (CURRENT_TIMESTAMP - INTERVAL '%d month')
                 RETURNING hash
-                """;
+                """, intervalToDeleteOldUrlMonths);
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"));
     }

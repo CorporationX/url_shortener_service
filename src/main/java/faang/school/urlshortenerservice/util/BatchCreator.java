@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Util {
+public class BatchCreator {
 
     public <T> List<List<T>> getBatches(List<T> listToDivide, int batchesQuantity) {
         List<List<T>> batches = new ArrayList<>();

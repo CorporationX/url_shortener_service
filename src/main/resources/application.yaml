@@ -32,6 +32,7 @@ logging:
 url:
   domain: http://localhost:${server.port}${url.path}
   path: /api/v1/urls/
+  interval-to-delete-old-url-month: 12
 
 hash:
   cash:
@@ -39,6 +40,7 @@ hash:
     percentage-to-start-fill: 30
     filling-batches-quantity: 10
     count-to-stop-generate: 80
+    durability-storing-cache-minutes: 10
 
 async:
   generator:

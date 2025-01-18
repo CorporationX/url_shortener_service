@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.config.async.ThreadPool;
 import faang.school.urlshortenerservice.properties.HashCacheQueueProperties;
 import faang.school.urlshortenerservice.repository.hash.impl.HashRepositoryImpl;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
-import faang.school.urlshortenerservice.util.Util;
+import faang.school.urlshortenerservice.util.BatchCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,7 +45,7 @@ class HashCacheTest {
     private ThreadPool threadPool;
 
     @Mock
-    private Util util;
+    private BatchCreator batchCreator;
 
     @InjectMocks
     private HashCache hashCache;
@@ -75,7 +75,7 @@ class HashCacheTest {
                 Arrays.asList("hash3", "hash4"),
                 Collections.singletonList("hash5")
         );
-        when(util.getBatches(mockHashes, queueProp.getFillingBatchesQuantity())).thenReturn(subBatches);
+        when(batchCreator.getBatches(mockHashes, queueProp.getFillingBatchesQuantity())).thenReturn(subBatches);
         when(hashRepository.getHashesCount()).thenReturn(150L);
 
         doAnswer(invocation -> {
@@ -88,7 +88,7 @@ class HashCacheTest {
         future.join();
 
         verify(hashRepository, times(1)).getHashBatch(anyInt());
-        verify(util, times(1)).getBatches(mockHashes, queueProp.getFillingBatchesQuantity());
+        verify(batchCreator, times(1)).getBatches(mockHashes, queueProp.getFillingBatchesQuantity());
         verify(hashGenerator, times(1)).generateBatchHashes(anyInt());
 
         Queue<String> localHashCache = (Queue<String>) ReflectionTestUtils.getField(hashCache, "localHashCache");
