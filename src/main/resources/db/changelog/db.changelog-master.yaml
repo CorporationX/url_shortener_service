@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/lb_url_v000_initial.sql
+  - include:
+      file: db/changelog/changeset/lb_url_v001_function.sql
+  - include:
+      file: db/changelog/changeset/lb_url_v002_initial_data.sql
