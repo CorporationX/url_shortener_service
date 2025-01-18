@@ -1,7 +1,7 @@
-package faang.school.urlshortenerservice.client;
+package faang.school.url_shortener_service.client;
 
 
-import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.url_shortener_service.config.context.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
