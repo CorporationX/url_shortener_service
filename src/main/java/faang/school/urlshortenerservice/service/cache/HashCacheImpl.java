@@ -42,11 +42,8 @@ public class HashCacheImpl implements HashCache {
     public String getHash() {
         if (isGenerationRequired()) {
             if (lock.tryLock()) {
-                try {
-                    addHash().join();
-                } finally {
-                    lock.unlock();
-                }
+                addHashes()
+                        .thenRun(lock::unlock);
             }
         }
         return hashes.poll();
@@ -56,7 +53,7 @@ public class HashCacheImpl implements HashCache {
         return (hashes.size() * 100) / MAX_CACHE_SIZE < MIN_CACHE_PERCENT;
     }
 
-    private CompletableFuture<LinkedBlockingQueue<String>> addHash() {
+    private CompletableFuture<LinkedBlockingQueue<String>> addHashes() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 hashes.addAll(hashGenerator.generateBatch(MAX_CACHE_SIZE - hashes.size()).get().stream()
