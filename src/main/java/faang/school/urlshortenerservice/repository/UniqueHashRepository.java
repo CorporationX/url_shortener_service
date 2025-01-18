@@ -17,8 +17,8 @@ public interface UniqueHashRepository extends JpaRepository<Hash, String> {
 
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash WHERE id IN (
-                SELECT id FROM hash ORDER BY id ASC LIMIT :amount
+            DELETE FROM hash WHERE hash IN (
+                SELECT hash FROM hash LIMIT :amount
             ) RETURNING *
             """)
     List<Hash> findAndDelete(long amount);

@@ -22,4 +22,6 @@ public interface UrlRepository extends JpaRepository<Url, Hash> {
 
     Optional<Url> findByHash(String hash);
 
+    Optional<Url> findByUrl(String longUrl);
+
 }

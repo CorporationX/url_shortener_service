@@ -25,7 +25,7 @@ public class UrlController {
 
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.OK)
-    public String getUrlHash(@RequestBody UrlDto urlDto) {
+    public String getUrlHash(@Valid @RequestBody UrlDto urlDto) {
         return urlService.getUrlHash(urlDto);
     }
 

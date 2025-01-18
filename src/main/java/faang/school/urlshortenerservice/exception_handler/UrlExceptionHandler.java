@@ -22,7 +22,7 @@ public class UrlExceptionHandler {
         return getProblemDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler(DataValidationException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleDataValidationException(EntityNotFoundException e) {
         log.warn("Bad request: {}", e.getMessage());

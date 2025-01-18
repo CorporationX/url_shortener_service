@@ -12,7 +12,7 @@ public class UrlCacheRepository {
     protected final RedisTemplate<String, Object> redisTemplate;
 
     public void saveUrlInCache(String hash, Url url) {
-        redisTemplate.opsForValue().set(hash, url.getUrl());
+        redisTemplate.opsForValue().set(hash, url);
     }
 
     public Url getUrlFromCache(String hash) {

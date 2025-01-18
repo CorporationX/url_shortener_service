@@ -25,11 +25,16 @@ public class UrlService {
     @Transactional
     public String getUrlHash(UrlDto urlDto) {
         String longUrl = urlDto.getUrl();
-        log.debug("LongUrl: {}", longUrl);
-        validator.validateUrl(urlDto.getUrl());
-        String hash = hashCache.getHash();
         StringBuilder builder = new StringBuilder();
         builder.append(removePathAfterThirdSlash(longUrl));
+        log.debug("LongUrl: {}", longUrl);
+        validator.validateUrl(urlDto.getUrl());
+        String hashFromBase = validator.urlExistsInBase(longUrl);
+        if (hashFromBase != null) {
+            log.info("Url {} already exists in base", longUrl);
+            return builder.append(hashFromBase).toString();
+        }
+        String hash = hashCache.getHash();
         builder.append(hash);
         Url url = new Url();
         url.setHash(hash);
