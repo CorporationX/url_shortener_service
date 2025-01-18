@@ -32,15 +32,14 @@ logging:
     root: info
 
 hashCache:
-  maxSize: 1000
+  maxSize: 500
   lowThreshold: 0.2
-  fillPercentage: 0.8
 
 hashRepository:
   batchSize: 50
 
 hashGenerator:
-  batchSize: 100
+  batchSize: 1000
 
 AsyncConfig:
   corePoolSize: 5

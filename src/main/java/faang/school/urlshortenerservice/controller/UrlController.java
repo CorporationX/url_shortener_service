@@ -34,9 +34,12 @@ public class UrlController {
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
         log.info("Received a request to redirect from url: https://localhost:8080/url/{}", hash);
+
         String originalUrl = urlService.redirectToRealUrl(hash);
+
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.LOCATION, originalUrl);
+
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }

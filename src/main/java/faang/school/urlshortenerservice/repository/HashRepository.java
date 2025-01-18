@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +19,33 @@ public class HashRepository {
     @Value("${hashRepository.batchSize}")
     private int batchSize;
 
+    @Transactional
+    public Long totalNumOfHashesInDb() {
+        String sql = "SELECT COUNT(*) FROM Hash h";
+        return jdbcTemplate.queryForObject(sql, Long.class);
+    }
+
+    @Transactional
     public List<Long> getUniqueNumbers(int n) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, n);
     }
 
+    @Transactional
+    public String getFirstHashAndDeleteFromDb() {
+        String sql = "WITH deleted AS (" +
+                "  DELETE FROM hash " +
+                "  WHERE hash = (" +
+                "    SELECT hash FROM hash LIMIT 1" +
+                "  ) " +
+                "  RETURNING hash" +
+                ") " +
+                "SELECT hash FROM deleted";
+
+        return jdbcTemplate.queryForObject(sql, String.class);
+    }
+
+    @Transactional
     public void save(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
 
@@ -32,7 +55,8 @@ public class HashRepository {
         log.info("Saved {} hashes in batch.", hashes.size());
     }
 
-    public List<String> getHashBatch() {
+    @Transactional
+    public List<String> getHashBatchAndDeleteFromDb() {
         String sql = "WITH deleted AS ( " +
                 "  DELETE FROM hash " +
                 "  WHERE hash IN (" +
