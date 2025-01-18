@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 public class HashGeneratorImpl implements HashGenerator {
 
     @Value("${hash.generation.batch-partition:5}")
-    private static int BATCH_PARTITION;
+    private int BATCH_PARTITION;
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;

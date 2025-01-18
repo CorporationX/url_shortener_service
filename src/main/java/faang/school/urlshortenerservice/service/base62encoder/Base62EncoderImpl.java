@@ -17,7 +17,7 @@ import java.util.List;
 public class Base62EncoderImpl implements Base62Encoder {
 
     @Value("${encoder.base62.chars:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789}")
-    private static String BASE62_CHARS;
+    private String BASE62_CHARS;
     private final static int BASE = 62;
 
 

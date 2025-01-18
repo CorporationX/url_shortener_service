@@ -19,9 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class HashCacheImpl implements HashCache {
 
     @Value("${hash.cache.min-percent:20}")
-    private static int MIN_CACHE_PERCENT;
+    private int MIN_CACHE_PERCENT;
     @Value("${hash.cache.max-size:10000}")
-    private static int MAX_CACHE_SIZE;
+    private int MAX_CACHE_SIZE;
 
 
     private final HashGenerator hashGenerator;
