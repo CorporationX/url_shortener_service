@@ -24,6 +24,11 @@ public class CleanerScheduler {
     @Transactional
     public void removeOldUrls() {
         List<String> oldHashes = urlRepository.removeOldLinks(LocalDateTime.now().minusYears(year));
+
+        if (oldHashes.isEmpty()) {
+            return;
+        }
+
         hashRepository.saveAll(oldHashes.stream()
                 .map(Hash::new)
                 .toList());

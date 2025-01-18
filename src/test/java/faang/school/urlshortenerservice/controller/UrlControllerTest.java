@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,7 +31,7 @@ class UrlControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void getHash() throws Exception {
+    void positiveGetHash() throws Exception {
         String hash = "asd";
 
         when(urlService.searchUrl(hash)).thenReturn("https://www.example.com");
@@ -41,8 +42,9 @@ class UrlControllerTest {
                 .andExpect(redirectedUrl("https://www.example.com"));
     }
 
+
     @Test
-    void getShortUrl() throws Exception {
+    void positiveGetShortUrl() throws Exception {
         UrlDto urlDto = new UrlDto("http://yandex.ru");
 
         when(urlService.saveNewHash(urlDto)).thenReturn("shortUrl123");
@@ -53,5 +55,31 @@ class UrlControllerTest {
                         .header("x-user-id", "12345"))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("http://localhost:8080/shortUrl123"));
+    }
+
+    @Test
+    void negativeGetHash() throws Exception {
+        String hash = "";
+
+        when(urlService.searchUrl(hash)).thenThrow(new IllegalStateException());
+
+        mockMvc.perform(get("/" + hash)
+                        .header("x-user-id", "12345"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void negativeGetShortUrl() throws Exception {
+        UrlDto urlDto = new UrlDto("dex.ru");
+
+        when(urlService.saveNewHash(urlDto)).thenThrow(new RuntimeException("Invalid URL"));
+
+        mockMvc.perform(post("/url")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(urlDto))
+                        .header("x-user-id", "12345"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value("500"))
+                .andExpect(jsonPath("$.message").value("Internal server error: Invalid URL"));
     }
 }
