@@ -24,7 +24,7 @@ public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${app.batch-size:50}")
+    @Value("${app.batch-update-size:50}")
     private int batchSize;
 
     public void saveHashes(List<String> hashes) {

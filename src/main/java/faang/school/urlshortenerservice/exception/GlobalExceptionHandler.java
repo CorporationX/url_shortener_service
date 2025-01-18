@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.exception;
 import faang.school.urlshortenerservice.dto.ExceptionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +26,14 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
 
         return new ExceptionDto(exceptionMessage);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ExceptionDto handleEmptyResultDataAccessException(Exception ex) {
+        log.info("Handle exception", ex);
+
+        return new ExceptionDto(HttpStatus.NOT_FOUND.getReasonPhrase());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-public class HashCache {
+public class LocalCache {
 
     @Value("${app.hash.cache.capacity:1000}")
     private int cacheCapacity;

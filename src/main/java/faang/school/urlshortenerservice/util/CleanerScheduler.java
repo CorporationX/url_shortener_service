@@ -19,7 +19,7 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${app.cleaner.url-lifetime:7}")
+    @Value("${app.cleaner.url-ttl:7}")
     private int urlLifetime;
 
     @Transactional
