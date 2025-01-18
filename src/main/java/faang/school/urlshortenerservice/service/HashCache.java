@@ -36,7 +36,6 @@ public class HashCache {
     }
 
     public String getHash() {
-        log.info("Getting hash from cache");
         if (getCurPercent() < fillPercent) {
             log.info("Count of hashes in cache is less than {}", fillPercent);
             if (filling.compareAndSet(false, true)) {
