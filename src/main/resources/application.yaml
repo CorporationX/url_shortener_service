@@ -24,9 +24,15 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   async:
-    core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 100
+    local-cache:
+      core-pool-size: 1
+      max-pool-size: 2
+      name-prefix: LocalCache-
+    hash:
+      core-pool-size: 3
+      max-pool-size: 5
+      queue-capacity: 100
+      name-prefix: HashService-
 
   data:
     redis:

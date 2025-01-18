@@ -1,40 +1,33 @@
 package faang.school.urlshortenerservice.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
+@RequiredArgsConstructor
 public class ThreadPoolConfig {
+    private final HashServiceThreadPoolProperties hashProperties;
+    private final LocalCacheThreadPoolProperties cacheProperties;
 
-    @Value("${spring.async.core-pool-size}")
-    int corePoolSize;
-
-    @Value("${spring.async.max-pool-size}")
-    int maxPoolSize;
-
-    @Value("${spring.async.queue-capacity}")
-    int queueCapacity;
-
-    @Bean (name = "hashServiceExecutor")
+    @Bean(name = "hashServiceExecutor")
     public ThreadPoolTaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(corePoolSize);
-        taskExecutor.setMaxPoolSize(maxPoolSize);
-        taskExecutor.setQueueCapacity(queueCapacity);
-        taskExecutor.setThreadNamePrefix("HashGenerator-");
+        taskExecutor.setCorePoolSize(hashProperties.corePoolSize());
+        taskExecutor.setMaxPoolSize(hashProperties.maxPoolSize());
+        taskExecutor.setQueueCapacity(hashProperties.queueCapacity());
+        taskExecutor.setThreadNamePrefix(hashProperties.namePrefix());
         taskExecutor.initialize();
         return taskExecutor;
     }
 
-    @Bean (name = "localCacheExecutor")
+    @Bean(name = "localCacheExecutor")
     public ThreadPoolTaskExecutor localCacheExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(corePoolSize);
-        taskExecutor.setMaxPoolSize(maxPoolSize);
-        taskExecutor.setQueueCapacity(queueCapacity);
-        taskExecutor.setThreadNamePrefix("LocalCache-");
+        taskExecutor.setCorePoolSize(cacheProperties.corePoolSize());
+        taskExecutor.setMaxPoolSize(cacheProperties.maxPoolSize());
+        taskExecutor.setThreadNamePrefix(cacheProperties.namePrefix());
         taskExecutor.initialize();
         return taskExecutor;
     }
