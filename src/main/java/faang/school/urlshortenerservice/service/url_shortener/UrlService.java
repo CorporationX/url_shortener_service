@@ -9,8 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +25,7 @@ public class UrlService {
 
     private final HashCacheQueueProperties queueProp;
     private final UrlRepositoryImpl urlRepository;
-    private final CacheManager cacheManager;
+    private final RedisCacheManager cacheManager;
     private final ThreadPool threadPool;
     private final HashCache hashCache;
 
@@ -51,6 +51,8 @@ public class UrlService {
     @Transactional
     @Cacheable(value = "hash", key = "#hash")
     public String getOriginalUrl(String hash) {
+        log.info("Hash - {} was missing from Cache", hash);
+
         return urlRepository.findOriginalUrlByHash(hash).
                 orElseThrow(() -> new EntityNotFoundException("No url found for hash: " + hash));
     }
@@ -61,7 +63,7 @@ public class UrlService {
                 isFilling.compareAndSet(false, true);
 
                 CompletableFuture.runAsync(() -> hashCache.fillCache().thenRun(() -> {
-                    isFilling.set(false);
+                    isFilling.compareAndSet(true, false);
                     log.info("Finished filling local cache");
                 }), threadPool.hashCacheFillExecutor());
             }

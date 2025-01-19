@@ -37,13 +37,10 @@ class HashCacheIT extends UrlShortenerApplicationTests {
 
     @Test
     public void generateHashesStopsWhenThresholdIsMetTest() {
-        hashCache.getLocalHashCache().clear();
         jdbcTemplate.update("DELETE FROM hash");
-
-        for (int i = 0; i < queueProp.getCountToStopGenerate(); i++) {
-            jdbcTemplate.update("INSERT INTO hash (hash) VALUES (?)", "h" + i);
-        }
-        hashGenerator.generateBatchHashes(getBatchSize()).join();
+        hashGenerator.generateBatchHashes(queueProp.getCountToStopGenerate() -
+                queueProp.getMaxQueueSize() + getBatchSize()).join();
+        hashCache.getLocalHashCache().clear();
 
         hashCache.fillCache().join();
 

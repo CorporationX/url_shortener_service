@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service.url_shortener;
 import faang.school.urlshortenerservice.UrlShortenerApplicationTests;
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.repository.url.impl.UrlRepositoryImpl;
+import faang.school.urlshortenerservice.service.hash_cache.HashCache;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.springframework.cache.CacheManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UrlServiceIT extends UrlShortenerApplicationTests {
@@ -25,6 +25,9 @@ public class UrlServiceIT extends UrlShortenerApplicationTests {
 
     @Autowired
     private UrlRepositoryImpl urlRepository;
+
+    @Autowired
+    private HashCache hashCache;
 
     private String hash;
     private String originalUrl;
@@ -47,6 +50,7 @@ public class UrlServiceIT extends UrlShortenerApplicationTests {
 
     @Test
     public void shortenUrlTest() {
+        hashCache.getLocalHashCache().add(hash);
         String shortenedUrl = urlService.shortenUrl(urlDto);
         String hash = shortenedUrl.replace(domain, "");
 
@@ -57,6 +61,7 @@ public class UrlServiceIT extends UrlShortenerApplicationTests {
 
     @Test
     public void getOriginalUrlContainsInCacheTest() {
+        hashCache.getLocalHashCache().add(hash);
         String shortenedUrl = urlService.shortenUrl(urlDto);
         String hashFromMethod = shortenedUrl.replace(domain, "");
 
@@ -71,11 +76,10 @@ public class UrlServiceIT extends UrlShortenerApplicationTests {
     public void getOriginalUrlNotContainsInCacheTest() {
         urlRepository.save(hash, originalUrl);
         Cache result = cacheManager.getCache(hash);
-        assertNull(result.get(hash));
 
         String returnedUrl = urlService.getOriginalUrl(hash);
 
-        assertNotNull(result.get(hash));
+        assertNotNull(result.get(hash).get());
         assertEquals(originalUrl, returnedUrl);
     }
 
