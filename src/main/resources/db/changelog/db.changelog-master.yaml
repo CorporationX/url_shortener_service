@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-url-shortener-schema
+      author: you
+      changes:
+        - sqlFile:
+            path: db/changelog/create_url_shortener_schema.sql
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: true
