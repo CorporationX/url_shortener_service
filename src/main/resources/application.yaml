@@ -46,3 +46,6 @@ async:
     queue_capacity: 100
     thread_name_prefix: hash-task
 
+scheduler:
+  cron:
+    expression: 0 0 0 * * ?
