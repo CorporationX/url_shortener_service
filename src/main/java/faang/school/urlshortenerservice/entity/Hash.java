@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class Hash {
-
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private String hash;
 }

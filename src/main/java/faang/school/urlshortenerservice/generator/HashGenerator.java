@@ -15,10 +15,9 @@ public class HashGenerator {
     private final Base62Encoder encoder;
     private final HashRepository hashRepository;
 
-    @Value("spring.url-shortener.hash.number-of-generations")
+    @Value("${spring.url-shortener.hash.number-of-generations}")
     private long quantity;
 
-    @Async("encodePool")
     public void generateBatch() {
      List<Long> numbers = hashRepository.getUniqueNumbers(quantity);
      List<Hash> hashes = encoder.encode(numbers);

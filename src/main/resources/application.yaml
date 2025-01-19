@@ -24,9 +24,9 @@ spring:
 
   url-shortener:
     hash:
-      number-of-generations: 20
+      number-of-generations: 100
       batch:
-       size: 5
+       size: 20
 
 app:
   async-config:

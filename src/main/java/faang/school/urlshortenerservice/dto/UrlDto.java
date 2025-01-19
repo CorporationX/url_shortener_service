@@ -1,5 +1,12 @@
 package faang.school.urlshortenerservice.dto;
 
-public class UrlDto {
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
+@Getter
+public class UrlDto {
+    @NotNull(message = "URL must not be null")
+    @Size(max = 1024, message = "URL must contain a maximum size of 1024 characters")
+    private String originalUrl;
 }
