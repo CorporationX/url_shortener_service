@@ -49,7 +49,7 @@ class HashGeneratorTest {
         when(baseEncoder.encodeList(numbers)).thenReturn(encodedHashes);
         when(hashService.saveHashes(encodedHashes)).thenReturn(encodedHashes);
 
-        hashGenerator.generateHashBatch(batchSize);
+        hashGenerator.asyncHashRepositoryRefill();
 
         verify(hashService, times(1)).getUniqueSeqNumbers(batchSize);
         verify(baseEncoder, times(1)).encodeList(numbers);

@@ -28,13 +28,14 @@ class HashServiceTest {
 
     private List<Long> uniqueSeqNumbers;
     private List<Hash> hashes;
+    private List<String> stringHashes;
 
     @BeforeEach
     void setUp() {
         uniqueSeqNumbers = List.of(1L, 2L, 3L);
         hashes = List.of(Hash.builder().hash("1").build(), Hash.builder().hash("2").build(),
                 Hash.builder().hash("3").build());
-
+        stringHashes = List.of("1", "2", "3");
     }
 
     @Test
@@ -49,12 +50,12 @@ class HashServiceTest {
 
     @Test
     void testGetAndDeleteHashBatch() {
-        when(hashRepository.getAndDeleteHashBatch(any())).thenReturn(hashes);
+        when(hashRepository.getAndDeleteHashBatch(any())).thenReturn(stringHashes);
 
-        List<Hash> result = hashService.getAndDeleteHashBatch(1L);
+        List<String> result = hashService.getAndDeleteHashBatch(1L);
 
         verify(hashRepository, times(1)).getAndDeleteHashBatch(any());
-        assertThat(result).isEqualTo(hashes);
+        assertThat(result).isEqualTo(stringHashes);
     }
 
     @Test

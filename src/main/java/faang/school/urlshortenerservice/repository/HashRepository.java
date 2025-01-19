@@ -16,5 +16,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM hash WHERE CTID IN (SELECT CTID FROM hash LIMIT :count) RETURNING *")
-    List<Hash> getAndDeleteHashBatch(Long count);
+    List<String> getAndDeleteHashBatch(Long count);
 }

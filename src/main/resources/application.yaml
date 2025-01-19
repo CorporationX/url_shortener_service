@@ -30,8 +30,13 @@ logging:
 encoder-values:
   characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
-async-properties:
-  threads-count: 10
+executor-service-properties:
+  core-pool-size: 5
+  max-pool-size: 10
+  keep-alive-time: 60
+  time-unit: SECONDS
 
-batch-properties:
-  hash-generate-batch: 100000
+hash-properties:
+  generate-batch: 100000
+  cache-capacity: 10000
+  threshold-percent: 20
