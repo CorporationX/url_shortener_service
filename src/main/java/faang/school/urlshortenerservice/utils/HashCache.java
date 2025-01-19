@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,7 +22,6 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     @Value("${hashGenerator.batchSize}")
     private int hashesForDb;
@@ -42,23 +40,15 @@ public class HashCache {
     @Transactional
     public void init() {
         log.info("Initializing HashCache with batchSize: {}, lowThreshold: {}, maxSize: {}", hashesForDb, lowThreshold, maxCacheSize);
-        int percentOfTotal = (int)(hashesForDb * lowThreshold);
         cache = new LinkedBlockingDeque<>(maxCacheSize);
 
-        if (isRunning.compareAndSet(false, true)) {
-            try {
-                if (hashRepository.totalNumOfHashesInDb() == null || hashRepository.totalNumOfHashesInDb() < percentOfTotal) {
-                    log.info("Generating hashes because totalNumOfHashesInDb is less than threshold.");
-                    hashGenerator.generateHashes();
-                    loadHashesFromDb();
-                }
-            }catch (Exception e) {
-                log.error("Error during HashCache initialization", e);
-            }
-            finally {
-                isRunning.set(false);
-            }
+        // Проверка и загрузка хешей при инициализации
+        if (hashRepository.totalNumOfHashesInDb() < hashesForDb * lowThreshold) {
+            log.info("Generating hashes due to insufficient hashes in DB.");
+            hashGenerator.generateHashes();
         }
+
+        loadHashesFromDb();
     }
 
     @Scheduled(cron = "0 0 2 * * ?")
@@ -68,22 +58,18 @@ public class HashCache {
 
     public String getHashFromCache() {
         String hash = cache.poll();
-        if (cache.size() < (int)(maxCacheSize * lowThreshold)) {
+        if (hash == null || cache.size() < (int)(maxCacheSize * lowThreshold)) {
             loadHashesFromDb();
-        }
-        if (hash != null) {
-            return hash;
-        } else {
-            loadHashesFromDb();
-            try {
-                return hashRepository.getFirstHashAndDeleteFromDb();
-            } catch (Exception e) {
-                throw new NoCacheFoundException("Error getting hash from DB" + e.toString());
+            hash = hashRepository.getFirstHashAndDeleteFromDb();
+            if (hash == null) {
+                throw new NoCacheFoundException("Error getting hash from DB");
             }
         }
+        return hash;
     }
 
     private void loadHashesFromDb() {
+        // Загружаем хеши, если их недостаточно в кэше и блокируем доступ для предотвращения гонки
         if (cache.size() < (int)(maxCacheSize * lowThreshold) && lock.tryLock()) {
             try {
                 List<String> hashesFromDb = hashRepository.getHashBatchAndDeleteFromDb();

@@ -25,9 +25,8 @@ public class HashGenerator {
     @Async("hashGeneratorExecutor")
     public void generateHashes() {
         try {
-            int n = batchSize;
-            List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(n);
-            log.info("Fetched {} unique numbers.", uniqueNumbers.size());
+            List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
+            log.info("Fetched {} unique numbers for hashing.", uniqueNumbers.size());
 
             List<String> hashes = base62Encoder.encode(uniqueNumbers);
             log.info("Generated {} hashes.", hashes.size());
