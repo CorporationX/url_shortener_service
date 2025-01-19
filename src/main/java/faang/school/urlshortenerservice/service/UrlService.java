@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.local_cache.HashCache;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.RedisUrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlService {
     private final HashCache hashCache;
-    private final UrlCacheRepository urlCacheRepository;
+    private final RedisUrlCacheRepository redisUrlCacheRepository;
     private final UrlRepository urlRepository;
 
     @Transactional
@@ -28,16 +28,16 @@ public class UrlService {
                 .createdAt(LocalDateTime.now())
                 .build();
         urlRepository.save(url);
-        urlCacheRepository.save(hash, urlDto.url());
+        redisUrlCacheRepository.save(hash, urlDto.url());
     }
 
     public String getUrl(String hash) {
-        String url = urlCacheRepository.get(hash);
+        String url = redisUrlCacheRepository.get(hash);
         if (url != null) {
             return url;
         }
         return urlRepository.findByHash(hash).map(u -> {
-            urlCacheRepository.save(hash, u.getUrl());
+            redisUrlCacheRepository.save(hash, u.getUrl());
             return u.getUrl();
         }).orElseThrow(() -> new UrlNotFoundException("Url not found for hash:" + hash));
     }

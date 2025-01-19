@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UrlCacheRepository {
+public class RedisUrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void save(String hash, String url) {
