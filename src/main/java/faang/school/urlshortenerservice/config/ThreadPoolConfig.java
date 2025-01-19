@@ -25,13 +25,9 @@ public class ThreadPoolConfig {
     @Value("${hash.thread.task.prefix}")
     private String taskPrefix;
 
-    @Bean
-    public ExecutorService fixedThreadPool() {
-        return Executors.newFixedThreadPool(hashPoolSize);
-    }
 
     @Bean
-    public TaskExecutor queueTaskThreadPool() {
+    public TaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);

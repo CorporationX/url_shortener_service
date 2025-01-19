@@ -1,12 +1,14 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
@@ -16,29 +18,25 @@ public class HashRepository {
     @Value("${hash.batch-size}")
     private int batchSize;
 
-    public List<Long> getUniqueNumbers(int n) {
-        String query = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
-        return jdbcTemplate.queryForList(query, Long.class, n);
+    public List<Long> getUniqueNumbers(long amount) {
+        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
+        return jdbcTemplate.queryForList(sql, Long.class, amount);
     }
 
     public void save(List<String> hashes) {
-        String query = "INSERT INTO hash (hash) VALUES (?)";
-        jdbcTemplate.batchUpdate(query, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
+        List<Object[]> mappedList = hashes.stream()
+                .map(hash -> new Object[]{hash})
+                .toList();
+
+        jdbcTemplate.batchUpdate("INSERT INTO hash VALUES(?)", mappedList);
     }
 
     public List<String> getHashBatch() {
-        String query = """ 
-                        WITH deleted AS (
-                        DELETE FROM hash
-                WHERE hash IN (
-                        SELECT hash
-                        FROM hash
-                        ORDER BY random()
-                        LIMIT ?
-                ) RETURNING hash
-                ) SELECT hash FROM deleted
+        String sql = """
+                DELETE FROM hash 
+                WHERE hash in (SELECT hash FROM hash LIMIT ?) 
+                RETURNING HASH
                 """;
-
-        return jdbcTemplate.queryForList(query, String.class, batchSize);
+        return jdbcTemplate.queryForList(sql, String.class, batchSize);
     }
 }

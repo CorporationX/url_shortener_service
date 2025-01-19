@@ -1,56 +1,69 @@
 package faang.school.urlshortenerservice.hesh;
 
+import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.util.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingDeque;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
-@RequiredArgsConstructor
 public class HashCache {
+    private final TaskExecutor queueTaskThreadPool;
     private final HashRepository hashRepository;
-    private final ExecutorService executorService;
-
+    private final HashGenerator hashGenerator;
+    private final AtomicBoolean isCaching = new AtomicBoolean(false);
+    private ArrayBlockingQueue<String> freeCaches;
     @Value("${hash.queue.size}")
-    private int maxCashSize;
+    private int queueSize;
     @Value("${hash.queue.percentage-multiplier}")
-    private double lowThresholdPercentage;
+    private double percentageMultiplier;
 
-    private BlockingDeque<String> cache;
-    private final AtomicBoolean isFilling = new AtomicBoolean(false);
-
+    @Autowired
+    public HashCache(@Qualifier("hashGeneratorExecutor") TaskExecutor queueTaskThreadPool,
+                     HashRepository hashRepository,
+                     HashGenerator hashGenerator) {
+        this.queueTaskThreadPool = queueTaskThreadPool;
+        this.hashRepository = hashRepository;
+        this.hashGenerator = hashGenerator;
+    }
     @PostConstruct
-    public void initializeCache() {
-        this.cache = new LinkedBlockingDeque<>(maxCashSize);
+    private void init() {
+        freeCaches = new ArrayBlockingQueue<>(queueSize);
+        hashGenerator.generateBatch();
+        freeCaches.addAll(hashRepository.getHashBatch());
+        log.info("HashCache initialized, queue is filled");
     }
 
     public String getHash() {
-        if (cache.size() <= maxCashSize * (lowThresholdPercentage / 100.0)) {
-            fillCacheAsync();
-
-        }
-        return cache.poll();
-    }
-
-    private void fillCacheAsync() {
-        if (isFilling.compareAndSet(false, true)) {
-            executorService.submit(() -> {
+        if (freeCaches.size() < queueSize * percentageMultiplier &&
+                isCaching.compareAndSet(false, true)) {
+            queueTaskThreadPool.execute(() -> {
                 try {
-                    List<String> hashes = hashRepository.getHashBatch();
-                    for (String hash : hashes) {
-                        cache.offer(hash);
-                    }
+                    freeCaches.addAll(hashRepository.getHashBatch());
+                    hashGenerator.generateBatch();
+                    log.info("hash cache will be refilled by {}", Thread.currentThread().getName());
                 } finally {
-                    isFilling.set(false);
+                    isCaching.set(false);
                 }
             });
+        }
+
+        try {
+            return freeCaches.take();
+        } catch (InterruptedException e) {
+            throw new DataNotFoundException("Something gone wrong while waiting for hash");
         }
     }
 }
