@@ -19,7 +19,9 @@ public class TransactionService {
     public List<String> saveHashBatch(int batchSize) {
         List<Long> nums = hashRepository.getUniqueNumbers(batchSize);
         List<String> encodedNums = base62Encoder.encodeBatch(nums);
-        List<Hash> hashBatch = encodedNums.stream().map(encodedNum -> Hash.builder().hash(encodedNum).build()).toList();
+        List<Hash> hashBatch = encodedNums.stream()
+                .map(Hash::new)
+                .toList();
         hashRepository.saveAll(hashBatch);
         return encodedNums;
     }
