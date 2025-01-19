@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,11 +39,12 @@ class HashGeneratorTest {
         when(hashRepository.getUniqueNumbers(anyLong())).thenReturn(sequences);
         when(base62Encoder.encode(sequences)).thenReturn(encodedHashes);
 
-        hashGenerator.generateBatch();
+        CompletableFuture<Void> future = hashGenerator.generateBatch();
+        future.join();
 
         verify(hashRepository, times(1)).getUniqueNumbers(anyLong());
         verify(base62Encoder, times(1)).encode(sequences);
-        verify(hashRepository, times(1)).save(encodedHashes);
+        verify(hashRepository, times(1)).saveBatch(encodedHashes);
     }
 
     @Test
@@ -50,12 +53,13 @@ class HashGeneratorTest {
                 .thenThrow(new RuntimeException("Database error"));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            hashGenerator.generateBatch();
+            hashGenerator.generateBatch().join();
         });
 
-        assertEquals("java.lang.RuntimeException: Database error", exception.getMessage());
+        assertTrue(exception.getCause() instanceof RuntimeException);
         verify(hashRepository,times(1)).getUniqueNumbers(anyLong());
         verifyNoInteractions(base62Encoder);
         verifyNoMoreInteractions(hashRepository);
     }
+
 }

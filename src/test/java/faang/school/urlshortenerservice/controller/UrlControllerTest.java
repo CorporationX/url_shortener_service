@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +40,7 @@ class UrlControllerTest {
     private UrlDto urlDto;
     private UrlDto nullUrlDto;
     private String hash;
-    String invalidhash ;
+    String invalidhash;
 
     @InjectMocks
     private UrlController urlController;
@@ -66,7 +67,7 @@ class UrlControllerTest {
     }
 
     @Test
-    void testCreateShotUrl_Success() throws Exception {
+    void testCreateShotUrlSuccess() throws Exception {
         when(urlService.getShotUrl(any(UrlDto.class))).thenReturn(shortUrl);
 
         mockMvc.perform(post("/url")
@@ -77,27 +78,29 @@ class UrlControllerTest {
     }
 
     @Test
-    void testCreateShotUrl_InvalidUrl() throws Exception {
+    void testCreateShotUrlInvalidUrl() throws Exception {
         mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nullUrlDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.url").value("URL can not be blank"));
     }
 
     @Test
-    void testGetOriginalUrl_Success() throws Exception {
+    void testGetOriginalUrlSuccess() throws Exception {
         when(urlService.getOriginalUrl(anyString())).thenReturn(originalUrl);
 
-        mockMvc.perform(get("/url/{hash}", hash))
+        mockMvc.perform(get("/url/{shortUrl}", hash))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl(originalUrl));
     }
 
     @Test
-    void testGetOriginalUrl_NotFound() throws Exception {
+    void testGetOriginalUrlNotFound() throws Exception {
         when(urlService.getOriginalUrl(anyString())).thenThrow(new DataNotFoundException("URL not found"));
 
-        mockMvc.perform(get("/url/{hash}", invalidhash))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/url/{shortUrl}", invalidhash))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("URL not found"));
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepositoryCustomImpl implements HashRepositoryCustom {
     private final JdbcTemplate jdbcTemplate;
-    public void save(List<String> hashes) {
+    public void saveBatch(List<String> hashes) {
         List<Object[]> batchHashes = hashes.stream()
                 .map(hash -> new Object[]{hash})
                 .toList();

@@ -32,8 +32,8 @@ public class ThreadPoolConfig {
         executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix(taskPrefix);
         executor.initialize();
-        log.info("Thread pool created with corePoolSize={}, maxPoolSize={}, queueCapacity={}",
-                corePoolSize, maxPoolSize, queueCapacity);
+        log.info("Thread pool created with corePoolSize={}, queueCapacity={}",
+                corePoolSize, queueCapacity);
         ;
 
         return executor;

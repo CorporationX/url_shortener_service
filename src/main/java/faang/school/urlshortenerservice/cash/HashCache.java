@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class HashCashe {
+public class HashCache {
     private final TaskExecutor queueTaskThreadPool;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final AtomicBoolean isCashing = new AtomicBoolean(false);
-    private ArrayBlockingQueue<String> freeCashes;
+    private final AtomicBoolean isCaching = new AtomicBoolean(false);
+    private ArrayBlockingQueue<String> freeCaсhes;
     @Value("${queue.size}")
     private int queueSize;
     @Value("${queue.percentage-multiplier}")
@@ -31,29 +31,37 @@ public class HashCashe {
 
     @PostConstruct
     private void init() {
-        freeCashes = new ArrayBlockingQueue<>(queueSize);
-        hashGenerator.generateBatch();
-        freeCashes.addAll(hashRepository.getHashBatch(batchSize));
-        log.info("HashCache initialized, queue is filled");
+        freeCaсhes = new ArrayBlockingQueue<>(queueSize);
+        hashGenerator.generateBatch()
+                .thenAccept(v -> {
+                    freeCaсhes.addAll(hashRepository.getHashBatch(batchSize));
+                    log.info("HashCache initialized, queue is filled");
+                })
+                .exceptionally(e -> {
+                    log.error("Error initializing HashCache: ", e);
+                    throw new IllegalStateException("Failed to initialize HashCache", e);
+                });
     }
 
     public String getHash() {
-        if (freeCashes.size() < queueSize * percentageMultiplier
-                && isCashing.compareAndSet(false, true)) {
+        if (freeCaсhes.size() < queueSize * percentageMultiplier
+                && isCaching.compareAndSet(false, true)) {
             queueTaskThreadPool.execute(() -> {
                 try {
-                    freeCashes.addAll(hashRepository.getHashBatch(batchSize));
-                    hashRepository.getHashBatch(batchSize);
+                    freeCaсhes.addAll(hashRepository.getHashBatch(batchSize));
+                    hashGenerator.generateBatch();
                     log.info("Hash cache will be refilled by {}", Thread.currentThread().getName());
+                } catch (Exception e) {
+                    log.error("Error occurred while refilling the hash cache: {}", e.getMessage(), e);
                 } finally {
-                    isCashing.set(false);
+                    isCaching.set(false);
                 }
             });
         }
         try {
-            return freeCashes.take();
+            return freeCaсhes.take();
         } catch (InterruptedException e) {
-            throw new DataNotFoundException("Something gone wrong while waiting for hash");
+            throw new IllegalStateException("Interrupted while waiting for hash", e);
         }
     }
 }

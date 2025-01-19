@@ -6,5 +6,5 @@ import java.util.List;
 
 @Repository
 public interface HashRepositoryCustom {
-    void save(List<String> hashes);
+    void saveBatch(List<String> hashes);
 }

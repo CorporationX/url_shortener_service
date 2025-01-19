@@ -1,8 +1,9 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cash.HashCashe;
+import faang.school.urlshortenerservice.cash.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCasheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,7 +32,10 @@ class UrlServiceTest {
     private UrlCasheRepository urlCasheRepository;
 
     @Mock
-    private HashCashe hashCashe;
+    private HashCache hashCashe;
+
+    @Mock
+    private UrlMapper urlMapper;
 
     private String hash;
     private String url;

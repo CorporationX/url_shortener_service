@@ -31,8 +31,11 @@ cron:
     releasing-сashe: "0 0 0 * * *"
 
 hash:
-  batch-size: 5
-  sequence-amount: 10
+  batch-size: 30
+  sequence-amount: 30
+
+cache:
+  ttl-duration: 86400
 
 thread:
   pool:
@@ -46,5 +49,8 @@ queue:
   size: 30
   percentage-multiplier: 0.2
 
+url-cleanup:
+  retention-period: P1Y
+
 url:
-  original-path: http://localhost:8080/api/v1/url/
+  original-path: domain
