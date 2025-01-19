@@ -5,6 +5,12 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: user
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -33,9 +39,10 @@ encoder:
 
 hash:
   generation:
-    batch-size: 50
+    min-length: 20
     thread-pool: 2
     batch-partition: 5
+    cron: 0 0 * * * ?
   cache:
     min-percent: 20
-    max-size: 10000
+    max-size: 100

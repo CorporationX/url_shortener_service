@@ -23,6 +23,10 @@ public class HashGeneratorImpl implements HashGenerator {
 
     @Value("${hash.generation.batch-partition:5}")
     private int BATCH_PARTITION;
+    @Value("${hash.generation.min-length:20}")
+    private int MIN_LENGTH;
+    @Value("${hash.cache.max-size:100}")
+    private int MAX_CACHE_SIZE;
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
@@ -34,7 +38,7 @@ public class HashGeneratorImpl implements HashGenerator {
     public CompletableFuture<List<Hash>> generateBatch(int batchSize) {
         List<Long> numbers = uniqueNumberSequenceRepository.getUniqueNumbers(batchSize);
 
-        if(numbers.isEmpty()) {
+        if (numbers.isEmpty()) {
             log.info("No numbers to generate hashes");
             throw new RuntimeException("No numbers to generate hashes");
         }
@@ -52,6 +56,11 @@ public class HashGeneratorImpl implements HashGenerator {
     @Override
     @Transactional
     public List<String> getHashes(int limit) {
-        return hashRepository.getHashBatch(limit);
+        var hashes = hashRepository.getHashBatch(limit);
+        if (hashes == null || hashes.size() < MIN_LENGTH) {
+            log.info("Hashes size is less than minimum length");
+            generateBatch(MAX_CACHE_SIZE * 2);
+        }
+        return hashes;
     }
 }

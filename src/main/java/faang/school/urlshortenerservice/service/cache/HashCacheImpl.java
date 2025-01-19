@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,18 +19,19 @@ public class HashCacheImpl implements HashCache {
 
     @Value("${hash.cache.min-percent:20}")
     private int MIN_CACHE_PERCENT;
-    @Value("${hash.cache.max-size:10000}")
+    @Value("${hash.cache.max-size:100}")
     private int MAX_CACHE_SIZE;
 
 
     private final HashGenerator hashGenerator;
     private LinkedBlockingQueue<String> hashes;
-    private ReentrantLock lock = new ReentrantLock();
+    private ReentrantLock lock = new ReentrantLock(true);
 
+    @SneakyThrows
     @PostConstruct
     public void init() {
         hashes = new LinkedBlockingQueue<>(MAX_CACHE_SIZE);
-        addHashes();
+        hashes.addAll(hashGenerator.getHashes(MAX_CACHE_SIZE * MIN_CACHE_PERCENT / 100));
     }
 
     @Override
