@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,8 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashService {
-    private HashRepository hashRepository;
-    private HashGenerator hashGenerator;
+    private final HashRepository hashRepository;
 
     public List<Long> getUniqueSeqNumbers(Long count) {
         List<Long> result = hashRepository.getUniqueSeqNumbers(count);

@@ -20,6 +20,12 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl: 60 #minutes
+
 server:
   port: 8080
 
@@ -33,10 +39,12 @@ encoder-values:
 executor-service-properties:
   core-pool-size: 5
   max-pool-size: 10
-  keep-alive-time: 60
-  time-unit: SECONDS
+  keep-alive-time: 60 #seconds
 
 hash-properties:
   generate-batch: 100000
   cache-capacity: 10000
   threshold-percent: 20
+
+url-prefix: localhost:8080/
+
