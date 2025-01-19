@@ -1,0 +1,26 @@
+name: Run Tests for Pull Requests
+
+on:
+  pull_request:
+    branches: [ "epic-bjs2-55283" ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Execute Test
+        run: ./gradlew test
