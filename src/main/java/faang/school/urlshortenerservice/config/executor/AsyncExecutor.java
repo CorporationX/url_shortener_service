@@ -22,24 +22,14 @@ public class AsyncExecutor {
     @Value("${async.thread-name-prefix}")
     private String threadNamePrefix;
 
-    private ThreadPoolTaskExecutor asyncExecutor;
-
-
-    @Bean("async")
+    @Bean(value = "async", destroyMethod = "shutdown")
     public ThreadPoolTaskExecutor taskExecutor() {
-        asyncExecutor = new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor asyncExecutor = new ThreadPoolTaskExecutor();
         asyncExecutor.setCorePoolSize(corePoolSize);
         asyncExecutor.setMaxPoolSize(maxPoolSize);
         asyncExecutor.setQueueCapacity(queueCapacity);
         asyncExecutor.setThreadNamePrefix(threadNamePrefix);
         asyncExecutor.initialize();
         return asyncExecutor;
-    }
-
-    @PreDestroy
-    public void shutDownAsyncExecutor() {
-        if (asyncExecutor != null) {
-            asyncExecutor.shutdown();
-        }
     }
 }

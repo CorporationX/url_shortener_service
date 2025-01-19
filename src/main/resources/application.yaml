@@ -48,6 +48,6 @@ scheduler:
   year: 1
 
 hash-cache:
-  queue-capacity: 500
+  queue-capacity: 300
   percent: 0.2
   redis-batch-size: 240

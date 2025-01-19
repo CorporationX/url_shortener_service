@@ -135,4 +135,48 @@ public class UrlControllerTest {
                           .content(new ObjectMapper().writeValueAsString(invalidUrlDto)))
                   .andExpect(status().isBadRequest());
      }
+
+     @Test
+     void testResolveUrl_SuccessfulRedirect() throws Exception {
+          String shortHash = "shortHash";
+          String originalUrl = "https://example.com/original";
+
+          when(urlService.findUrl("https://example.com/short")).thenReturn(shortHash);
+          when(urlService.findUrl(shortHash)).thenReturn(originalUrl);
+
+          UrlDto urlDto = new UrlDto("https://example.com/short");
+          String requestBody = new ObjectMapper().writeValueAsString(urlDto);
+
+          mockMvc.perform(post("/resolve")
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .content(requestBody))
+                  .andExpect(status().isFound())
+                  .andExpect(redirectedUrl(originalUrl));
+     }
+
+
+     @Test
+     void testResolveUrl_NotFound() throws Exception {
+          when(urlService.findUrl(anyString())).thenReturn(null);
+
+          UrlDto urlDto = new UrlDto("https://example.com/short");
+          String requestBody = new ObjectMapper().writeValueAsString(urlDto);
+
+          mockMvc.perform(post("/resolve")
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .content(requestBody))
+                  .andExpect(status().isFound())
+                  .andExpect(redirectedUrl("/error-page"));
+     }
+
+     @Test
+     void testResolveUrl_InvalidRequestBody() throws Exception {
+          UrlDto urlDto = new UrlDto("");
+          String requestBody = new ObjectMapper().writeValueAsString(urlDto);
+
+          mockMvc.perform(post("/resolve")
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .content(requestBody))
+                  .andExpect(status().isBadRequest());
+     }
 }
