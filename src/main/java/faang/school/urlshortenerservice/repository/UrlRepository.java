@@ -16,7 +16,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
   Url create(String url, String hash);
 
   @Query(nativeQuery = true, value = """
-      DELETE FROM url WHERE age(NOW(), created_at) > '1 year' ? RETURNING *
+      DELETE FROM url WHERE age(NOW(), created_at) > '1 year' RETURNING hash
       """)
   List<String> delete();
 
