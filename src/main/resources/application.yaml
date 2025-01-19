@@ -26,3 +26,6 @@ logging:
 
 base62:
   base: 62
+
+hash-repository:
+  random-batch-size: 10
