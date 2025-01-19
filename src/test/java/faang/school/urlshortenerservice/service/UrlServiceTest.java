@@ -13,7 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UrlServiceTest {
@@ -44,14 +47,12 @@ public class UrlServiceTest {
     @Test
     public void testCreateShortUrl() {
         when(hashCache.getHash()).thenReturn(hash);
-        doNothing().when(urlRepository).save(any(Url.class));
-        doNothing().when(urlCacheRepository).save(anyString(), anyString());
 
         String result = urlService.createShortUrl(longUrl);
 
         assertEquals(shortUrl, result);
         verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(Url.class));
-        verify(urlCacheRepository, times(1)).save(hash, longUrl);
+        verify(urlCacheRepository, times(1)).save(anyString(), anyString());
     }
 }

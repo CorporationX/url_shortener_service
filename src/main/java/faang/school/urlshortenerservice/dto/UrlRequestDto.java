@@ -8,5 +8,8 @@ import lombok.Data;
 public class UrlRequestDto {
     @NotEmpty(message = "URL cannot be empty")
     @Pattern(regexp = "^(http|https)://.*$", message = "Invalid URL format")
-    private final String longUrl;
+    private String longUrl;
+
+    public UrlRequestDto() {
+    }
 }
