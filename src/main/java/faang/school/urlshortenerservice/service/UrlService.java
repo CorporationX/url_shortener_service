@@ -44,17 +44,17 @@ public class UrlService {
 
     public String getLongUrl(String hash) {
         String longUrl;
-        Optional<String> optionalUrl = urlRedisCacheRepository.getUrl(hash);
+        Optional<String> cacheUrl = urlRedisCacheRepository.getUrl(hash);
 
-        if (optionalUrl.isPresent()) {
-            longUrl = optionalUrl.get();
-            log.info("Url {} for hash {} found in redis cache",longUrl, hash);
+        if (cacheUrl.isPresent()) {
+            longUrl = cacheUrl.get();
+            log.info("Url {} for hash {} found in redis cache", longUrl, hash);
             return longUrl;
         } else {
-            optionalUrl = urlRepository.findUrlByHash(hash);
+            Optional<Url> dbUrl = urlRepository.findByHash(hash);
 
-            if (optionalUrl.isPresent()) {
-                longUrl = optionalUrl.get();
+            if (dbUrl.isPresent()) {
+                longUrl = dbUrl.get().getUrl();
                 urlRedisCacheService.saveUrl(hash, longUrl);
                 log.info("Url {} for hash {} found in database and saved in cache", longUrl, hash);
                 return longUrl;

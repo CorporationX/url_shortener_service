@@ -34,16 +34,17 @@ logging:
     root: info
 
 encoder-values:
-  characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  characters: zNjfnMZR0mxOqLKdHw7I9yCa3Ql2PtXgUVW8vJk6BrEb5sFGhTYSAop4uDce1i
 
 executor-service-properties:
   core-pool-size: 5
   max-pool-size: 10
   keep-alive-time: 60 #seconds
+  time-unit: SECONDS
 
 hash-properties:
-  generate-batch: 100000
-  cache-capacity: 10000
+  generate-batch: 1000
+  cache-capacity: 100
   threshold-percent: 20
 
 url-prefix: localhost:8080/
