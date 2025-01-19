@@ -26,3 +26,18 @@ logging:
 
 base62:
   base: 62
+
+hash-repository:
+  random-batch-size: 10
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 50
+
+hash-cache:
+  max-size: 1000
+  refill-threshold-percent: 20.0
+  thread-pool:
+    core-size: 2
+    max-size: 5
+    queue-capacity: 50
