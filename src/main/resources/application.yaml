@@ -20,7 +20,11 @@ spring:
   properties:
     batch-size: 10000
     thread-pool-size: 5
-
+    cache-pros:
+      initial-capacity: 100
+      maximum-capacity: 100000
+      expire: 365
+      cache-min-percentage: 20
 server:
   port: 8080
 

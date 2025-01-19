@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service.encoder;
+package faang.school.urlshortenerservice.service.config;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import lombok.Data;
