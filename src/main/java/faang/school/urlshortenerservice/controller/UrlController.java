@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/url")
+@RequestMapping("/api/v1/shortener")
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping
+    @PostMapping("/shortUrl")
     public ResponseEntity<String> createShortUrl(@RequestBody @Valid UrlRequestDto urlRequestDto) {
         String shortUrl = urlService.createShortUrl(urlRequestDto.getUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
