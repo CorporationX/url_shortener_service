@@ -2,12 +2,12 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlCreateDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class UrlServiceImpl implements UrlService {
     String url = urlCacheRepository.findUrlByHash(hash);
 
     if (url == null) {
-      url = urlRepository.findById(hash).orElseThrow(() -> new NoSuchElementException("No such URL found")).getUrl();
+      url = urlRepository.findById(hash).orElseThrow(() -> new UrlNotFoundException("No such URL found")).getUrl();
     }
 
     return url;

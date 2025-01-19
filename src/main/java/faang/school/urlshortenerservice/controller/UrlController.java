@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlCreateDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -27,7 +28,7 @@ public class UrlController {
     if (urlValidator.isValid(dto.url())) {
       return urlService.createShortUrl(dto);
     }
-    throw new RuntimeException("Invalid URL: " + dto.url());
+    throw new InvalidUrlException("Invalid URL: " + dto.url());
   }
 
   @GetMapping("/{hash}")

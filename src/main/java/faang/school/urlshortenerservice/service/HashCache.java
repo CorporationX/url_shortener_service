@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-
 public class HashCache {
 
   @Value("${generator.hashes.min-level-percent}")
@@ -29,13 +28,12 @@ public class HashCache {
   @Value("${generator.batch.size:10000}")
   private int batchSize;
 
+  private final AtomicBoolean isFilling = new AtomicBoolean(false);
+
   private BlockingQueue<String> localCache;
 
   private final HashRepository hashRepository;
-
   private final HashGenerator hashGenerator;
-  private final AtomicBoolean isFilling = new AtomicBoolean(false);
-
   private final ExecutorService cachedThreadPool;
 
   @PostConstruct

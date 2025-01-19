@@ -11,22 +11,21 @@ import org.springframework.data.redis.core.RedisTemplate;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    private final RedisProperties redisProperties;
+  private final RedisProperties redisProperties;
 
-    @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration configuration =
-                new RedisStandaloneConfiguration(redisProperties.host(), redisProperties.port());
-        return new JedisConnectionFactory(configuration);
-    }
+  @Bean
+  JedisConnectionFactory jedisConnectionFactory() {
+    RedisStandaloneConfiguration configuration =
+        new RedisStandaloneConfiguration(redisProperties.host(), redisProperties.port());
+    return new JedisConnectionFactory(configuration);
+  }
 
-    @Bean
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+  @Bean
+  public RedisTemplate<?, ?> redisTemplate() {
+    RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setConnectionFactory(jedisConnectionFactory());
 
-        return redisTemplate;
-    }
-
+    return redisTemplate;
+  }
 
 }
