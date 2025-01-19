@@ -30,6 +30,5 @@ public class Url {
     }
 
     public Url() {
-
     }
 }
