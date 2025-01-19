@@ -26,6 +26,10 @@ logging:
 
 base62:
   base: 62
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 50
 
 hash-repository:
   random-batch-size: 10
