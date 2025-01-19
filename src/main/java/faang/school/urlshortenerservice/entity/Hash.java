@@ -18,6 +18,14 @@ public class Hash {
     @Column(name = "hash")
     private String hash;
 
+    @Column(name = "unique_number")
+    private Long uniqueNumber;
+
+    public Hash(Long uniqueNumber, String hash) {
+        this.uniqueNumber = uniqueNumber;
+        this.hash = hash;
+    }
+
     @Override
     public String toString() {
         return hash;

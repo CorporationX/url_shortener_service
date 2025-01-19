@@ -24,6 +24,16 @@ public class AsyncConfig {
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix("HashGenerator-");
+
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAllowCoreThreadTimeOut(true);
+
+        executor.setThreadFactory(runnable -> {
+            Thread thread = new Thread(runnable);
+            thread.setDaemon(true);
+            return thread;
+        });
+
         executor.initialize();
         return executor;
     }

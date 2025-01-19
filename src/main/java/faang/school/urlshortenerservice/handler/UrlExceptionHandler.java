@@ -39,7 +39,7 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.warn("Произошло исключение IllegalArgumentException: {}", ex.getMessage());
+        log.warn("An IllegalArgumentException occurred: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
@@ -47,9 +47,9 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> handleDataAccessException(DataAccessException ex) {
-        log.error("Ошибка доступа к базе данных: ", ex);
+        log.error("Database access error: ", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Произошла ошибка базы данных.");
+                .body("A database error occurred.");
     }
 }
