@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cash.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCasheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +32,6 @@ class UrlServiceTest {
 
     @Mock
     private HashCache hashCashe;
-
-    @Mock
-    private UrlMapper urlMapper;
 
     private String hash;
     private String url;
