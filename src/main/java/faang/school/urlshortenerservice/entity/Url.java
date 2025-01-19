@@ -11,8 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.redis.core.RedisHash;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,7 +33,4 @@ public class Url {
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Column(name = "expires_at")
-    private LocalDateTime expiresAt;
 }
