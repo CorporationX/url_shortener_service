@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import faang.school.urlshortenerservice.dto.ErrorResponse;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
 @Slf4j
 @ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UrlNotFoundException.class)

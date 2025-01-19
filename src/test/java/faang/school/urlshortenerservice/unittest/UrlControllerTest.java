@@ -1,12 +1,10 @@
 package faang.school.urlshortenerservice.unittest;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.config.context.UserContext;
 import faang.school.urlshortenerservice.controller.UrlController;
 import faang.school.urlshortenerservice.dto.UrlRequestDTO;
 import faang.school.urlshortenerservice.service.UrlService;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +27,21 @@ class UrlControllerTest {
     private UrlService urlService;
 
     @MockBean
-    private UserContext userContext;
+    private UserContext userContext; // Add mock for UserContext
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void createShortUrl_ShouldReturnShortUrl() throws Exception {
-
         String longUrl = "https://example.com";
         String expectedShortUrl = "http://short.url/1234abcd";
 
         UrlRequestDTO urlRequestDTO = new UrlRequestDTO();
         urlRequestDTO.setLongUrl(longUrl);
 
-
-        Mockito.when(userContext.getUserId()).thenReturn(123L);
+        Mockito.when(userContext.getUserId()).thenReturn(123L); // Mock behavior
         Mockito.when(urlService.createShortUrl(any(String.class))).thenReturn(expectedShortUrl);
-
 
         mockMvc.perform(post("/url")
                         .header("x-user-id", "123")
@@ -58,10 +53,8 @@ class UrlControllerTest {
 
     @Test
     void createShortUrl_ShouldReturnBadRequestForInvalidUrl() throws Exception {
-
         UrlRequestDTO urlRequestDTO = new UrlRequestDTO();
-        urlRequestDTO.setLongUrl("invalid_url");
-
+        urlRequestDTO.setLongUrl("invalid_url"); // Does not match the URL pattern
 
         mockMvc.perform(post("/url")
                         .header("x-user-id", "123")
