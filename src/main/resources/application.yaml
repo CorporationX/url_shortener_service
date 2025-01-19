@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,7 +17,7 @@ spring:
           batch_size: 10
         order_inserts: true
         order_updates: true
-        generate_statistics: true
+        generate_statistics: false
   data:
     redis:
       host: localhost

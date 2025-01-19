@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepository {
@@ -13,7 +15,8 @@ public class UrlCacheRepository {
         redisTemplate.opsForValue().set(hash, url);
     }
 
-    public String get(String hash) {
-        return (String) redisTemplate.opsForValue().get(hash);
+    public Optional<String> get(String hash) {
+        String value = (String) redisTemplate.opsForValue().get(hash);
+        return Optional.ofNullable(value);
     }
 }

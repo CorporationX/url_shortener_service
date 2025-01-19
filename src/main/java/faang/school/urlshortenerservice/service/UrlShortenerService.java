@@ -3,10 +3,13 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,20 @@ public class UrlShortenerService {
         url = urlRepository.save(url);
         urlCacheRepository.save(url.getHash(), url.getUrl());
         return new HashDto(url.getHash());
+    }
+
+    public String getUrlByHash(String hash) {
+        Optional<String> cachedUrl = urlCacheRepository.get(hash);
+        if (cachedUrl.isPresent()) {
+            return cachedUrl.get();
+        }
+
+        Optional<Url> savedUrl = urlRepository.findByHash(hash);
+        if (savedUrl.isPresent()) {
+            return savedUrl.get().getUrl();
+        }
+
+        throw new UrlNotFoundException(String.format("Url not found by hash '%s", hash));
     }
 
 }

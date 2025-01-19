@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS url_shortener_schema;
 
 CREATE TABLE url_shortener_schema.url
 (
-    id         BIGINT PRIMARY KEY,
+    id         SERIAL PRIMARY KEY,
     hash       VARCHAR(6) UNIQUE,
     url        TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
