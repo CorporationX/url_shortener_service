@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
 @RequiredArgsConstructor
-//@EnableRedisRepositories
 public class RedisConfig {
 
     private final RedisProperties redisProperties;
