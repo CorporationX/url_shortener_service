@@ -29,7 +29,7 @@ public class UrlService {
                 .url(requestDto.getUrl())
                 .hash(hash)
                 .build();
-        requestDto.setHash(hash);
+        url.setHash(hash);
         return urlRepository.save(url).getUrl();
     }
 
