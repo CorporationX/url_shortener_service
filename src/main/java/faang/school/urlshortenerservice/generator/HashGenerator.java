@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.config.HashGeneratorProperties;
+import faang.school.urlshortenerservice.config.properties.HashGeneratorProperties;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.exception.InternalException;
 import faang.school.urlshortenerservice.exception.ValidationException;

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.config.HashRepositoryProperties;
+import faang.school.urlshortenerservice.config.properties.HashRepositoryProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.*;
@@ -40,9 +40,7 @@ public class HashRepository {
         log.info("Saved {} hashes in batch", hashes.size());
     }
 
-    public List<String> getHashBatch() {
-        int limit = hashRepoProps.getRandomBatchSize();
-
+    public List<String> getHashBatch(int limit) {
         String sql = """
             WITH cte AS (
               SELECT hash
@@ -56,13 +54,9 @@ public class HashRepository {
             RETURNING cte.hash
         """;
 
-        var params = Collections.singletonMap("limit", limit);
+        var params = new MapSqlParameterSource("limit", limit);
 
-        return namedJdbcTemplate.query(
-                sql,
-                params,
-                (rs, rowNum) -> rs.getString(1)
-        );
+        return namedJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getString(1));
     }
 }
 
