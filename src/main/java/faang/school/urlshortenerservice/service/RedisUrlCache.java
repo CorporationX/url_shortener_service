@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RedisUrlCacheRepository implements UrlCacheRepository {
+public class RedisUrlCache implements UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
