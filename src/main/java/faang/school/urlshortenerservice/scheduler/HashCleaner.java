@@ -30,8 +30,10 @@ public class HashCleaner {
         LocalDateTime cleaningTime = LocalDateTime.now().minus(intervalToClean);
         List<String> hashStrings = urlRepository.getExpiredHashes(cleaningTime);
         List<Hash> hashes = convertToHash(hashStrings);
-        hashRepository.saveAll(hashes);
-        log.info("{} hashes removed from short url database and moved to hash repository", hashes.size());
+        if (!hashes.isEmpty()) {
+            hashRepository.saveAll(hashes);
+            log.info("{} hashes removed from short url database and moved to hash repository", hashes.size());
+        }
     }
 
     private List<Hash> convertToHash(List<String> hashes) {

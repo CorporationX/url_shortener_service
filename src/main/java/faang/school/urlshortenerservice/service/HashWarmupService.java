@@ -9,13 +9,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class HashWarmupService implements CommandLineRunner {
-    private final HashService hashService;
     private final HashCacheService hashCacheService;
 
     @Override
-    public void run(String... args) throws Exception {
-        hashService.uploadHashInDatabaseIfNecessary().get();
-        hashCacheService.addHashToLocalCacheIfNecessary();
-        log.info("Cache warmup complete");
+    public void run(String... args) {
+            hashCacheService.getHashesFromDatabaseAndWaitUntilDone();
+            hashCacheService.addHashToLocalCacheIfNecessary();
+            log.info("Cache warmup complete");
     }
 }

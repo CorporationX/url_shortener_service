@@ -24,8 +24,7 @@ public class HashService {
 
     @Async("hashServiceExecutor")
     public CompletableFuture<Void> uploadHashInDatabaseIfNecessary() {
-        if (!isEnoughHashCapacity() && !uploadInProgressFlag.get()) {
-            uploadInProgressFlag.set(true);
+        if (!isEnoughHashCapacity() && uploadInProgressFlag.compareAndSet(false, true)) {
             List<Hash> hashes = generateBatch(urlShortenerProperties.hashAmountToGenerate());
             hashRepository.saveAll(hashes);
             uploadInProgressFlag.set(false);

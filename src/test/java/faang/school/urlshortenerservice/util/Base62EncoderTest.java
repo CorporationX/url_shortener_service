@@ -13,7 +13,8 @@ class Base62EncoderTest {
 
     @BeforeEach
     void setUp() {
-        base62Encoder = new Base62Encoder();
+        String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        base62Encoder = new Base62Encoder(alphabet);
     }
 
     @Test

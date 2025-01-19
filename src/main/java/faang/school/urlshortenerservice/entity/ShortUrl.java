@@ -30,9 +30,4 @@ public class ShortUrl {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     LocalDateTime createdAt;
-
-    public ShortUrl(String url, String hash) {
-        this.url = url;
-        this.hash = hash;
-    }
 }

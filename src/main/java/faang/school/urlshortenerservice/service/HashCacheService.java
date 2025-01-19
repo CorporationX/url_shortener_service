@@ -32,10 +32,9 @@ public class HashCacheService {
     }
 
     public void addHashToLocalCacheIfNecessary() {
-        if (!isEnoughLocalCacheCapacity() && !uploadInProgressFlag.get()) {
+        if (!isEnoughLocalCacheCapacity() && uploadInProgressFlag.compareAndSet(false, true)) {
             log.info("{} hashes left in local cache (threshold is {}). Update started", localCache.size(), (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio()));
             localCacheExecutor.execute(() -> {
-                uploadInProgressFlag.set(true);
                 try {
                     uploadHashFromDatabaseToLocalCache();
                 } finally {
@@ -46,11 +45,20 @@ public class HashCacheService {
     }
 
     public void uploadHashFromDatabaseToLocalCache() {
-        try {
-            List<Hash> hashes = hashService.getHashesFromDatabase().get();
+            List<Hash> hashes = getHashesFromDatabaseAndWaitUntilDone();
             localCache.addAll(hashes);
             log.info("{} hashes added to local cache successfully", hashes.size());
             hashService.uploadHashInDatabaseIfNecessary();
+    }
+
+    private boolean isEnoughLocalCacheCapacity() {
+        long lowerBoundCapacity = (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio());
+        return localCache.size() >= lowerBoundCapacity;
+    }
+
+    public List<Hash> getHashesFromDatabaseAndWaitUntilDone() {
+        try {
+            return hashService.getHashesFromDatabase().get();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error during hash download from database. Error: {}", e.getMessage());
             Thread.currentThread().interrupt();
@@ -59,14 +67,10 @@ public class HashCacheService {
         }
     }
 
-    private boolean isEnoughLocalCacheCapacity() {
-        long lowerBoundCapacity = (long) (urlShortenerProperties.localCacheCapacity() * urlShortenerProperties.localCacheThresholdRatio());
-        return localCache.size() >= lowerBoundCapacity;
-    }
-
     private LocalCacheException createLocalCacheException() {
         String errorMessage = "Unable to provide hash for short URL";
         log.error(errorMessage);
         return new LocalCacheException(errorMessage);
     }
+
 }

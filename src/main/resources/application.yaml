@@ -47,6 +47,10 @@ logging:
   level:
     root: info
 
+encoder:
+  base62:
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
 url-shortener:
   host-name: https://shrt.com/
   local-cache-capacity: 12_000

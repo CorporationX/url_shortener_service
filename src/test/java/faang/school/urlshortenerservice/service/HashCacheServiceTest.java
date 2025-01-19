@@ -50,7 +50,8 @@ class HashCacheServiceTest {
     @BeforeEach
     void setUp() {
         urlShortenerProperties = UrlShortenerProperties.builder()
-                .localCacheCapacity(10)
+                .localCacheCapacity(12)
+                .hashAmountToLocalCache(10)
                 .localCacheThresholdRatio(0.5)
                 .build();
         hashCacheService = new HashCacheService(localCache, hashService, localCacheExecutor, urlShortenerProperties);
