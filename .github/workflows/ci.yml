@@ -2,7 +2,7 @@ name: Run Tests for Pull Requests
 
 on:
   pull_request:
-    branches: [ "epic-bjs2-55283" ]
+    branches: [ "epic-bjs2-55285" ]
 
 jobs:
   test:
