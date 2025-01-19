@@ -6,6 +6,8 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,5 +26,13 @@ public class UrlController {
     public ResponseEntity<String> createShortUrl(@RequestBody @Validated UrlRequestDto urlRequestDto) {
         String shortUrl = urlService.createShortUrl(urlRequestDto.getLongUrl());
         return ResponseEntity.ok(shortUrl);
+    }
+
+    @GetMapping("/{hash}")
+    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
+        String originalUrl = urlService.getOriginalUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", originalUrl)
+                .build();
     }
 }

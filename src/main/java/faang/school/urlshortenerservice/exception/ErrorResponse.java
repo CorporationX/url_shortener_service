@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.exception;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
 class ErrorResponse {

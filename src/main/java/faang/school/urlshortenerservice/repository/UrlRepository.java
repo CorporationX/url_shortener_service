@@ -15,7 +15,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM url WHERE created_at < now() - interval '1 year' RETURNING hash", nativeQuery = true)
+    @Query(value = "DELETE FROM Url WHERE created_at < now() - interval '1 year' RETURNING hash", nativeQuery = true)
     List<String> deleteOldUrlsAndReturnHashes();
-}
 
+    @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
+    String findUrlByHash(String hash);
+}

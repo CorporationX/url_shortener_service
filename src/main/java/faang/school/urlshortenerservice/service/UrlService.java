@@ -6,8 +6,10 @@ import faang.school.urlshortenerservice.redis.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Data
@@ -25,6 +27,18 @@ public class UrlService {
         urlCacheRepository.save(hash, longUrl);
         log.info("Short URL hash created: {}, longUrl: {}", hash, longUrl);
         return "http://short.url/" + hash;
+    }
+
+    public String getOriginalUrl(String hash) {
+        String originalUrl = urlCacheRepository.findUrlByHash(hash);
+        if (originalUrl == null) {
+            originalUrl = urlRepository.findUrlByHash(hash);
+            urlCacheRepository.save(hash, originalUrl);
+            if (originalUrl == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found");
+            }
+        }
+        return originalUrl;
     }
 }
 
