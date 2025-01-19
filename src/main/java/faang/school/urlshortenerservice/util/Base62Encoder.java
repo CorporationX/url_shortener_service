@@ -22,6 +22,6 @@ public class Base62Encoder {
             finalString.append(BASE_62_CHARSET.charAt((int) (value % 62)));
             value /= 62;
         }
-        return new Hash(finalString.reverse().toString());
+        return new Hash(finalString.toString());
     }
 }

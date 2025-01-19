@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -16,7 +17,7 @@ public class UrlCacheRepository {
         redisTemplate.opsForValue().set(key, value, timeToLiveInMinutes, TimeUnit.MINUTES);
     }
 
-    public String getValue(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public Optional<String> getValue(String key) {
+        return Optional.ofNullable(redisTemplate.opsForValue().get(key));
     }
 }

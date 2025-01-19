@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,14 +25,17 @@ class CleanerSchedulerTest {
     @Mock
     private HashRepository hashRepository;
 
+    @Mock
+    private UrlRepository urlRepository;
+
     @Test
-    @DisplayName("Delete expired urls and return hashes later than one year: success case")
-    void deleteExpiredUrlsAndReturnHashesLaterThanOneYear_Success() {
-        when(hashRepository.deleteHashesLaterThan(any())).thenReturn(List.of());
+    @DisplayName("Delete expired urls and recycle hashes: success case")
+    void deleteExpiredUrlsAndRecycleHashes_Success() {
+        when(urlRepository.deleteHashesEarlierThan(any())).thenReturn(List.of());
 
-        cleanerScheduler.deleteExpiredUrlsAndReturnHashesLaterThanOneYear();
+        cleanerScheduler.deleteExpiredUrlsAndRecycleHashes();
 
-        verify(hashRepository, times(1)).deleteHashesLaterThan(any());
+        verify(urlRepository, times(1)).deleteHashesEarlierThan(any());
         verify(hashRepository, times(1)).saveAll(any());
     }
 }

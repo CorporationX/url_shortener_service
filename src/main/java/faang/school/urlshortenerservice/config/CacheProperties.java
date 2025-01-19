@@ -4,6 +4,6 @@ import lombok.Builder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Builder
-@ConfigurationProperties(prefix = "hash-generator")
-public record HashGeneratorPropertiesConfig(long batchSize) {
+@ConfigurationProperties(prefix = "cache")
+public record CacheProperties(int size, double percentSizeToTriggerUpdate, double percentSizeToUpdate) {
 }

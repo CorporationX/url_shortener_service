@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface HashRepository extends JpaRepository<Hash, Long> {
@@ -17,21 +16,13 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Modifying
     @Query(value = """
-            DELETE FROM url_hashes
+            DELETE FROM url_hash
             WHERE hash IN (
                 SELECT hash
-                FROM url_hashes
+                FROM url_hash
                 LIMIT :batchSize
             )
             RETURNING hash;
             """, nativeQuery = true)
-    List<Hash> popUrlHashes(@Param("batchSize") double batchSize);
-
-    @Modifying
-    @Query(value = """
-            DELETE FROM urls
-            WHERE created_at < :dateTime
-            RETURNING urls.hash
-            """, nativeQuery = true)
-    List<Hash> deleteHashesLaterThan(@Param("dateTime") LocalDateTime dateTime);
+    List<Hash> popUrlHashes(@Param("batchSize") Long batchSize);
 }

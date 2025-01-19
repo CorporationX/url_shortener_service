@@ -1,13 +1,12 @@
 package faang.school.urlshortenerservice.controller;
 
-
+import faang.school.urlshortenerservice.config.annotation.ValidURL;
 import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.URL;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,7 @@ public class UrlController {
     @PostMapping("/url")
     @Operation(summary = "Create short link from original link")
     ResponseEntity<String> createShortLink(@RequestBody
-                                           @URL
+                                           @ValidURL
                                            @Parameter(description = "Original URL")
                                            String url) {
         log.info("Request to create short link for url: {}", url);
@@ -42,7 +41,7 @@ public class UrlController {
     public ResponseEntity<Void> getOriginalLink(@PathVariable String hash) {
         log.info("Request to redirect to original url: {}", hash);
         return ResponseEntity
-                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, urlService.getOriginalUrl(hash))
                 .build();
     }

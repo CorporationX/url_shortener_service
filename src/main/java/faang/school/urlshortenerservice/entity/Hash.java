@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "url_hashes")
+@Table(name = "url_hash")
 public class Hash {
 
     @Id

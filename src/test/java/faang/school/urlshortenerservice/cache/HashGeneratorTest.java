@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.HashGeneratorPropertiesConfig;
+import faang.school.urlshortenerservice.config.HashGeneratorProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
@@ -33,8 +33,8 @@ class HashGeneratorTest {
 
     @BeforeEach
     public void setUp() {
-        HashGeneratorPropertiesConfig hashGeneratorPropertiesConfig = new HashGeneratorPropertiesConfig(10);
-        hashGenerator = new HashGenerator(hashRepository, hashGeneratorPropertiesConfig, base62Encoder);
+        HashGeneratorProperties hashGeneratorProperties = new HashGeneratorProperties(10);
+        hashGenerator = new HashGenerator(hashRepository, hashGeneratorProperties, base62Encoder);
     }
 
     @Test

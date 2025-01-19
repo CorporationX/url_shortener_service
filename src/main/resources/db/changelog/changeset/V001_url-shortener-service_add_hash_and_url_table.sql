@@ -1,9 +1,9 @@
-CREATE TABLE url_hashes
+CREATE TABLE url_hash
 (
     hash VARCHAR(6) PRIMARY KEY
 );
 
-CREATE TABLE urls
+CREATE TABLE url
 (
     hash       VARCHAR(6) PRIMARY KEY,
     url        VARCHAR     NOT NULL,

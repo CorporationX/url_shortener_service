@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.config.app.AppPropertiesConfig;
-import faang.school.urlshortenerservice.config.redis.RedisPropertiesConfig;
+import faang.school.urlshortenerservice.config.app.AppProperties;
+import faang.school.urlshortenerservice.config.redis.RedisProperties;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -49,9 +49,9 @@ class UrlServiceTest {
                 .url(url)
                 .hash(hash)
                 .build();
-        RedisPropertiesConfig redisPropertiesConfig = new RedisPropertiesConfig(10);
-        AppPropertiesConfig appPropertiesConfig = new AppPropertiesConfig("https://localhost:8077");
-        urlService = new UrlService(hashCache, urlRepository, urlCacheRepository, redisPropertiesConfig, appPropertiesConfig);
+        RedisProperties redisProperties = new RedisProperties(10);
+        AppProperties appProperties = new AppProperties("https://localhost:8077");
+        urlService = new UrlService(hashCache, urlRepository, urlCacheRepository, redisProperties, appProperties);
     }
 
     @Test
@@ -67,7 +67,7 @@ class UrlServiceTest {
     @Test
     @DisplayName("Get original link: success case")
     void testGetOriginalUrl_Success() {
-        when(urlCacheRepository.getValue(hash)).thenReturn(url);
+        when(urlCacheRepository.getValue(hash)).thenReturn(Optional.ofNullable(url));
 
         String originalUrl = urlService.getOriginalUrl(hash);
         assertEquals(url, originalUrl);
@@ -76,7 +76,7 @@ class UrlServiceTest {
     @Test
     @DisplayName("Get original link: not found in hash but found in database")
     void testGetOriginalUrl_NotFoundInHashButFoundInDatabase() {
-        when(urlCacheRepository.getValue(hash)).thenReturn(null);
+        when(urlCacheRepository.getValue(hash)).thenReturn(Optional.empty());
         when(urlRepository.findByHash(hash)).thenReturn(Optional.of(entity));
 
         assertEquals(url, urlService.getOriginalUrl(hash));
@@ -85,7 +85,7 @@ class UrlServiceTest {
     @Test
     @DisplayName("Get original link: not found in hash and not found in database")
     void testGetOriginalUrl_NotFoundInHashAndNotFoundInDatabase() {
-        when(urlCacheRepository.getValue(hash)).thenReturn(null);
+        when(urlCacheRepository.getValue(hash)).thenReturn(Optional.empty());
         when(urlRepository.findByHash(hash)).thenThrow(new EntityNotFoundException(String.format("Url with hash %s not found", hash)));
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> urlService.getOriginalUrl(hash));

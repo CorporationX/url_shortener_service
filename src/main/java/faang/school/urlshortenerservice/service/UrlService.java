@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.config.app.AppPropertiesConfig;
-import faang.school.urlshortenerservice.config.redis.RedisPropertiesConfig;
+import faang.school.urlshortenerservice.config.app.AppProperties;
+import faang.school.urlshortenerservice.config.redis.RedisProperties;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -10,9 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,29 +21,28 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final RedisPropertiesConfig redisPropertiesConfig;
-    private final AppPropertiesConfig appPropertiesConfig;
+    private final RedisProperties redisProperties;
+    private final AppProperties appProperties;
 
-    @Transactional
     public String createShortLink(String originalUrl) {
         String hash = hashCache.takeCache();
         Url entity = createUrlEntity(hash, originalUrl);
         urlRepository.save(entity);
-        urlCacheRepository.saveWithTTL(hash, originalUrl, redisPropertiesConfig.timeToLiveInMinutes());
-        String shortUrl = String.format("%s/%s", appPropertiesConfig.baseUrl(), hash);
+        urlCacheRepository.saveWithTTL(hash, originalUrl, redisProperties.timeToLiveInMinutes());
+        String shortUrl = String.format("%s/%s", appProperties.baseUrl(), hash);
         log.info("Created short link '{}' for url: {}", shortUrl, originalUrl);
         return shortUrl;
     }
 
     public String getOriginalUrl(String hash) {
-        String url = urlCacheRepository.getValue(hash);
-        if (url == null || url.isBlank()) {
-            log.info("Original url in cache not found for hash '{}' and will be retrieved from database", hash);
-            Url entity = findUrlByHash(hash);
-            url = entity.getUrl();
+        Optional<String> url = urlCacheRepository.getValue(hash);
+        if (url.isPresent()) {
+            log.info("Found original url '{}' for hash '{}', send to redirect", url, hash);
+            return url.get();
         }
-        log.info("Founded original url '{}' for hash '{}', send to redirect", url, hash);
-        return url;
+        log.info("Original url in cache not found for hash '{}' and will be retrieved from database", hash);
+        Url entity = findUrlByHash(hash);
+        return entity.getUrl();
     }
 
     private Url findUrlByHash(String hash) {
@@ -56,7 +54,6 @@ public class UrlService {
         return Url.builder()
                 .hash(hash)
                 .url(originalUrl)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

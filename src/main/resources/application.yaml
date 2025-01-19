@@ -50,7 +50,12 @@ cache:
   size: 10
   percent-size-to-trigger-update: 0.2
   percent-size-to-update: 0.8
+
+database:
   db-size-to-trigger-update: 20
 
 scheduler:
   cleaner-start-cron-expression: 0 0 0 * * *
+  cleaner-expiration-months: 12
+
+

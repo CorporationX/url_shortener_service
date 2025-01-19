@@ -70,7 +70,7 @@ class UrlControllerTest {
                         .content(url))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.url").exists())
-                .andExpect(jsonPath("$.url").value("must be a valid URL"));
+                .andExpect(jsonPath("$.url").value("Invalid URL"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class UrlControllerTest {
         mockMvc.perform(get(String.format("/%s", hash))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(hash))
-                .andExpect(status().isTemporaryRedirect())
+                .andExpect(status().isFound())
                 .andExpect(header().string("Location", url));
     }
 

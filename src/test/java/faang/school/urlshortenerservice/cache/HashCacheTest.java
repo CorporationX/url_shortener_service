@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.config.CachePropertiesConfig;
+import faang.school.urlshortenerservice.config.CacheProperties;
+import faang.school.urlshortenerservice.config.DatabaseProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +40,10 @@ class HashCacheTest {
 
     @BeforeEach
     public void setUp() {
-        CachePropertiesConfig cachePropertiesConfig = new CachePropertiesConfig(10, 0.2, 0.8, 100);
-        cache = new ArrayBlockingQueue<>(cachePropertiesConfig.size());
-        hashCache = new HashCache(hashRepository, hashGenerator, threadPoolTaskExecutor, cachePropertiesConfig);
+        CacheProperties cacheProperties = new CacheProperties(10, 0.2, 0.8);
+        DatabaseProperties databaseProperties = new DatabaseProperties(20);
+        cache = new ArrayBlockingQueue<>(cacheProperties.size());
+        hashCache = new HashCache(hashRepository, hashGenerator, threadPoolTaskExecutor, cacheProperties, databaseProperties);
         ReflectionTestUtils.setField(hashCache, "cache", cache);
     }
 

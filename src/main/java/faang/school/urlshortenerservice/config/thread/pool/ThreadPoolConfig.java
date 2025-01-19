@@ -9,15 +9,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 public class ThreadPoolConfig {
 
-    private final ThreadPoolTaskExecutorPropertiesConfig threadPoolTaskExecutorPropertiesConfig;
+    private final ThreadPoolTaskExecutorProperties threadPoolTaskExecutorProperties;
 
     @Bean
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(threadPoolTaskExecutorPropertiesConfig.corePoolSize());
-        threadPoolTaskExecutor.setMaxPoolSize(threadPoolTaskExecutorPropertiesConfig.maxPoolSize());
-        threadPoolTaskExecutor.setQueueCapacity(threadPoolTaskExecutorPropertiesConfig.queueCapacity());
-        threadPoolTaskExecutor.setThreadNamePrefix(threadPoolTaskExecutorPropertiesConfig.threadNamePrefix());
+        threadPoolTaskExecutor.setCorePoolSize(threadPoolTaskExecutorProperties.corePoolSize());
+        threadPoolTaskExecutor.setMaxPoolSize(threadPoolTaskExecutorProperties.maxPoolSize());
+        threadPoolTaskExecutor.setQueueCapacity(threadPoolTaskExecutorProperties.queueCapacity());
+        threadPoolTaskExecutor.setThreadNamePrefix(threadPoolTaskExecutorProperties.threadNamePrefix());
         threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;
     }
