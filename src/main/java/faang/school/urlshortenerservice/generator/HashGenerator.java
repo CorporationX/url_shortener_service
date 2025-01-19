@@ -53,10 +53,6 @@ public class HashGenerator {
     public List<Hash> getHashBatchSync() {
         log.info("Getting hash batch synchronously");
         List<Hash> hashes = hashRepository.getHashBatch(hashButhSize);
-        if (hashes.size() < hashButhSize) {
-            generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(hashButhSize));
-        }
         return hashes;
     }
 }

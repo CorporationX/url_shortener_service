@@ -28,11 +28,12 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService executorService;
-    private final Queue<String> hasheQueue = new ArrayBlockingQueue<>(capacity);
+    private Queue<String> hasheQueue;
     private final ReentrantLock lock = new ReentrantLock();
 
     @PostConstruct
     public void init() {
+        hasheQueue = new ArrayBlockingQueue<>(capacity);
         hashGenerator.getHashBatchSync().stream().map(Hash::getHash).forEach(hasheQueue::add);
     }
 
@@ -44,7 +45,7 @@ public class HashCache {
         return hasheQueue.poll();
     }
 
-    public void refillHashCache() {
+    protected void refillHashCache() {
         if (lock.tryLock()) {
             try {
                 if (lock.isLocked()) {
