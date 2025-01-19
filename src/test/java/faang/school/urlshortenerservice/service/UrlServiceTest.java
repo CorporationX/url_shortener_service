@@ -31,7 +31,7 @@ class UrlServiceTest {
     private UrlCasheRepository urlCasheRepository;
 
     @Mock
-    private HashCache hashCashe;
+    private HashCache hashCache;
 
     private String hash;
     private String url;
@@ -96,12 +96,12 @@ class UrlServiceTest {
     public void testGetShotUrl() {
         ReflectionTestUtils.setField(urlService, "urlPath", urlPath);
 
-        when(hashCashe.getHash()).thenReturn(hash);
+        when(hashCache.getHash()).thenReturn(hash);
 
         String result = urlService.getShotUrl(urlDto);
 
         assertTrue(result.endsWith(hash));
-        verify(hashCashe, times(1)).getHash();
+        verify(hashCache, times(1)).getHash();
         verify(urlRepository, times(1)).saveUrlWithNewHash(hash, url);
         verify(urlCasheRepository, times(1)).saveUrl(hash, url);
     }
