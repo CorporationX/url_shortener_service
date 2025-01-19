@@ -27,11 +27,9 @@ class LiquibaseSchemaTestContainersTest {
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
-        // Подменяем настройки подключения для Spring
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
-        // Указываем, где лежит наш changelog (если не прописали в application.yaml)
         registry.add("spring.liquibase.change-log",
                 () -> "classpath:db/changelog/db.changelog-master.yaml");
     }
@@ -43,13 +41,11 @@ class LiquibaseSchemaTestContainersTest {
     void testSchemaCreatedInPostgres() throws Exception {
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
-            // Проверяем таблицу hash
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM hash")) {
                 rs.next();
                 int count = rs.getInt(1);
                 Assertions.assertEquals(0, count, "Table hash should be empty initially");
             }
-            // Проверяем таблицу url
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM url")) {
                 rs.next();
                 int count = rs.getInt(1);
