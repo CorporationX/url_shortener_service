@@ -42,11 +42,17 @@ public class HashCache {
         updateHashes();
     }
 
-    public String getHash() throws InterruptedException {
+    public String getHash() {
         if (needUpdateQueue() && isUpdating.compareAndSet(false, true)) {
             executorService.submit(this::updateHashes);
         }
-        return hashQueue.take();
+        try {
+            return hashQueue.take();
+        } catch (InterruptedException e) {
+            log.error("Thread was interrupted", e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread was interrupted", e);
+        }
     }
 
     private boolean needUpdateQueue() {
@@ -63,7 +69,7 @@ public class HashCache {
             }
 
         } catch (InterruptedException e) {
-            log.error("Thread interrupted", e);
+            log.error("Thread was interrupted", e);
             Thread.currentThread().interrupt();
         } finally {
             isUpdating.set(false);

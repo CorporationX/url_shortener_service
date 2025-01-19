@@ -2,10 +2,13 @@ CREATE SCHEMA IF NOT EXISTS url_shortener_schema;
 
 CREATE TABLE url_shortener_schema.url
 (
-    hash       VARCHAR(6) PRIMARY KEY,
+    id         BIGINT PRIMARY KEY,
+    hash       VARCHAR(6) UNIQUE,
     url        TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_url_hash ON url_shortener_schema.url (hash);
 
 CREATE TABLE url_shortener_schema.hash
 (
