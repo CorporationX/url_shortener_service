@@ -3,12 +3,12 @@ package faang.school.urlshortenerservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.Deque;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCacheService {
     private final Deque<String> hashCache = new ConcurrentLinkedDeque<>();
-    private final ExecutorService executorService;
+    private final ThreadPoolTaskExecutor shortenerTaskExecutor;
     private final HashService hashService;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
@@ -34,9 +34,9 @@ public class HashCacheService {
         return hashCache.pop();
     }
 
-    public void asyncCacheRefill() {
-        CompletableFuture.runAsync(() -> {
-            if (isRefilling.compareAndExchange(false, true)) {
+    public CompletableFuture<Void> asyncCacheRefill() {
+        return CompletableFuture.runAsync(() -> {
+            if (isRefilling.compareAndSet(false, true)) {
                 try {
                     hashCache.addAll(hashService.getAndDeleteHashBatch(cacheCapacity));
                     log.info("Hash cache has been refilled by {} hashes", cacheCapacity);
@@ -44,10 +44,10 @@ public class HashCacheService {
                     isRefilling.set(false);
                 }
             }
-        }, executorService);
+        }, shortenerTaskExecutor);
     }
 
     private boolean isCacheLow() {
-        return hashCache.size() < cacheCapacity * 100 / lowThresholdPercent;
+        return hashCache.size() < (cacheCapacity * lowThresholdPercent / 100);
     }
 }

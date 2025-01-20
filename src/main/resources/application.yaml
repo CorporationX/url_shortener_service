@@ -39,8 +39,9 @@ encoder-values:
 executor-service-properties:
   core-pool-size: 5
   max-pool-size: 10
+  queue-capacity: 1000
   keep-alive-time: 60 #seconds
-  time-unit: SECONDS
+  thread-name-prefix: shortener-thread
 
 hash-properties:
   generate-batch: 1000

@@ -4,11 +4,11 @@ import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 public class HashGenerator {
     private final HashService hashService;
     private final BaseEncoder baseEncoder;
-    private final ExecutorService executorService;
+    private final ThreadPoolTaskExecutor shortenerTaskExecutor;
 
     @Value("${hash-properties.generate-batch}")
     private Long batchSize;
@@ -31,7 +31,7 @@ public class HashGenerator {
                 hashService.saveHashes(baseEncoder.encodeList(uniqueNumbers));
                 log.info("Created and saved {} hashes", uniqueNumbers.size());
             }
-        }, executorService);
+        }, shortenerTaskExecutor);
     }
 
     private boolean isRefillNeeded() {

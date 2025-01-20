@@ -15,7 +15,11 @@ public class Warmup implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        hashGenerator.asyncHashRepositoryRefill().thenRun(hashCacheService::asyncCacheRefill).join();
-        log.info("Warmup finished correctly, HashRepository and HashCache have enough data.");
+        hashGenerator.asyncHashRepositoryRefill().thenCompose(v -> {
+            log.info("Hash repository warmup completed. Starting cache warmup.");
+            return hashCacheService.asyncCacheRefill();
+        }).join();
+
+        log.info("Warmup finished correctly. HashRepository and HashCache have enough data.");
     }
 }
