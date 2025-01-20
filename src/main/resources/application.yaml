@@ -41,3 +41,7 @@ hash-cache:
     core-size: 2
     max-size: 5
     queue-capacity: 50
+
+
+cleaner-scheduler:
+  cron: "0 0 1 * * ?"
