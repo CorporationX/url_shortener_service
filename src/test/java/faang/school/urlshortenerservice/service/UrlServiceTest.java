@@ -1,7 +1,9 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.local_cache.LocalCache;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlServiceValidator;
@@ -9,7 +11,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +44,12 @@ public class UrlServiceTest {
 
     @Mock
     private UrlCacheRepository urlCacheRepository;
+
+    @Mock
+    private HashRepository hashRepository;
+
+    @Captor
+    private ArgumentCaptor<List<Hash>> captor;
 
     @InjectMocks
     private UrlService urlService;
@@ -95,6 +106,22 @@ public class UrlServiceTest {
 
         assertEquals(expectedUrl, actualUrl);
         verify(urlRepository, times(1)).findByHash(hash);
+    }
+    @Test
+    void testRemoveOldUrl() {
+        Url url = new Url();
+        url.setHash("aaaa");
+
+        when(urlRepository.findAndRemoveAllOldEntity()).thenReturn(List.of(url));
+
+        urlService.removeOldUrl();
+
+        verify(urlRepository).findAndRemoveAllOldEntity();
+        verify(hashRepository).saveAll(captor.capture());
+
+        List<Hash> result = captor.getValue();
+
+        assertEquals(result.get(0).getHash(), url.getHash());
     }
 
     @Test

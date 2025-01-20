@@ -12,7 +12,7 @@ public class UrlServiceValidator {
 
     public void validateHash(String hash) {
         if (hash == null || hash.isBlank() || hash.length() > 7) {
-            log.error("hash was null or blank or with incorrect length");
+            log.warn("hash was null or blank or with incorrect length");
             throw new IllegalArgumentException("incorrect given hash: " + hash);
         }
     }

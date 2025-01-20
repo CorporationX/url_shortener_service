@@ -52,7 +52,6 @@ public class HashGenerator {
     }
 
     @Transactional
-    @Scheduled(cron = "${hash.cache.generate_hash_time}")
     public void generateHash() {
         log.info("check the database for a non-redundant number of values");
         while (hashRepository.count() <= hashForSchedulerSize) {

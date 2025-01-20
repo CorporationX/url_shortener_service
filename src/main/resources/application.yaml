@@ -28,7 +28,7 @@ spring:
         payment: payment_topic
 
 server:
-  port: 8080
+  port: 8087
 
 logging:
   level:

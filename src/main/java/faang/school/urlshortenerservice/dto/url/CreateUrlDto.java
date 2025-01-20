@@ -5,7 +5,7 @@ import lombok.Data;
 import java.net.URL;
 
 @Data
-public class CreateNewUrlDto {
+public class CreateUrlDto {
     @org.hibernate.validator.constraints.URL
     private URL url;
 }

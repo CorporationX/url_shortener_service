@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.url.CreateNewUrlDto;
+import faang.school.urlshortenerservice.dto.url.CreateUrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,17 +46,17 @@ class UrlControllerTest {
 
     @Test
     void testCreateShortUrl() throws Exception {
-        CreateNewUrlDto createNewUrlDto = new CreateNewUrlDto();
+        CreateUrlDto createUrlDto = new CreateUrlDto();
         URL url = new URL("http://main-long.url/abc/adfaasdsdf");
-        createNewUrlDto.setUrl(url);
+        createUrlDto.setUrl(url);
 
         URL shortUrl = new URL("http://shortUrl.url/ssss");
 
         when(urlService.createNewShortUrl(any(URL.class))).thenReturn(shortUrl);
 
-        mockMvc.perform(post("/api/v1/shorter/shortUrl/new")
+        mockMvc.perform(post("/api/v1/shorter/shortUrl")
                 .header("x-user-id", 1)
-                .content(objectMapper.writeValueAsString(createNewUrlDto))
+                .content(objectMapper.writeValueAsString(createUrlDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(shortUrl.toString()));

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.url.CreateNewUrlDto;
+import faang.school.urlshortenerservice.dto.url.CreateUrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +17,8 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/shortUrl/new")
-    public java.net.URL createShortUrl(@RequestBody CreateNewUrlDto dto) {
+    @PostMapping("/shortUrl")
+    public java.net.URL createShortUrl(@RequestBody CreateUrlDto dto) {
         return urlService.createNewShortUrl(dto.getUrl());
     }
 
