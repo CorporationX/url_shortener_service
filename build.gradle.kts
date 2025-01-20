@@ -16,7 +16,6 @@ dependencies {
     /**
      * Spring boot starters
      */
-    implementation("org.redisson:redisson-spring-boot-starter:3.39.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
