@@ -1,7 +1,9 @@
 package faang.school.urlshortenerservice.aop;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -35,7 +37,7 @@ public class UrlServiceAspect {
             url.toURI();
         } catch (MalformedURLException | URISyntaxException e) {
             log.error("Валидация НЕ пройдена!");
-            throw new RuntimeException(e);
+            throw new ValidationException(e.getMessage());
         }
     }
 

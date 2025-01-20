@@ -25,6 +25,7 @@ public class HashCache {
     private float percent;
     @Value("${hashCash.batchSizeForRedis}")
     private int batchSizeForRedis;
+
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private BlockingQueue<Hash> caches;
     private final HashGenerator hashGenerator;
