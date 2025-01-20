@@ -1,0 +1,17 @@
+CREATE SEQUENCE IF NOT EXISTS unique_hash_number_seq
+    START WITH 238328
+    INCREMENT BY 1;
+
+CREATE TABLE hash (
+    id BIGSERIAL NOT NULL,
+    hash VARCHAR(7) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (hash)
+);
+
+CREATE TABLE url (
+    hash VARCHAR(7) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
