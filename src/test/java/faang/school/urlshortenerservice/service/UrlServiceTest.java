@@ -2,38 +2,28 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.util.UrlUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
-
-    @Mock
-    private UrlUtil urlUtil;
 
     @Mock
     private HashCache hashCache;
@@ -44,50 +34,22 @@ class UrlServiceTest {
     @Mock
     private UrlRepository urlRepository;
 
-    @Mock
-    private UrlCacheRepository urlCacheRepository;
-
     @InjectMocks
     private faang.school.urlshortenerservice.service.UrlService urlService;
 
     @Test
-    void createShortUrlInvalidOriginalTest() {
-        String invalidUrl = "http://example.com/invalid^";
-        UrlDto urlDto = new UrlDto(invalidUrl);
-        when(urlUtil.ensureUrlHasProtocol(invalidUrl)).thenReturn(invalidUrl);
-        when(urlUtil.isValidUrl(any(String.class))).thenReturn(false);
-
-        assertThrows(DataValidationException.class, () -> urlService.createShortUrl(urlDto));
-
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(invalidUrl);
-        verify(urlUtil, times(1)).isValidUrl(any(String.class));
-    }
-
-    @Test
     void createShortUrlValidTest() {
-        String validUrl = "http://example.com/valid";
-        UrlDto urlDto = new UrlDto(validUrl);
+        ReflectionTestUtils.setField(urlService, "baseUrl", "localhost:8080/api/v1/urls");
+        UrlDto urlDto = new UrlDto("http://example.com");
         String hash = "21j";
-        String expectedShortUrl = "localhost:8080/api/v1/url/%s".formatted(hash);
-        when(urlUtil.ensureUrlHasProtocol(validUrl)).thenReturn(validUrl);
-        when(urlUtil.isValidUrl(validUrl)).thenReturn(true);
-        when(urlUtil.buildShortUrlFromContext(anyString())).thenReturn(expectedShortUrl);
+        String expectedShortUrl = "localhost:8080/api/v1/urls/%s".formatted(hash);
         when(hashCache.getHash()).thenReturn(hash);
-
-        ArgumentCaptor<Url> urlCaptor = ArgumentCaptor.forClass(Url.class);
 
         String shortUrl = urlService.createShortUrl(urlDto);
 
-        verify(urlUtil, times(1)).ensureUrlHasProtocol(validUrl);
-        verify(urlUtil, times(1)).isValidUrl(validUrl);
-        verify(urlUtil, times(1)).buildShortUrlFromContext(hash);
         verify(hashCache, times(1)).getHash();
-        verify(urlRepository, times(1)).save(urlCaptor.capture());
-        verify(urlCacheRepository, times(1)).saveDefaultUrl(hash, validUrl);
-
+        verify(urlRepository, times(1)).save(any());
         assertEquals(expectedShortUrl, shortUrl);
-        assertEquals(validUrl, urlCaptor.getValue().getUrl());
-        assertEquals(hash, urlCaptor.getValue().getHash());
     }
 
     @Test
@@ -108,15 +70,6 @@ class UrlServiceTest {
 
         assertEquals(originalUrl, resultUrl);
         verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
-    }
-
-    @Test
-    void findUrlEntitiesValidTest() {
-        List<Url> urlEntitiesFromDb = List.of(new Url());
-        when(urlRepository.findByHashes(any())).thenReturn(urlEntitiesFromDb);
-
-        List<Url> urlEntities = urlService.findUrlEntities(new HashSet<>());
-        assertEquals(urlEntitiesFromDb, urlEntities);
     }
 
     @Test

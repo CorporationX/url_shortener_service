@@ -1,10 +1,10 @@
 package faang.school.urlshortenerservice.config.cache.url_hash_cache;
 
-import faang.school.urlshortenerservice.interceptor.UrlHashCachingInterceptor;
-import faang.school.urlshortenerservice.properties.short_url.UrlCacheProperties;
+import faang.school.urlshortenerservice.interceptor.UrlCachingInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +20,13 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class UrlHashCacheConfig {
 
-    private final UrlCacheProperties urlCacheProperties;
+    @Value("${short-url.cache.ttl-minutes}")
+    private int ttlMinutes;
 
     @Bean(name = "urlHashCacheManager")
     public CacheManager cacheManager(JedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(urlCacheProperties.getDefaultTtlMinutes()))
+                .entryTtl(Duration.ofMinutes(ttlMinutes))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .disableCachingNullValues();
@@ -37,7 +38,7 @@ public class UrlHashCacheConfig {
     }
 
     @Bean
-    public DefaultPointcutAdvisor urlHashCachingAdvisor(UrlHashCachingInterceptor urlHashCachingInterceptor) {
+    public DefaultPointcutAdvisor urlHashCachingAdvisor(UrlCachingInterceptor urlHashCachingInterceptor) {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
         pointcut.setExpression("""
                         execution(@org.springframework.cache.annotation.Cacheable 

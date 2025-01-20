@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.BaseContextIT;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.properties.short_url.UrlCacheProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,11 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class UrlControllerIT extends BaseContextIT {
 
-    @Value("${short-url.base-path}")
-    private String endpointBasePath;
+    @Value("${short-url.base-url}")
+    private String baseUrl;
 
-    @Autowired
-    private UrlCacheProperties urlCacheProperties;
+    @Value("${short-url.cache.ttl-minutes}")
+    private int ttlMinutes;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -48,36 +46,37 @@ public class UrlControllerIT extends BaseContextIT {
 
     @Test
     void createShortUrlNonValidUrlLength() throws Exception {
-        long requesterId = 11L;
-        String firstOriginalUrl = "y.c";
-        String secondOriginalUrl = "%s.com".formatted("".repeat(550));
-        UrlDto firstUrlDto = new UrlDto(firstOriginalUrl);
-        UrlDto secondUrlDto = new UrlDto(secondOriginalUrl);
+        String originalUrl = "https://%s.com".formatted("m".repeat(550));
+        UrlDto urlDto = new UrlDto(originalUrl);
 
-        performCreatingShortUrlExpectBadRequest(firstUrlDto, requesterId);
-        performCreatingShortUrlExpectBadRequest(secondUrlDto, requesterId);
+        performCreatingShortUrlExpectBadRequest(urlDto);
     }
 
     @Test
     void createShortUrlInvalidStructureTest() throws Exception {
-        long requesterId = 11L;
         String firstOriginalUrl = "hp://youtube.com";
         String secondOriginalUrl = "youtube.com^^^";
         UrlDto firstUrlDto = new UrlDto(firstOriginalUrl);
         UrlDto secondUrlDto = new UrlDto(secondOriginalUrl);
 
-        performCreatingShortUrlExpectBadRequest(firstUrlDto, requesterId);
-        performCreatingShortUrlExpectBadRequest(secondUrlDto, requesterId);
+        performCreatingShortUrlExpectBadRequest(firstUrlDto);
+        performCreatingShortUrlExpectBadRequest(secondUrlDto);
+    }
+
+    @Test
+    void createShortUrlNullUrlTest() throws Exception {
+        UrlDto urlDto = new UrlDto();
+        performCreatingShortUrlExpectBadRequest(urlDto);
     }
 
     @Test
     void createShortUrlTest() throws Exception {
         long requesterId = 11L;
-        String originalUrl = "youtube.com";
+        String originalUrl = "https://youtube.com";
         UrlDto urlDto = new UrlDto(originalUrl);
         String urlRequest = objectMapper.writeValueAsString(urlDto);
 
-        MvcResult result = mockMvc.perform(post(endpointBasePath)
+        MvcResult result = mockMvc.perform(post("/api/v1/urls")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))
@@ -86,25 +85,21 @@ public class UrlControllerIT extends BaseContextIT {
 
         String shortUrl = result.getResponse().getContentAsString();
         String hash = getHashFromUrl(shortUrl);
-        String redisKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
-        System.out.println("REDIS KEY:" + redisKey);
 
         assertTrue(existsByHash("url", hash));
         assertFalse(existsByHash("hash", hash));
-        assertEquals(Boolean.TRUE, redisTemplate.hasKey(redisKey));
-        assertTrue(Objects.requireNonNullElse(redisTemplate.getExpire(redisKey), 0L)
-                <= urlCacheProperties.getDefaultTtlMinutes() * 60L);
     }
 
     @Test
     @Sql("/db/test_sql/insert_url_records.sql")
     void redirectValidTest() throws Exception {
         long requesterId = 11L;
-        String originalUrl = "youtube.com";
+        String originalUrl = "https://youtube.com";
         String hash = "hash1";
-        String redisKey = "%s::%s".formatted(urlCacheProperties.getDefaultCacheName(), hash);
+        String cacheName = "shortUrls";
+        String redisKey = "%s::%s".formatted(cacheName, hash);
 
-        MvcResult redirectUrlResponse = mockMvc.perform(get("%s/%s".formatted(endpointBasePath, hash))
+        MvcResult redirectUrlResponse = mockMvc.perform(get("%s/%s".formatted("/api/v1/urls", hash))
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("x-user-id", requesterId))
                 .andExpect(status().is3xxRedirection())
@@ -114,17 +109,16 @@ public class UrlControllerIT extends BaseContextIT {
 
         assertTrue(existsByHash("url", hash));
         assertFalse(existsByHash("hash", hash));
-        assertNotNull(redisTemplate.opsForZSet().score(urlCacheProperties.getPopularCacheName(), hash));
         assertEquals(Boolean.TRUE, redisTemplate.hasKey(redisKey));
-        assertTrue(Objects.requireNonNullElse(redisTemplate.getExpire(redisKey), 0L)
-                <= urlCacheProperties.getDefaultTtlMinutes() * 60L);
-        assertEquals("http://%s".formatted(originalUrl), redirectedUrl);
+        assertTrue(Objects.requireNonNullElse(redisTemplate.getExpire(redisKey), 0L) <= ttlMinutes * 60L);
+        assertEquals(originalUrl, redirectedUrl);
     }
 
-    private void performCreatingShortUrlExpectBadRequest(UrlDto urlDto, long requesterId) throws Exception {
+    private void performCreatingShortUrlExpectBadRequest(UrlDto urlDto) throws Exception {
+        long requesterId = 11L;
         String urlRequest = objectMapper.writeValueAsString(urlDto);
 
-        mockMvc.perform(post(endpointBasePath)
+        mockMvc.perform(post("/api/v1/urls")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(urlRequest)
                         .header("x-user-id", requesterId))
