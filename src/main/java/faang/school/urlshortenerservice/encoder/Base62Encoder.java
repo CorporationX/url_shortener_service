@@ -17,7 +17,7 @@ public class Base62Encoder implements BaseEncoder {
                 .toList();
     }
 
-    private String encodeNumber(long number) {
+    public String encodeNumber(long number) {
         StringBuilder builder = new StringBuilder(1);
         while (number > 0) {
             builder.append(characters.charAt((int) (number % base)));
