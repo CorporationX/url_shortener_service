@@ -12,7 +12,7 @@ public class OpenApiConfig {
     public OpenAPI urlShortenerOpenApi() {
         return new OpenAPI()
                 .info(new Info().title("Deema's URL shortener API")
-                        .description("Made by Deema, good luck =).")
+                        .description("Made by Deema, good luck and have fun =).")
                         .version("v1.0"));
     }
 }

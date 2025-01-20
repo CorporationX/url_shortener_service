@@ -21,8 +21,8 @@ public class HashGenerator {
     @Value("${hash-properties.generate-batch}")
     private Long batchSize;
 
-    @Value("${hash-properties.threshold-percent}")
-    private int lowThresholdPercent;
+    @Value("${hash-properties.cache-threshold-rate}")
+    private double lowThresholdPercent;
 
     public CompletableFuture<Void> asyncHashRepositoryRefill() {
         return CompletableFuture.runAsync(() -> {
@@ -35,6 +35,6 @@ public class HashGenerator {
     }
 
     private boolean isRefillNeeded() {
-        return hashService.getHashRepositorySize() < batchSize * 100 / lowThresholdPercent;
+        return hashService.getHashRepositorySize() < batchSize * lowThresholdPercent;
     }
 }

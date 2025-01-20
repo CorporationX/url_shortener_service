@@ -14,7 +14,7 @@ spring:
       hibernate:
         format_sql: true
         generate_statistics: true
-        jdbc.batch_size: 30
+        jdbc.batch_size: 500
         order_inserts: true
 
   liquibase:
@@ -24,7 +24,7 @@ spring:
     redis:
       port: 6379
       host: localhost
-      ttl: 60 #minutes
+      ttl: 3600 #seconds
 
 server:
   port: 8080
@@ -39,14 +39,14 @@ encoder-values:
 executor-service-properties:
   core-pool-size: 5
   max-pool-size: 10
-  queue-capacity: 1000
-  keep-alive-time: 60 #seconds
+  queue-capacity: 500
+  keep-alive-time: 30 #seconds
   thread-name-prefix: shortener-thread
 
 hash-properties:
-  generate-batch: 1000
-  cache-capacity: 100
-  threshold-percent: 20
+  generate-batch: 10000
+  cache-capacity: 1000
+  cache-threshold-rate: 0.2
 
 url-prefix: localhost:8080/
 

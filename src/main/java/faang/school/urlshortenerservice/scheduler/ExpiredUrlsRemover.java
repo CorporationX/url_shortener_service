@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class expiredUrlsRemover {
+public class ExpiredUrlsRemover {
     private final UrlService urlService;
     private final HashService hashService;
 

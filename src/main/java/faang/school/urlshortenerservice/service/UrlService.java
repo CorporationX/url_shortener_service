@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.repository.UrlRedisCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class UrlService {
     private final HashCacheService hashCacheService;
     private final UrlRepository urlRepository;
     private final UrlRedisCacheService urlRedisCacheService;
-    private final UrlRedisCacheRepository urlRedisCacheRepository;
+
 
     @Value("${url-prefix}")
     private String urlPrefix;
@@ -47,7 +46,7 @@ public class UrlService {
 
     public String getLongUrl(String hash) {
         String longUrl;
-        Optional<String> cacheUrl = urlRedisCacheRepository.getUrl(hash);
+        Optional<String> cacheUrl = urlRedisCacheService.getUrl(hash);
 
         if (cacheUrl.isPresent()) {
             longUrl = cacheUrl.get();

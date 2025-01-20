@@ -15,7 +15,7 @@ public class UrlRedisCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveUrl(String hash, String longUrl) {
-        redisTemplate.opsForValue().set(hash, longUrl, redisProperties.ttl(), TimeUnit.MINUTES);
+        redisTemplate.opsForValue().setIfAbsent(hash, longUrl, redisProperties.ttl(), TimeUnit.SECONDS);
     }
 
     public Optional<String> getUrl(String hash) {

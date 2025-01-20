@@ -26,10 +26,9 @@ public class HashService {
         return result;
     }
 
-    public List<Hash> saveHashes(List<Hash> hashes) {
-        List<Hash> result = hashRepository.saveAll(hashes);
-        log.info("Saved {} new hashes to hash repository.", result.size());
-        return result;
+    public void saveHashes(List<Hash> hashes) {
+        hashRepository.saveAll(hashes);
+        log.info("Saved {} new hashes to hash repository.", hashes.size());
     }
 
     public Long getHashRepositorySize() {
