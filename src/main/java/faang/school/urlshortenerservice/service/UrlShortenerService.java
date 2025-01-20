@@ -40,7 +40,7 @@ public class UrlShortenerService {
             return savedUrl.get().getUrl();
         }
 
-        throw new UrlNotFoundException(String.format("Url not found by hash '%s", hash));
+        throw new UrlNotFoundException("Url not found by hash", hash);
     }
 
 }
