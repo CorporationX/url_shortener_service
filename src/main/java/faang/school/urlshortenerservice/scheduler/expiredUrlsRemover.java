@@ -27,7 +27,7 @@ public class expiredUrlsRemover {
     @Scheduled(cron = "${scheduler.delete-expired-urls-cron}")
     public void deleteExpiredUrls() {
         log.info("Deleting expired urls started");
-        LocalDateTime expirationDate = LocalDateTime.now().minusMinutes(expirationPeriodMonths);
+        LocalDateTime expirationDate = LocalDateTime.now().minusMonths(expirationPeriodMonths);
         List<Hash> freedHashes = urlService.deleteExpiredLinks(expirationDate);
 
         if (freedHashes.isEmpty()) {
