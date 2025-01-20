@@ -24,7 +24,7 @@ public class UrlService {
     @Transactional
     public String getOriginalUrl(String hash) {
         String cashedUrl = urlCasheRepository.getUrl(hash);
-        if (cashedUrl != null && !cashedUrl.trim().isEmpty()) {
+        if (cashedUrl != null) {
             return cashedUrl;
         }
         try {

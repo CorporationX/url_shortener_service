@@ -18,7 +18,7 @@ import java.net.URL;
 public class UrlDto {
 
     @NotBlank(message = "URL can not be blank")
-    @Pattern(regexp = "^(https?|ftp|mailto|file)://.*$",
+    @Pattern(regexp = "^(https?|http/ftp|mailto|file)://.*$",
             message = "URL must start with a valid protocol (http, https, ftp, mailto, file)")
     private String url;
 }

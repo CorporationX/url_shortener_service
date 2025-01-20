@@ -6,9 +6,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,8 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 @Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Url {
 
     @Id

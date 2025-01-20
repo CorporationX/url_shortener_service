@@ -12,7 +12,7 @@ import java.time.Duration;
 public class UrlCasheRepository {
     private final RedisTemplate<String, String> redisTemplate;
     @Value("${cache.ttl-duration}")
-    private long ttlDuration;
+    private   Duration ttlDuration;
 
     public String getUrl(String hash) {
         String originalUrl = redisTemplate.opsForValue().get(hash);
