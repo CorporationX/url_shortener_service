@@ -4,7 +4,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -18,21 +17,24 @@ spring:
         order_inserts: true
         order_updates: true
         generate_statistics: true
+  crontab:
+    deleteOldHashes: 0 0 0 * * ?
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   task:
-   execution:
+    execution:
       pool:
         core-size: 5
         max-size: 10
         queue-capacity: 100
-      thread-name-prefix: "customThreadPool"
-
-
+      thread-name-prefix: "hashGeneratorThreadPool"
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
-  port: 8088
-
+  port: 8087
 logging:
   level:
     root: info
@@ -41,6 +43,6 @@ hash:
   generate:
     size: 10
   cache:
-      threshold:
-        percentage: 20
-        size: 10
+    threshold:
+      percentage: 20
+      size: 10

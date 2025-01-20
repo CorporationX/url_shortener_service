@@ -37,6 +37,7 @@ public class Base62Encoder {
             number /= BASE;
         } while (number > 0);
 
-        return result.reverse().toString();
+        String encoded = result.reverse().toString();
+        return String.format("%6s", encoded).replace(' ', '0');
     }
 }

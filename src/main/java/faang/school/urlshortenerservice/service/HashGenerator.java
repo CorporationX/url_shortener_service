@@ -21,11 +21,11 @@ public class HashGenerator {
     @Value("${hash.generate.size}")
     public Integer size;
 
-    @Async("customThreadPool")
+    @Async("hashGeneratorThreadPool")
     @Transactional
     public void generateHashes() {
         List<Long> listUniqueNumbers = hashRepository.getUniqueNumbers(size);
         List<String> hashList = base62Encoder.encode(listUniqueNumbers);
-        hashRepository.saveHashes(hashList);
+        hashRepository.saveAllHashes(hashList);
     }
 }

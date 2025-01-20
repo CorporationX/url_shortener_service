@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -21,7 +22,7 @@ public class HashCache {
     @Value("${hash.cache.threshold.percentage}")
     private double thresholdPercentage;
 
-    private LinkedBlockingQueue<String> hashQueue ;
+    private LinkedBlockingQueue<String> hashQueue;
 
     private final ExecutorService executorService;
     private final AtomicBoolean isRefreshing = new AtomicBoolean(false);
@@ -32,17 +33,27 @@ public class HashCache {
 
     @PostConstruct
     public void initializeQueue() {
+        log.info("Initializing hash queue with cache size: {}", cacheSize);
         this.hashQueue = new LinkedBlockingQueue<>(cacheSize);
     }
 
     public String getHash() {
         double threshold = cacheSize * (thresholdPercentage / 100.0);
-
         if (hashQueue.size() > threshold) {
             return hashQueue.poll();
         }
         triggerCacheRefresh();
-        return hashQueue.poll();
+        try {
+            String hash = hashQueue.poll(5, TimeUnit.SECONDS);
+            if (hash == null) {
+                log.warn("Failed to retrieve hash within the timeout period.");
+            }
+            return hash;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted while waiting for a hash.", e);
+            return null;
+        }
     }
 
     private void triggerCacheRefresh() {
@@ -54,7 +65,7 @@ public class HashCache {
                     hashGenerator.generateHashes();
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 } finally {
                     isRefreshing.set(false);
                 }

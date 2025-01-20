@@ -2,13 +2,11 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Validated
@@ -20,12 +18,25 @@ public class UrlController {
 
     @PostMapping
     public ResponseEntity<String> shortenUrl(@RequestBody UrlDto urlDto) {
-        if (isValidUrl(urlDto.url())) {
+        if (!isValidUrl(urlDto.url())) {
             return ResponseEntity.badRequest().body("Invalid URL format.");
         }
         String shortUrl = urlService.createShortUrl(urlDto.url());
         return ResponseEntity.ok(shortUrl);
     }
+
+    @GetMapping("/{hash}")
+    public ResponseEntity<Void> redirectToUrl(@PathVariable String hash) {
+        try {
+            String longUrl = urlService.getUrlByHash(hash);
+            return ResponseEntity.status(302)
+                    .header("Location", longUrl)
+                    .build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     private boolean isValidUrl(String url) {
         try {
