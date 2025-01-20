@@ -23,6 +23,8 @@ public class CacheConfig {
     private String redisHost;
     @Value("${spring.data.redis.port}")
     private int redisPort;
+    @Value("${spring.cache.redis.time-to-live:1}")
+    private int TTL;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -33,9 +35,10 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(1))
+                .entryTtl(Duration.ofDays(TTL))
                 .disableCachingNullValues()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(cacheConfiguration)

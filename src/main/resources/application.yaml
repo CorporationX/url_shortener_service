@@ -1,4 +1,8 @@
 spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres

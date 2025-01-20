@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
-import springfox.documentation.annotations.Cacheable;
 
 @Slf4j
 @Service
@@ -20,10 +19,10 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlValidator urlValidator;
 
-    @CachePut("url")
+    @CachePut(value = "url", key = "#urlDto.url")
     public String shortenUrl(UrlDto urlDto) {
         var urlOptional = urlValidator.findByUrl(urlDto.getUrl());
-        if(urlOptional != null) {
+        if (urlOptional != null) {
             return urlOptional.getHash();
         }
         String hash = hashCache.getHash();
