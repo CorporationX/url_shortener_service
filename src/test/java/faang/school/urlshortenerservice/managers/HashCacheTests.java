@@ -42,7 +42,7 @@ public class HashCacheTests {
     @InjectMocks
     private HashCache hashCache;
 
-    private final int capacity = 10;
+    private final int capacity = 5;
     private final double refillThreshold = 0.5;
     private final Queue<String> hasheQueue = new ArrayBlockingQueue<>(capacity);
     private final String hasheQueueName = "hasheQueue";
@@ -84,11 +84,11 @@ public class HashCacheTests {
     @Test
     public void testGetHash() throws NoSuchFieldException, IllegalAccessException {
         Queue<String> hasheQueue = (Queue<String>) getPrivateField(hashCache, hasheQueueName);
-        hasheQueue.add("hash1");
+        hasheQueue.addAll(List.of("hash11", "hash2", "hash3"));
 
         String hash = hashCache.getHash();
 
-        assertEquals("hash1", hash);
+        assertEquals("hash11", hash);
     }
 
 

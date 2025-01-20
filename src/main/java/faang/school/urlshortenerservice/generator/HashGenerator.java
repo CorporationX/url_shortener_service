@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,6 @@ public class HashGenerator {
     private int hashButhSize;
 
     @Transactional
-    @Scheduled(cron = "${hash.generator.cron}")
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
         log.info("Generating hash batch");
