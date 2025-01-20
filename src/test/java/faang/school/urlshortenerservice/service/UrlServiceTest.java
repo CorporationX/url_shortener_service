@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exception.InvalidURLException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -42,7 +41,7 @@ class UrlServiceTest {
     @InjectMocks
     private UrlService urlService;
 
-    private String hostName = "http:/shrt.com/";
+    private String hostName = "https://localhost:8099/";
     private LongUrlDto longUrlDto;
     private String hash;
 
@@ -75,70 +74,37 @@ class UrlServiceTest {
     void test_createShortUrl_success() {
         when(hashCacheService.getHashFromCache()).thenReturn(hash);
 
-        ShortUrlDto result = urlService.createShortUrl(longUrlDto);
+        String result = urlService.createShortUrl(longUrlDto);
 
         verify(urlRepository, times(1)).save(any(ShortUrl.class));
         verify(urlCacheService, times(1)).saveToCache(hash, longUrlDto.url());
 
         assertNotNull(result);
-        assertEquals("http:/shrt.com/123abc", result.shortUrl());
-    }
-
-    @Test
-    @DisplayName("Test validation of short URL")
-    void test_getUrl_validateShortUrl() {
-        String shortUrl = "https://shrt.com/123abc";
-        hash = "123abc";
-
-        when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.of(anyString()));
-
-        urlService.getUrl(shortUrl);
-
-        assertDoesNotThrow(() -> urlService.getUrl("https://shrt.com/a1b2c3"));
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("notRealUrl"));
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("https://shrt.com/a1b2c3z"));
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("https://some.com/a1b2c3"));
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("https://shrt.com"));
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("https://shrt.com/"));
-    }
-
-    @Test
-    @DisplayName("Test parsing of short URL")
-    void test_getUrl_parseHashFromShortURL() {
-        String shortUrl = "https://shrt.com/123abc";
-        hash = "123abc";
-
-        when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.of(anyString()));
-
-        urlService.getUrl(shortUrl);
-
-        verify(urlCacheService, times(1)).getFromCache(hash);
-
-        assertThrows(InvalidURLException.class, () -> urlService.getUrl("notRealUrl"));
+        assertEquals("https://localhost:8099/123abc", result);
     }
 
     @Test
     @DisplayName("Test get real URL from cache success")
     void test_getUrl_WhenValidInput_ReturnsFromCache() {
-        String shortUrl = "https://shrt.com/abc";
+        String hash = "abc";
         String longUrl = "https://google.com";
 
         when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.of(longUrl));
 
-        LongUrlDto result = urlService.getUrl(shortUrl);
+        String result = urlService.getUrl(hash);
 
         verify(urlCacheService, times(1)).getFromCache(anyString());
         verify(urlRepository, never()).findById(anyString());
         verify(urlCacheService, never()).saveToCache(anyString(), anyString());
 
         assertNotNull(result);
-        assertEquals(longUrl, result.url());
+        assertEquals(longUrl, result);
     }
 
     @Test
     @DisplayName("Test get real URL from database")
     void test_getUrl_WhenValidInput_ReturnsFromDB() {
-        String shortUrl = "https://shrt.com/abc";
+        String hash = "abc";
         String longUrl = "https://google.com";
         ShortUrl urlEntity = ShortUrl.builder()
                 .url(longUrl)
@@ -147,25 +113,25 @@ class UrlServiceTest {
         when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findById(anyString())).thenReturn(Optional.of(urlEntity));
 
-        LongUrlDto result = urlService.getUrl(shortUrl);
+        String result = urlService.getUrl(hash);
 
         verify(urlCacheService, times(1)).getFromCache(anyString());
         verify(urlRepository, times(1)).findById(anyString());
         verify(urlCacheService, times(1)).saveToCache(anyString(), anyString());
 
         assertNotNull(result);
-        assertEquals(longUrl, result.url());
+        assertEquals(longUrl, result);
     }
 
     @Test
     @DisplayName("Test get real URL from database fail - no such url in DB")
     void test_getUrl_WhenInvalidInput_ReturnsException() {
-        String shortUrl = "https://shrt.com/abc";
+        String hash = "abc";
 
         when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> urlService.getUrl(shortUrl));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> urlService.getUrl(hash));
         assertEquals("URL matching provided hash 'abc' not found", ex.getMessage());
 
         verify(urlCacheService, times(1)).getFromCache(anyString());

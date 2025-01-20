@@ -51,11 +51,6 @@ public class HashCacheService {
             hashService.uploadHashInDatabaseIfNecessary();
     }
 
-    private boolean isEnoughLocalCacheCapacity() {
-        long lowerBoundCapacity = (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio());
-        return localCache.size() >= lowerBoundCapacity;
-    }
-
     public List<Hash> getHashesFromDatabaseAndWaitUntilDone() {
         try {
             return hashService.getHashesFromDatabase().get();
@@ -65,6 +60,11 @@ public class HashCacheService {
             throw new IllegalStateException(String.format(
                     "Error during hash download from database. Error: %s", e.getMessage()), e);
         }
+    }
+
+    private boolean isEnoughLocalCacheCapacity() {
+        long lowerBoundCapacity = (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio());
+        return localCache.size() >= lowerBoundCapacity;
     }
 
     private LocalCacheException createLocalCacheException() {

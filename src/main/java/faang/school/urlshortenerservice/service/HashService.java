@@ -25,10 +25,13 @@ public class HashService {
     @Async("hashServiceExecutor")
     public CompletableFuture<Void> uploadHashInDatabaseIfNecessary() {
         if (!isEnoughHashCapacity() && uploadInProgressFlag.compareAndSet(false, true)) {
-            List<Hash> hashes = generateBatch(urlShortenerProperties.hashAmountToGenerate());
-            hashRepository.saveAll(hashes);
-            uploadInProgressFlag.set(false);
-            log.info("{} hashes added to database", hashes.size());
+            try {
+                List<Hash> hashes = generateBatch(urlShortenerProperties.hashAmountToGenerate());
+                hashRepository.saveAll(hashes);
+                log.info("{} hashes added to database", hashes.size());
+            } finally {
+                uploadInProgressFlag.set(false);
+            }
         }
         return CompletableFuture.completedFuture(null);
     }

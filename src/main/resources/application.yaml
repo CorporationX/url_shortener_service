@@ -41,7 +41,7 @@ spring:
       ttl-seconds: 7200
 
 server:
-  port: 8080
+  port: 8099
 
 logging:
   level:
@@ -52,7 +52,7 @@ encoder:
     alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 url-shortener:
-  host-name: https://shrt.com/
+  host-name: http://localhost:8099/
   local-cache-capacity: 12_000
   hash-amount-to-local-cache: 10_000
   local-cache-threshold-ratio: 0.2

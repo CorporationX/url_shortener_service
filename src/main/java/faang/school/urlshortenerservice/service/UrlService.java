@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exception.InvalidURLException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -29,7 +28,7 @@ public class UrlService {
     @Value("${url-shortener.host-name}")
     private String hostName;
 
-    public ShortUrlDto createShortUrl(LongUrlDto longUrl) {
+    public String createShortUrl(LongUrlDto longUrl) {
         String url = longUrl.url();
         validateLongUrl(url);
 
@@ -45,17 +44,15 @@ public class UrlService {
         String shortUrl = hostName.concat(hash);
 
         log.info("Short URL '{}' created for real URL '{}'", shortUrl, url);
-        return new ShortUrlDto(shortUrl);
+        return shortUrl;
     }
 
-    public LongUrlDto getUrl(String shortUrl) {
-        validateShortUrl(shortUrl);
-        String hash = parseHashFromShortUrl(shortUrl);
+    public String getUrl(String hash) {
 
         Optional<String> urlFromCache = urlCacheService.getFromCache(hash);
         if (urlFromCache.isPresent()) {
             log.info("Long URL {} returned from cache", urlFromCache.get());
-            return new LongUrlDto(urlFromCache.get());
+            return urlFromCache.get();
         }
 
         String urlFromDB = getUrlFromDataBase(hash);
@@ -63,7 +60,7 @@ public class UrlService {
         urlCacheService.saveToCache(hash, urlFromDB);
 
         log.info("Long URL {} returned from DataBase", urlFromDB);
-        return new LongUrlDto(urlFromDB);
+        return urlFromDB;
     }
 
     private void validateLongUrl(String longUrl) {
@@ -71,32 +68,6 @@ public class UrlService {
             new URL(longUrl).toURI();
         } catch (MalformedURLException | URISyntaxException e) {
             throw new InvalidURLException(String.format("Invalid URL provided: %s. Error: %s", longUrl, e.getMessage()));
-        }
-    }
-
-    private void validateShortUrl(String shortUrl) {
-        try {
-
-            URL url = new URL(shortUrl);
-            String shortUrlHost = url.getHost();
-            String shortUrlPath = url.getPath();
-            if (!hostName.contains(shortUrlHost)
-                    || shortUrlPath.length() > 7
-                    || shortUrlPath.isBlank()
-                    || shortUrlPath.equals("/")) {
-                throw new InvalidURLException(String.format("Invalid URL provided: %s", shortUrl));
-            }
-        } catch (MalformedURLException e) {
-            throw new InvalidURLException(String.format("Invalid URL provided: %s. Error: %s", shortUrl, e.getMessage()));
-        }
-    }
-
-    private String parseHashFromShortUrl(String shortUrl) {
-        try {
-            String urlPath = new URL(shortUrl).getPath();
-            return urlPath.replaceFirst("/", "");
-        } catch (MalformedURLException e) {
-            throw new InvalidURLException(String.format("Invalid URL provided: %s. Error: %s", shortUrl, e.getMessage()));
         }
     }
 

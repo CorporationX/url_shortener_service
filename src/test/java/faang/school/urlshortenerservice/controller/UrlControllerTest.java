@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.exception.GlobalExceptionHandler;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,12 +40,12 @@ class UrlControllerTest {
     private UserContext userContext;
 
     private LongUrlDto longUrlDto;
-    private ShortUrlDto shortUrlDto;
+    private String shortUrl;
 
     @BeforeEach
     void setUp() {
         longUrlDto = new LongUrlDto("http:/reallyReallyLongUrl.com/something");
-        shortUrlDto = new ShortUrlDto("http:/srt.com/abc123");
+        shortUrl = "https:/localhost:8099/abc123";
     }
 
     @Test
@@ -57,13 +57,13 @@ class UrlControllerTest {
                 }
                 """;
 
-        when(urlService.createShortUrl(longUrlDto)).thenReturn(shortUrlDto);
+        when(urlService.createShortUrl(longUrlDto)).thenReturn(shortUrl);
 
-        mockMvc.perform(post("/api/v1/url")
+        mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonLongUrl))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(jsonPath("$.shortUrl").value(shortUrlDto.shortUrl()));
+                .andExpect(status().isCreated())
+                .andExpect(content().string(shortUrl));
     }
 
     @Test
@@ -75,7 +75,7 @@ class UrlControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/v1/url")
+        mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonLongUrl))
                 .andExpect(status().isBadRequest())
@@ -86,35 +86,32 @@ class UrlControllerTest {
     @Test
     @DisplayName("Long URL returned success")
     void test_getUrl_whenValidInput_ReturnsDto() throws Exception {
-        String shortUrl = "http:/srt.com/abc123";
+        String hash = "abc123";
+        String longUrl = "https://google.com";
 
-        when(urlService.getUrl(shortUrl)).thenReturn(longUrlDto);
+        when(urlService.getUrl(hash)).thenReturn(longUrl);
 
-        mockMvc.perform(get("/api/v1/url")
-                        .param("shortUrl", shortUrl))
+        mockMvc.perform(get("/{hash}", hash))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(jsonPath("$.url").value("http:/reallyReallyLongUrl.com/something"));
+                .andExpect(header().stringValues(longUrl));
     }
 
     @Test
-    @DisplayName("Test get real URL fail - provided empty param")
-    void test_getUrl_WhenEmptyParam_ReturnsExceptionJson() throws Exception {
-        String shortUrl = "";
+    @DisplayName("Test get real URL fail - provided empty path")
+    void test_getUrl_WhenEmptyPath_ReturnsNotFound() throws Exception {
+        String hash = "";
 
-        mockMvc.perform(get("/api/v1/url")
-                        .param("shortUrl", shortUrl))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("URL cannot be empty")));
+        mockMvc.perform(get("/{hash}", hash))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("Test get real URL fail - no param provided")
-    void test_getUrl_WhenENullParam_ReturnsExceptionJson() throws Exception {
-        String shortUrl = null;
+    @DisplayName("Test get real URL fail - hash size is too long")
+    void test_getUrl_WhenPathMore6_ReturnsExceptionJson() throws Exception {
+        String hash = "1234567";
 
-        mockMvc.perform(get("/api/v1/url")
-                        .param("shortUrl", shortUrl))
+        mockMvc.perform(get("/{hash}", hash))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Missed parameter")));
+                .andExpect(content().string(containsString("Invalid hash size")));
     }
 }
