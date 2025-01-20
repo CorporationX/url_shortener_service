@@ -42,10 +42,14 @@ public class HashCache {
             try {
                 if (hashCache.size() < maxSize * refillThreshold) {
                     executorService.submit(() -> {
-                        List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
-                        hashCache.addAll(hashes);
+                        try{
+                            List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
+                            hashCache.addAll(hashes);
 
-                        hashGenerator.generateBatch();
+                            hashGenerator.generateBatch();
+                        } finally {
+                            reentrantLock.unlock();
+                        }
                     });
                 }
             } finally {

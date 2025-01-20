@@ -19,6 +19,12 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     public String createShortUrl(String longUrl) {
+        Url existingUrl = urlRepository.findByUrl(longUrl).orElse(null);
+
+        if (existingUrl != null) {
+            return "localhost:8080/api/v1/shortener/shortUrl/redirect/" + existingUrl.getHash();
+        }
+
         String hash = hashCache.getHash();
 
         Url url = new Url(hash, longUrl, LocalDateTime.now());
@@ -26,7 +32,7 @@ public class UrlService {
 
         urlCacheRepository.save(hash, longUrl);
 
-        return "http://short.url/" + hash;
+        return "localhost:8080/api/v1/shortener/shortUrl/redirect/" + hash;
     }
 
     public String getOriginalUrl(String hash) {
@@ -39,8 +45,9 @@ public class UrlService {
 
         longUrl = urlRepository.findByHash(hash)
                 .orElseThrow(() -> new IllegalArgumentException("URL not found for hash: " + hash));
-
         log.info("Found URL in database for hash: {}", hash);
+
+        urlCacheRepository.save(hash, longUrl);
         return longUrl;
     }
 }

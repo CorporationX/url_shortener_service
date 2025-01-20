@@ -1,11 +1,10 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.repository.url;
 
-import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class RedisUrlCache implements UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;

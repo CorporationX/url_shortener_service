@@ -1,35 +1,30 @@
 package faang.school.urlshortenerservice.exception;
 
-
-import faang.school.urlshortenerservice.dto.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
 public class UrlExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("IllegalArgumentException", e);
-        return new ErrorDto(e.getMessage());
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("IllegalArgumentException", e);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto handleIllegalStateException(IllegalStateException e) {
-        log.error("IllegalStateException", e);
-        return new ErrorDto(e.getMessage());
+    public ProblemDetail handleIllegalStateException(IllegalStateException e) {
+        log.warn("IllegalStateException", e);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto handleRuntimeException(RuntimeException e) {
-        log.error("RuntimeException", e);
-        return new ErrorDto(e.getMessage());
+    public ProblemDetail handleRuntimeException(RuntimeException e) {
+        log.warn("RuntimeException", e);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 }
 
