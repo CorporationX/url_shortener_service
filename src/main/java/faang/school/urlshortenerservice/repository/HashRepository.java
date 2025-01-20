@@ -20,15 +20,15 @@ public class HashRepository {
         return jdbcTemplate.queryForList(getUniqueNumbersQuery, Long.class, numbersCount);
     }
 
-    public void save(List<String> urlHashs) {
-        String saveUrlHashsQuery = """
+    public void save(List<String> urlHashes) {
+        String saveUrlHashesQuery = """
                 INSERT INTO hash (hash)
                 VALUES (?)
                 """;
 
         jdbcTemplate.batchUpdate(
-                saveUrlHashsQuery,
-                urlHashs.stream()
+                saveUrlHashesQuery,
+                urlHashes.stream()
                         .map(urlHash -> new Object[] {urlHash})
                         .toList()
         );
