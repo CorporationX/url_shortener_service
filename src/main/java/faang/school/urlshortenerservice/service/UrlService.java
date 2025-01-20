@@ -2,15 +2,18 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRedisCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,6 +64,12 @@ public class UrlService {
             }
         }
 
-        throw new UrlNotFoundException(String.format("Url for hash %s was not found in cache and database", hash));
+        throw new EntityNotFoundException(String.format("Url for hash %s was not found in cache and database", hash));
+    }
+
+    public List<Hash> deleteExpiredLinks(LocalDateTime expiredDate) {
+        return urlRepository.deleteExpiredLinks(expiredDate).stream()
+                .map(hash -> Hash.builder().hash(hash).build())
+                .toList();
     }
 }

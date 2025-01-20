@@ -50,3 +50,7 @@ hash-properties:
 
 url-prefix: localhost:8080/
 
+scheduler:
+  url-expiration-period: 12 #months
+  delete-expired-urls-cron: "0 0 0 * * *"
+
