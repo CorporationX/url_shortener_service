@@ -29,6 +29,7 @@ public class CleanerScheduler {
     private int batchSize;
 
     @Scheduled(cron = "${url.cleaner.cron}")
+    @Transactional
     public void cleanExpiredUrls() {
         log.info("Starting cleanup of expired URLs");
 

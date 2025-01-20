@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.exception.InvalidHashException;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.generator.LocalHashCache;
-import faang.school.urlshortenerservice.repository.Has  hRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validation.UrlValidator;
@@ -41,42 +41,12 @@ public class UrlService {
         log.info("Starting short URL creation process for URL: {}", originalUrl);
         validateUrl(originalUrl);
 
-        String hashValue = generateAndReserveHash();
-        saveUrlMapping(hashValue, originalUrl);
-        String shortUrl = constructShortUrl(hashValue);
+        Hash hash = generateAndReserveHash();
+        saveUrlMapping(hash, originalUrl);
+        String shortUrl = constructShortUrl(hash.getValue());
 
         log.info("Successfully created short URL: {} -> {}", shortUrl, originalUrl);
         return shortUrl;
-    }
-
-    private String generateAndReserveHash() {
-        String hashValue = hashCache.getNextHash();
-        log.debug("Generated new hash: {}", hashValue);
-
-        Hash hash = hashRepository.findByValueAndUsedFalse(hashValue)
-                .orElseThrow(() -> {
-                    log.error("Failed to find available hash: {}", hashValue);
-                    return new RuntimeException("Hash not found or already used: " + hashValue);
-                });
-
-        hash.setUsed(true);
-        hashRepository.save(hash);
-        log.debug("Reserved hash {} in database", hashValue);
-
-        return hashValue;
-    }
-
-    private void saveUrlMapping(String hashValue, String originalUrl) {
-        Url url = new Url(new Hash(hashValue), originalUrl);
-        urlRepository.save(url);
-        log.debug("Saved URL mapping to database: {} -> {}", hashValue, originalUrl);
-
-        urlCacheRepository.saveUrl(hashValue, originalUrl);
-        log.debug("Cached URL mapping: {} -> {}", hashValue, originalUrl);
-    }
-
-    private String constructShortUrl(String hashValue) {
-        return baseUrl + "/" + hashValue;
     }
 
     public ResponseEntity<Void> redirect(String hashValue) {
@@ -119,6 +89,36 @@ public class UrlService {
         log.debug("Updated cache with database result: {} -> {}", hashValue, originalUrl);
 
         return originalUrl;
+    }
+
+    private Hash generateAndReserveHash() {
+        String hashValue = hashCache.getNextHash();
+        log.debug("Generated new hash: {}", hashValue);
+
+        Hash hash = hashRepository.findByValueAndUsedFalse(hashValue)
+                .orElseThrow(() -> {
+                    log.error("Failed to find available hash: {}", hashValue);
+                    return new RuntimeException("Hash not found or already used: " + hashValue);
+                });
+
+        hash.setUsed(true);
+        hashRepository.save(hash);
+        log.debug("Reserved hash {} in database", hashValue);
+
+        return hash;
+    }
+
+    private void saveUrlMapping(Hash hash, String originalUrl) {
+        Url url = new Url(hash, originalUrl);
+        urlRepository.save(url);
+        log.debug("Saved URL mapping to database: {} -> {}", hash.getValue(), originalUrl);
+
+        urlCacheRepository.saveUrl(hash.getValue(), originalUrl);
+        log.debug("Cached URL mapping: {} -> {}", hash.getValue(), originalUrl);
+    }
+
+    private String constructShortUrl(String hashValue) {
+        return baseUrl + "/" + hashValue;
     }
 
     private void incrementVisitsAsync(String hashValue) {
