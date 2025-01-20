@@ -59,7 +59,7 @@ public class UrlService {
                 .build();
 
         Url url = urlRepository.save(urlToSave);
-        Objects.requireNonNull(cacheManager.getCache("urlCache")).put(hash, url.getUrl());
+        putInCache(hash, url.getUrl());
 
         return toDto(url);
     }
@@ -86,5 +86,9 @@ public class UrlService {
                 .url(rootPath + url.getHash())
                 .expiresAt(url.getExpiresAt())
                 .build();
+    }
+
+    public void putInCache(String hash, String url) {
+        Objects.requireNonNull(cacheManager.getCache("urlCache")).put(hash, url);
     }
 }
