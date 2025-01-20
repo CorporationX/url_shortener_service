@@ -26,6 +26,6 @@ public class Url {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", insertable = false)
     private LocalDateTime createdAt;
 }

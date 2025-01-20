@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS url
 (
     hash       VARCHAR(6)  NOT NULL PRIMARY KEY,
     url        VARCHAR     NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT current_timestamp
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS hash
