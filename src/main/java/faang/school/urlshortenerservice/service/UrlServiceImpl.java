@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UrlServiceImpl implements UrlService {
 
-  private final HashGenerator hashGenerator;
   private final HashCache hashCache;
   private final UrlRepository urlRepository;
   private final UrlMapper urlMapper;
