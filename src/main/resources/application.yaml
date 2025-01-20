@@ -28,3 +28,21 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    capacity: 1000
+    fill.percent: 20
+  cron: 0 0 0 * * *
+  range: 10000
+  clean:
+    days-to-delete: 365
+    cron: 0 0 0 * * *
+
+threadpool:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 20
+
+api:
+  url-body: "https://corp.x/"

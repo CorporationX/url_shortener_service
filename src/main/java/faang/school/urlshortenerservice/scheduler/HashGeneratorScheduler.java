@@ -11,7 +11,7 @@ public class HashGeneratorScheduler {
 
     private final HashGenerator hashGenerator;
 
-    @Scheduled(cron = "${hash.cron:0 0 0 * * *}") //TODO
+    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
     public void generateHash() {
         hashGenerator.generateBatch();
     }

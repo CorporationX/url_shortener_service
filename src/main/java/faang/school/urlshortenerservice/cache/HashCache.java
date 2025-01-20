@@ -16,9 +16,9 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
 
-    @Value("${hash.cache.capacity:1000}") //TODO
+    @Value("${hash.cache.capacity:1000}")
     private int capacity;
-    @Value("${hash.cache.fill.percent:20}") //TODO
+    @Value("${hash.cache.fill.percent:20}")
     private volatile int fillPercent;
 
     private final AtomicBoolean filling = new AtomicBoolean(false);

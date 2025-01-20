@@ -19,7 +19,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base64Encoder;
 
-    @Value("${hash.range:1000}") //TODO
+    @Value("${hash.range:1000}")
     private long maxRange;
 
     @Transactional
