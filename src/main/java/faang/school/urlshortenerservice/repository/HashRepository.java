@@ -21,8 +21,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(@Param("n") int n);
 
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash 
-                WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT :batchSize FOR UPDATE SKIP LOCKED) 
+            DELETE FROM hash
+                WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT :batchSize FOR UPDATE SKIP LOCKED)
             RETURNING hash.hash;
             """)
     List<String> getBatchAndDelete(@Param("batchSize") int batchSize);
