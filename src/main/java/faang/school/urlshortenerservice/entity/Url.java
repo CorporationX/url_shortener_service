@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -18,5 +19,6 @@ public class Url {
     @Column(name = "url")
     private String url;
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime time;
 }
