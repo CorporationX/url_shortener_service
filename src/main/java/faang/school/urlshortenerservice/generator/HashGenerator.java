@@ -4,36 +4,34 @@ import faang.school.urlshortenerservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
     private final TransactionService transactionService;
-
-    @Value("${hashBatch.batchSize:10000}")
+    @Value("${hashBatch.batchSize}")
     private int batchSize;
 
     @Scheduled(cron = "${hashGenerator.every-midnight}")
-    @Async
-    public void generateBatch() {
+    public void generateHashes() {
         transactionService.saveHashBatch(batchSize);
     }
 
-    @Async
-    public CompletableFuture<List<String>> getHashBatch(int batchSize) {
-        List<String> hashBatch = transactionService.getHashBatch(batchSize);
-        if (hashBatch.size() < batchSize) {
-            int remaining = batchSize - hashBatch.size();
-            generateBatch();
-            hashBatch.addAll(transactionService.getHashBatch(remaining));
+    @Transactional
+    public List<String> getHashes(int batchSize) {
+        List<String> hashes = new ArrayList<>(transactionService.removeAndGetHashes(batchSize));
+        if (hashes.size() < batchSize) {
+            int remaining = batchSize - hashes.size();
+            transactionService.saveHashBatch(remaining);
+            hashes.addAll(transactionService.removeAndGetHashes(remaining));
         }
-        return CompletableFuture.completedFuture(hashBatch);
+        return hashes;
     }
 }

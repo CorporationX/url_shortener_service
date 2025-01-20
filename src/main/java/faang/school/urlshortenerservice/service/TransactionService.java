@@ -16,18 +16,17 @@ public class TransactionService {
     private final Base62Encoder base62Encoder;
 
     @Transactional
-    public List<String> saveHashBatch(int batchSize) {
+    public void saveHashBatch(int batchSize) {
         List<Long> nums = hashRepository.getUniqueNumbers(batchSize);
         List<String> encodedNums = base62Encoder.encodeBatch(nums);
         List<Hash> hashBatch = encodedNums.stream()
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashBatch);
-        return encodedNums;
     }
 
     @Transactional
-    public List<String> getHashBatch(int batchSize) {
+    public List<String> removeAndGetHashes(int batchSize) {
         return hashRepository.removeAndGetHashBatch(batchSize);
     }
 }

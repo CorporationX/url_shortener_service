@@ -31,7 +31,7 @@ hashCache:
   percent: 20
 
 hashBatch:
-  batchSize: 10000
+  batchSize: 100000
 
 hashGenerator:
   every-midnight: "0 0 0 * * *"
