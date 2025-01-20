@@ -22,6 +22,6 @@ public class Base62Encoder {
             builder.append(BASE_62_CHARACTERS.charAt(index));
             number = number / BASE_62_CHARACTERS.length();
         }
-        return builder.reverse().toString();
+        return builder.toString();
     }
 }
