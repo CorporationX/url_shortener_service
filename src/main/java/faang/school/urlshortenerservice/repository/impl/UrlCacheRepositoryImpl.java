@@ -32,9 +32,7 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     @Override
     public String getUrl(String hash) {
         String url = (String) hashOperations.get(HASH_TO_URL, hash);
-        if (url != null) {
-            log.info("Found url: {} for hash: {}", url, hash);
-        } else {
+        if (url == null) {
             log.warn("No url found for hash: {}", hash);
         }
         return url;

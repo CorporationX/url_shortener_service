@@ -32,17 +32,19 @@ public class HashCache {
     public void init() {
         this.hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
-        log.info("Current queue size is : " + hashes.size());
+        log.info("Current queue size is : {}", hashes.size());
     }
 
     public String getHash() {
-        if (hashes.size() / (capacity / 100.0) < fillPercentage) {
-            if (filling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll)
-                        .thenRun(() -> filling.set(false));
-            }
+        if (hashes.isEmpty()) {
+            log.warn("Hash queue is empty, triggering immediate generation");
+            hashes.addAll(hashGenerator.getHashes(capacity));
         }
-        log.info("Queue size after polling is : " + hashes.size());
+        if (hashes.size() / (capacity / 100.0) < fillPercentage && filling.compareAndSet(false, true)) {
+            hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll)
+                    .thenRun(() -> filling.set(false));
+        }
+        log.info("Queue size after polling is : {}", hashes.size());
         return hashes.poll();
     }
 

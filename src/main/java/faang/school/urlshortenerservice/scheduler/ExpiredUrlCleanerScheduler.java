@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CleanerScheduler {
+public class ExpiredUrlCleanerScheduler {
     private final UrlService urlService;
 
     @Scheduled(cron = "${hash.clean-scheduler.cron}")
-    public void clean() {
-        urlService.clean();
+    public void cleanExpiredUrls() {
+        urlService.cleanExpiredUrls();
     }
 
 }

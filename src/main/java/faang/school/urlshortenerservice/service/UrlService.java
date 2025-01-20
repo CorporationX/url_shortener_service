@@ -12,6 +12,8 @@ import faang.school.urlshortenerservice.repository.impl.UrlCacheRepositoryImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,10 +28,14 @@ public class UrlService {
     private final HashRepository hashRepository;
     private final UrlCacheRepositoryImpl urlCacheRepositoryImpl;
 
+    @Value("${url.cleanup.interval}")
+    private String cleanInterval;
+
     @Transactional
     public HashResponseDto getHash(RequestDto dto) {
-        if (getExistingHashByUrl(dto.getUrl()) != null) {
-            return new HashResponseDto(getExistingHashByUrl(dto.getUrl()));
+        String existingHash = getExistingHashByUrl(dto.getUrl());
+        if (existingHash != null) {
+            return new HashResponseDto(existingHash);
         }
         String hash = hashCache.getHash();
         Url url = new Url();
@@ -41,26 +47,23 @@ public class UrlService {
         return new HashResponseDto(hash);
     }
 
+    @Cacheable(value = "urls", key = "#hash")
     @Transactional
     public String getUrl(String hash) {
-        String resultFromCache = urlCacheRepositoryImpl.getUrl(hash);
-        if (resultFromCache != null) {
-            log.info("Result found from Redis cache: {}", hash);
-            return resultFromCache;
-        }
-
+        log.info("Fetching URL from database for hash: {}", hash);
         String resultFromDB = urlRepository.getByHash(hash);
+
         if (resultFromDB != null) {
-            log.info("Url found in the database: {}", hash);
             return resultFromDB;
         }
+
         log.warn("Url for this hash does not exist: {}", hash);
         throw new UrlNotFoundException("URL not found for hash: " + hash);
     }
 
     @Transactional
-    public void clean() {
-        List<String> freeHashes = urlRepository.getAndDeleteExpiredData();
+    public void cleanExpiredUrls() {
+        List<String> freeHashes = urlRepository.getAndDeleteExpiredData(cleanInterval);
         List<Hash> hashes = freeHashes.stream()
                 .map(Hash::new)
                 .toList();

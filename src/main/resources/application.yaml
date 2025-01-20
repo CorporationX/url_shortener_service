@@ -40,7 +40,9 @@ hash:
     fill-percentage: 20
   clean-scheduler:
     cron: 0 0 0 * * ?
-
+url:
+  cleanup:
+    interval: 1 year
 async:
   thread-name-prefix: AsyncThread-
   core-pool-size: 5

@@ -27,6 +27,10 @@ public class HashGenerator {
 
     @Transactional
     public void generateBatch() {
+        if (hashRepository.count() >= maxRange) {
+            log.warn("Reached the maximum number of hashes: {}", maxRange);
+            return;
+        }
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
         List<String> encodedHashes = base62Encoder.encode(range);
         List<Hash> hashes = encodedHashes.stream()

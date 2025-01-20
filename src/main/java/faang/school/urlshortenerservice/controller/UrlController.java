@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.HashResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UrlController {
         String longUrl = urlService.getUrl(hash);
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", longUrl)
+                .header(HttpHeaders.LOCATION, longUrl)
                 .build();
     }
 

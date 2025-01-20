@@ -20,8 +20,10 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-                        DELETE FROM url WHERE url.created_at < current_timestamp - interval '1 year'
-                        RETURNING hash
-            """ )
-    List<String> getAndDeleteExpiredData();
+            DELETE FROM url
+            WHERE url.created_at < current_timestamp - interval :interval
+            RETURNING hash
+        """)
+    List<String> getAndDeleteExpiredData(@Param("interval") String interval);
+
 }
