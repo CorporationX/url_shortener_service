@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,7 +44,7 @@ public class HashCacheImpl implements HashCache {
                         .thenRun(lock::unlock);
             }
         }
-        return hashes.poll();
+        return Objects.requireNonNull(hashes.poll()).trim();
     }
 
     private boolean isGenerationRequired() {
