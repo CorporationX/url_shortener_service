@@ -1,0 +1,14 @@
+CREATE TABLE url
+(
+    id             BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    hash           VARCHAR(6) UNIQUE ,
+    url            TEXT NOT NULL,
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE hash
+(
+    id             BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    hash           VARCHAR(6) UNIQUE
+);
+
