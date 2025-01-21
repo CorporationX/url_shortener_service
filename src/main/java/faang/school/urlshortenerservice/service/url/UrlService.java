@@ -7,4 +7,6 @@ public interface UrlService {
     String shortenUrl(UrlDto urlDto);
 
     String getOriginalUrl(String hash);
+
+    void cleanExpiredUrls();
 }

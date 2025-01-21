@@ -55,3 +55,6 @@ hash:
 url:
   shortener:
     prefix: http://localhost:8090/url/
+  cleaning:
+    cron: 0 0 0 * * ?
+    thread-pool: 1

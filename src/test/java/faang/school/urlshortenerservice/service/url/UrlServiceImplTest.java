@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.exception.UrlException;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashService;
 import faang.school.urlshortenerservice.validator.url.UrlValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,6 +37,9 @@ class UrlServiceImplTest {
 
     @Mock
     private UrlCacheRepository urlCacheRepository;
+
+    @Mock
+    private HashService hashService;
 
     @InjectMocks
     private UrlServiceImpl urlServiceImpl;
@@ -107,5 +112,26 @@ class UrlServiceImplTest {
 
         assertEquals("URL not found", exception.getMessage());
         verify(urlRepository).findByHash(hash);
+    }
+
+    @Test
+    void cleanExpiredUrls_expiredUrlsExist_hashesAdded() {
+        Set<String> expiredHashes = Set.of("expiredHash1", "expiredHash2");
+        when(urlRepository.findExpiredUrls()).thenReturn(Optional.of(expiredHashes));
+
+        urlServiceImpl.cleanExpiredUrls();
+
+        verify(hashService).addHashes(expiredHashes);
+    }
+
+    @Test
+    void cleanExpiredUrls_noExpiredUrls_throwsUrlException() {
+        when(urlRepository.findExpiredUrls()).thenReturn(Optional.empty());
+
+        UrlException exception = assertThrows(UrlException.class, () -> {
+            urlServiceImpl.cleanExpiredUrls();
+        });
+
+        assertEquals("No expired URLs found", exception.getMessage());
     }
 }
