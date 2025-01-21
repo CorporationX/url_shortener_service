@@ -23,3 +23,13 @@ server:
 logging:
   level:
     root: info
+hash:
+  cache:
+    capacity: 5
+    fill:
+      percent: 20
+
+  range:
+    max: 9
+tread-pool:
+  all: 2
