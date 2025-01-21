@@ -49,3 +49,6 @@ async:
 scheduler:
   cron:
     expression: 0 0 0 * * ?
+
+shortener:
+  base_url: localhost:8080/api/v1/shortener/shortUrl/redirect/

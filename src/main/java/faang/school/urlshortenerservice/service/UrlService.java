@@ -2,13 +2,17 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,12 +21,16 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+
+    @Value("${shortener.base_url}")
+    private String baseUrl;
 
     public String createShortUrl(String longUrl) {
         Url existingUrl = urlRepository.findByUrl(longUrl).orElse(null);
 
         if (existingUrl != null) {
-            return "localhost:8080/api/v1/shortener/shortUrl/redirect/" + existingUrl.getHash();
+            return baseUrl + existingUrl.getHash();
         }
 
         String hash = hashCache.getHash();
@@ -32,7 +40,7 @@ public class UrlService {
 
         urlCacheRepository.save(hash, longUrl);
 
-        return "localhost:8080/api/v1/shortener/shortUrl/redirect/" + hash;
+        return baseUrl + hash;
     }
 
     public String getOriginalUrl(String hash) {
@@ -49,5 +57,11 @@ public class UrlService {
 
         urlCacheRepository.save(hash, longUrl);
         return longUrl;
+    }
+
+    @Transactional
+    public void cleanupOldUrl(LocalDateTime time) {
+        List<String> hashes = urlRepository.deleteOldUrls(time);
+        hashRepository.saveBatch(hashes);
     }
 }
