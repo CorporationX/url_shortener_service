@@ -1,0 +1,1 @@
+CREATE INDEX idx_url ON url (url);

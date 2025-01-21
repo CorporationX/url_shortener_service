@@ -17,9 +17,45 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
+  queue-name: url_validation_queue
+  exchange-name: url_validation_exchange
+  routing-key: url.validation.key
+
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
     root: info
+
+app:
+  short-url-prefix: CorporationX-
+  hashes-generation:
+    batch-size: 800
+    initial-min-size: 500
+    initial-filling-size: 250
+  hash-cache:
+    size: 1000
+    threshold: 200
+  url:
+    life-time:
+      months: 6
+      days: 0
+      hours: 0
+
+executor:
+  thread-pool-size: 1
+
+scheduler:
+  clean-hashes:
+    cron: "0 0 0 * * *"
