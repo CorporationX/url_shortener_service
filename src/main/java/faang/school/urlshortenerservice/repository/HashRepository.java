@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
 
-    @Query(nativeQuery = true, value = "SELECT nextval('hash_sequence') FROM generate_series(1, :count)")
-    List<Long> getUniqueSeqNumbers(Long count);
+    @Query(nativeQuery = true, value = "SELECT nextval('hash_sequence') FROM generate_series(1, :amount)")
+    List<Long> getUniqueSeqNumbers(Long amount);
 
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT :amount) RETURNING hash")
