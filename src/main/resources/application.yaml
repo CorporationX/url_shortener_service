@@ -1,9 +1,19 @@
 spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: user
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -13,13 +23,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 10
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8090
 
 logging:
   level:
     root: info
+
+encoder:
+  base62:
+    chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+
+hash:
+  generation:
+    min-length: 20
+    thread-pool: 2
+    batch-partition: 5
+    cron: 0 0 * * * ?
+  cache:
+    min-percent: 20
+    max-size: 100
