@@ -1,15 +1,14 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.hesh.HashCache;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashJpaRepository;
 import faang.school.urlshortenerservice.repository.RedisCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.UrlJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,8 +21,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlService {
     private final HashCache hashCoach;
-    private final HashRepository hashRepository;
-    private final UrlRepository urlRepository;
+    private final HashJpaRepository hashRepository;
+    private final UrlJpaRepository urlRepository;
     private final RedisCacheRepository redisCacheRepository;
     @Value("${url.original-path}")
     private String urlPath;

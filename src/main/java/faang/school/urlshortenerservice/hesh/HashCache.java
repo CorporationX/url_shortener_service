@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice.hesh;
 
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashJpaRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +12,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class HashCache {
     private final TaskExecutor queueTaskThreadPool;
-    private final HashRepository hashRepository;
+    private final HashJpaRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean isCaching = new AtomicBoolean(false);
     private ArrayBlockingQueue<String> freeCaches;
@@ -33,7 +31,7 @@ public class HashCache {
     private int batchSize;
     @Autowired
     public HashCache(@Qualifier("hashGeneratorExecutor") TaskExecutor queueTaskThreadPool,
-                     HashRepository hashRepository,
+                     HashJpaRepository hashRepository,
                      HashGenerator hashGenerator) {
         this.queueTaskThreadPool = queueTaskThreadPool;
         this.hashRepository = hashRepository;

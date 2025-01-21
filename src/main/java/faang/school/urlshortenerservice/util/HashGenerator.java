@@ -1,10 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.hesh.HashCache;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import jdk.dynalink.linker.LinkerServices;
-import lombok.AllArgsConstructor;
+import faang.school.urlshortenerservice.repository.HashJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    private final HashRepository hashRepository;
+    private final HashJpaRepository hashRepository;
     private final Base62Encoder base62Encoder;
     @Value("${hash.sequence-amount}")
     private int batchSize;

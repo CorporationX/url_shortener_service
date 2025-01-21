@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.UrlService;
+import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

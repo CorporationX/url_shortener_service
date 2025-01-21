@@ -1,22 +1,22 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.entity.Url;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UrlRepository extends JpaRepository<Url, String> {
-    Url findByHash(String hash);
-    @Query("SELECT u FROM Url u WHERE u.hash = :hash")
-    Url getUrlByHash(@Param("hash") String hash);
+@RequiredArgsConstructor
+public class UrlRepository {
+    @Value("${url.scheduler.expired-interval}")
+    private String interval;
+    @PersistenceContext
+    private final EntityManager entityManager;
+    public List<String> deleteExpiredUrlsReturningHashes(){
+        String query =  "DELETE FROM url WHERE created_at < NOW() - INTERVAL '%s' RETURNING hash".formatted(interval);
+        return entityManager.createNativeQuery(query).getResultList();
+    }
 }
