@@ -22,7 +22,7 @@ public class HashGenerator {
 
     public void generateAndSaveHashes() {
         try {
-            log.info("Starting hash generation with batch maxCacheSize: {}", hashGeneratorProperties.hashBatchSize());
+            log.info("Starting hash generation with batch size: {}", hashGeneratorProperties.hashBatchSize());
             List<Long> uniqueNumbers = hashRepository.generateUniqueNumbers(hashGeneratorProperties.hashBatchSize());
             List<Hash> generatedHashes = base62Encoder.encode(uniqueNumbers);
             hashRepository.saveAll(generatedHashes);

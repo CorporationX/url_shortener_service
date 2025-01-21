@@ -49,18 +49,18 @@ public class HashCache {
     }
 
     private void putCache() {
-        cache.addAll(hashRepository.popUrlHashes(cacheProperties.maxCacheSize()
-                        * (cacheProperties.cacheUpdateBatchPercentage() / 100))
+        cache.addAll(hashRepository.popUrlHashes((long) (cacheProperties.maxCacheSize()
+                                        * (cacheProperties.cacheUpdateBatchPercentage() / 100.0)))
                 .stream()
                 .map(Hash::getHash)
                 .toList()
         );
-        log.info("Cache was updated, cache maxCacheSize: {}", cache.size());
+        log.info("Cache was updated, cache size: {}", cache.size());
     }
 
     private void updateCacheIfNeeded() {
         int cacheSize = cache.size();
-        log.info("Checking if cache needs to be updated, cache maxCacheSize: {}", cacheSize);
+        log.info("Checking if cache needs to be updated, cache size: {}", cacheSize);
         updateHashInDatabaseIfNeeded();
         if (cacheSize <= cacheProperties.maxCacheSize() * (cacheProperties.cacheUpdateThresholdPercentage() / 100)
                 && cacheUpdateInProgress.compareAndSet(false, true)) {
