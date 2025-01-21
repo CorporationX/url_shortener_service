@@ -38,7 +38,7 @@ logging:
     root: info
 
 hash-generator:
-  batch-size: 30
+  hash-batch-size: 30
 
 thread-pool-task-executor:
   core-pool-size: 4
@@ -47,15 +47,17 @@ thread-pool-task-executor:
   thread-name-prefix: ThreadPoolTaskExecutor-
 
 cache:
-  size: 10
-  percent-size-to-trigger-update: 0.2
-  percent-size-to-update: 0.8
+  max-cache-size: 10
+  cache-update-threshold-percentage: 20
+  cache-update-batch-percentage: 80
 
 database:
-  db-size-to-trigger-update: 20
+  min-hashes-in-database: 20
 
 scheduler:
   cleaner-start-cron-expression: 0 0 0 * * *
   cleaner-expiration-months: 12
 
+base62:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 

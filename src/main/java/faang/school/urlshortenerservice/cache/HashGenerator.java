@@ -20,10 +20,10 @@ public class HashGenerator {
     private final HashGeneratorProperties hashGeneratorProperties;
     private final Base62Encoder base62Encoder;
 
-    public void generateBatch() {
+    public void generateAndSaveHashes() {
         try {
-            log.info("Starting hash generation with batch size: {}", hashGeneratorProperties.batchSize());
-            List<Long> uniqueNumbers = hashRepository.generateUniqueNumbers(hashGeneratorProperties.batchSize());
+            log.info("Starting hash generation with batch maxCacheSize: {}", hashGeneratorProperties.hashBatchSize());
+            List<Long> uniqueNumbers = hashRepository.generateUniqueNumbers(hashGeneratorProperties.hashBatchSize());
             List<Hash> generatedHashes = base62Encoder.encode(uniqueNumbers);
             hashRepository.saveAll(generatedHashes);
             log.info("Generated and saved in hash repository {} unique hashes", generatedHashes.size());

@@ -25,14 +25,14 @@ public class HashCache {
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final CacheProperties cacheProperties;
     private final DatabaseProperties databaseProperties;
-    private final AtomicBoolean hashUpdateInProgress = new AtomicBoolean(false);
+    private final AtomicBoolean cacheUpdateInProgress = new AtomicBoolean(false);
     private final AtomicBoolean dbUpdateInProgress = new AtomicBoolean(false);
 
     private BlockingQueue<String> cache;
 
     @PostConstruct
     public void init() {
-        this.cache = new ArrayBlockingQueue<>(cacheProperties.size());
+        this.cache = new ArrayBlockingQueue<>(cacheProperties.maxCacheSize());
         cacheWarmUp();
     }
 
@@ -49,44 +49,45 @@ public class HashCache {
     }
 
     private void putCache() {
-        cache.addAll(hashRepository.popUrlHashes((long) (cacheProperties.size() * cacheProperties.percentSizeToUpdate()))
+        cache.addAll(hashRepository.popUrlHashes(cacheProperties.maxCacheSize()
+                        * (cacheProperties.cacheUpdateBatchPercentage() / 100))
                 .stream()
                 .map(Hash::getHash)
                 .toList()
         );
-        log.info("Cache was updated, cache size: {}", cache.size());
+        log.info("Cache was updated, cache maxCacheSize: {}", cache.size());
     }
 
     private void updateCacheIfNeeded() {
         int cacheSize = cache.size();
-        log.info("Checking if cache needs to be updated, cache size: {}", cacheSize);
-        generateHashInDatabaseIfNeeded();
-        if (cacheSize <= cacheProperties.size() * cacheProperties.percentSizeToTriggerUpdate()
-                && hashUpdateInProgress.compareAndSet(false, true)) {
+        log.info("Checking if cache needs to be updated, cache maxCacheSize: {}", cacheSize);
+        updateHashInDatabaseIfNeeded();
+        if (cacheSize <= cacheProperties.maxCacheSize() * (cacheProperties.cacheUpdateThresholdPercentage() / 100)
+                && cacheUpdateInProgress.compareAndSet(false, true)) {
             log.info("Cache update triggered. Updating cache in background thread");
             try {
                 threadPoolTaskExecutor.execute(() -> {
                     try {
                         putCache();
                     } finally {
-                        hashUpdateInProgress.set(false);
+                        cacheUpdateInProgress.set(false);
                     }
                 });
             } catch (Exception e) {
                 log.error("Failed to submit task to thread pool", e);
-                hashUpdateInProgress.set(false);
+                cacheUpdateInProgress.set(false);
             }
         }
     }
 
-    private void generateHashInDatabaseIfNeeded() {
+    private void updateHashInDatabaseIfNeeded() {
         long count = hashRepository.count();
         log.info("Checking if database needs to be updated, count: {}", count);
-        if (count <= databaseProperties.dbSizeToTriggerUpdate() && dbUpdateInProgress.compareAndSet(false, true)) {
+        if (count <= databaseProperties.minHashesInDatabase() && dbUpdateInProgress.compareAndSet(false, true)) {
             log.info("Database update triggered. Generating hashes in background thread");
             threadPoolTaskExecutor.execute(() -> {
                 try {
-                    hashGenerator.generateBatch();
+                    hashGenerator.generateAndSaveHashes();
                 } finally {
                     dbUpdateInProgress.set(false);
                 }
@@ -95,11 +96,11 @@ public class HashCache {
     }
 
     private void cacheWarmUp() {
-        if (hashRepository.count() <= cacheProperties.size()) {
+        if (hashRepository.count() <= cacheProperties.maxCacheSize()) {
             log.info("Database is not yet warmed up. Generating hashes");
-            hashGenerator.generateBatch();
+            hashGenerator.generateAndSaveHashes();
         }
-        updateCacheIfNeeded();
+        putCache();
         log.info("Cache and database was warmed up!");
     }
 }

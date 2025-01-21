@@ -39,11 +39,11 @@ class HashGeneratorTest {
 
     @Test
     @DisplayName("Generate batch: success case")
-    void testGenerateBatch_Success() {
+    void testGenerateAndSaveHashes_Success() {
         when(hashRepository.generateUniqueNumbers(any())).thenReturn(List.of(1L, 2L));
         when(base62Encoder.encode(any())).thenReturn(List.of(new Hash("1"), new Hash("2")));
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateAndSaveHashes();
 
         verify(base62Encoder, times(1)).encode(any());
         verify(hashRepository, times(1)).generateUniqueNumbers(any());

@@ -40,9 +40,9 @@ class HashCacheTest {
 
     @BeforeEach
     public void setUp() {
-        CacheProperties cacheProperties = new CacheProperties(10, 0.2, 0.8);
+        CacheProperties cacheProperties = new CacheProperties(10, 20, 80);
         DatabaseProperties databaseProperties = new DatabaseProperties(20);
-        cache = new ArrayBlockingQueue<>(cacheProperties.size());
+        cache = new ArrayBlockingQueue<>(cacheProperties.maxCacheSize());
         hashCache = new HashCache(hashRepository, hashGenerator, threadPoolTaskExecutor, cacheProperties, databaseProperties);
         ReflectionTestUtils.setField(hashCache, "cache", cache);
     }
@@ -54,7 +54,7 @@ class HashCacheTest {
         hashCache.init();
 
         assertEquals(10, cache.remainingCapacity());
-        verify(hashRepository, times(2)).count();
+        verify(hashRepository, times(1)).count();
     }
 
     @Test

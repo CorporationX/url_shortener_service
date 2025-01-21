@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Builder
 @ConfigurationProperties(prefix = "hash-generator")
-public record HashGeneratorProperties(long batchSize) {
+public record HashGeneratorProperties(long hashBatchSize) {
 }

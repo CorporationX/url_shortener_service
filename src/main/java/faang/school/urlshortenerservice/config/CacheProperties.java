@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Builder
 @ConfigurationProperties(prefix = "cache")
-public record CacheProperties(int size, double percentSizeToTriggerUpdate, double percentSizeToUpdate) {
+public record CacheProperties(int maxCacheSize, long cacheUpdateThresholdPercentage, long cacheUpdateBatchPercentage) {
 }

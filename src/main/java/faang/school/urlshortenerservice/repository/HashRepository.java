@@ -12,7 +12,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
 
     @Query(value = "SELECT nextval('unique_number_sequence') FROM generate_series(1, :batchSize)",
             nativeQuery = true)
-    List<Long> generateUniqueNumbers(@Param("batchSize") Long batchSize);
+    List<Long> generateUniqueNumbers(@Param("hashBatchSize") Long batchSize);
 
     @Modifying
     @Query(value = """
@@ -24,5 +24,5 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
             )
             RETURNING hash;
             """, nativeQuery = true)
-    List<Hash> popUrlHashes(@Param("batchSize") Long batchSize);
+    List<Hash> popUrlHashes(@Param("hashBatchSize") Long batchSize);
 }

@@ -13,7 +13,7 @@ public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveWithTTL(String key, String value, Integer timeToLiveInMinutes) {
+    public void saveWithTTL(String key, String value, long timeToLiveInMinutes) {
         redisTemplate.opsForValue().set(key, value, timeToLiveInMinutes, TimeUnit.MINUTES);
     }
 
