@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,13 +18,42 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        generate_statistics: true
+        jdbc:
+          batch_size: 1000
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8087
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
     root: info
+
+app:
+  root_path: http://localhost:8087/api/v1/url-shortener/
+  cron:
+    clean_url: 0 0 0 * * *
+  url_retention_period_month: 6
+  cache_ttl_hour: 24
+  count_of_generated_hashes: 10000
+  cache_capacity: 1000
+  cache_to_store_coefficient: 3
+  cache_min_volume_percent: 20
+  base62_chars: SlTc6wVygLdOsbutzEDneAK5GZpImMrxfXYvF1aoN2k83JiUWRCqQ97jHP40Bh
+  hash_generator_thread_pool:
+    core_size: 2
+    max_size: 8
+    keep_alive_millisecond: 5000
+    queue_size: 1000
+  hash_cache_thread_pool:
+    core_size: 2
+    max_size: 16
+    keep_alive_millisecond: 2000
+    queue_size: 1000
