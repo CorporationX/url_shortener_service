@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<Url> findByHash(String hash);
 
+    Optional<Url> findByUrl(String url);
+
     @Query(nativeQuery = true, value = """
             DELETE FROM url
             WHERE hash IN (

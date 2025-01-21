@@ -15,12 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HashCacheTest {
+
     private static final int CACHE_CAPACITY = 3;
     private static final int THRESHOLD = 2;
     private static final int BATCH_SIZE = 2;
@@ -38,15 +37,37 @@ class HashCacheTest {
     private void initWithGenerateBatchOfHashes() {
         when(hashGenerator.getHashesCount()).thenReturn(0);
         when(hashGenerator.getHashes(anyInt())).thenReturn(List.of("hash1", "hash2", "hash3"));
-        hashCache = new HashCache(CACHE_CAPACITY, THRESHOLD, BATCH_SIZE, INITIAL_MIN_SIZE, INITIAL_FILLING_SIZE,
-                hashGenerator, fillUpCacheExecutorService);
+
+        hashCache = new HashCache(
+                CACHE_CAPACITY,
+                THRESHOLD,
+                BATCH_SIZE,
+                INITIAL_MIN_SIZE,
+                INITIAL_FILLING_SIZE,
+                hashGenerator,
+                fillUpCacheExecutorService
+        );
+
+        hashCache.init();
+
         verify(hashGenerator).generateBatchOfHashes(eq(CACHE_CAPACITY + BATCH_SIZE));
     }
 
     private void initWithoutGenerateBatchOfHashes() {
         when(hashGenerator.getHashesCount()).thenReturn(INITIAL_MIN_SIZE);
-        hashCache = new HashCache(CACHE_CAPACITY, THRESHOLD, BATCH_SIZE, INITIAL_MIN_SIZE, INITIAL_FILLING_SIZE,
-                hashGenerator, fillUpCacheExecutorService);
+
+        hashCache = new HashCache(
+                CACHE_CAPACITY,
+                THRESHOLD,
+                BATCH_SIZE,
+                INITIAL_MIN_SIZE,
+                INITIAL_FILLING_SIZE,
+                hashGenerator,
+                fillUpCacheExecutorService
+        );
+
+        hashCache.init();
+
         verify(hashGenerator, never()).generateBatchOfHashes(anyInt());
     }
 
@@ -74,10 +95,10 @@ class HashCacheTest {
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(fillUpCacheExecutorService).execute(runnableCaptor.capture());
+
         Runnable fillUpTask = runnableCaptor.getValue();
         fillUpTask.run();
 
-        verify(fillUpCacheExecutorService).execute(any(Runnable.class));
         verify(hashGenerator).getHashes(BATCH_SIZE);
         verify(hashGenerator).generateBatchOfHashesAsync(CACHE_CAPACITY);
     }

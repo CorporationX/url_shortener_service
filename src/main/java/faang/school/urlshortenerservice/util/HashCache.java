@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.util;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,11 +9,15 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 @Component
 public class HashCache {
+
     private final int cacheCapacity;
     private final int threshold;
     private final int batchSize;
+    private final int initialMinSize;
+    private final int initialFillingSize;
     private final HashGenerator hashGenerator;
     private final ExecutorService fillUpCacheExecutorService;
     private final AtomicBoolean isFillingUp = new AtomicBoolean(false);
@@ -25,22 +30,26 @@ public class HashCache {
             @Value("${app.hashes-generation.initial-min-size:500}") int initialMinSize,
             @Value("${app.hashes-generation.initial-filling-size:250}") int initialFillingSize,
             HashGenerator hashGenerator,
-            ExecutorService fillUpCacheExecutorService) {
+            ExecutorService fillUpCacheExecutorService
+    ) {
         this.cacheCapacity = cacheCapacity;
         this.threshold = threshold;
         this.batchSize = batchSize;
+        this.initialMinSize = initialMinSize;
+        this.initialFillingSize = initialFillingSize;
         this.hashGenerator = hashGenerator;
         this.fillUpCacheExecutorService = fillUpCacheExecutorService;
         this.cache = new ConcurrentLinkedDeque<>();
+    }
 
+    @PostConstruct
+    public void init() {
         int hashesCount = hashGenerator.getHashesCount();
         if (hashesCount >= initialMinSize) {
-            List<String> hashesFromDb = hashGenerator.getHashes(initialFillingSize);
-            cache.addAll(hashesFromDb);
+            fillCache(initialFillingSize);
         } else {
             hashGenerator.generateBatchOfHashes(cacheCapacity + batchSize);
-            List<String> hashesFromDb = hashGenerator.getHashes(cacheCapacity);
-            cache.addAll(hashesFromDb);
+            fillCache(cacheCapacity);
         }
     }
 
@@ -65,5 +74,10 @@ public class HashCache {
         List<String> hashesFromDb = hashGenerator.getHashes(batchSize);
         cache.addAll(hashesFromDb);
         hashGenerator.generateBatchOfHashesAsync(cacheCapacity);
+    }
+
+    private void fillCache(int size) {
+        List<String> hashesFromDb = hashGenerator.getHashes(size);
+        cache.addAll(hashesFromDb);
     }
 }

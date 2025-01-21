@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.properties.UrlLifeTimeConfig;
+import faang.school.urlshortenerservice.exception.DuplicateUrlException;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.model.dto.UrlResponseDto;
@@ -30,7 +31,13 @@ public class UrlService {
     @Value("${app.short-url-prefix}")
     private String pathWithHashedUrl;
 
+    @Transactional
     public UrlResponseDto generateShortUrl(UrlRequestDto requestDto) {
+        urlRepository.findByUrl(requestDto.getLongUrl())
+                .ifPresent(existingUrl -> {
+                    throw new DuplicateUrlException(requestDto.getLongUrl());
+                });
+
         String hash = hashCache.getHash();
         LocalDateTime expirationTime = calculateExpirationTime();
         Url url = createUrl(requestDto.getLongUrl(), hash, expirationTime);

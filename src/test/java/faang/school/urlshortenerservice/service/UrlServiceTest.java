@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.properties.UrlLifeTimeConfig;
+import faang.school.urlshortenerservice.exception.DuplicateUrlException;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.model.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.model.entity.Url;
+import faang.school.urlshortenerservice.model.enums.UrlStatus;
 import faang.school.urlshortenerservice.producer.RabbitQueueProducerService;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +59,7 @@ class UrlServiceTest {
     @Test
     void testGenerateShortUrl() {
         UrlRequestDto requestDto = UrlRequestDto.builder().longUrl(LONG_URL).build();
+        when(urlRepository.findByUrl(LONG_URL)).thenReturn(Optional.empty());
         when(hashCache.getHash()).thenReturn(HASH);
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
             Url url = invocation.getArgument(0);
@@ -70,6 +74,22 @@ class UrlServiceTest {
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).save(any(Url.class));
         verify(rabbitQueueProducerService).sendUrlIdForValidation(eq(HASH));
+    }
+
+    @Test
+    void testGenerateShortUrl_duplicateUrl() {
+        UrlRequestDto requestDto = UrlRequestDto.builder().longUrl(LONG_URL).build();
+        Url existingUrl = new Url(LONG_URL, HASH, UrlStatus.OK, LocalDateTime.now().plusHours(1));
+        when(urlRepository.findByUrl(LONG_URL)).thenReturn(Optional.of(existingUrl));
+
+        DuplicateUrlException exception = assertThrows(DuplicateUrlException.class, () -> {
+            urlService.generateShortUrl(requestDto);
+        });
+
+        assertNotNull(exception);
+        assertEquals("URL already exists in the database.", exception.getMessage());
+        verify(urlRepository, never()).save(any(Url.class));
+        verify(rabbitQueueProducerService, never()).sendUrlIdForValidation(anyString());
     }
 
     @Test
