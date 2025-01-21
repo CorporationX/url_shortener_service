@@ -20,7 +20,7 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     public void generateShortUrl(UrlDto originalUrl) {
-        String firstElement = hashCache.getHashes().poll();
+        String firstElement = hashCache.getHash();
         UrlBaza urlBaza = UrlBaza.builder()
                 .hash(firstElement)
                 .url(originalUrl.getOriginalUrl())

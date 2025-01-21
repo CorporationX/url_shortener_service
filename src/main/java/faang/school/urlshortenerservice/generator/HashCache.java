@@ -44,8 +44,7 @@ public class HashCache {
             e.printStackTrace();
         }
     }
-    @Scheduled(cron = "0 0 * * * *")//запускает задачу каждый час")
-    private String getHash() {
+    public String getHash() {
         if ((hashes.size() * (capacity / 100.0)) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
                 executorService.submit(() -> {
