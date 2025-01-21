@@ -8,7 +8,6 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.repository.impl.UrlCacheRepositoryImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,28 +25,29 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
-    private final UrlCacheRepositoryImpl urlCacheRepositoryImpl;
 
     @Value("${url.cleanup.interval}")
     private String cleanInterval;
 
     @Transactional
     public HashResponseDto getHash(RequestDto dto) {
-        String existingHash = getExistingHashByUrl(dto.getUrl());
+        String existingHash = urlRepository.getByUrl(dto.getUrl());
         if (existingHash != null) {
+            log.info("Hash for this link found in the database: {}", dto.getUrl());
             return new HashResponseDto(existingHash);
         }
+
         String hash = hashCache.getHash();
         Url url = new Url();
         url.setUrl(dto.getUrl());
         url.setHash(hash);
         urlRepository.save(url);
-        log.info("saved data to url table : {}", url);
-        urlCacheRepositoryImpl.add(dto.getUrl(), hash);
+
+        log.info("Saved data to url table: {}", url);
         return new HashResponseDto(hash);
     }
 
-    @Cacheable(value = "urls", key = "#hash")
+    @Cacheable(value = "urls", key = "#hash", unless = "#result == null")
     @Transactional
     public String getUrl(String hash) {
         log.info("Fetching URL from database for hash: {}", hash);
@@ -57,7 +57,7 @@ public class UrlService {
             return resultFromDB;
         }
 
-        log.warn("Url for this hash does not exist: {}", hash);
+        log.warn("URL for this hash does not exist: {}", hash);
         throw new UrlNotFoundException("URL not found for hash: " + hash);
     }
 
@@ -68,22 +68,6 @@ public class UrlService {
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashes);
-    }
-
-    private String getExistingHashByUrl(String url) {
-        String resultFromCache = urlCacheRepositoryImpl.getHash(url);
-        if (resultFromCache != null) {
-            log.info("Hash for this link already exists in Redis: {}", url);
-            return resultFromCache;
-        }
-
-        String resultFromDB = urlRepository.getByUrl(url);
-        if (resultFromDB != null) {
-            log.info("Hash for this link found in the database: {}", url);
-            return resultFromDB;
-        }
-        log.warn("Hash for this link does not exist: {}", url);
-        return null;
     }
 
 }
