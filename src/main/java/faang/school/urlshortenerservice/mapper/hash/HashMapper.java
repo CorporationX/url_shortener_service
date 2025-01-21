@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.mapper.hash;
 
 import faang.school.urlshortenerservice.entity.hash.Hash;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;

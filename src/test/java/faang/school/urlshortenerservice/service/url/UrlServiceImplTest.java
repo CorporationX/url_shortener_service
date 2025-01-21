@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -82,9 +81,8 @@ class UrlServiceImplTest {
         when(urlValidator.findByUrl(urlDto.getUrl())).thenReturn(null);
         when(hashCache.getHash()).thenReturn(null);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            urlServiceImpl.shortenUrl(urlDto);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> urlServiceImpl.shortenUrl(urlDto));
 
         assertEquals("Failed to generate short URL", exception.getMessage());
     }
@@ -106,9 +104,8 @@ class UrlServiceImplTest {
         String hash = "nonExistingHash";
         when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
-        UrlException exception = assertThrows(UrlException.class, () -> {
-            urlServiceImpl.getOriginalUrl(hash);
-        });
+        UrlException exception = assertThrows(UrlException.class,
+                () -> urlServiceImpl.getOriginalUrl(hash));
 
         assertEquals("URL not found", exception.getMessage());
         verify(urlRepository).findByHash(hash);
@@ -128,9 +125,8 @@ class UrlServiceImplTest {
     void cleanExpiredUrls_noExpiredUrls_throwsUrlException() {
         when(urlRepository.findExpiredUrls()).thenReturn(Optional.empty());
 
-        UrlException exception = assertThrows(UrlException.class, () -> {
-            urlServiceImpl.cleanExpiredUrls();
-        });
+        UrlException exception = assertThrows(UrlException.class,
+                () -> urlServiceImpl.cleanExpiredUrls());
 
         assertEquals("No expired URLs found", exception.getMessage());
     }
