@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
@@ -31,26 +32,24 @@ public class HashCache {
     public String getHash() {
         if (hashCache.size() > maxSize * refillThreshold) {
             return hashCache.peek();
-        } else {
-            refillCache();
-            return hashCache.peek();
         }
+
+        refillCache();
+        return hashCache.peek();
     }
 
     private void refillCache() {
         if (reentrantLock.tryLock()) {
             try {
                 if (hashCache.size() < maxSize * refillThreshold) {
-                    executorService.submit(() -> {
-                        try{
-                            List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
-                            hashCache.addAll(hashes);
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                        List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
+                        hashCache.addAll(hashes);
 
-                            hashGenerator.generateBatch();
-                        } finally {
-                            reentrantLock.unlock();
-                        }
-                    });
+                        hashGenerator.generateBatch();
+                    }, executorService);
+
+                    future.join();
                 }
             } finally {
                 reentrantLock.unlock();

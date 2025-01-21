@@ -26,5 +26,11 @@ public class UrlExceptionHandler {
         log.warn("RuntimeException", e);
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleException(Exception e) {
+        log.error("Exception", e);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 }
 
