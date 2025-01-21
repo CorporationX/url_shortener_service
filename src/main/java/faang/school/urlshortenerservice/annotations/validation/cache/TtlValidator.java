@@ -8,13 +8,10 @@ public class TtlValidator implements ConstraintValidator<ValidTtl, CacheProperti
 
     @Override
     public boolean isValid(CacheProperties.Cache cacheProps, ConstraintValidatorContext context) {
-        if (cacheProps == null || ttlIsNotValid(cacheProps)) {
-            return false;
-        }
-        return true;
+        return cacheProps != null && !ttlIsValid(cacheProps);
     }
 
-    private boolean ttlIsNotValid(CacheProperties.Cache cacheProps) {
-        return cacheProps.isTtlEnabled() && (cacheProps.getTtlInMinutes() == null || cacheProps.getTtlInMinutes() < 0);
+    private boolean ttlIsValid(CacheProperties.Cache cacheProps) {
+        return !(cacheProps.isTtlEnabled() && (cacheProps.getTtlInMinutes() == null || cacheProps.getTtlInMinutes() < 0));
     }
 }
