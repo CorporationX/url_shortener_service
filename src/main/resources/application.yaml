@@ -1,4 +1,8 @@
 spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 24h
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -8,15 +12,18 @@ spring:
     redis:
       port: 6379
       host: localhost
+  mvc:
+    servlet:
+      path: /api/v1
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         jdbc:
           batch_size: 10000
 
@@ -33,9 +40,13 @@ logging:
 hash:
   range: 1000
   cache:
-    capacity: 1000
+    capacity: 100
     fill-percentage: 20
-
+  clean-scheduler:
+    cron: 0 0 0 * * ?
+url:
+  cleanup:
+    interval: 1 year
 async:
   thread-name-prefix: AsyncThread-
   core-pool-size: 5
