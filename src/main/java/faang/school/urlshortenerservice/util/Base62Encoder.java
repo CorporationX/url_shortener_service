@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.util;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

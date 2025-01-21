@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashCache;
 import faang.school.urlshortenerservice.properties.UrlProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;

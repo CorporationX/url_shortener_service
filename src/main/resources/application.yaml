@@ -47,8 +47,6 @@ hash:
 
 url:
   year-to-life: 1
-  cash:
-    ttl-minutes: 30
 
 server:
   port: 8080
