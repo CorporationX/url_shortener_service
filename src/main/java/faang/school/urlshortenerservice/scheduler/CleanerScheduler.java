@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
@@ -21,7 +22,5 @@ public class CleanerScheduler {
     @Scheduled(cron = "${scheduler.cron}")
     @Transactional
     public void cleanOldUrls() {
-        List<String> oldHashes = urlrepository.deleteOldUrlsAndGetHashes();
-        hashRepository.save(oldHashes);
     }
 }

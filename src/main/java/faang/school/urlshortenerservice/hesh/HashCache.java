@@ -29,7 +29,8 @@ public class HashCache {
     private int queueSize;
     @Value("${hash.queue.percentage-multiplier}")
     private double percentageMultiplier;
-
+    @Value("${hash.batch-size}")
+    private int batchSize;
     @Autowired
     public HashCache(@Qualifier("hashGeneratorExecutor") TaskExecutor queueTaskThreadPool,
                      HashRepository hashRepository,
@@ -42,7 +43,7 @@ public class HashCache {
     private void init() {
         freeCaches = new ArrayBlockingQueue<>(queueSize);
         hashGenerator.generateBatch();
-        freeCaches.addAll(hashRepository.getHashBatch());
+        freeCaches.addAll(hashRepository.getHashBatch(batchSize));
         log.info("HashCache initialized, queue is filled");
     }
 
@@ -51,7 +52,7 @@ public class HashCache {
                 isCaching.compareAndSet(false, true)) {
             queueTaskThreadPool.execute(() -> {
                 try {
-                    freeCaches.addAll(hashRepository.getHashBatch());
+                    freeCaches.addAll(hashRepository.getHashBatch(batchSize));
                     hashGenerator.generateBatch();
                     log.info("hash cache will be refilled by {}", Thread.currentThread().getName());
                 } finally {

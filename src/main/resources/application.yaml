@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -37,7 +41,7 @@ base62:
 url:
   original-path: http://localhost:8080/api/v1/url/
 server:
-  port: 8080
+  port: 8085
 
 logging:
   level:

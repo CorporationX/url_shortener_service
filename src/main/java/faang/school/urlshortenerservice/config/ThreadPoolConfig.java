@@ -25,7 +25,6 @@ public class ThreadPoolConfig {
     @Value("${hash.thread.task.prefix}")
     private String taskPrefix;
 
-
     @Bean
     public TaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -37,5 +36,4 @@ public class ThreadPoolConfig {
 
         return executor;
     }
-
 }

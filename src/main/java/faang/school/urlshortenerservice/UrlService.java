@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.hesh.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -13,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,28 +31,34 @@ public class UrlService {
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
         String hash = hashCoach.getHash();
-        if (hash == null || hash.isBlank()) {
-            throw new IllegalStateException("Не удалось сгенерировать хэш. Хэш не может быть нулевым или пустым.");
-        }
         log.info("Generated hash: {}", hash);
+        Url urlEntity = new Url(hash, urlDto.url(), LocalDateTime.now());
 
-        urlRepository.saveUrl(hash, urlDto.url());
+        urlRepository.save(urlEntity);
         redisCacheRepository.save(hash, urlDto.url());
         return urlPath.concat(hash);
     }
 
     @Transactional
     public String getOriginalUrl(String hash){
-        String cashedUrl = redisCacheRepository.get(hash);
-        if (cashedUrl != null) {
-            return cashedUrl;
+        String cachedUrl = redisCacheRepository.get(hash);
+        if (cachedUrl != null) {
+            return cachedUrl;
         }
+
         try {
-            cashedUrl = urlRepository.getUrlByHash(hash);
-        }catch (EmptyResultDataAccessException e){
+            Url urlEntity = urlRepository.findByHash(hash);
+            if (urlEntity == null) {
+                throw new DataNotFoundException("Url with hash %s was not found in database".formatted(hash));
+            }
+
+            cachedUrl = urlEntity.getUrl();
+
+            redisCacheRepository.save(hash, cachedUrl);
+        } catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("Url with hash %s was not found in database".formatted(hash));
         }
-        return cashedUrl;
-    }
 
+        return cachedUrl;
+    }
 }

@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
+import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.hesh.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jdk.dynalink.linker.LinkerServices;
 import lombok.AllArgsConstructor;
@@ -27,8 +29,11 @@ public class HashGenerator {
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
             log.info("sequence numbers to be hashed: {}", uniqueNumbers);
             List<String> hashes = base62Encoder.encode(uniqueNumbers);
+            List<Hash> hashEntities = hashes.stream()
+                    .map(Hash::new)
+                    .toList();
 
-            hashRepository.save(hashes);
+            hashRepository.saveAll(hashEntities);
         } catch (Exception e) {
             log.error("error during generating hashcode :", e);
             throw new RuntimeException(e);

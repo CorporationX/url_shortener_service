@@ -1,42 +1,31 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-@Slf4j
+
 @Repository
-@RequiredArgsConstructor
-public class HashRepository {
+public interface HashRepository extends JpaRepository<Hash, String> {
 
-    private final JdbcTemplate jdbcTemplate;
+    //    private final JdbcTemplate jdbcTemplate;
+//
 
-    @Value("${hash.batch-size}")
-    private int batchSize;
+    @Query(nativeQuery = true, value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :amount)")
+    List<Long> getUniqueNumbers(long amount);
 
-    public List<Long> getUniqueNumbers(long amount) {
-        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
-        return jdbcTemplate.queryForList(sql, Long.class, amount);
-    }
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash 
+            WHERE hash in (SELECT hash FROM hash LIMIT ?) 
+            RETURNING HASH
+            """)
 
-    public void save(List<String> hashes) {
-        List<Object[]> mappedList = hashes.stream()
-                .map(hash -> new Object[]{hash})
-                .toList();
-
-        jdbcTemplate.batchUpdate("INSERT INTO hash VALUES(?)", mappedList);
-    }
-
-    public List<String> getHashBatch() {
-        String sql = """
-                DELETE FROM hash 
-                WHERE hash in (SELECT hash FROM hash LIMIT ?) 
-                RETURNING HASH
-                """;
-        return jdbcTemplate.queryForList(sql, String.class, batchSize);
-    }
+    public List<String> getHashBatch(int batchSize);
 }
