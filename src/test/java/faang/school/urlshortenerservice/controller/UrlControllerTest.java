@@ -43,7 +43,7 @@ public class UrlControllerTest {
     @Test
     public void testCreateShortUrl() throws Exception {
         String longUrl = "http://example.com/very/long/url";
-        String shortUrl = "http://short.url/abc123";
+        String shortUrl = "http://example.com/api/v1/url/abc123";
         UrlRequestDto urlRequestDto = new UrlRequestDto();
         urlRequestDto.setLongUrl(longUrl);
 
@@ -63,7 +63,7 @@ public class UrlControllerTest {
 
         when(urlService.getOriginalUrl(hash)).thenReturn(originalUrl);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/" + hash))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/url/" + hash))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", originalUrl));
 

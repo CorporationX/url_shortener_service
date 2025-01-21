@@ -41,7 +41,7 @@ public class UrlServiceTest {
     public void setUp() {
         longUrl = "http://example.com/very/long/url";
         hash = "abc123";
-        shortUrl = "http://short.url/" + hash;
+        shortUrl = "http://example.url/api/v1/url/" + hash;
     }
 
     @Test
