@@ -35,7 +35,7 @@ hash:
     size: 15
     percentage-multiplier: 0.2
 base62:
-  alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  alphabet: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   length: 62
 
 url:

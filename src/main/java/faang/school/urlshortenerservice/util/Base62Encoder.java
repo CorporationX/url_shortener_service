@@ -22,16 +22,15 @@ public class Base62Encoder {
         return hashes;
     }
 
-    private String encodeToBase62(Long number) {
+    public String encodeToBase62(Long number) {
         if (number == 0) {
             return String.valueOf(base62.charAt(0));
         }
 
-
         StringBuilder encoded = new StringBuilder();
         while (number > 0) {
             int remainder = (int) (number % base62length);
-            encoded.append(base62.charAt(remainder));
+            encoded.append(Character.toLowerCase(base62.charAt(remainder)));
             number /= base62length;
         }
         return encoded.toString();
