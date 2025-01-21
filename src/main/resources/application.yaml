@@ -29,4 +29,10 @@ logging:
 
 hash:
   amount: 10000
-  unique-numbers-amount: 10000
+  unique-numbers-amount: 100000
+  cache:
+    capacity: 10000
+    limit: 0.2
+
+thread-pool:
+  default-amount: 5
