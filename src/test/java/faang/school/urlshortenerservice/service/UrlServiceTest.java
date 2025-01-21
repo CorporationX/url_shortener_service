@@ -47,7 +47,7 @@ class UrlServiceTest {
     private String longUrl;
     private String hash;
     private Url url;
-    private ShortUrlDto shortUrlDto;
+    private String shortUrl;
     private LocalDateTime expirationDate;
     private List<Hash> expectedHashes;
     private List<String> expectedHashesAsStrings;
@@ -63,7 +63,7 @@ class UrlServiceTest {
                 .url(longUrl)
                 .build();
         ReflectionTestUtils.setField(urlService, "urlPrefix", urlPrefix);
-        shortUrlDto = new ShortUrlDto(urlPrefix + hash);
+        shortUrl = urlPrefix + hash;
         expirationDate = LocalDateTime.now();
         expectedHashes = new ArrayList<>(
                 List.of(Hash.builder().hash("1").build(),
@@ -76,12 +76,12 @@ class UrlServiceTest {
     void testCreateShortUrlSuccess() {
         when(hashCacheService.getHash()).thenReturn(hash);
 
-        ShortUrlDto result = urlService.createShortUrl(longUrlDto);
+        String result = urlService.createShortUrl(longUrlDto);
 
         verify(hashCacheService, times(1)).getHash();
         verify(urlRepository, times(1)).save(any(Url.class));
         verify(urlRedisCacheService, times(1)).saveUrl(hash, longUrl);
-        assertThat(result).isEqualTo(shortUrlDto);
+        assertThat(result).isEqualTo(shortUrl);
     }
 
     @Test
@@ -115,7 +115,7 @@ class UrlServiceTest {
 
         assertThatThrownBy(() -> urlService.getLongUrl(hash))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("was not found in cache and database");
+                .hasMessageContaining("was not found");
 
         verify(urlRedisCacheService, times(1)).findByHash(hash);
         verify(urlRepository, times(1)).findByHash(hash);

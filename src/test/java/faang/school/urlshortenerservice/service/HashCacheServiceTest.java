@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.util.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -33,6 +35,9 @@ class HashCacheServiceTest {
 
     @Mock
     private HashService hashService;
+
+    @Mock
+    private HashGenerator hashGenerator;
 
     @Spy
     @InjectMocks
@@ -62,6 +67,8 @@ class HashCacheServiceTest {
 
         verify(hashCache, times(1)).size();
         verify(hashCache, times(1)).poll();
+        verify(hashCache, never()).addAll(any());
+        verifyNoInteractions(hashGenerator);
         assertThat(result).isEqualTo(hash);
     }
 
@@ -88,6 +95,7 @@ class HashCacheServiceTest {
 
         verify(hashService, times(1)).getAndDeleteHashBatch(cacheCapacity);
         verify(hashCache, times(1)).addAll(hashes);
+        verify(hashGenerator, times(1)).asyncHashRepositoryRefill();
     }
 
     @Test
@@ -99,12 +107,13 @@ class HashCacheServiceTest {
 
         verifyNoInteractions(hashService);
         verifyNoInteractions(hashCache);
+        verifyNoInteractions(hashGenerator);
     }
 
     private void prepareExecutorAndHashCacheService() {
         shortenerTaskExecutor = new ThreadPoolTaskExecutor();
         shortenerTaskExecutor.initialize();
-        hashCacheService = new HashCacheService(hashCache, shortenerTaskExecutor, hashService);
+        hashCacheService = new HashCacheService(hashCache, shortenerTaskExecutor, hashService, hashGenerator);
         ReflectionTestUtils.setField(hashCacheService, "cacheCapacity", cacheCapacity);
         ReflectionTestUtils.setField(hashCacheService, "lowThresholdRate", lowThresholdRate);
     }

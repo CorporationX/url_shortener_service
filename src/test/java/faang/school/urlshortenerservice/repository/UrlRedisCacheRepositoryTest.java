@@ -47,7 +47,7 @@ class UrlRedisCacheRepositoryTest {
     void testSaveUrlSuccess() {
         urlRedisCacheRepository.saveUrl(hash, longUrl);
 
-        verify(valueOperations, times(1)).setIfAbsent(hash, longUrl, redisProperties.ttl(), TimeUnit.SECONDS);
+        verify(valueOperations, times(1)).set(hash, longUrl, redisProperties.ttl(), TimeUnit.SECONDS);
     }
 
     @Test

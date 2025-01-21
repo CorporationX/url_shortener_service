@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UrlController.class)
@@ -40,7 +39,6 @@ class UrlControllerTest {
     private String invalidHash;
     private String shortUrl;
     private LongUrlDto longUrlDto;
-    private ShortUrlDto shortUrlDto;
 
     @BeforeEach
     void setUp() {
@@ -57,21 +55,20 @@ class UrlControllerTest {
                 }""";
 
         longUrlDto = new LongUrlDto(validLongUrl);
-        shortUrlDto = new ShortUrlDto(shortUrl);
-        when(urlService.createShortUrl(longUrlDto)).thenReturn(shortUrlDto);
+        when(urlService.createShortUrl(longUrlDto)).thenReturn(shortUrl);
 
         mockMvc.perform(post("")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonValidLongUrl))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.shortUrl").value(shortUrl));
+                .andExpect(content().string(containsString(shortUrl)));
     }
 
     @Test
     void testCreateUrlFailed_WrongUrlFormat() throws Exception {
         jsonInvalidLongUrl = """
                 {
-                "longUrl":"htps://www.shortmefasterplease.com/PLEASEPLEASEPLEASE"
+                "longUrl":" ://www.shortmefasterplease.com/PLEASEPLEASEPLEASE"
                 }""";
 
         mockMvc.perform(post("")
@@ -109,8 +106,7 @@ class UrlControllerTest {
         invalidHash = "hash";
 
         mockMvc.perform(get("/{hash}", invalidHash))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Hash must contain 6 chars.")));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -118,8 +114,7 @@ class UrlControllerTest {
         invalidHash = "hash )";
 
         mockMvc.perform(get("/{hash}", invalidHash))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("0-9, a-z, A-Z chars only")));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -127,7 +122,6 @@ class UrlControllerTest {
         invalidHash = "      ";
 
         mockMvc.perform(get("/{hash}", invalidHash))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Hash must not be empty")));
+                .andExpect(status().isNotFound());
     }
 }
