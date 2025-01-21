@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.entity.url.Url;
+import faang.school.urlshortenerservice.exception.UrlException;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
@@ -9,6 +10,7 @@ import faang.school.urlshortenerservice.validator.url.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +44,14 @@ public class UrlServiceImpl implements UrlService {
         urlCacheRepository.save(hash, urlDto.getUrl());
         log.info("created shortened URL: {}", hash);
         return hash;
+    }
+
+    @Override
+    @Transactional
+    @Cacheable(value = "url", key = "#hash")
+    public String getOriginalUrl(String hash) {
+        log.info("Retrieving original URL for hash: {}", hash);
+        return urlRepository.findByHash(hash)
+                .orElseThrow(() -> new UrlException("URL not found"));
     }
 }

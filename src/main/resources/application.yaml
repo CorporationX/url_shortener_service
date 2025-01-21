@@ -46,7 +46,12 @@ hash:
     min-length: 20
     thread-pool: 2
     batch-partition: 5
-    cron: 0 0 * * * ?
   cache:
     min-percent: 20
     max-size: 100
+    url:
+      prefix: url
+
+url:
+  shortener:
+    prefix: http://localhost:8090/url/

@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.dto.url.UrlDto;
 import faang.school.urlshortenerservice.entity.url.Url;
+import faang.school.urlshortenerservice.exception.UrlException;
 import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
@@ -13,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,5 +82,30 @@ class UrlServiceImplTest {
         });
 
         assertEquals("Failed to generate short URL", exception.getMessage());
+    }
+
+    @Test
+    void getOriginalUrl_existingHash_returnsOriginalUrl() {
+        String hash = "existingHash";
+        String originalUrl = "https://example.com";
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.of(originalUrl));
+
+        String result = urlServiceImpl.getOriginalUrl(hash);
+
+        assertEquals(originalUrl, result);
+        verify(urlRepository).findByHash(hash);
+    }
+
+    @Test
+    void getOriginalUrl_nonExistingHash_throwsUrlException() {
+        String hash = "nonExistingHash";
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
+
+        UrlException exception = assertThrows(UrlException.class, () -> {
+            urlServiceImpl.getOriginalUrl(hash);
+        });
+
+        assertEquals("URL not found", exception.getMessage());
+        verify(urlRepository).findByHash(hash);
     }
 }
