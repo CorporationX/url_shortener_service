@@ -19,7 +19,7 @@ import java.net.URI;
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/url")
+@RequestMapping("/api/v1/urls")
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;

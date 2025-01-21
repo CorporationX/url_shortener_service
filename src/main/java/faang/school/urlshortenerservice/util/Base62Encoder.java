@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.util;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,6 +21,6 @@ public class Base62Encoder {
             builder.append(BASE_62_CHARACTERS.charAt(index));
             number = number / BASE_62_CHARACTERS.length();
         }
-        return builder.reverse().toString();
+        return builder.toString();
     }
 }

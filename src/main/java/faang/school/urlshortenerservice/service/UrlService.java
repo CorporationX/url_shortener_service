@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashCache;
 import faang.school.urlshortenerservice.properties.UrlProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -29,26 +29,8 @@ public class UrlService {
     @Transactional
     public String generateShortUrl(UrlDto url) {
         return urlRepository.findHashByUrl(url.getUrl())
-                .map(hash -> {
-                    log.info("Hash found for URL {}: {}", url.getUrl(), hash);
-                    urlCacheRepository.save(hash, url.getUrl());
-                    log.info("Hash {} cached in Redis for URL {}", hash, url.getUrl());
-                    return hash;
-                })
-                .orElseGet(() -> {
-                    String hash = hashCache.getHash();
-                    Url modelUrl = Url.builder()
-                            .hash(hash)
-                            .url(url.getUrl())
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    urlRepository.save(modelUrl);
-                    log.info("New URL saved in DB: {}", modelUrl);
-                    urlCacheRepository.save(hash, url.getUrl());
-                    log.info("New hash {} cached in Redis for URL {}", hash, url.getUrl());
-                    hashCache.checkAndFillHashCache();
-                    return hash;
-                });
+                .map(hash -> processingExistingHash(url, hash))
+                .orElseGet(() -> processingNewUrl(url));
     }
 
     @Transactional(readOnly = true)
@@ -71,5 +53,29 @@ public class UrlService {
                 .deleteAndGetOldUrls(LocalDate.now().minusYears(urlProperties.getYearToLife()));
         hashRepository.saveHashes(hashes.toArray(String[]::new));
         urlCacheRepository.removeHashes(hashes);
+    }
+
+    private String processingExistingHash(UrlDto url, String hash) {
+        log.info("Hash found for URL {}: {}", url.getUrl(), hash);
+        urlCacheRepository.save(hash, url.getUrl());
+        log.info("Hash {} cached in Redis for URL {}", hash, url.getUrl());
+        return hash;
+    }
+
+    private String processingNewUrl(UrlDto url) {
+        String hash = hashCache.getHash();
+        urlRepository.save(createUrl(hash, url));
+        urlCacheRepository.save(hash, url.getUrl());
+        log.info("New hash {} cached in Redis for URL {}", hash, url.getUrl());
+        hashCache.checkAndFillHashCache();
+        return hash;
+    }
+
+    private Url createUrl(String hash, UrlDto url) {
+        return Url.builder()
+                .hash(hash)
+                .url(url.getUrl())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

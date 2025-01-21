@@ -74,7 +74,7 @@ tasks.bootJar {
  */
 val jacocoInclude = listOf(
     "**/service/**",
-    "**/hash/**"
+    "**/util/**"
 )
 jacoco {
     toolVersion = "0.8.9"
@@ -85,12 +85,16 @@ tasks.test {
 }
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
-
     reports {
         xml.required.set(false)
         csv.required.set(false)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            include(jacocoInclude)
+        }
+    )
 }
 tasks.jacocoTestCoverageVerification {
     violationRules {

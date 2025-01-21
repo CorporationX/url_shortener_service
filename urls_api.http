@@ -1,5 +1,5 @@
 ### Generate short URL
-POST http://localhost:8080/api/v1/url
+POST http://localhost:8080/api/v1/urls
 Content-Type: application/json
 x-user-id: 12345
 
@@ -8,5 +8,5 @@ x-user-id: 12345
 }
 
 ### Redirect to URL
-GET http://localhost:8080/api/v1/url/baanqL
+GET http://localhost:8080/api/v1/urls/baaaaa
 x-user-id: 12345

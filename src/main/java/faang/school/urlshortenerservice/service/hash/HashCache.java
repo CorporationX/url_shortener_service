@@ -1,8 +1,7 @@
-package faang.school.urlshortenerservice.hash;
+package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.properties.HashLocalCacheProperties;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -51,7 +50,7 @@ public class HashCache {
         if (inProgress.get()) {
             return false;
         }
-        return hashCache.size() < (int) (hashLocalCacheProperties.getSize() * (hashLocalCacheProperties.getLowPercent() / 100))
+        return hashCache.size() < (hashLocalCacheProperties.getSize() * (hashLocalCacheProperties.getLowPercent() / 100))
                 && inProgress.compareAndSet(false, true);
     }
 
