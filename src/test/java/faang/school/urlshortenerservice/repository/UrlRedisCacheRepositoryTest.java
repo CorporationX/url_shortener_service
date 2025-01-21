@@ -54,7 +54,7 @@ class UrlRedisCacheRepositoryTest {
     void testGetUrlReturnsValue() {
         when(valueOperations.get(hash)).thenReturn(longUrl);
 
-        Optional<String> result = urlRedisCacheRepository.getUrl(hash);
+        Optional<String> result = urlRedisCacheRepository.findByHash(hash);
 
         verify(valueOperations, times(1)).get(hash);
         assertThat(result.get()).isEqualTo(longUrl);
@@ -64,7 +64,7 @@ class UrlRedisCacheRepositoryTest {
     void testGetUrlReturnsEmptyOptional() {
         when(valueOperations.get(hash)).thenReturn(null);
 
-        Optional<String> result = urlRedisCacheRepository.getUrl(hash);
+        Optional<String> result = urlRedisCacheRepository.findByHash(hash);
 
         verify(valueOperations, times(1)).get(hash);
         assertThat(result.isEmpty()).isTrue();

@@ -15,7 +15,7 @@ public class UrlRedisCacheService {
         urlRedisCacheRepository.saveUrl(hash, longUrl);
     }
 
-    public Optional<String> getUrl(String hash) {
-        return urlRedisCacheRepository.getUrl(hash);
+    public Optional<String> findByHash(String hash) {
+        return urlRedisCacheRepository.findByHash(hash);
     }
 }

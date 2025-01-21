@@ -20,7 +20,7 @@ public class ExpiredUrlsRemover {
     private final UrlService urlService;
     private final HashService hashService;
 
-    @Value("${scheduler.url-expiration-period}")
+    @Value("${scheduler.url-expiration-period-months}")
     private int expirationPeriodMonths;
 
     @Transactional
@@ -36,6 +36,6 @@ public class ExpiredUrlsRemover {
         }
 
         hashService.saveHashes(freedHashes);
-        log.info("Deleted {} expired urls, freed hashes: {}", freedHashes.size(), freedHashes);
+        log.info("Deleted {} expired urls.", freedHashes.size());
     }
 }

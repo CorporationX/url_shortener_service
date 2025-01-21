@@ -44,13 +44,13 @@ executor-service-properties:
   thread-name-prefix: shortener-thread
 
 hash-properties:
-  generate-batch: 10000
-  cache-capacity: 1000
+  generate-batch: 100000
+  cache-capacity: 10000
   cache-threshold-rate: 0.2
 
 url-prefix: localhost:8080/
 
 scheduler:
-  url-expiration-period: 12 #months
+  url-expiration-period-months: 12
   delete-expired-urls-cron: "0 0 0 * * *"
 

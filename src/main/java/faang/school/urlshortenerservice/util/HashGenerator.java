@@ -25,16 +25,18 @@ public class HashGenerator {
     private double lowThresholdPercent;
 
     public CompletableFuture<Void> asyncHashRepositoryRefill() {
-        return CompletableFuture.runAsync(() -> {
-            if (isRefillNeeded()) {
+        if (isHashRepositoryLow()) {
+            return CompletableFuture.runAsync(() -> {
                 List<Long> uniqueNumbers = hashService.getUniqueSeqNumbers(batchSize);
                 hashService.saveHashes(baseEncoder.encodeList(uniqueNumbers));
                 log.info("Created and saved {} hashes", uniqueNumbers.size());
-            }
-        }, shortenerTaskExecutor);
+            }, shortenerTaskExecutor);
+        }
+
+        return CompletableFuture.completedFuture(null);
     }
 
-    private boolean isRefillNeeded() {
+    private boolean isHashRepositoryLow() {
         return hashService.getHashRepositorySize() < batchSize * lowThresholdPercent;
     }
 }

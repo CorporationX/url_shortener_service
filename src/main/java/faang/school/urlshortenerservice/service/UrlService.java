@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +21,10 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlRedisCacheService urlRedisCacheService;
 
-
     @Value("${url-prefix}")
     private String urlPrefix;
 
-    public ShortUrlDto createShortUrl(LongUrlDto longUrlDto) {
+    public String createShortUrl(LongUrlDto longUrlDto) {
         String longUrl = longUrlDto.longUrl();
         String hash = hashCacheService.getHash();
         Url url = Url.builder()
@@ -38,32 +35,25 @@ public class UrlService {
         urlRepository.save(url);
         urlRedisCacheService.saveUrl(hash, longUrl);
 
-        ShortUrlDto shortUrlDto = new ShortUrlDto(urlPrefix + hash);
-        log.info("Created short url {} for long url {}.", shortUrlDto.shortUrl(), longUrlDto.longUrl());
+        String shortUrl = urlPrefix + hash;
+        log.info("Created short url {} for long url {}.", shortUrl, longUrlDto.longUrl());
 
-        return shortUrlDto;
+        return shortUrl;
     }
 
     public String getLongUrl(String hash) {
-        String longUrl;
-        Optional<String> cacheUrl = urlRedisCacheService.getUrl(hash);
-
-        if (cacheUrl.isPresent()) {
-            longUrl = cacheUrl.get();
-            log.info("Url {} for hash {} found in redis cache", longUrl, hash);
-            return longUrl;
-        } else {
-            Optional<Url> dbUrl = urlRepository.findByHash(hash);
-
-            if (dbUrl.isPresent()) {
-                longUrl = dbUrl.get().getUrl();
-                urlRedisCacheService.saveUrl(hash, longUrl);
-                log.info("Url {} for hash {} found in database and saved in cache", longUrl, hash);
-                return longUrl;
-            }
-        }
-
-        throw new EntityNotFoundException(String.format("Url for hash %s was not found in cache and database", hash));
+        return urlRedisCacheService.findByHash(hash)
+                .map(longUrl -> {
+                    log.debug("Url '{}' for hash '{}' found in redis cache", longUrl, hash);
+                    return longUrl;
+                }).orElseGet(() -> urlRepository.findByHash(hash)
+                        .map(url -> {
+                            String longUrl = url.getUrl();
+                            urlRedisCacheService.saveUrl(hash, longUrl);
+                            log.debug("Url '{}' for hash '{}' found in database and saved in cache", longUrl, hash);
+                            return longUrl;
+                        })
+                        .orElseThrow(() -> new EntityNotFoundException(String.format("Url for hash '%s' was not found.", hash))));
     }
 
     public List<Hash> deleteExpiredLinks(LocalDateTime expiredDate) {

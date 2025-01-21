@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,17 +22,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping()
 @RequiredArgsConstructor
 @Slf4j
 @Validated
+@RequestMapping
 @Tag(name = "Deema's URL SHORTENER.", description = "You can make your URL shorter =)")
 public class UrlController {
     public final UrlService urlService;
 
     @PostMapping
     @Operation(summary = "Create short URL", description = "Put your URL into request body, and you'll get short version")
-    public ResponseEntity<ShortUrlDto> createShortUrl(@Valid @RequestBody LongUrlDto longUrlDto) {
+    public ResponseEntity<String> createShortUrl(@Valid @RequestBody LongUrlDto longUrlDto) {
         log.info("Requesting short URL for '{}'", longUrlDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.createShortUrl(longUrlDto));
     }

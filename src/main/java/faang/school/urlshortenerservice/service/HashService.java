@@ -14,14 +14,14 @@ import java.util.List;
 public class HashService {
     private final HashRepository hashRepository;
 
-    public List<Long> getUniqueSeqNumbers(Long count) {
-        List<Long> result = hashRepository.getUniqueSeqNumbers(count);
+    public List<Long> getUniqueSeqNumbers(Long amount) {
+        List<Long> result = hashRepository.getUniqueSeqNumbers(amount);
         log.info("Received {} unique sequence numbers to generate hashes.", result.size());
         return result;
     }
 
-    public List<String> getAndDeleteHashBatch(Long count) {
-        List<String> result = hashRepository.getAndDeleteHashBatch(count);
+    public List<String> getAndDeleteHashBatch(Long amount) {
+        List<String> result = hashRepository.getAndDeleteHashBatch(amount);
         log.info("Received and deleted {} hashes from hash repository.", result.size());
         return result;
     }

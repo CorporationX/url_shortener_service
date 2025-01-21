@@ -24,14 +24,14 @@ public class BaseEncoder {
     }
 
     private String encode(Long number) {
-        var sb = new StringBuilder();
+        StringBuilder hashBuilder = new StringBuilder();
         int base = characters.length();
 
         while (number > 0) {
-            sb.append(characters.charAt((int) (number % base)));
+            hashBuilder.append(characters.charAt((int) (number % base)));
             number /= base;
         }
 
-        return sb.toString();
+        return hashBuilder.toString();
     }
 }

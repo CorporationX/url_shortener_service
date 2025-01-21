@@ -15,6 +15,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueSeqNumbers(Long count);
 
     @Modifying
-    @Query(nativeQuery = true, value = "DELETE FROM hash WHERE CTID IN (SELECT CTID FROM hash LIMIT :count) RETURNING hash")
-    List<String> getAndDeleteHashBatch(Long count);
+    @Query(nativeQuery = true, value = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT :amount) RETURNING hash")
+    List<String> getAndDeleteHashBatch(Long amount);
 }

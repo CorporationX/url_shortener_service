@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.LongUrlDto;
-import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -87,23 +86,23 @@ class UrlServiceTest {
 
     @Test
     void testGetLongUrlSuccess_FromCache() {
-        when(urlRedisCacheService.getUrl(hash)).thenReturn(Optional.of(longUrl));
+        when(urlRedisCacheService.findByHash(hash)).thenReturn(Optional.of(longUrl));
 
         String result = urlService.getLongUrl(hash);
 
-        verify(urlRedisCacheService, times(1)).getUrl(hash);
+        verify(urlRedisCacheService, times(1)).findByHash(hash);
         verifyNoInteractions(urlRepository);
         assertThat(result).isEqualTo(longUrl);
     }
 
     @Test
     void testGetLongUrlSuccess_FromDatabase() {
-        when(urlRedisCacheService.getUrl(hash)).thenReturn(Optional.empty());
+        when(urlRedisCacheService.findByHash(hash)).thenReturn(Optional.empty());
         when(urlRepository.findByHash(hash)).thenReturn(Optional.of(url));
 
         String result = urlService.getLongUrl(hash);
 
-        verify(urlRedisCacheService, times(1)).getUrl(hash);
+        verify(urlRedisCacheService, times(1)).findByHash(hash);
         verify(urlRepository, times(1)).findByHash(hash);
         verify(urlRedisCacheService, times(1)).saveUrl(hash, longUrl);
         assertThat(result).isEqualTo(longUrl);
@@ -111,14 +110,14 @@ class UrlServiceTest {
 
     @Test
     void testGetLongUrl_ThrowsException() {
-        when(urlRedisCacheService.getUrl(hash)).thenReturn(Optional.empty());
+        when(urlRedisCacheService.findByHash(hash)).thenReturn(Optional.empty());
         when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> urlService.getLongUrl(hash))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("was not found in cache and database");
 
-        verify(urlRedisCacheService, times(1)).getUrl(hash);
+        verify(urlRedisCacheService, times(1)).findByHash(hash);
         verify(urlRepository, times(1)).findByHash(hash);
         verify(urlRedisCacheService, never()).saveUrl(hash, longUrl);
     }

@@ -42,11 +42,11 @@ class UrlRedisCacheServiceTest {
 
     @Test
     void testGetUrl() {
-        when(urlRedisCacheRepository.getUrl(hash)).thenReturn(Optional.of(longUrl));
+        when(urlRedisCacheRepository.findByHash(hash)).thenReturn(Optional.of(longUrl));
 
-        Optional<String> result = urlRedisCacheService.getUrl(hash);
+        Optional<String> result = urlRedisCacheService.findByHash(hash);
 
-        verify(urlRedisCacheRepository, times(1)).getUrl(hash);
+        verify(urlRedisCacheRepository, times(1)).findByHash(hash);
         assertThat(result).isEqualTo(Optional.of(longUrl));
     }
 }

@@ -15,10 +15,10 @@ public class UrlRedisCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveUrl(String hash, String longUrl) {
-        redisTemplate.opsForValue().setIfAbsent(hash, longUrl, redisProperties.ttl(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(hash, longUrl, redisProperties.ttl(), TimeUnit.SECONDS);
     }
 
-    public Optional<String> getUrl(String hash) {
+    public Optional<String> findByHash(String hash) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
     }
 }
