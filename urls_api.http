@@ -1,0 +1,12 @@
+### Generate short URL
+POST http://localhost:8080/api/v1/urls
+Content-Type: application/json
+x-user-id: 12345
+
+{
+  "url": "https://www.google.com/search?sca_esv=2e9d584eca4b7171&sxsrf=ADLYWIKyVWeQU8h7r5sglmzbhPLW571oow:1737252725068&q=%D0%BE%D1%87%D0%B5%D0%BD%D1%8C+%D1%81%D1%83%D0%BF%D0%B5%D1%80+%D0%BF%D1%83%D0%BF%D0%B5%D1%80+%D0%B4%D0%BB%D0%B8%D0%BD%D0%BD%D1%8B%D0%B9+%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81&spell=1&sa=X&ved=2ahUKEwi4g8Dc2oCLAxXa0AIHHYikHpgQBSgAegQIChAB&cshid=1737252759802978&biw=1920&bih=934&dpr=1"
+}
+
+### Redirect to URL
+GET http://localhost:8080/api/v1/urls/baaaaa
+x-user-id: 12345

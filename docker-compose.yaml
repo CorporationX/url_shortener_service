@@ -1,0 +1,31 @@
+version: '3'
+services:
+  master_postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - '5432:5432'
+
+  master_redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+
+  app_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://master_postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_REDIS_HOST=master_redis
+      - SPRING_REDIS_PORT=6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - master_postgres
+      - master_redis
