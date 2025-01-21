@@ -28,7 +28,7 @@ public class UrlController {
         urlValidate.getUrlValidate(originalUrl);
         service.generateShortUrl(originalUrl);
     }
-    @GetMapping
+    @GetMapping("/{requesthash}")
     public RedirectView returnFullUrl(@NotNull @RequestParam String requesthash){
         String redirectUrl = service.returnFullUrl(requesthash);
         RedirectView redirectView = new RedirectView(redirectUrl);

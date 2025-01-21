@@ -14,12 +14,8 @@ public class ExecutorServiceConfig {
     @Value("${tread-pool.all}")
     private int pool;
 
-    @Bean(name = "executorService")
+    @Bean
     public ExecutorService executorService() {
-        return Executors.newFixedThreadPool(pool);
-    }
-    @Bean(name = "executorgenerator")
-    public ExecutorService executorgenerator() {
         return Executors.newFixedThreadPool(pool);
     }
 }

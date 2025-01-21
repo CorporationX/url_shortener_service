@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,8 +20,9 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
+    @Cacheable(cacheNames = "generateShortUrl", key = "#originalUrl")
     public void generateShortUrl(UrlDto originalUrl) {
-        String firstElement = hashCache.getHashes().poll();
+        String firstElement = hashCache.getHash();
         UrlBaza urlBaza = UrlBaza.builder()
                 .hash(firstElement)
                 .url(originalUrl.getOriginalUrl())
@@ -29,6 +31,7 @@ public class UrlService {
         urlRepository.save(urlBaza);
         log.info("Saved hash {}, and original url in baza",firstElement);
     }
+    @Cacheable(cacheNames = "returnFullUrl", key = "#requesthash")
     public String returnFullUrl(String requesthash){
         UrlBaza urlBaza = urlRepository.findById(requesthash)
                 .orElseThrow(() -> new IllegalStateException("For the hash  the full URL not in the database"));

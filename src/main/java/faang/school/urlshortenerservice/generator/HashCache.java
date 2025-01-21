@@ -1,14 +1,15 @@
 package faang.school.urlshortenerservice.generator;
 
 
+import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -36,22 +37,21 @@ public class HashCache {
         this.hashes = new ArrayBlockingQueue<>(capacity);
         try {
             hashes.addAll(hashGenerator.getHashBatch(capacity));
-            log.info("hashes all = {} ",hashes.size());
-            for (String hash : hashes) {
-                log.info("Hash: {}", hash);
-            }
+            log.info("hashes all = {} ", hashes.size());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error {}",e);
         }
     }
-    @Scheduled(cron = "0 0 * * * *")//запускает задачу каждый час")
-    private String getHash() {
+    public String getHash() {
         if ((hashes.size() * (capacity / 100.0)) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                executorService.submit(() -> {
-                    hashGenerator.getHashesAsync(capacity)
-                            .thenAccept(hashes::addAll)
-                            .thenRun(() -> filling.set(false));
+                executorService.submit(() ->
+                {
+                    List<String> batch = hashGenerator.getHashBatch(capacity);
+                    synchronized (hashes) {
+                        hashes.addAll(batch);
+                    }
+                    filling.set(false);
                 });
             }
         }

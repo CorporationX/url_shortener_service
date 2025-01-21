@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.entity.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,29 +12,25 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    private static final String BASE_62_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private final HashJpaRepository hashRepository;
+    private final Base62Encoder base62Encoder;
 
     @Value("${hash.range.max}")
     private int maxRange;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")//запускает задачу каждый день в полночь (00:00:00)")
     @Async("executorgenerator")
     public void generateBatch() {
         List<Long> range = getUniqueNumbers();
-        List<Hash> hashes = range.stream()
-                .map(this::applyBase62Encoding)
-                .map(Hash::new)
-                .toList();
+        List<String> hashes = base62Encoder.applyBase62Encoding(range);
         log.info("hashes = {} ",hashes.size());
-        hashRepository.saveAll(hashes);
+        hashRepository.saveAll(hashes.stream().map(Hash::new).toList());
     }
     private List<Long> getUniqueNumbers() {
         return hashRepository.getNextRange(maxRange);
@@ -47,19 +44,5 @@ public class HashGenerator {
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).toList();
-    }
-
-    @Async("executorService")
-    public CompletableFuture<List<String>> getHashesAsync(long amount) {
-        return CompletableFuture.completedFuture(getHashBatch(amount));
-    }
-
-    private String applyBase62Encoding(long number) {
-        StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
-            number /= BASE_62_CHARACTERS.length();
-        }
-        return builder.toString();
     }
 }
