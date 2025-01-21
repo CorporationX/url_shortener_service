@@ -10,12 +10,13 @@ import org.springframework.context.annotation.Configuration;
 public class ThreadPoolProps {
 
     private ThreadPool hashGeneratorPool;
+    private ThreadPool cacheLoaderPool;
 
     @Data
     public static class ThreadPool {
         private int corePoolSize;
         private int maxPoolSize;
         private int queueCapacity;
-        private String threadPrefixName;
+        private String threadNamePrefix;
     }
 }

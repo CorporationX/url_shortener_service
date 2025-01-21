@@ -14,21 +14,30 @@ spring:
       hibernate:
         format_sql: true
         jdbc:
-          batch_versioned_data: true
           batch_size: 100
         order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
         generate_statistics: true
+
+  cache:
+    type: redis
+    caches:
+      url-cache:
+        prefix: "urls"
+        ttl-in-minutes: 30
+        ttl-enabled: true
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-sequence:
-  batch:
-    # Number of sequence values to allocate in single database call
-    # Recommended range: 50-1000
-    # Default: 100
-    size: 100
-
+hash-generation:
+  initial-batch-size: 1000
 
 server:
   port: 8080
@@ -47,7 +56,25 @@ async:
       max-pool-size: 1
       queue-capacity: 1
       thread-name-prefix: "HashGenerationThread-"
+    cache-loader-pool:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 1
+      thread-name-prefix: "CacheLoaderThread-"
 
-cache:
+local-cache:
   hash-cache:
-    capacity: 1000
+    capacity: 100
+    threshold: 20
+
+
+app:
+  domain:
+    port: 8080
+    protocol: http
+    host: localhost
+
+schedule:
+  url-cleaner-scheduler:
+    cron: "0 0 0 * * *"
+    batch-size: 100

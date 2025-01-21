@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "url_seq_gen")
     @SequenceGenerator(
             name = "url_seq_gen",
             sequenceName = "url_seq",
@@ -36,6 +37,7 @@ public class Url {
     private String hash;
 
     @Column(name = "url", nullable = false, columnDefinition = "TEXT")
+    @URL
     private String url;
 
     @CreationTimestamp
