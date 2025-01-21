@@ -9,6 +9,7 @@ public class Base62Encoder {
     private static final String BASE_62_ELEMENTS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final int elementsAmount = BASE_62_ELEMENTS.length();
 
+    // TODO Сравнить время работы stream() и parallelStream()
     public List<String> encode(List<Long> numbers) {
         return numbers.stream().map(this::base62Encoding).toList();
     }
