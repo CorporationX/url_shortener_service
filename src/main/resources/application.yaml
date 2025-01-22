@@ -14,6 +14,10 @@ app:
     url-ttl: 365
     cron: 0 0 0 * * *
   batch-update-size: 50
+  cache:
+    names:
+      hashCache:
+        expire: 1d
 
 spring:
   task:
