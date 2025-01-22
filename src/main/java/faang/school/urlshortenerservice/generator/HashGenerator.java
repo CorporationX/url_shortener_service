@@ -25,7 +25,6 @@ public class HashGenerator {
     private int maxRange;
 
     @Transactional
-    @Scheduled(cron = "${scheduled.cron_generated}")
     public void generateBatch() {
         List<Long> range = hashRepository.getNextRange(maxRange);
         List<Hash> hashes = base62Encoder.encode(range);
@@ -41,11 +40,6 @@ public class HashGenerator {
             hashes.addAll(hashRepository.findAndDelete(amount-hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).toList();
-    }
-
-    @Async("generateHashPool")
-    public CompletableFuture<List<String>> getHashesAsync(long amount) {
-        return CompletableFuture.completedFuture(getHashes(amount));
     }
 
 }

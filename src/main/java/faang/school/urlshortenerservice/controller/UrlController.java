@@ -18,7 +18,6 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @RequestMapping("api/v1/urls")
 @RequiredArgsConstructor
-@Validated
 public class UrlController {
 
     private final UrlService urlService;

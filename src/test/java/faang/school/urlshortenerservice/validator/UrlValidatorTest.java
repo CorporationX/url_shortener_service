@@ -8,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UrlValidatorTest {
@@ -22,12 +21,12 @@ public class UrlValidatorTest {
 
     @Test
     void testValidateUrlWithException() {
-        assertThrows(DataValidationException.class, () -> urlValidator.validateUrl("hello"));
+        assertFalse(() -> urlValidator.isValidUrl("hello"));
     }
 
     @Test
     void testValidateUrlWithNoException() {
-        assertDoesNotThrow(() -> urlValidator.validateUrl("https://www.google.com"));
+        assertTrue(() -> urlValidator.isValidUrl("https://www.google.com"));
     }
 
 }

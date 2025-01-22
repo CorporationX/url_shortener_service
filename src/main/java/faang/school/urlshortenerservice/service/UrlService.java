@@ -3,14 +3,19 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.generator.HashCache;
+import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.repository.UniqueHashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +25,23 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
+    private final UniqueHashRepository hashRepository;
     private final UrlValidator validator;
+
+    @Value("${url.original-path}")
+    private String myUrl;
 
     @Transactional
     public String getUrlHash(UrlDto urlDto) {
         String longUrl = urlDto.getUrl();
-        StringBuilder builder = new StringBuilder();
-        builder.append(removePathAfterThirdSlash(longUrl));
+        boolean checkIsValid = validator.isValidUrl(longUrl);
+        if (!checkIsValid) {
+            log.warn("Invalid URL {}", longUrl);
+            return "Invalid URL " + urlDto.getUrl();
+        }
         log.debug("LongUrl: {}", longUrl);
-        validator.validateUrl(urlDto.getUrl());
+        StringBuilder builder = new StringBuilder();
+        builder.append(myUrl);
         String hashFromBase = validator.urlExistsInBase(longUrl);
         if (hashFromBase != null) {
             log.info("Url {} already exists in base", longUrl);
@@ -61,27 +74,10 @@ public class UrlService {
         return urlFromCache.getUrl();
     }
 
-    private String removePathAfterThirdSlash(String urlString) {
-        int thirdSlashIndex = getThirdSlashIndex(urlString);
-        if (thirdSlashIndex != -1) {
-            return urlString.substring(0, thirdSlashIndex + 1);
-        }
-        return urlString;
-    }
-
-    private int getThirdSlashIndex(String urlString) {
-        int thirdSlashIndex = -1;
-        int slashCount = 0;
-        for (int i = 0; i < urlString.length(); i++) {
-            if (urlString.charAt(i) == '/') {
-                slashCount++;
-                if (slashCount == 3) {
-                    thirdSlashIndex = i;
-                    return thirdSlashIndex;
-                }
-            }
-        }
-        return thirdSlashIndex;
+    @Transactional
+    public void cleaner() {
+        List<Hash> hashes = urlRepository.getAndDeleteAfterOneYear();
+        hashRepository.saveAll(hashes);
     }
 
 }

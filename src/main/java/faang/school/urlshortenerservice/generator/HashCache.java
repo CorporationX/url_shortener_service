@@ -22,6 +22,7 @@ public class HashCache {
     private int fillPercent;
 
     private final HashGenerator hashGenerator;
+    private final HashGeneratorAsync generatorAsync;
     private final AtomicBoolean filling = new AtomicBoolean(false);
     private Queue<String> hashes;
 
@@ -36,7 +37,7 @@ public class HashCache {
             if (filling.compareAndSet(false, true)) {
                 log.debug("\n" +
                         "Queue full of hashes is less than 20 percent");
-                hashGenerator.getHashesAsync(capacity)
+                generatorAsync.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> filling.set(false));
             }

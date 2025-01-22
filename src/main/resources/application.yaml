@@ -26,6 +26,9 @@ spring:
 server:
   port: 8083
 
+url:
+  original-path: http://localhost:8083/api/v1/urls/
+
 async-config:
   generate_hash:
     core_pool_size: 10
