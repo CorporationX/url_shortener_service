@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public class HashRepository {
 
   @Value("${generator.hashes.add-to-local-cache}")
-  private int n;
+  private int hashBatchSize;
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -25,7 +25,7 @@ public class HashRepository {
 
   public void save(List<String> hashes) {
     String sql = "INSERT INTO hash(hash) VALUES(?)";
-    jdbcTemplate.batchUpdate(sql, hashes, n, (ps, hash) -> {
+    jdbcTemplate.batchUpdate(sql, hashes, hashBatchSize, (ps, hash) -> {
       ps.setString(1, hash);
     });
   }
@@ -33,7 +33,7 @@ public class HashRepository {
   public List<String> takeHashBatch() {
     return jdbcTemplate.queryForList(
         "DELETE FROM hash h WHERE h.hash IN (SELECT h.hash FROM hash h ORDER BY RANDOM() LIMIT ?) RETURNING *",
-        String.class, n
+        String.class, hashBatchSize
     );
   }
 }

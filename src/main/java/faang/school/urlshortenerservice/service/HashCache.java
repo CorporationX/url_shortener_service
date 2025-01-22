@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.exception.HashRetrievingInterruptedException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -46,7 +47,7 @@ public class HashCache {
     try {
       return localCache.take();
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw new HashRetrievingInterruptedException("Retrieving hash from Cache is interrupted");
     }
   }
 

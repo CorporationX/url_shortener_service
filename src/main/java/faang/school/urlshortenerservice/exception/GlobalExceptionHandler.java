@@ -23,4 +23,11 @@ public class GlobalExceptionHandler {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(e.getMessage());
   }
+
+  @ExceptionHandler({HashRetrievingInterruptedException.class})
+  public ResponseEntity<Object> handleHashRetrievingInterruptedException(HashRetrievingInterruptedException e) {
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(e.getMessage());
+  }
 }
