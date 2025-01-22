@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.properties.UrlLifeTimeConfig;
-import faang.school.urlshortenerservice.exception.DuplicateUrlException;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.model.dto.UrlResponseDto;
@@ -33,19 +32,18 @@ public class UrlService {
 
     @Transactional
     public UrlResponseDto generateShortUrl(UrlRequestDto requestDto) {
-        urlRepository.findByUrl(requestDto.getLongUrl())
-                .ifPresent(existingUrl -> {
-                    throw new DuplicateUrlException(requestDto.getLongUrl());
+        return urlRepository.findByUrl(requestDto.getLongUrl())
+                .map(existingUrl -> buildResponse(existingUrl.getHash()))
+                .orElseGet(() -> {
+                    String hash = hashCache.getHash();
+                    LocalDateTime expirationTime = calculateExpirationTime();
+                    Url url = createUrl(requestDto.getLongUrl(), hash, expirationTime);
+
+                    saveUrl(url);
+                    rabbitQueueProducerService.sendUrlIdForValidation(url.getHash());
+
+                    return buildResponse(hash);
                 });
-
-        String hash = hashCache.getHash();
-        LocalDateTime expirationTime = calculateExpirationTime();
-        Url url = createUrl(requestDto.getLongUrl(), hash, expirationTime);
-
-        saveUrl(url);
-        rabbitQueueProducerService.sendUrlIdForValidation(url.getHash());
-
-        return buildResponse(hash);
     }
 
     public String getUrlByHash(String hash) {
