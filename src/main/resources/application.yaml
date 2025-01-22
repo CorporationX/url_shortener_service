@@ -32,7 +32,7 @@ logging:
 generator:
     unique-ids: 10000
     hashes:
-        add-to-local-cache: 80000
+        batch-size: 80000
         min-level-percent: 20
     storage:
         size: 100000

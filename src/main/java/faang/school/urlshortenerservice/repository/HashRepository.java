@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class HashRepository {
 
-  @Value("${generator.hashes.add-to-local-cache}")
+  @Value("${generator.hashes.batch-size}")
   private int hashBatchSize;
 
   private final JdbcTemplate jdbcTemplate;
