@@ -25,17 +25,13 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Modifying
     @Query(
             value = """
-                    WITH deleted AS (
-                        DELETE FROM hash
-                        WHERE hash IN (
-                            SELECT hash
-                            FROM hash
-                            LIMIT :count
-                        )
-                        RETURNING hash
+                    DELETE FROM hash
+                    WHERE hash IN (
+                        SELECT hash
+                        FROM hash
+                        LIMIT :count
                     )
-                    SELECT hash
-                    FROM deleted
+                    RETURNING hash
                     """,
             nativeQuery = true
     )

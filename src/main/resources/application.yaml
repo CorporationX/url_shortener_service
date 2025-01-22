@@ -40,4 +40,12 @@ hash:
 
 scheduler:
   cron:
+#    at 00:00 on every day
     expression: "0 0 0 * * ?"
+
+async:
+  hash-generator:
+    core-pool-size: 2
+    max-pool-size: 5
+    queue-capacity: 100
+    thread-name-prefix: "HashGenerator-"
