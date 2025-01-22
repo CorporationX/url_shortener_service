@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.validator;
 
-import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

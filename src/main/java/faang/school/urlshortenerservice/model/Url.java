@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -20,7 +19,6 @@ import java.time.OffsetDateTime;
 @Builder
 @Entity
 @Table(name = "urls")
-//@RedisHash(timeToLive = 3600L)
 public class Url implements Serializable {
 
     @Id
