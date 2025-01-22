@@ -28,8 +28,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${hash.cleaner.cron:00****}")
     public void clean() {
         log.info("Cleaning urls older than {} years in DB", timesAgo);
-//        LocalDateTime timeAgo = LocalDateTime.now().minusYears(timesAgo);
-        LocalDateTime timeAgo = LocalDateTime.now().minusSeconds(timesAgo);
+        LocalDateTime timeAgo = LocalDateTime.now().minusYears(timesAgo);
         List<Url> urls = urlRepository.deleteByCreatedAtAfter(timeAgo);
         if (!urls.isEmpty()) {
             log.info("Saving freed {} hashes back to DB", urls.size());
