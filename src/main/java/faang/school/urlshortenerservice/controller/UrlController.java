@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,16 +26,11 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToUrl(@PathVariable String hash) {
-        try {
-            String longUrl = urlService.getUrlByHash(hash);
-            return ResponseEntity.status(302)
-                    .header("Location", longUrl)
-                    .build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        String longUrl = urlService.getUrlByHash(hash);
+        return ResponseEntity.status(302)
+                .header("Location", longUrl)
+                .build();
     }
-
 
     private boolean isValidUrl(String url) {
         try {

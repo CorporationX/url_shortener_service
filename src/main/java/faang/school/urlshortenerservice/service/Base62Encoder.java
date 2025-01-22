@@ -14,21 +14,15 @@ public class Base62Encoder {
     private static final int BASE = BASE62_ALPHABET.length();
 
     public List<String> encode(List<Long> numbers) {
+        checkLongList(numbers);
         List<String> encodedHashes = new ArrayList<>();
-
         for (Long number : numbers) {
             encodedHashes.add(encodeToBase62(number));
         }
-
         return encodedHashes;
     }
 
     private String encodeToBase62(Long number) {
-        if (number == null || number < 0) {
-            log.error("Number must be a non-negative value.{}", number);
-            throw new IllegalArgumentException("Number must be a non-negative value.");
-        }
-
         StringBuilder result = new StringBuilder();
 
         do {
@@ -39,5 +33,16 @@ public class Base62Encoder {
 
         String encoded = result.reverse().toString();
         return String.format("%6s", encoded).replace(' ', '0');
+    }
+
+    void checkLongList(List<Long> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty.");
+        }
+        for (Long number : numbers) {
+            if (number < 0) {
+                throw new IllegalArgumentException("List must contain only Long values.");
+            }
+        }
     }
 }

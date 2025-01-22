@@ -18,7 +18,7 @@ spring:
         order_updates: true
         generate_statistics: true
   crontab:
-    deleteOldHashes: 0 0 0 * * ?
+    deleteOldHashes: 0 0 0 * * ? #every day at 00:00
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -33,6 +33,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      live-time-cache: 39600 # 11 hours
 server:
   port: 8087
 logging:

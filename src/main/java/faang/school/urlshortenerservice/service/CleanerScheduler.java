@@ -28,8 +28,6 @@ public class CleanerScheduler {
             log.info("Saved {} hashes back to the hash table", expiredHashes.size());
         } catch (Exception e) {
             log.error("Error occurred during the cleaning job", e);
-            throw e;
         }
-        log.info("Scheduled job completed successfully.");
     }
 }

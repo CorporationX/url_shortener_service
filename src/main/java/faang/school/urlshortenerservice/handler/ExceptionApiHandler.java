@@ -66,7 +66,7 @@ public class ExceptionApiHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> handleRuntimeException(RuntimeException exception) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorMessage(exception.getMessage()));
     }
 }
