@@ -23,3 +23,19 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batch-size: 10
+    encoder-base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    async:
+      thread-pool-size: 2
+      thread-queue-capacity: 2
+      thread-name-prefix: HashGenerator-
+    cron: 0/10 * * * * *
+  cache:
+    capacity: 10
+    fill-percent: 20
+  cleaner:
+    cron: 0 * * * * *
+    times: 30

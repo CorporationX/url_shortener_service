@@ -34,6 +34,7 @@ dependencies {
     /**
      * Utils & Logging
      */
+    implementation("commons-validator:commons-validator:1.7")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.6")
@@ -58,6 +59,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -66,4 +68,8 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+tasks.bootRun {
+    jvmArgs = listOf("-javaagent:build/libs/aspectjweaver-1.9.8.jar")
 }
