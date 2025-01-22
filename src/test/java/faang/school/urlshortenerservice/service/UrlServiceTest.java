@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.properties.UrlLifeTimeConfig;
-import faang.school.urlshortenerservice.exception.DuplicateUrlException;
 import faang.school.urlshortenerservice.exception.UrlExpiredException;
 import faang.school.urlshortenerservice.model.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.model.dto.UrlResponseDto;
@@ -77,17 +76,15 @@ class UrlServiceTest {
     }
 
     @Test
-    void testGenerateShortUrl_duplicateUrl() {
+    void testGenerateShortUrl_urlExist() {
         UrlRequestDto requestDto = UrlRequestDto.builder().longUrl(LONG_URL).build();
-        Url existingUrl = new Url(LONG_URL, HASH, UrlStatus.OK, LocalDateTime.now().plusHours(1));
+        Url existingUrl = new Url(HASH, LONG_URL, UrlStatus.OK, LocalDateTime.now().plusHours(1));
         when(urlRepository.findByUrl(LONG_URL)).thenReturn(Optional.of(existingUrl));
 
-        DuplicateUrlException exception = assertThrows(DuplicateUrlException.class, () -> {
-            urlService.generateShortUrl(requestDto);
-        });
+        UrlResponseDto response = urlService.generateShortUrl(requestDto);
 
-        assertNotNull(exception);
-        assertEquals("URL already exists in the database.", exception.getMessage());
+        assertNotNull(response);
+        assertEquals(PATH_WITH_HASHED_URL + HASH, response.getShortUrl());
         verify(urlRepository, never()).save(any(Url.class));
         verify(rabbitQueueProducerService, never()).sendUrlIdForValidation(anyString());
     }
