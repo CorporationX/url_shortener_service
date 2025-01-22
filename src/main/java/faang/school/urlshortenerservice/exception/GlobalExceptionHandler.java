@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleEntityNotFoundException(EntityNotFoundException e) {
-        log.error("entity not found exception", e);
+        log.warn("entity not found exception", e);
         return buildExceptionDto(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
