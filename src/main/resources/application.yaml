@@ -1,4 +1,30 @@
+app:
+  task-executor:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 25
+  hash:
+    cache:
+      capacity: 1000
+      min-fill-percent: 20
+    generator:
+      batch-size: 1000
+      cron: 0 0 0 * * *
+  cleaner:
+    url-ttl: 365
+    cron: 0 0 0 * * *
+  batch-update-size: 50
+  cache:
+    names:
+      hashCache:
+        expire: 1d
+
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 2
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,9 +39,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 8080
