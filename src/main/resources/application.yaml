@@ -39,7 +39,8 @@ logging:
     root: info
 
 app:
-  short-url-prefix: CorporationX-
+  base-url: http://localhost:8080
+  short-url-prefix: ${app.base-url}/url/
   hashes-generation:
     batch-size: 800
     initial-min-size: 500
