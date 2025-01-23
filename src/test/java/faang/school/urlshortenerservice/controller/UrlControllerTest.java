@@ -45,14 +45,14 @@ class UrlControllerTest {
         String originalUrl = "http://example.com";
         long userId = 123L;
         when(userContext.getUserId()).thenReturn(userId);
-        when(urlService.getOriginalUrl(hash, userId)).thenReturn(originalUrl);
+        when(urlService.getOriginalUrl(hash)).thenReturn(originalUrl);
 
         mockMvc.perform(get("/{hash}", hash)
                 .header("x-user-id", userId))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", originalUrl));
 
-        verify(urlService, times(1)).getOriginalUrl(hash, userId);
+        verify(urlService, times(1)).getOriginalUrl(hash);
     }
 
     @Test
@@ -60,14 +60,14 @@ class UrlControllerTest {
         String hash = "invalidHash";
         long userId = 123L;
         when(userContext.getUserId()).thenReturn(userId);
-        when(urlService.getOriginalUrl(hash, userId)).thenThrow(new IllegalArgumentException("Hash not found"));
+        when(urlService.getOriginalUrl(hash)).thenThrow(new IllegalArgumentException("Hash not found"));
 
         mockMvc.perform(get("/{hash}", hash)
                         .header("x-user-id", userId))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Hash not found"));
 
-        verify(urlService, times(1)).getOriginalUrl(hash, userId);
+        verify(urlService, times(1)).getOriginalUrl(hash);
     }
 
     @Test
@@ -77,7 +77,7 @@ class UrlControllerTest {
         long userId = 123L;
         UrlRequest urlRequest = new UrlRequest(originalUrl);
         when(userContext.getUserId()).thenReturn(userId);
-        when(urlService.createShortUrl(originalUrl, userId)).thenReturn(shortUrl);
+        when(urlService.createShortUrl(originalUrl)).thenReturn(shortUrl);
 
         mockMvc.perform(post("/url")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +86,7 @@ class UrlControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(shortUrl));
 
-        verify(urlService, times(1)).createShortUrl(originalUrl, userId);
+        verify(urlService, times(1)).createShortUrl(originalUrl);
     }
 
     @Test
@@ -101,6 +101,6 @@ class UrlControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.url").value("URL must not be blank"));
 
-        verify(urlService, never()).createShortUrl(anyString(), anyLong());
+        verify(urlService, never()).createShortUrl(anyString());
     }
 }

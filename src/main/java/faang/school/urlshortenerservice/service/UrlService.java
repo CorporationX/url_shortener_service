@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.HashCache;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -19,8 +21,10 @@ public class UrlService {
     private final HashCache hashCache;
 
     @Cacheable(cacheNames = "UrlService::createShortUrl", key = "#url")
-    public String createShortUrl(String url, long userId) {
+    public String createShortUrl(String url) {
         String hash = hashCache.getHash();
+        log.info("Generated hash: {}", hash);
+
         Url longUrl = Url.builder()
                 .hash(hash)
                 .url(url)
@@ -31,7 +35,7 @@ public class UrlService {
     }
 
     @Cacheable(cacheNames = "UrlService::getOriginalUrl", key = "#hash")
-    public String getOriginalUrl(String hash, long userId) {
+    public String getOriginalUrl(String hash) {
         return urlRepository.findById(hash)
                 .map(Url::getUrl)
                 .orElseThrow(() -> new ResponseStatusException(

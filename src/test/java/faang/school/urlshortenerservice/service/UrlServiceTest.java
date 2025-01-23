@@ -49,7 +49,7 @@ class UrlServiceTest {
         when(hashCache.getHash()).thenReturn(hash);
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        String result = urlService.createShortUrl(url, userId);
+        String result = urlService.createShortUrl(url);
 
         assertEquals(hash, result);
         verify(hashCache, times(1)).getHash();
@@ -68,7 +68,7 @@ class UrlServiceTest {
                 .build();
         when(urlRepository.findById(hash)).thenReturn(Optional.of(url));
 
-        String result = urlService.getOriginalUrl(hash, userId);
+        String result = urlService.getOriginalUrl(hash);
 
         assertEquals(originalUrl, result);
         verify(urlRepository, times(1)).findById(hash);
@@ -81,7 +81,7 @@ class UrlServiceTest {
         when(urlRepository.findById(hash)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            urlService.getOriginalUrl(hash, userId);
+            urlService.getOriginalUrl(hash);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());

@@ -41,28 +41,58 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-//        executor.execute(this::refreshCache);
-        refreshCache();
+        log.info("[{}] Initializing cache...",
+                Thread.currentThread().getName());
+        executor.execute(this::refreshCache);
     }
 
     public String getHash() {
+        log.info("[{}] getHash() called. Current cache size: {}",
+                Thread.currentThread().getName(), cache.size());
         int threshold = (int) (maxCacheSize * (thresholdPercentage / 100.0));
+
         if (cache.size() > threshold) {
-            return cache.poll();
+            String hash = cache.poll();
+            log.info("[{}] Returning hash from cache: {}",
+                    Thread.currentThread().getName(), hash);
+            return hash;
         }
-//        executor.execute(this::refreshCache);
-        refreshCache();
-        return cache.poll();
+
+        log.info("[{}] Cache size below threshold. Submitting refresh task.",
+                Thread.currentThread().getName());
+        executor.execute(this::refreshCache);
+
+        String hash = cache.poll();
+        log.info("[{}] Returning hash after submitting refresh: {}",
+                Thread.currentThread().getName(), hash);
+        return hash;
     }
 
     private void refreshCache() {
+        log.info("[{}] Attempting to refresh cache. Current cache size: {}",
+                Thread.currentThread().getName(), cache.size());
+
         if (isRefreshing.compareAndSet(false, true)) {
             try {
-                List<String> hashes = hashRepository.getHashBatch(maxCacheSize - cache.size());
-                cache.addAll(hashes);
+                log.info("[{}] Cache refresh started...",
+                        Thread.currentThread().getName());
+                int neededSize = maxCacheSize - cache.size();
+                log.info("[{}] Fetching {} hashes from repository.",
+                        Thread.currentThread().getName(), neededSize);
+
+                List<String> hashes = hashRepository.getHashBatch(neededSize);
+
                 if (hashes.isEmpty()) {
+                    log.warn("[{}] No hashes available in repository. Generating new batch.",
+                            Thread.currentThread().getName());
                     hashGenerator.generateBatch();
+                    hashes = hashRepository.getHashBatch(maxCacheSize - cache.size());
                 }
+                log.info("[{}] Retrieved hashes: {}",
+                        Thread.currentThread().getName(), hashes);
+                cache.addAll(hashes);
+                log.info("[{}] Cache refreshed with {} hashes. New cache size: {}",
+                        Thread.currentThread().getName(), hashes.size(), cache.size());
             } finally {
                 isRefreshing.set(false);
             }

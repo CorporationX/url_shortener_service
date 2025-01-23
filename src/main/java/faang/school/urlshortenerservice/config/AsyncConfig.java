@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 @Configuration
 @EnableAsync
@@ -24,17 +23,12 @@ public class AsyncConfig {
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor() {
-        return Executors.newFixedThreadPool(2);
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(maxPoolSize);
+        executor.setQueueCapacity(queueCapacity);
+        executor.setThreadNamePrefix(threadNamePrefix);
+        executor.initialize();
+        return executor;
     }
-
-//    @Bean(name = "hashGeneratorExecutor")
-//    public Executor hashGeneratorExecutor() {
-//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        executor.setCorePoolSize(corePoolSize);
-//        executor.setMaxPoolSize(maxPoolSize);
-//        executor.setQueueCapacity(queueCapacity);
-//        executor.setThreadNamePrefix(threadNamePrefix);
-//        executor.initialize();
-//        return executor;
-//    }
 }
