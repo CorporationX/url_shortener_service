@@ -10,8 +10,14 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cascade;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.Optional;
 
 @Service
@@ -31,7 +37,6 @@ public class UrlService {
      */
     public String createShortUrl(LongUrlDto url) {
         log.info("Начало создания короткого URL для: {}", url.getUrl());
-
 
         Optional<Url> existingUrl = urlRepository.findByUrl(url.getUrl());
         if (existingUrl.isPresent()) {
@@ -59,13 +64,15 @@ public class UrlService {
      * @return Длинный URL.
      * @throws UrlNotFoundException Если URL не найден в кэше или базе данных.
      */
+
+    @Cacheable("Url")
     public String getLongUrl(String hash) {
         log.info("Поиск длинного URL по хэшу: {}", hash);
 
         Optional<RedisUrl> redisUrlOptional = urlCacheRepository.findByHash(hash);
         if (redisUrlOptional.isPresent()) {
-            log.info("Длинный URL найден в кэше: {}", redisUrlOptional.get().getHash());
-            return redisUrlOptional.get().getHash();
+            log.info("Длинный URL найден в кэше: {}", redisUrlOptional.get().getUrl());
+            return redisUrlOptional.get().getUrl();
         }
 
         Optional<Url> urlOptional = urlRepository.findUrlByHash(hash);
@@ -76,5 +83,19 @@ public class UrlService {
 
         log.error("URL с хэшем {} не найден", hash);
         throw new UrlNotFoundException("URL с хэшем " + hash + " не найден");
+    }
+
+    /**
+     * Возвращает ResponseEntity с редиректом на длинный URL.
+     *
+     * @param hash Хэш короткого URL.
+     * @return ResponseEntity с заголовком Location и статусом FOUND.
+     * @throws UrlNotFoundException Если URL не найден в кэше или базе данных.
+     */
+    public ResponseEntity<Void> getRedirect(String hash) {
+        String longUrl = getLongUrl(hash);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(longUrl));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }

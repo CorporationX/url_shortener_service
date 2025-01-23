@@ -16,6 +16,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Сущность, представляющая URL в базе данных.
+ */
 @Entity
 @Table(name = "url")
 @Builder
@@ -23,16 +26,29 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class Url {
+
+    /**
+     * Уникальный идентификатор URL.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Хэш, представляющий собой короткий URL.
+     */
     @Column(name = "hash", nullable = false, length = 6)
     private String hash;
 
+    /**
+     * Полный URL, который был сокращён.
+     */
     @Column(name = "url", nullable = false)
     private String url;
 
+    /**
+     * Время создания записи. Заполняется автоматически при создании.
+     */
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
