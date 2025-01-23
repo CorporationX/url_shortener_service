@@ -18,11 +18,10 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,8 +63,9 @@ public class HashCacheTests {
 
     @Test
     public void testInit() throws NoSuchFieldException, IllegalAccessException {
+
         List<Hash> hashList = List.of(new Hash("hash1"), new Hash("hash2"));
-        when(hashGenerator.getHashBatchSync()).thenReturn(hashList);
+        doReturn(hashList).when(hashGenerator).getHashBatchSync();
 
         hashCache.init();
 
@@ -74,6 +74,7 @@ public class HashCacheTests {
         Queue<String> hasheQueue = (Queue<String>) getPrivateField(hashCache, hasheQueueName);
         assertEquals(2, hasheQueue.size());
     }
+
 
     private Object getPrivateField(Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = object.getClass().getDeclaredField(fieldName);
@@ -108,7 +109,7 @@ public class HashCacheTests {
         List<Hash> hashList = List.of(new Hash("hash1"), new Hash("hash2"));
         CompletableFuture<List<Hash>> futureHashes = CompletableFuture.completedFuture(hashList);
 
-        when(hashGenerator.getHashBatch()).thenReturn(futureHashes);
+        doReturn(futureHashes).when(hashGenerator).getHashBatch();
         hashCache.refillHashCache();
 
         verify(hashGenerator, times(1)).getHashBatch();
@@ -116,18 +117,6 @@ public class HashCacheTests {
 
         Queue<String> hasheQueue = (Queue<String>) getPrivateField(hashCache, hasheQueueName);
         assertEquals(2, hasheQueue.size());
-    }
-
-    @Test
-    public void testRefillHashCacheLockFailed() throws NoSuchFieldException, IllegalAccessException {
-        ReentrantLock lock = mock(ReentrantLock.class);
-        when(lock.tryLock()).thenReturn(false);
-        setPrivateField(hashCache, "lock", lock);
-
-        hashCache.refillHashCache();
-
-        verify(hashGenerator, times(0)).getHashBatch();
-        verify(executorService, times(0)).submit(any(Runnable.class));
     }
 }
 

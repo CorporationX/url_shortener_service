@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final ExecutorService executorService;
     private Queue<String> hasheQueue;
-    private final ReentrantLock lock = new ReentrantLock();
+    protected AtomicBoolean isRefilling = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
@@ -48,30 +47,26 @@ public class HashCache {
     }
 
     protected void refillHashCache() {
-
-        if (lock.tryLock()) {
-            try {
-                CompletableFuture<List<Hash>> futureHashes = hashGenerator.getHashBatch();
-                futureHashes.whenComplete((hashes, throwable) -> {
-                    try {
-                        if (throwable == null) {
-                            hashes.stream().map(Hash::getHash).forEach(hasheQueue::add);
-                            executorService.submit(() -> {
-                                List<Hash> newHashes = hashRepository.getHashBatch(capacity);
-                                newHashes.stream().map(Hash::getHash).forEach(hasheQueue::add);
-                                hashGenerator.generateBatch();
-                            });
-                        } else {
-                            log.error("Failed to get hash batch", throwable);
-                        }
-                    } finally {
-                        lock.unlock();
-                    }
-                });
-            } catch (PersistenceException e) {
-                lock.unlock();
-                log.error("Exception during hash cache refill", e);
-            }
+        if (isRefilling.compareAndSet(false, true)) {
+            CompletableFuture<List<Hash>> futureHashes = hashGenerator.getHashBatch();
+            futureHashes.thenAccept(hashes -> {
+                try {
+                    hashes.stream().map(Hash::getHash).forEach(hasheQueue::add);
+                    executorService.submit(() -> {
+                        List<Hash> newHashes = hashRepository.getHashBatch(capacity);
+                        newHashes.stream().map(Hash::getHash).forEach(hasheQueue::add);
+                        hashGenerator.generateBatch();
+                    });
+                } catch (Exception e) {
+                    log.error("Exception during hash cache refill", e);
+                } finally {
+                    isRefilling.set(false);
+                }
+            }).exceptionally(throwable -> {
+                log.error("Failed to get hash batch", throwable);
+                isRefilling.set(false);
+                return null;
+            });
         }
     }
 }
