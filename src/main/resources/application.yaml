@@ -9,17 +9,55 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+
+    show-sql: false
     properties:
       hibernate:
+        jdbc.batch_size: 100
+        order_inserts: true
+        order_updates: true
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      time-to-live-in-minutes: 86400
+
 server:
-  port: 8080
+  port: 8077
+
+application:
+  base-url: http://localhost:8077
 
 logging:
   level:
     root: info
+
+hash-generator:
+  hash-batch-size: 30
+
+thread-pool-task-executor:
+  core-pool-size: 4
+  max-pool-size: 12
+  queue-capacity: 50
+  thread-name-prefix: ThreadPoolTaskExecutor-
+
+cache:
+  max-cache-size: 10
+  cache-update-threshold-percentage: 20
+  cache-update-batch-percentage: 80
+
+database:
+  min-hashes-in-database: 20
+
+scheduler:
+  cleaner-start-cron-expression: 0 0 0 * * *
+  cleaner-expiration-months: 12
+
+base62:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
