@@ -38,3 +38,6 @@ hash:
     max: 9
 tread-pool:
   all: 2
+scheduler:
+  cron:
+    expression: "0 0 0 * * *"

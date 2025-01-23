@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-
-import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.repository.HashJpaRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 @Slf4j
 @Component
 @Data
@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final HashGenerator hashGenerator;
     private final ExecutorService executorService;
+    private final HashJpaRepository hashRepository;
 
     @Value("${hash.cache.capacity:5}")
     private int capacity;
@@ -30,31 +31,37 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private Queue<String> hashes;
+    private Queue<String> cache;
 
     @PostConstruct
     private void init() {
-        this.hashes = new ArrayBlockingQueue<>(capacity);
+        this.cache = new ArrayBlockingQueue<>(capacity);
         try {
-            hashes.addAll(hashGenerator.getHashBatch(capacity));
-            log.info("hashes all = {} ", hashes.size());
+            refreshHasahes();
+            log.info("hashes all = {} ", cache.size());
         } catch (Exception e) {
-            log.error("Error {}",e);
+            log.error("Error {}", e);
         }
     }
+
     public String getHash() {
-        if ((hashes.size() * (capacity / 100.0)) < fillPercent) {
+        if ((cache.size() * (capacity / 100.0)) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                executorService.submit(() ->
-                {
-                    List<String> batch = hashGenerator.getHashBatch(capacity);
-                    synchronized (hashes) {
-                        hashes.addAll(batch);
-                    }
-                    filling.set(false);
-                });
+                refreshHasahes();
+                return cache.poll();
             }
         }
-        return hashes.poll();
+        return cache.poll();
+    }
+
+    public void refreshHasahes() {
+        executorService.submit(() ->
+        {
+            int residue = capacity - cache.size();
+            hashGenerator.generateBatch();
+            List<String> hashes  = hashRepository.findAndDelete(residue);
+            cache.addAll(hashes);
+            filling.set(false);
+        });
     }
 }

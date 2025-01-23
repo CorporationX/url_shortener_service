@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +13,7 @@ import java.util.List;
 public class Base62Encoder {
 
     private static final String BASE_62_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int LenghtBASE62 = BASE_62_CHARACTERS.length();
 
     public List<String> applyBase62Encoding(List<Long> numbers) {
         List<String> hashes = new ArrayList<>(numbers.size());
@@ -22,7 +21,7 @@ public class Base62Encoder {
             StringBuilder builder = new StringBuilder();
             while (number > 0) {
                 builder.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
-                number /= BASE_62_CHARACTERS.length();
+                number /= LenghtBASE62;
             }
             hashes.add(builder.toString());
 

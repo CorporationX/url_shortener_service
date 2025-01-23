@@ -14,12 +14,10 @@ public class UrlValidate {
     public URL getUrlValidate(UrlDto originalUrl) {
         try {
             URL url = new URL(originalUrl.getOriginalUrl());
-            if (url.getProtocol().equals("http")) {
-            }
             return url;
         } catch (MalformedURLException e) {
             log.warn("Address not have <http>");
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Bad format URL", e);
         }
     }
 }

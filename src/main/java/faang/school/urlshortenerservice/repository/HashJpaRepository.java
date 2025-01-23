@@ -17,5 +17,5 @@ public interface HashJpaRepository extends CrudRepository<Hash, String> {
             SELECT hash FROM hash ORDER BY hash ASC LIMIT :amount
             ) RETURNING *
             """)
-    List<Hash> findAndDelete(long amount);
+    List<String> findAndDelete(long amount);
 }

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -34,15 +33,5 @@ public class HashGenerator {
     }
     private List<Long> getUniqueNumbers() {
         return hashRepository.getNextRange(maxRange);
-    }
-
-    @Transactional
-    public List<String> getHashBatch(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateBatch();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
-        }
-        return hashes.stream().map(Hash::getHash).toList();
     }
 }

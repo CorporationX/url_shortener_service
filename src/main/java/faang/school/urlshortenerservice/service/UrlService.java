@@ -23,10 +23,12 @@ public class UrlService {
     @Cacheable(cacheNames = "generateShortUrl", key = "#originalUrl")
     public void generateShortUrl(UrlDto originalUrl) {
         String firstElement = hashCache.getHash();
+        if(firstElement == null){
+            throw new RuntimeException("Please try again later");
+        }
         UrlBaza urlBaza = UrlBaza.builder()
                 .hash(firstElement)
                 .url(originalUrl.getOriginalUrl())
-                .createdAt(LocalDateTime.now())
                 .build();
         urlRepository.save(urlBaza);
         log.info("Saved hash {}, and original url in baza",firstElement);
@@ -34,7 +36,7 @@ public class UrlService {
     @Cacheable(cacheNames = "returnFullUrl", key = "#requesthash")
     public String returnFullUrl(String requesthash){
         UrlBaza urlBaza = urlRepository.findById(requesthash)
-                .orElseThrow(() -> new IllegalStateException("For the hash  the full URL not in the database"));
+                .orElseThrow(() -> new IllegalStateException("For the hash the full URL not in the database"));
         return urlBaza.getUrl();
     }
 }
