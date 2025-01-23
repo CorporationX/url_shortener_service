@@ -21,9 +21,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final ExecutorService executorService;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
-
     private final Queue<String> hashCache = new ConcurrentLinkedQueue<>();
-    private final ReentrantLock reentrantLock = new ReentrantLock();
 
     @Value("${hash.cache.max_size}")
     private int maxSize;
@@ -33,23 +31,23 @@ public class HashCache {
 
     public String getHash() {
         if (hashCache.size() > maxSize * refillThreshold) {
-            return hashCache.peek();
+            refillCache();
         }
-
-        refillCache();
         return hashCache.peek();
     }
 
     private void refillCache() {
         if (isRefilling.compareAndExchange(false, true)) {
-            try {
-                List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
-                hashCache.addAll(hashes);
+            CompletableFuture.runAsync(() -> {
+                try {
+                    List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
+                    hashCache.addAll(hashes);
 
-                hashGenerator.generateBatch();
-            } finally {
-                isRefilling.set(false);
-            }
+                    hashGenerator.generateBatch();
+                } finally {
+                    isRefilling.set(false);
+                }
+            }, executorService);
         }
     }
 }
