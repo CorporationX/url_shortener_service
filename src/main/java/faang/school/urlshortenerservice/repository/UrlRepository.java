@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findUrlByHash(String hash);
 
+    Optional<Url> findByUrl(String url);
+
     @Modifying
     @Query(nativeQuery = true, value = """
                DELETE FROM url WHERE url.created_at < now() - INTERVAL '1 year' RETURNING url.hash

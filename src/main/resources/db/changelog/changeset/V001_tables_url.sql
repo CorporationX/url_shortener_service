@@ -11,4 +11,6 @@ CREATE TABLE hash
     id             BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     hash           VARCHAR(6) UNIQUE
 );
-
+CREATE SEQUENCE unique_number_seq
+    INCREMENT BY 1
+    START WITH 1
