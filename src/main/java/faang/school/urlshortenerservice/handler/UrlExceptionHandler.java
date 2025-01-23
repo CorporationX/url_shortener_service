@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 public class UrlExceptionHandler {
 
     @ExceptionHandler(UrlNotFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUrlNotFoundException(UrlNotFoundException e) {
         log.error("UrlNotFoundException", e);
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
