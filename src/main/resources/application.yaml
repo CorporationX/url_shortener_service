@@ -51,3 +51,4 @@ hash-cache:
   queue-capacity: 300
   percent: 0.2
   redis-batch-size: 240
+  cache-fill-timeout: 1000

@@ -26,19 +26,10 @@ public class UrlController {
     private String baseUrl;
     private final UrlService urlService;
 
-
     @PostMapping("/url")
     @ResponseStatus(HttpStatus.CREATED)
     public String createUrl(@Valid @RequestBody UrlDto urlDto) {
         return baseUrl.concat(urlService.saveNewHash(urlDto));
-    }
-
-    @PostMapping("/resolve")
-    @ResponseStatus(HttpStatus.FOUND)
-    public RedirectView resolveUrl(@RequestBody @Valid UrlDto urlDto) {
-        String hash = urlService.findUrl(urlDto.url());
-        String largeUrl = urlService.findUrl(hash);
-        return new RedirectView(Objects.requireNonNullElse(largeUrl, "/error-page"));
     }
 
     @GetMapping("/{hash}")

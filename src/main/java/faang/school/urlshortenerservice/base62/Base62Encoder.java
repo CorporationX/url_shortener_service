@@ -13,10 +13,13 @@ public class Base62Encoder {
     private String alphabetBase62;
 
     public List<Hash> encode(List<Long> nums) {
-        return nums.stream().map(this::applyBase62Encoder).toList();
+        return nums.stream()
+                .map(this::applyBase62Encoder)
+                .map(base62String -> Hash.builder().hash(base62String).build())
+                .toList();
     }
 
-    private Hash applyBase62Encoder(long number) {
+    private String applyBase62Encoder(long number) {
         StringBuilder stringBuilder = new StringBuilder();
         int base = alphabetBase62.length();
         while (number > 0) {
@@ -24,6 +27,6 @@ public class Base62Encoder {
             number /= base;
         }
 
-        return new Hash(stringBuilder.reverse().toString());
+        return stringBuilder.reverse().toString();
     }
 }

@@ -9,8 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,25 +29,21 @@ public class Base62EncoderTest {
 
     @DisplayName("Test encode method")
     @Test
-    void testEncode() {
-        List<Long> inputNumbers = Arrays.asList(1L, 2L, 62L, 63L, 3844L, 238328L);
+    void testEncodeUniqueness() {
+        int numberOfInputs = 100_000;
 
-        List<Hash> expectedHashes = Arrays.asList(
-                new Hash("1"),
-                new Hash("2"),
-                new Hash("10"),
-                new Hash("11"),
-                new Hash("100"),
-                new Hash("1000")
-        );
+        List<Long> inputNumbers = LongStream.rangeClosed(1, numberOfInputs)
+                .boxed()
+                .collect(Collectors.toList());
 
         List<Hash> actualHashes = base62Encoder.encode(inputNumbers);
 
-        assertEquals(expectedHashes.size(), actualHashes.size());
+        Set<String> uniqueHashes = actualHashes.stream()
+                .map(Hash::getHash)
+                .collect(Collectors.toSet());
 
-        for (int i = 0; i < expectedHashes.size(); i++) {
-            assertEquals(expectedHashes.get(i).getHash(), actualHashes.get(i).getHash());
-        }
+        assertEquals(numberOfInputs, uniqueHashes.size(),
+                "Generated hashes are not unique");
     }
 
     @DisplayName("Test encode empty list")

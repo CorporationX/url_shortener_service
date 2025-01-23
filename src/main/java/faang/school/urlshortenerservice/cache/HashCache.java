@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -27,6 +28,8 @@ public class HashCache {
     private double percent;
     @Value("${hash-cache.redis-batch-size}")
     private int redisBatchSize;
+    @Value("${hash-cache.cache-fill-timeout}")
+    private int cacheFillTimeout;
 
     private final AtomicBoolean isCacheFilling = new AtomicBoolean(false);
     private final ThreadPoolTaskExecutor taskExecutor;
@@ -62,9 +65,26 @@ public class HashCache {
             }
         }
         try {
-            return caches.take();
+            Hash hash = caches.poll(cacheFillTimeout, TimeUnit.MILLISECONDS);
+            if (hash == null) {
+                log.warn("Cache retrieval timeout reached, generating hashes synchronously.");
+                generateHashesSynchronously();
+                return caches.take();
+            }
+            return hash;
+
         } catch (InterruptedException e) {
             throw new HashRetrievalException("Failed to retrieve hash from the queue: " + e.getMessage(), e);
+        }
+
+    }
+
+    private void generateHashesSynchronously() {
+        try {
+            hashGenerator.generateBatch();
+            caches.addAll(hashRepository.getHashBatch(redisBatchSize));
+        } catch (Exception e) {
+            throw new CacheUpdateException("Failed to update cache with new hashes: " + e.getMessage(), e);
         }
     }
 }

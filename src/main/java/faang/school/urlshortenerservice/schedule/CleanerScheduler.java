@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,6 +19,8 @@ import java.util.List;
 public class CleanerScheduler {
     @Value("${scheduler.year}")
     private int year;
+    @Value("${batch-size.size}")
+    private int batchSize;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
@@ -27,10 +30,30 @@ public class CleanerScheduler {
 
         List<String> hashes = urlRepository.deleteUrlsOlderThan(oneYearAgo);
 
-        hashes.forEach(hash -> {
-            hashRepository.save(new Hash(hash));
-        });
+        List<Hash> batch = new ArrayList<>(batchSize);
 
-        log.info("Deleted URLs older than {}", oneYearAgo);
+        for (String hash : hashes) {
+            batch.add(new Hash(hash));
+        }
+
+        if (batch.size() == batchSize) {
+            saveBatch(batch);
+            batch.clear();
+        }
+
+        if (!batch.isEmpty()) {
+            saveBatch(batch);
+        }
+
+        log.info("Deleted URLs older than {} years", year);
+    }
+
+    private void saveBatch(List<Hash> batch) {
+        try {
+            hashRepository.saveAll(batch);
+        } catch (Exception e) {
+            log.error("Failed to save batch: {}", batch, e);
+            throw e;
+        }
     }
 }

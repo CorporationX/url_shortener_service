@@ -38,13 +38,9 @@ public class UrlService {
                .url(urlDto.url())
                .build();
 
-       saveToDataBase(newUrl);
+       urlRepository.save(newUrl);
        urlCacheRepository.saveToCache(newUrl);
 
        return newHash.getHash();
-   }
-
-   public void saveToDataBase(Url url) {
-       urlRepository.save(url);
    }
 }
