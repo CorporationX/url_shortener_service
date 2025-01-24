@@ -19,13 +19,6 @@ public class HashGenerator {
     private long numberOfDigits;
 
     @Transactional
-    public void generateHashes() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(numberOfDigits);
-        List<Hash> hashes = encoder.encode(numbers);
-        hashRepository.saveAll(hashes);
-    }
-
-    @Transactional
     public List<String> getHashes(int batchSize) {
         List<Hash> hashes = hashRepository.getHashBatch(batchSize);
         if (hashes.size() < batchSize) {
@@ -33,5 +26,11 @@ public class HashGenerator {
             hashes.addAll(hashRepository.getHashBatch(batchSize - hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).toList();
+    }
+
+    private void generateHashes() {
+        List<Long> numbers = hashRepository.getUniqueNumbers(numberOfDigits);
+        List<Hash> hashes = encoder.encode(numbers);
+        hashRepository.saveAll(hashes);
     }
 }
