@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.TemporarilyUnavailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UrlService {
+    public final static String FAILED_TO_GENERATE_SHORT_LINK = "Failed to generate short link. Please try again later.";
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final HashCache hashCache;
@@ -31,13 +33,12 @@ public class UrlService {
     private String baseUrl;
 
     public String createShortUrl(UrlDto urlDto) {
-        String hashFromDB = urlRepository.findHashByUrl(urlDto.getUrl());
-        if (hashFromDB != null) {
-            urlCacheRepository.save(hashFromDB, urlDto.getUrl());
-            return getShortUrl(hashFromDB);
-        }
 
         String hash = hashCache.getHash();
+
+        if (hash == null) {
+            throw new TemporarilyUnavailableException(FAILED_TO_GENERATE_SHORT_LINK);
+        }
 
         Url url = Url.builder()
                 .hash(hash)
@@ -73,7 +74,7 @@ public class UrlService {
 
         List<String> releasedHashes = urlRepository.deleteUrlsAndReturnHashList(cutoff);
 
-        if(releasedHashes.isEmpty()) {
+        if (releasedHashes.isEmpty()) {
             log.info("Nothing was released!");
             return 0L;
         }

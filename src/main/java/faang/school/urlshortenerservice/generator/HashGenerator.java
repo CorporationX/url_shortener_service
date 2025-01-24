@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class HashGenerator {
 
             List<String> generatedHashList = hashRepository.getHashesAndDelete(quantity - hashList.size());
 
-            return generatedHashList;
+            hashList.addAll(generatedHashList);
         }
         log.info("Finish getting hashes from repository: {}", hashList.size());
 
@@ -44,11 +43,6 @@ public class HashGenerator {
     }
 
     @Async("hashGeneratorTaskExecutor")
-    @Transactional
-    public CompletableFuture<List<String>> getHashListAsync(long quantity) {
-        return CompletableFuture.completedFuture(getHashList(quantity));
-    }
-
     @Transactional
     public void generateHashList() {
         List<Long> range = hashRepository.getNextRangeHashes(batchSize);

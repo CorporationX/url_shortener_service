@@ -11,6 +11,8 @@ public class Base62Encoder {
     private static final int BASE_62_LENGTH = BASE_62_CHARACTERS.length();
 
     public List<String> encode(List<Long> range) {
+        checkRangeList(range);
+
         List<String> hashList = new ArrayList<>();
 
         range.forEach(number -> {
@@ -24,5 +26,16 @@ public class Base62Encoder {
         });
 
         return hashList;
+    }
+
+    void checkRangeList(List<Long> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty.");
+        }
+        for (Long number : numbers) {
+            if (number < 0) {
+                throw new IllegalArgumentException("List must contain only Long values.");
+            }
+        }
     }
 }

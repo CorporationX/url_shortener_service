@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import faang.school.urlshortenerservice.exception.TemporarilyUnavailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -37,6 +38,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDataAccessException(DataAccessException ex) {
         log.error(DATABASE_ERROR_SHORT_MESSAGE, ex.getMessage(), ex);
         return buildResponseEntity(DATABASE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleTemporarilyUnavailableException(TemporarilyUnavailableException ex) {
+        log.error(UNEXPECTED_ERROR_SHORT_MESSAGE, ex.getMessage(), ex);
+        return buildResponseEntity(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(Exception.class)

@@ -35,8 +35,8 @@ app:
 hash:
   generator:
     batch-size: 10000
-    scheduled:
-      cron: "0 0 0 * * *"
+#    scheduled:
+#      cron: "0 0 0 * * *"
   cache:
     threshold-percent: 20
     queue:
@@ -51,9 +51,14 @@ task:
       core-size: 5
       max-size: 10
     queue-capacity: 100
+  hash-cache-executor:
+    pool:
+      core-size: 5
+      max-size: 10
+    queue-capacity: 100
 
 cleaning:
-  period: "P6M"
+  period: "P1Y"
 
 redis:
 #  minutes
