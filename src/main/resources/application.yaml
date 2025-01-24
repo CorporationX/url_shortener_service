@@ -13,13 +13,40 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc.batch_size: 100
+        order_inserts: true
+        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        payment: payment_topic
+
 server:
-  port: 8080
+  port: 8087
 
 logging:
   level:
     root: info
+
+base62:
+  chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  length: 62
+
+hash:
+  generate_size: 5000
+  get_size: 2700
+  min_cache_rep_size: 2500
+  rep_mid_size: 7000
+  cache:
+    get_hash_time: 0 0,12 * * * *
+    generate_hash_time: 0 0,12 * * * *
+
+link: http://localhost:8080/api/v1/shorter/redirect/
+
+remove_old_url_cron: 0 0 0 * * *
