@@ -1,10 +1,12 @@
-package faang.school.urlshortenerservice.model;
+package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-//    @Async("hashGeneratorExecutor")
+    @Async("hashGeneratorExecutor")
     public void generateBatch() {
         log.info("[{}] Starting hash generation.", Thread.currentThread().getName());
 

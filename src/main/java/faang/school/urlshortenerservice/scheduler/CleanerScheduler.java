@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.model;
+package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;

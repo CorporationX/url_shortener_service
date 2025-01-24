@@ -1,26 +1,27 @@
-package faang.school.urlshortenerservice.model;
+package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
 public class HashCache {
 
+    private static final int HASH_LENGTH = 6;
     private final ConcurrentLinkedQueue<String> cache;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean isRefreshing;
-    private final Executor executor;
+    private final ExecutorService executorService;
 
     @Value("${hash.cache.size}")
     private int maxCacheSize;
@@ -30,20 +31,19 @@ public class HashCache {
 
     public HashCache(
             HashRepository hashRepository,
-            HashGenerator hashGenerator,
-            @Qualifier("hashGeneratorExecutor") Executor executor) {
+            HashGenerator hashGenerator) {
         this.cache = new ConcurrentLinkedQueue<>();
         this.hashRepository = hashRepository;
         this.hashGenerator = hashGenerator;
         this.isRefreshing = new AtomicBoolean(false);
-        this.executor = executor;
+        this.executorService = Executors.newFixedThreadPool(HASH_LENGTH);
     }
 
     @PostConstruct
     public void init() {
         log.info("[{}] Initializing cache...",
                 Thread.currentThread().getName());
-        executor.execute(this::refreshCache);
+        executorService.submit(this::refreshCache);
     }
 
     public String getHash() {
@@ -60,7 +60,7 @@ public class HashCache {
 
         log.info("[{}] Cache size below threshold. Submitting refresh task.",
                 Thread.currentThread().getName());
-        executor.execute(this::refreshCache);
+        executorService.submit(this::refreshCache);
 
         String hash = cache.poll();
         log.info("[{}] Returning hash after submitting refresh: {}",
@@ -80,14 +80,11 @@ public class HashCache {
                 log.info("[{}] Fetching {} hashes from repository.",
                         Thread.currentThread().getName(), neededSize);
 
+                log.warn("[{}] Generating new batch.",
+                        Thread.currentThread().getName());
+                hashGenerator.generateBatch();
                 List<String> hashes = hashRepository.getHashBatch(neededSize);
 
-                if (hashes.isEmpty()) {
-                    log.warn("[{}] No hashes available in repository. Generating new batch.",
-                            Thread.currentThread().getName());
-                    hashGenerator.generateBatch();
-                    hashes = hashRepository.getHashBatch(maxCacheSize - cache.size());
-                }
                 log.info("[{}] Retrieved hashes: {}",
                         Thread.currentThread().getName(), hashes);
                 cache.addAll(hashes);

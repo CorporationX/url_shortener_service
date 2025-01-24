@@ -2,8 +2,8 @@ package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.urlshortenerservice.dto.UrlRequest;
 import faang.school.urlshortenerservice.service.UrlService;
-import faang.school.urlshortenerservice.util.UrlRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
