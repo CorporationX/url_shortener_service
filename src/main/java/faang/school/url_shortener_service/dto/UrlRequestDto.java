@@ -1,19 +1,18 @@
 package faang.school.url_shortener_service.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import faang.school.url_shortener_service.config.swagger.annotations.ApiUrlRequestDto;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 @Data
 @AllArgsConstructor
-public class URLRequestDto {
+@NoArgsConstructor
+public class UrlRequestDto {
+    @ApiUrlRequestDto
     @NotBlank(message = "URL can't be empty or null")
     @URL(message = "Invalid URL format")
-    private String url;
-    @Null
-    @JsonIgnore
-    private String hash;
+    private String originalUrl;
 }

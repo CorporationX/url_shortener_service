@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class ExecutorServiceConfig {
 
     @Value("${executor.threads.count}")
-    public int threadCount;
+    private int threadCount;
 
     @Bean
     public ExecutorService executor() {

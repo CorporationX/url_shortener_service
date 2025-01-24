@@ -1,6 +1,5 @@
 package faang.school.url_shortener_service.exception;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,17 +35,10 @@ public class UrlExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
 
-    @ExceptionHandler(EntityExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflictException(EntityExistsException exception) {
-        log.error("Entity already exists: ", exception);
-        return new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
-    }
-
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGlobalException(Exception exception) {
-        log.error("Unhandled exception occured: ", exception);
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred");
+        log.error("Unhandled exception occurred: {}", exception.getMessage(), exception);
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred: " + exception.getMessage());
     }
 }

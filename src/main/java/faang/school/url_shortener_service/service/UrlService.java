@@ -1,16 +1,19 @@
 package faang.school.url_shortener_service.service;
 
 import faang.school.url_shortener_service.cache.HashCache;
-import faang.school.url_shortener_service.dto.URLRequestDto;
+import faang.school.url_shortener_service.dto.UrlRequestDto;
+import faang.school.url_shortener_service.dto.UrlResponseDto;
 import faang.school.url_shortener_service.entity.Url;
 import faang.school.url_shortener_service.repository.url.UrlRepository;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -19,18 +22,21 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
+    @Value("${short.url.base}")
+    private String baseUrl;
+
+
     @Transactional
-    @CachePut(key = "#URLRequestDto.hash", value = "urls")
-    public String createShortUrl(URLRequestDto requestDto) {
-        if (urlRepository.existsByUrl(requestDto.getUrl()))
-            throw new EntityExistsException("URL %s already exists".formatted(requestDto.getUrl()));
-        String hash = hashCache.getHash();
-        Url url = Url.builder()
-                .url(requestDto.getUrl())
-                .hash(hash)
-                .build();
-        url.setHash(hash);
-        return urlRepository.save(url).getUrl();
+    @CachePut(key = "#requestDto.originalUrl", value = "urls")
+    public UrlResponseDto createShortUrl(UrlRequestDto requestDto) {
+        return urlRepository.findByUrl(requestDto.getOriginalUrl())
+                .map(existingUrl -> buildResponse(existingUrl.getHash()))
+                .orElseGet(() -> {
+                    String hash = hashCache.getHash();
+                    Url url = new Url(hash, requestDto.getOriginalUrl(), OffsetDateTime.now());
+                    urlRepository.save(url);
+                    return buildResponse(hash);
+                });
     }
 
     @Cacheable(key = "#hash", value = "urls")
@@ -38,5 +44,16 @@ public class UrlService {
     public String getOriginalURL(String hash) {
         return urlRepository.findById(hash).orElseThrow(() -> new EntityNotFoundException("URL with hash %s not found".formatted(hash)))
                 .getUrl();
+    }
+
+    private UrlResponseDto buildResponse(String hash) {
+        return UrlResponseDto.builder()
+                .shortUrl(buildShortUrl(hash))
+                .build();
+
+    }
+
+    private String buildShortUrl(String hash) {
+        return baseUrl + "/" + hash;
     }
 }

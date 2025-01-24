@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "hash")
 public class Hash {
     @Id
-    @NotNull
     @Size(min = 1, max = 8)
     @Column(name = "hash", unique = true, nullable = false)
     private String hash;

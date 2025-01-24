@@ -4,6 +4,7 @@ import faang.school.url_shortener_service.entity.Hash;
 import faang.school.url_shortener_service.repository.hash.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HashGenerator {
 
     private final HashRepository hashRepository;
@@ -25,6 +27,7 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashBatchSize);
         List<Hash> hashList = base62Encoder.encode(uniqueNumbers);
+        log.info("Generated {} hashes successfully", hashList.size());
         hashRepository.saveAll(hashList);
     }
 
