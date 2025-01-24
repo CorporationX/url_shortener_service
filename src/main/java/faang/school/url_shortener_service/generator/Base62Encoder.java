@@ -23,6 +23,6 @@ public class Base62Encoder {
             builder.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));
             number /= BASE_62_CHARACTERS.length();
         }
-        return new Hash(builder.toString());
+        return new Hash(builder.reverse().toString());
     }
 }
