@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,8 +33,9 @@ public class HashCache {
     @PostConstruct
     private void init() {
         freeCaсhes = new ArrayBlockingQueue<>(queueSize);
+        freeCaсhes.addAll(hashGenerator.syncGenerateBatch());
         hashGenerator.generateBatch()
-                .thenAccept(v -> {
+                .thenRun(() -> {
                     freeCaсhes.addAll(hashRepository.getHashBatch(batchSize));
                     log.info("HashCache initialized, queue is filled");
                 })
@@ -48,7 +50,7 @@ public class HashCache {
                 && isCaching.compareAndSet(false, true)) {
             queueTaskThreadPool.execute(() -> {
                 try {
-                    freeCaсhes.addAll(hashRepository.getHashBatch(batchSize));
+                    fillQueueSafely(hashRepository.getHashBatch(batchSize));
                     hashGenerator.generateBatch();
                     log.info("Hash cache will be refilled by {}", Thread.currentThread().getName());
                 } catch (Exception e) {
@@ -58,10 +60,20 @@ public class HashCache {
                 }
             });
         }
-        try {
-            return freeCaсhes.take();
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("Interrupted while waiting for hash", e);
+        String hash = freeCaсhes.poll();
+        if (hash == null) {
+            log.warn("Hash queue is empty, returning null");
+        }
+        return hash;
+    }
+
+    private void fillQueueSafely(List<String> hashes) {
+        for (String hash : hashes) {
+            boolean added = freeCaсhes.offer(hash);
+            if (!added) {
+                log.warn("Queue is full, skipping hash addition: {}", hash);
+                break;
+            }
         }
     }
 }

@@ -32,4 +32,16 @@ public class HashGenerator {
             }
         });
     }
+
+    public List<String> syncGenerateBatch() {
+        try {
+            List<Long> sequencesForHash = hashRepository.getUniqueNumbers(sequenceAmount);
+            List<String> encodedHash = base62Encoder.encode(sequencesForHash);
+            hashRepository.saveBatch(encodedHash);
+            return encodedHash;
+        } catch (Exception e) {
+            log.error("error during generating hashcodes: ", e);
+            throw new RuntimeException(e);
+        }
+    }
 }
