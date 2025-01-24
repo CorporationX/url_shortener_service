@@ -4,7 +4,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
+  date:
+    redis:
+      port: 6379
+      host: localhost
+    ttl:
+      hour:
+        url: 24
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,13 +19,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      jdbc:
+        batch_size: 500
+        order_inserts: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   port: 8080
+  servlet:
+    context-path: /sh.com
 
 logging:
   level:
     root: info
+app:
+  hash_cache:
+    hashes_max_size: 1_000
+    hashes_min_size: 200
+  hash_generator:
+    db_hashes_limit: 5_000
+  scheduler:
+    url_cleaner:
+      cron: '0 0 0 * * *'
+      url_lifetime_days: 365
+  shortener:
+    base-url: "https://sh.com"
