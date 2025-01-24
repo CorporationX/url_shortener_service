@@ -29,8 +29,8 @@ public class UrlController {
     }
 
     @GetMapping
-    public RedirectView returnFullUrl(@RequestParam String shortUrl) {
-        RedirectView redirectView = new RedirectView(service.returnFullUrl(shortUrl));
+    public RedirectView returnFullUrl(@RequestParam String hash) {
+        RedirectView redirectView = new RedirectView(service.returnFullUrl(hash));
         redirectView.setStatusCode(HttpStatus.FOUND);
 
         return redirectView;

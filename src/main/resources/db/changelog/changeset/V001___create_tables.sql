@@ -1,9 +1,9 @@
 CREATE TABLE hash (
-    hash VARCHAR(8) PRIMARY KEY NOT NULL UNIQUE
+    hash VARCHAR(8) PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE url (
-    hash VARCHAR(8) PRIMARY KEY NOT NULL UNIQUE,
+    hash VARCHAR(8) PRIMARY KEY NOT NULL,
     url VARCHAR(1024) NOT NULL UNIQUE,
     created_at timestamptz DEFAULT current_timestamp
 );

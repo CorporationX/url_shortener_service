@@ -1,6 +1,9 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LocalCache {
     private final RedisTemplate<String, String> redisTemplate;
+
+    @Value("${spring.url-shortener.hash.cache-max-size}")
+    private int hashMaxSize;
+
+    public void saveHashesInCache(List<String> hashes) {
+        saveHashes(hashes);
+    }
 
     public String getHash() {
         Set<String> keys = redisTemplate.keys("*hash*");
@@ -25,18 +35,17 @@ public class LocalCache {
         return redisTemplate.opsForValue().get(randomKey);
     }
 
-    public void saveHashes(List<String> hashes) {
+    public boolean hashSizeValidate() {
+        long currentSize = getCacheSize();
+        int threshold = (int) (hashMaxSize * 0.2);
+
+        return currentSize > threshold;
+    }
+
+    private void saveHashes(List<String> hashes) {
         for (String hash : hashes) {
             redisTemplate.opsForValue().set("hash_" + hash, hash);
         }
-    }
-
-    public boolean hashSizeValidate() {
-        long currentSize = getCacheSize();
-        int maxSize = 100;
-        int threshold = (int) (maxSize * 0.2);
-
-        return currentSize > threshold;
     }
 
     private Long getCacheSize() {
