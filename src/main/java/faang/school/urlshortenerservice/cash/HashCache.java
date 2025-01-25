@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cash;
 
-import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -22,7 +21,7 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final AtomicBoolean isCaching = new AtomicBoolean(false);
-    private ArrayBlockingQueue<String> freeCaсhes;
+    private ArrayBlockingQueue<String> freeCaches;
     @Value("${queue.size}")
     private int queueSize;
     @Value("${queue.percentage-multiplier}")
@@ -32,11 +31,10 @@ public class HashCache {
 
     @PostConstruct
     private void init() {
-        freeCaсhes = new ArrayBlockingQueue<>(queueSize);
-        freeCaсhes.addAll(hashGenerator.syncGenerateBatch());
+        freeCaches = new ArrayBlockingQueue<>(queueSize);
         hashGenerator.generateBatch()
                 .thenRun(() -> {
-                    freeCaсhes.addAll(hashRepository.getHashBatch(batchSize));
+                    fillQueueSafely(hashRepository.getHashBatch(batchSize));
                     log.info("HashCache initialized, queue is filled");
                 })
                 .exceptionally(e -> {
@@ -46,7 +44,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (freeCaсhes.size() < queueSize * percentageMultiplier
+        if (freeCaches.size() < queueSize * percentageMultiplier
                 && isCaching.compareAndSet(false, true)) {
             queueTaskThreadPool.execute(() -> {
                 try {
@@ -60,7 +58,7 @@ public class HashCache {
                 }
             });
         }
-        String hash = freeCaсhes.poll();
+        String hash = freeCaches.poll();
         if (hash == null) {
             log.warn("Hash queue is empty, returning null");
         }
@@ -69,9 +67,8 @@ public class HashCache {
 
     private void fillQueueSafely(List<String> hashes) {
         for (String hash : hashes) {
-            boolean added = freeCaсhes.offer(hash);
+            boolean added = freeCaches.offer(hash);
             if (!added) {
-                log.warn("Queue is full, skipping hash addition: {}", hash);
                 break;
             }
         }
