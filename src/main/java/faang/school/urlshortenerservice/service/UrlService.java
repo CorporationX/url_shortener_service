@@ -42,6 +42,13 @@ public class UrlService {
         return domain.concat(hash.getHash());
     }
 
+    public String getUrl(String hash) {
+        validateUrl(hash);
+        Url url = urlRepository.findById(hash)
+                .orElseThrow(() -> new RuntimeException("Hash not found"));
+        return url.getUrl();
+    }
+
     private void validateUrl(String url) {
         try {
             new URL(url).toURI();
