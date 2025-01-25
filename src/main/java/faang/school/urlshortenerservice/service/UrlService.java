@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -47,6 +49,20 @@ public class UrlService {
         Url url = urlRepository.findById(hash)
                 .orElseThrow(() -> new RuntimeException("Hash not found"));
         return url.getUrl();
+    }
+
+    @Transactional
+    public void removeExpiredAndAddToHashRepo() {
+        List<Url> expiredUrl = urlRepository.removeUrlsByExpired();
+        if (expiredUrl.isEmpty()) {
+            log.info("No url expired in the Database");
+            return;
+        }
+
+        List<Hash> hashes = expiredUrl.stream()
+                .map(url -> new Hash(url.getHash()))
+                .toList();
+        hashRepository.saveAll(hashes);
     }
 
     private void validateUrl(String url) {

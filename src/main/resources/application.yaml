@@ -36,6 +36,7 @@ spring:
       attempts: 3
       backoff-delay: 500
       multiplier: 1.5
+    cron: 0 0 0 1 * *
 server:
   port: 8080
 
