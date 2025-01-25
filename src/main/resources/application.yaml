@@ -19,7 +19,38 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
     root: info
+
+cron:
+  expressions:
+    releasing-сashe: "0 0 0 * * *"
+
+hash:
+  batch-size: 30
+  sequence-amount: 30
+
+cache:
+  ttl-duration: 86400
+
+thread:
+  pool:
+    core-size: 3
+    max-size: 5
+    queue-capacity: 100
+    task-prefix: queueTaskExecutor-
+    fixed-size: 3
+
+queue:
+  size: 30
+  percentage-multiplier: 0.2
+
+url-cleanup:
+  retention-period: P1Y
+
+url:
+  original-path: domain
