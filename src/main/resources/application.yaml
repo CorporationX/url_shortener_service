@@ -17,6 +17,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  url:
+    hash:
+      butch:
+        size: 5
+
 server:
   port: 8080
 
