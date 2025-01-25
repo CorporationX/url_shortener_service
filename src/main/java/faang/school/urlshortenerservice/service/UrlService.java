@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.hesh.HashCache;
@@ -15,6 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -39,7 +41,7 @@ public class UrlService {
     }
 
     @Transactional
-    public String getOriginalUrl(String hash){
+    public String getOriginalUrl(String hash) {
         String cachedUrl = redisCacheRepository.get(hash);
         if (cachedUrl != null) {
             return cachedUrl;
@@ -60,4 +62,15 @@ public class UrlService {
 
         return cachedUrl;
     }
+
+    @Transactional
+    public void cleaner() {
+        List<String> expiredHashes = urlRepository.deleteExpiredUrlsReturningHashes();
+        if (!expiredHashes.isEmpty()) {
+            hashRepository.batchSave(expiredHashes);
+        }
+        redisCacheRepository.deleteAll(expiredHashes);
+    }
+
 }
+

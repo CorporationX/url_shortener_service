@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,8 @@ public class Url {
     private String hash;
     @Column(name = "url", length = 2000, nullable = false)
     private String url;
-    @Column(name = "created_at")
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime expirationTime;
 }

@@ -19,7 +19,6 @@ public class HashGenerator {
     @Value("${hash.sequence-amount}")
     private int batchSize;
 
-    @Async("hashGeneratorExecutor")
     public void generateBatch() {
         try {
 

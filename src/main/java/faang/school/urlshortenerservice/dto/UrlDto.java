@@ -14,4 +14,8 @@ public record UrlDto(
         @Pattern(regexp = "^(http|https)://.*$", message = "URL must start with http or https")
         String url
 ) {
+        @Override
+        public @NotNull(message = "URL can not be null") @Pattern(regexp = "^(http|https)://.*$", message = "URL must start with http or https") String url() {
+                return url;
+        }
 }

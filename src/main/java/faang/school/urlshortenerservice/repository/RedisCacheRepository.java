@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,5 +23,8 @@ public class RedisCacheRepository {
             redisTemplate.expire(shortHash, TTl_DURATION);
         }
         return originalUrl;
+    }
+    public void deleteAll(List<String> hashes) {
+        redisTemplate.delete(hashes);
     }
 }

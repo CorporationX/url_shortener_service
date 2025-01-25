@@ -1,27 +1,19 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
-import jakarta.transaction.Transactional;
+import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
-@EnableScheduling
 @RequiredArgsConstructor
 public class CleanerScheduler {
 
-    private final HashRepository hashRepository;
-    private final UrlRepository urlrepository;
+    private final UrlService urlService;
 
     @Scheduled(cron = "${url.scheduler.cron}")
-    @Transactional
     public void cleanOldUrls() {
-        List<String> releasedHashes = urlrepository.deleteExpiredUrlsReturningHashes();
-        hashRepository.batchSave(releasedHashes);
+        urlService.cleaner();
     }
 }
