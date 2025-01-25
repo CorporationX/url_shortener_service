@@ -8,7 +8,6 @@ CREATE TABLE hash(
     hash varchar(6) PRIMARY KEY NOT NULL
 );
 
-CREATE SEQUENCE unique_number-seq(
+CREATE SEQUENCE unique_number_seq
     START WITH 1
     INCREMENT BY 1;
-);
