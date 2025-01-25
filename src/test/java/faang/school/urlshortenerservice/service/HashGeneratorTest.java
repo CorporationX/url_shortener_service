@@ -32,9 +32,7 @@ class HashGeneratorTest {
         ReflectionTestUtils.setField(hashGenerator, "maxRange", 1000);
         when(hashRepository.getUniqueNumbers(1000)).thenReturn(uniqueNumbers);
         when(encoder.encode(uniqueNumbers)).thenReturn(hashes);
-        assertDoesNotThrow(() -> {
-            hashGenerator.generateBatch();
-        });
+        assertDoesNotThrow(() -> hashGenerator.generateBatch());
         verify(hashRepository).getUniqueNumbers(1000);
         verify(encoder).encode(uniqueNumbers);
         verify(hashRepository).saveAll(hashes);
