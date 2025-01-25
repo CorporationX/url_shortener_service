@@ -9,6 +9,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 class Base62EncoderTest {
 
     private final Base62Encoder base62Encoder = new Base62Encoder();
