@@ -9,7 +9,7 @@ CREATE TABLE if not exists public.hash (
 );
 
 CREATE SEQUENCE public.unique_number_seq
-    START WITH 1000,
+    START WITH 1000
     INCREMENT BY 1;
 
 create index idx_url on public.url(url);

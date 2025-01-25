@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exception.NoHashValueException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -9,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -23,8 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HashCache {
     private final ExecutorService executorService;
-    private final CacheManager caffeineCacheManager;
-    private final RedisCacheManager cacheManager;
+    private final CacheManager cacheManager;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ReentrantLock lock = new ReentrantLock();
@@ -44,26 +46,36 @@ public class HashCache {
         storeHashesToCache();
     }
 
-    public String getHash() {
+    @Retryable(
+            value = { NoHashValueException.class },
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 500, multiplier = 1.5)
+    )
+    public Hash getHash() {
         Cache<String, String> cache =
-                (Cache<String, String>)(cacheManager.getCache("hashCache")).getNativeCache();
+                (Cache<String, String>)(cacheManager.getCache("hashes")).getNativeCache();
         Map<String, String> cacheMap = cache.asMap();
-        if (cacheMap.size() > maximumCapacity * cacheMinPercentage / 100) {
-            Map.Entry<String, String> entry = cacheMap.entrySet().iterator().next();
-            String key = entry.getKey();
-            String value = entry.getValue();
-            cache.invalidate(key);
-            return value;
-        } else {
+        if (cacheMap.size() < maximumCapacity * cacheMinPercentage / 100) {
             getHashesFromDBAsyncly();
+            throw new NoHashValueException("No hash available in Cache");
         }
-        return null;
+
+        Map.Entry<String, String> entry = cacheMap.entrySet().iterator().next();
+        String key = entry.getKey();
+        String value = entry.getValue();
+        cache.invalidate(key);
+        return new Hash(value);
+    }
+
+    @Recover
+    public String recover(NoHashValueException ex) {
+        log.error("Unable to fetch a hash after multiple attempts", ex);
+        throw new IllegalStateException(ex.getMessage());
     }
 
     private void storeHashesToCache() {
-        hashGenerator.generateBatch();
         Cache<String, String> cache =
-                (Cache<String, String>)(cacheManager.getCache("hashCache")).getNativeCache();
+                (Cache<String, String>)(cacheManager.getCache("hashes")).getNativeCache();
         Map<String, String> hashStorage = hashRepository.getHashBatch(batchSize).stream()
                 .collect(Collectors.toMap(Hash::getHash, Hash::getHash));
         cache.putAll(hashStorage);

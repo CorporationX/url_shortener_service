@@ -26,6 +26,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache:3.4.1")
     implementation("org.springframework:spring-context-support:6.2.2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
+    implementation("org.springframework.retry:spring-retry:2.0.11")
+
 
 
 
