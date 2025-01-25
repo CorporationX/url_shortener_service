@@ -10,6 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Base62Encoder {
     private static final String BASE_62_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int BASE_62_LENGTH = BASE_62_CHARACTERS.length();
 
     public List<Hash> encode(List<Long> numbers) {
          return numbers.stream()
@@ -22,7 +23,7 @@ public class Base62Encoder {
         StringBuilder builder = new StringBuilder();
         while (number > 0) {
             builder.append(BASE_62_CHARACTERS.charAt((int) (number % 62)));
-            number /= 62;
+            number /= BASE_62_LENGTH;
         }
         return builder.toString();
     }
