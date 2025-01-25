@@ -23,7 +23,7 @@ public class HashCache {
     @Value("${hash.cache.fill-percent:20}")
     private int fillPercent;
 
-    private final AtomicBoolean filling = new AtomicBoolean(false);
+    private final AtomicBoolean isFilled = new AtomicBoolean(false);
 
     private BlockingQueue<String> hashes;
 
@@ -38,11 +38,11 @@ public class HashCache {
     public String getHash() {
         if (getCurPercent() < fillPercent) {
             log.info("Count of hashes in cache is less than {}", fillPercent);
-            if (filling.compareAndSet(false, true)) {
+            if (isFilled.compareAndSet(false, true)) {
                 log.info("Generating hashes");
                 getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
-                        .thenRun(() -> filling.set(false));
+                        .thenRun(() -> isFilled.set(false));
             }
         }
         try {
