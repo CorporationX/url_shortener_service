@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ValidationAspect {
 
+    private static final String URL_PATTERN = "(https?://)?(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)";
+
     @Before("execution(* faang.school.urlshortenerservice.service.UrlService.createShortUrl(..)) && args(longUrl,..)")
     public void validateUrlFormat(String longUrl) {
-        if (!longUrl.matches("(https?://)?(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)")) {
+        if (!longUrl.matches(URL_PATTERN)) {
             log.error("Invalid URL format: {}", longUrl);
             throw new IllegalArgumentException("Invalid URL format.");
         }

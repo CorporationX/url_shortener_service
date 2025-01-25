@@ -57,7 +57,15 @@ public class HashCache {
             } else {
                 log.error("No hash available in Redis. Triggering async refill...");
                 triggerAsyncRefill();
-                throw new IllegalStateException("Hash cache is empty! Refill in progress...");
+                if(hash != null) {
+                    redisTemplate.opsForHash().delete(REDIS_HASH_CACHE_KEY, hash);
+                    log.info("Retrieved hash '{}' from Redis cache.", hash);
+                } else {
+                    log.warn("Hash cache is empty. Triggering async refill...");
+                    triggerAsyncRefill();
+                    log.warn("Hash cache is still empty. Returning null.");
+                    return null;
+                }
             }
         }
 
@@ -79,16 +87,17 @@ public class HashCache {
         }
     }
 
+    private boolean isNeeded() {
+        return hashQueue.size() < maxSize;
+    }
     private void refillCache() {
         try {
-            int currentCacheSize = hashQueue.size();
-            int needed = maxSize - currentCacheSize;
-
-            if (needed <= 0) {
+            if (!isNeeded()) {
                 log.info("Hash cache is already full. No refill needed.");
                 return;
             }
 
+            int needed = maxSize - hashQueue.size();
             log.info("Refilling hash cache with up to {} hashes...", needed);
 
             List<String> fetchedHashes = hashRepository.getHashBatch(needed);
@@ -108,9 +117,11 @@ public class HashCache {
                 hashGenerator.generatedBatch();
             }
         } catch (Exception e) {
+
             log.error("Error while refilling the hash cache: {}", e.getMessage(), e);
         }
     }
+
     public void addHash(String hash) {
         if (hashQueue.size() < maxSize) {
             hashQueue.offer(hash);

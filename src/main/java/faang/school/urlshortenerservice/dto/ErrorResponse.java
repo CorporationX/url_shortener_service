@@ -10,5 +10,4 @@ import java.util.List;
 public class ErrorResponse {
     private String error;
     private String message;
-//    private List<String> details;
 }

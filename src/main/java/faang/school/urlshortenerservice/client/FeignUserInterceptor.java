@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.client;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.urlshortenerservice.exeption.InvalidUserContextException;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class FeignUserInterceptor implements RequestInterceptor {
             template.header("x-user-id", String.valueOf(userId));
         } catch (IllegalArgumentException ex) {
             log.error("Failed to set 'x-user-id' header: {}", ex.getMessage());
-            throw new RuntimeException("UserContext is invalid. Ensure headers are set correctly.", ex);
+            throw new InvalidUserContextException("UserContext is invalid. Ensure headers are set correctly.", ex);
         }
     }
 }
