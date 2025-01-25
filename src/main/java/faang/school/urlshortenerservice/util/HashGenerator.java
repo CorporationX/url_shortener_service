@@ -23,7 +23,23 @@ public class HashGenerator {
     private final HashConfig hashConfig;
 
     public String generateHash() {
-        return UUID.randomUUID().toString().substring(0, 8);
+
+        long uniqueNumber = System.currentTimeMillis();
+
+
+        String hash = base62Encoder.encode(uniqueNumber);
+
+
+        if (hash.length() > 6) {
+            hash = hash.substring(0, 6);
+        } else {
+            while (hash.length() < 6) {
+                hash = "0" + hash;
+            }
+        }
+
+        log.debug("Generated hash: {}", hash);
+        return hash;
     }
 
     @Async("hashGeneratorTaskExecutor")
@@ -34,7 +50,19 @@ public class HashGenerator {
             long start = hashRepository.getNextSequenceValue(hashConfig.getBatchSize());
             List<Long> uniqueNumbers = LongStream.range(start, start + hashConfig.getBatchSize()).boxed().collect(Collectors.toList());
 
-            List<String> hashes = uniqueNumbers.stream().map(base62Encoder::encode).collect(Collectors.toList());
+            List<String> hashes = uniqueNumbers.stream()
+                    .map(base62Encoder::encode)
+                    .map(hash -> {
+                        if (hash.length() > 6) {
+                            return hash.substring(0, 6);
+                        } else {
+                            while (hash.length() < 6) {
+                                hash = "0" + hash;
+                            }
+                            return hash;
+                        }
+                    })
+                    .collect(Collectors.toList());
 
             List<Hash> hashEntities = hashes.stream().map(hash -> Hash.builder().hash(hash).build()).collect(Collectors.toList());
 
