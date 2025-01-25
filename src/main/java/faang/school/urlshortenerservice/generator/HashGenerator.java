@@ -25,18 +25,11 @@ public class HashGenerator {
     @Transactional
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
-        log.info("[{}] Starting hash generation.", Thread.currentThread().getName());
-
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-
-        log.info("[{}] Get unique numbers: {}", Thread.currentThread().getName(), uniqueNumbers);
-
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
-
-        log.info("[{}] Encoded hashes: {}", Thread.currentThread().getName(), hashes.size());
-
         hashRepository.saveAll(hashes.stream().map(Hash::new).toList());
 
-        log.info("[{}] Hash generation completed.", Thread.currentThread().getName());
+        log.debug("[{}] Hash generation completed. Get unique numbers: {} Encoded hashes: {}" ,
+                Thread.currentThread().getName(), uniqueNumbers, hashes.size());
     }
 }
