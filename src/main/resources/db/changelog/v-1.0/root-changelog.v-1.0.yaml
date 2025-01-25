@@ -1,7 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: create_table_url_shortener.sql
-      relativeToChangelogFile: true
-  - include:
-      file: insert_data.sql
-      relativeToChangelogFile: true
