@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/url")
@@ -32,14 +35,14 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
-        log.info("Received a request to redirect from url: https://localhost:8080/url/{}", hash);
+    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash, HttpServletRequest request) {
+        String currentUrl = request.getRequestURL().toString();
+        log.info("Received a request to redirect from url: {}", currentUrl);
 
         String originalUrl = urlService.redirectToRealUrl(hash);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.LOCATION, originalUrl);
-
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(originalUrl))
+                .build();
     }
 }

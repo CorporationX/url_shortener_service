@@ -41,7 +41,11 @@ hashRepository:
 hashGenerator:
   batchSize: 1000
 
-AsyncConfig:
+asyncConfig:
   corePoolSize: 5
   maxPoolSize: 10
   queueCapacity: 100
+
+app:
+  short-url:
+    host: https://localhost:8080/url/

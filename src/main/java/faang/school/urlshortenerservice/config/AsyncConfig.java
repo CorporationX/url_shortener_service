@@ -8,13 +8,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class AsyncConfig {
 
-    @Value("${AsyncConfig.corePoolSize}")
+    @Value("${asyncConfig.corePoolSize}")
     private int corePoolSize;
 
-    @Value("${AsyncConfig.maxPoolSize}")
+    @Value("${asyncConfig.maxPoolSize}")
     private int maxPoolSize;
 
-    @Value("${AsyncConfig.queueCapacity}")
+    @Value("${asyncConfig.queueCapacity}")
     private int queueCapacity;
 
     @Bean(name = "hashGeneratorExecutor")

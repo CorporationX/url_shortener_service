@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.utils.HashCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
 
+    @Value("${app.short-url.host}")
+    private String shortUrlHost;
+
     public String getShortUrl(UrlDto urlDto) {
         String url = urlDto.getUrl();
         String hash = hashCache.getHashFromCache();
@@ -32,7 +36,7 @@ public class UrlService {
         newShortUrl.setCreatedAt(LocalDateTime.now());
         urlCacheRepository.save(hash, url);
         urlRepository.save(urlMapper.toEntity(newShortUrl));
-        return "https://localhost:8080/url/" + hash;
+        return shortUrlHost + hash;
     }
 
     public String redirectToRealUrl(String hash) {

@@ -42,7 +42,7 @@ public class HashCache {
     @Transactional
     public void init() {
         log.info("Initializing HashCache with batchSize: {}, lowThreshold: {}, maxSize: {}", hashesForDb, lowThreshold, maxCacheSize);
-        int percentOfTotal = (int)(hashesForDb * lowThreshold);
+        int percentOfTotal = (int) (hashesForDb * lowThreshold);
         cache = new LinkedBlockingDeque<>(maxCacheSize);
 
         if (isRunning.compareAndSet(false, true)) {
@@ -52,10 +52,9 @@ public class HashCache {
                     hashGenerator.generateHashes();
                     loadHashesFromDb();
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 log.error("Error during HashCache initialization", e);
-            }
-            finally {
+            } finally {
                 isRunning.set(false);
             }
         }
@@ -68,7 +67,7 @@ public class HashCache {
 
     public String getHashFromCache() {
         String hash = cache.poll();
-        if (cache.size() < (int)(maxCacheSize * lowThreshold)) {
+        if (cache.size() < (int) (maxCacheSize * lowThreshold)) {
             loadHashesFromDb();
         }
         if (hash != null) {
@@ -84,7 +83,7 @@ public class HashCache {
     }
 
     private void loadHashesFromDb() {
-        if (cache.size() < (int)(maxCacheSize * lowThreshold) && lock.tryLock()) {
+        if (cache.size() < (int) (maxCacheSize * lowThreshold) && lock.tryLock()) {
             try {
                 List<String> hashesFromDb = hashRepository.getHashBatchAndDeleteFromDb();
                 cache.addAll(hashesFromDb);
