@@ -8,11 +8,16 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+      format_sql: true
+      jdbc:
+        batch_size: 100
+      order_inserts: true
+      order_updates: true
+      batch_versioned_data: true
+      generate_statistics: true
+
+  executor:
+    pool-size: 5
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +28,20 @@ server:
 logging:
   level:
     root: info
+    org.hibernate.sql: DEBUG
+    org.hibernate.type.descriptor.sql: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.engine.jdbc.batch.internal: TRACE
+
+hash:
+  cache:
+    capacity: 100
+    fillPercent: 20
+  range: 300
+
+schedule:
+  url-cleaner-scheduler:
+    cron: "0 0 0 * * *"
+
+api:
+  base-url: https://example.com
