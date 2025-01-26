@@ -7,10 +7,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "url")
 @Data
@@ -31,9 +33,5 @@ public class UrlEntity {
     public UrlEntity(String hash, String originalUrl) {
         this.hash = hash;
         this.url = originalUrl;
-    }
-
-    public UrlEntity() {
-
     }
 }

@@ -17,7 +17,7 @@ public class HashGenerator {
     private final HashRepositoryJdbc hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.generator.batch-size}")
+    @Value("${hash.generator.batch-size:100}")
     private int batchSize;
 
     //todo: parallelize hash generation

@@ -30,6 +30,7 @@ logging:
     root: info
 
 hash:
+  url: "http://short.url/"
   persist:
     batch-size: 3
   cache:

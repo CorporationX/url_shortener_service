@@ -48,7 +48,7 @@ public class HashCache {
         }
 
         asyncRefillCache();
-        hashGenerator.syncGenerateBatch();
+        hashGenerator.generateBatch();
 
         return hashCache.poll();
     }

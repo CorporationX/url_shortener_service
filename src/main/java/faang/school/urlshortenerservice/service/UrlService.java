@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +15,9 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
+
+    @Value("${hash.url}")
+    private String url;
 
     public String getOriginalUrl(String hash) {
         // Redis
@@ -39,6 +42,6 @@ public class UrlService {
     }
 
     private String generateShortUrl(String hash) {
-        return "http://short.url/" + hash;
+        return url + hash;
     }
 }
