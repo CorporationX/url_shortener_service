@@ -75,7 +75,6 @@ public class UrlService {
         List<String> releasedHashes = urlRepository.deleteUrlsAndReturnHashList(cutoff);
 
         if (releasedHashes.isEmpty()) {
-            log.info("Nothing was released!");
             return 0L;
         }
 

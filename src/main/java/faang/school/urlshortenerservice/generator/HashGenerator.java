@@ -24,21 +24,13 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashList(long quantity) {
-        log.info("Start getting hashes from the repository.");
         List<String> hashList = hashRepository.getHashesAndDelete(quantity);
 
-        log.info("Retrieved {} hashes from the repository: {}", hashList.size(), hashList);
-
         if (hashList.size() < quantity) {
-            log.info("Not enough hashes (size = {}), generating more", hashList.size());
             generateHashList();
-
             List<String> generatedHashList = hashRepository.getHashesAndDelete(quantity - hashList.size());
-
             hashList.addAll(generatedHashList);
         }
-        log.info("Finish getting hashes from repository: {}", hashList.size());
-
         return hashList;
     }
 
@@ -47,13 +39,9 @@ public class HashGenerator {
     public void generateHashList() {
         List<Long> range = hashRepository.getNextRangeHashes(batchSize);
 
-        log.info("Start generate {} hashes for range: {}", batchSize, range);
         List<Hash> hashList = base62Encoder.encode(range).stream()
                 .map(Hash::new)
                 .toList();
-        log.info("End generate {} hashes for range: {}", batchSize, range);
-
         hashRepository.saveAll(hashList);
-        log.info("Hashes saved, size = {}.", hashList.size());
     }
 }

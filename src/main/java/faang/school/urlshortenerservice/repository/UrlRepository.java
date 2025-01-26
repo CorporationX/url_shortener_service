@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
 
-    @Query(nativeQuery = true, value = "SELECT u.hash FROM url u WHERE u.url = :url")
-    String findHashByUrl(String url);
-
     @Query(nativeQuery = true, value = """
         DELETE FROM url
         WHERE created_at < :cutoff

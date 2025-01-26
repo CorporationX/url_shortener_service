@@ -32,7 +32,6 @@ public class UrlController {
     @GetMapping(UrlUtils.hash)
     public ResponseEntity<Void> redirect(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        log.info("Redirecting to original URL: {}", originalUrl);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", originalUrl)
                 .build();
