@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service.config;
 import com.github.benmanes.caffeine.cache.Cache;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.exception.NoHashValueException;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.jpa.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -91,7 +91,7 @@ public class HashCache {
                     storeHashesToCache();
                 } catch (Exception e) {
                     log.error("Received an error while generating or getting hashes from DB", e);
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e.getMessage());
                 } finally {
                     isGettingHashesFromDB.set(false);
                     lock.unlock();
