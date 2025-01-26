@@ -17,6 +17,26 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  properties:
+    batch-size: 50
+    thread-pool-size: 5
+    cache-pros:
+      initial-capacity: 50
+      maximum-capacity: 500
+      expire: 365
+      cache-min-percentage: 20
+      ttl: 60
+    domain: https://short.com/
+    retry:
+      attempts: 3
+      backoff-delay: 500
+      multiplier: 1.5
+    cron: 0 0 0 1 * *
 server:
   port: 8080
 
