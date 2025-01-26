@@ -13,6 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        generate_statistics: true
+        order_inserts: true
+        jdbc:
+          batch_size: 100
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      topics:
+        url_by_hash: url_by_hash
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +34,25 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batchSize: 10000
+    cashedHashesMinSize: 100000
+  redirect_suffix: /api/v1/shorter/redirect/
+  local_cache:
+    size: 1000
+    min_size_threshold: 0.2
+    waiting_local_cache_update_timeout: 1
+
+cleaner_scheduler:
+  free_old_hashes:
+    cron: 0 0 * * * *
+
+app_link: http://localhost
+
+pools:
+  generateHashesPool:
+    size: 2
+  redisSaveUrl:
+    size: 2
