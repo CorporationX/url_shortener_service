@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.validate;
 
+import faang.school.urlshortenerservice.entity.UrlAssociation;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class UrlValidate {
     private final UrlRepository urlRepository;
 
-    public boolean presenceOfUrl(String originalUrl) {
-        return urlRepository.existsByUrl(originalUrl);
+    public UrlAssociation findExistingUrl(String originalUrl) {
+        return urlRepository.findByUrl(originalUrl);
     }
 }

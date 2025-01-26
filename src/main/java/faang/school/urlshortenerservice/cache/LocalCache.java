@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +18,9 @@ public class LocalCache {
     private int hashMaxSize;
 
     public void saveHashesInCache(List<String> hashes) {
-        saveHashes(hashes);
+        for (String hash : hashes) {
+            redisTemplate.opsForValue().set("hash_" + hash, hash);
+        }
     }
 
     public String getHash() {
@@ -40,12 +40,6 @@ public class LocalCache {
         int threshold = (int) (hashMaxSize * 0.2);
 
         return currentSize > threshold;
-    }
-
-    private void saveHashes(List<String> hashes) {
-        for (String hash : hashes) {
-            redisTemplate.opsForValue().set("hash_" + hash, hash);
-        }
     }
 
     private Long getCacheSize() {

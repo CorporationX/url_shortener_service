@@ -28,8 +28,8 @@ public class UrlController {
         return service.generateShortUrl(originalUrl);
     }
 
-    @GetMapping
-    public RedirectView returnFullUrl(@RequestParam String hash) {
+    @GetMapping("/{hash}")
+    public RedirectView returnFullUrl(@PathVariable String hash) {
         RedirectView redirectView = new RedirectView(service.returnFullUrl(hash));
         redirectView.setStatusCode(HttpStatus.FOUND);
 

@@ -24,28 +24,34 @@ public class UrlService {
 
 
     public String generateShortUrl(UrlDto urlDto) {
-        if (validator.presenceOfUrl(urlDto.getOriginalUrl())) {
-            return serviceUrl + urlRepository.findByUrl( urlDto.getOriginalUrl()).getHash();
+        UrlAssociation urlAssociation = validator.findExistingUrl(urlDto.getOriginalUrl());
+
+        if (urlAssociation != null) {
+            return serviceUrl + urlAssociation.getHash();
+        } else {
+            String hash = hashCache.getHash();
+
+            urlAssociation = new UrlAssociation();
+            urlAssociation.setUrl(urlDto.getOriginalUrl());
+            urlAssociation.setHash(hash);
+
+            urlRepository.save(urlAssociation);
+            urlCacheRepository.save(urlAssociation);
+
+            return serviceUrl + hash;
         }
-        String hash = hashCache.getHash();
-
-        UrlAssociation urlAssociation = new UrlAssociation();
-        urlAssociation.setUrl(urlDto.getOriginalUrl());
-        urlAssociation.setHash(hash);
-
-        urlRepository.save(urlAssociation);
-        urlCacheRepository.save(urlAssociation);
-
-        return serviceUrl + hash;
     }
-
     public String returnFullUrl(String hash) {
         String originUrl = urlCacheRepository.getOriginUrl(hash);
         if (originUrl != null) {
             return originUrl;
         }
+
         UrlAssociation urlAssociation = urlRepository.findById(hash).orElseThrow(
                 () -> new IllegalStateException("For the specified hash the full URL is not in the database"));
+        urlCacheRepository.save(urlAssociation);
+
         return urlAssociation.getUrl();
+
     }
 }
