@@ -1,3 +1,8 @@
+hash:
+  cash:
+    capaсity: 10
+    perсent: 20
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
