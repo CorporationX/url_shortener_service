@@ -51,7 +51,7 @@ public class HashCacheTest {
             }).start();
             return null;
         }).when(executorService).submit(any(Runnable.class));
-        hashCache.refreshHasahes();
+        hashCache.refreshCache();
         latch.await();
 
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);

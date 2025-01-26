@@ -37,7 +37,7 @@ public class HashCache {
     private void init() {
         this.cache = new ArrayBlockingQueue<>(capacity);
         try {
-            refreshHasahes();
+            refreshCache();
             log.info("hashes all = {} ", cache.size());
         } catch (Exception e) {
             log.error("Error {}", e);
@@ -47,19 +47,19 @@ public class HashCache {
     public String getHash() {
         if ((cache.size() * (capacity / 100.0)) < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                refreshHasahes();
+                refreshCache();
                 return cache.poll();
             }
         }
         return cache.poll();
     }
 
-    public void refreshHasahes() {
+    public void refreshCache() {
         executorService.submit(() ->
         {
-            int residue = capacity - cache.size();
+            int needSize = capacity - cache.size();
             hashGenerator.generateBatch();
-            List<String> hashes  = hashRepository.findAndDelete(residue);
+            List<String> hashes = hashRepository.findAndDelete(needSize);
             cache.addAll(hashes);
             filling.set(false);
         });
