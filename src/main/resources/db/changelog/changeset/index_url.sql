@@ -1,0 +1,1 @@
+CREATE INDEX url_ids ON urls(url);

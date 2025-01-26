@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/initialize.sql
+  - include:
+      file: db/changelog/changeset/index_url.sql
