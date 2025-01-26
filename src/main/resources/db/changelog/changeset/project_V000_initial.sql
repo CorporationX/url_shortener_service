@@ -1,14 +1,17 @@
 CREATE TABLE IF NOT EXISTS url (
-    hash        VARCHAR(6) PRIMARY KEY,
+    id          BIGINT PRIMARY KEY,
+    hash        VARCHAR(6) NOT NULL,
     url         TEXT NOT NULL CHECK (LENGTH(url) > 0),
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT check_hash_length_url CHECK (LENGTH(hash) = 6)
+    CONSTRAINT check_hash_length_url CHECK (LENGTH(hash) = 6),
+    CONSTRAINT unique_hash_url UNIQUE (hash)
     );
 
 CREATE TABLE IF NOT EXISTS hash (
-    hash        VARCHAR(6) PRIMARY KEY,
+    id          BIGINT PRIMARY KEY,
+    hash        VARCHAR(6) NOT NULL,
     CONSTRAINT check_hash_length_hash CHECK (LENGTH(hash) = 6),
-    CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES url(hash) ON DELETE CASCADE
+    CONSTRAINT fk_hash_id FOREIGN KEY (id) REFERENCES url(id) ON DELETE CASCADE
     );
 
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq
