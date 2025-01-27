@@ -20,7 +20,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Value("${hash.range}")
     private int batch;

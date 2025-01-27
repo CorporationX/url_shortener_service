@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UrlController {
 
-    @Value(("${short_url.domain_address}"))
+    @Value("${short-url.domain-address}")
     private String domainAddress;
 
     private final UrlService urlService;

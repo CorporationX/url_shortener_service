@@ -32,7 +32,7 @@ spring:
       host: localhost
 
 server:
-  port: 8080
+  port: 8088
 
 logging:
   level:
@@ -60,7 +60,7 @@ hashCache:
   percentage: 20
 
 short-url:
-  domain-address: https//sh.com/
+  domain-address: "https: //sh.com/"
 
 scheduling:
   cron:

@@ -11,7 +11,7 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<UrlAssociation, String> {
 
     @Query(nativeQuery = true, value = """
-            DELETE  FROM  url WHERE CURRENT_DATE - created_at >= 365
+            DELETE  FROM  url WHERE created_at <= CURRENT_DATE - INTERVAL '1 year'
             RETURNING hash""")
     public List<String> deleteUrlAssociationByTime();
 

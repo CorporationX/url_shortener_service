@@ -23,7 +23,7 @@ public class UrlService {
 
     public Hash saveUrlAssociation(OriginalUrlDto originalUrlDto) {
         Hash hash = hashCache.getHash();
-        urlRepository.save(new UrlAssociation(hash.getHash(), originalUrlDto.getUrl(), LocalDateTime.now()));
+        urlRepository.save(new UrlAssociation(hash.getHash(), originalUrlDto.getUrl()));
         urlCacheRepository.saveUrl(hash.getHash(), originalUrlDto.getUrl());
         return hash;
     }

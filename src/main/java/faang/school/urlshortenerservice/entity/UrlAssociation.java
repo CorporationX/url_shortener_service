@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +27,11 @@ public class UrlAssociation {
     private String url;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime timestamp;
 
+    public UrlAssociation(String hash, String url) {
+        this.hash = hash;
+        this.url = url;
+    }
 }

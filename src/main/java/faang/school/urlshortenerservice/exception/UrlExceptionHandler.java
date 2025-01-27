@@ -19,14 +19,13 @@ public class UrlExceptionHandler {
     @Value("${exception.throwable-class}")
     private String throwableClassBodyText;
 
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleInternalServerError(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(exceptionClassBodyText);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getFieldErrors().forEach(error ->
