@@ -35,13 +35,11 @@ public class HashCache {
     }
 
     public String getHash() {
-        synchronized (this) {
             if (hashes.size() / (capacity / 100) < filledPercentage && isFilling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> isFilling.set(false));
             }
-        }
         log.info("Hash Cache after refill when close to empty {}", hashes);
         return hashes.poll();
     }

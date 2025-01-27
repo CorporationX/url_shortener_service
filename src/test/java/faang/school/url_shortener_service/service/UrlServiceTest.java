@@ -37,6 +37,8 @@ class UrlServiceTest {
 
     @Value("${short.url.base}")
     private String baseUrl;
+    @Value("${short.url.versionPath}")
+    private String versionPath;
 
     private UrlRequestDto requestDto;
     private Url existingUrl;
@@ -46,7 +48,8 @@ class UrlServiceTest {
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         hash = "abc123";
-        baseUrl = "ShortUrl - ";
+        baseUrl = "localhost:9081";
+        versionPath = "/api/v1/url/";
 
         requestDto = new UrlRequestDto("https://example.com/long-url");
 
@@ -57,6 +60,9 @@ class UrlServiceTest {
         Field baseUrlField = UrlService.class.getDeclaredField("baseUrl");
         baseUrlField.setAccessible(true);
         baseUrlField.set(urlService, baseUrl);
+        Field versionPathField = UrlService.class.getDeclaredField("versionPath");
+        versionPathField.setAccessible(true);
+        versionPathField.set(urlService, versionPath);
     }
 
     @Test
@@ -64,7 +70,7 @@ class UrlServiceTest {
         when(urlRepository.findByUrl(requestDto.getOriginalUrl())).thenReturn(Optional.of(existingUrl));
         UrlResponseDto response = urlService.createShortUrl(requestDto);
         assertThat(response).isNotNull();
-        assertThat(response.getShortUrl()).isEqualTo(baseUrl + "/xyz789");
+        assertThat(response.getShortUrl()).isEqualTo(baseUrl + versionPath + "xyz789");
         verify(hashCache, never()).getHash();
         verify(urlRepository, never()).save(any(Url.class));
     }
@@ -78,7 +84,7 @@ class UrlServiceTest {
         UrlResponseDto response = urlService.createShortUrl(requestDto);
 
         assertThat(response).isNotNull();
-        assertThat(response.getShortUrl()).isEqualTo(baseUrl + "/" + hash);
+        assertThat(response.getShortUrl()).isEqualTo(baseUrl + versionPath + hash);
 
         verify(hashCache).getHash();
         verify(urlRepository).save(any(Url.class));

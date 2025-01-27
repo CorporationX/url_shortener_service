@@ -24,6 +24,8 @@ public class UrlService {
 
     @Value("${short.url.base}")
     private String baseUrl;
+    @Value("${short.url.versionPath}")
+    private String versionPath;
 
 
     @Transactional
@@ -54,6 +56,6 @@ public class UrlService {
     }
 
     private String buildShortUrl(String hash) {
-        return baseUrl + "/" + hash;
+        return baseUrl + versionPath + hash;
     }
 }

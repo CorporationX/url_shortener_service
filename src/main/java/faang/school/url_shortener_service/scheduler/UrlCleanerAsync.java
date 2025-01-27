@@ -20,7 +20,7 @@ public class UrlCleanerAsync {
 
     @Async("executor")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void cleanUrl(List<Hash> hashes) {
+    public void saveRecycledHashes(List<Hash> hashes) {
         List<Hash> saved = hashRepository.saveAll(hashes);
         saved.forEach(hash ->
                 Objects.requireNonNull(cacheManager.getCache("urls")).evict(hash.getHash()));

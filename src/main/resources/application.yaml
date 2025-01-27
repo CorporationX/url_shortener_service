@@ -34,10 +34,11 @@ logging:
 
 short:
   url:
-    base: ShortUrl -
+    base: localhost:9081
+    versionPath: /api/v1/url/
 
 hash:
-  batch: 10
+  batch: 1000
   cache:
     capacity: 100
     filled-percentage: 20

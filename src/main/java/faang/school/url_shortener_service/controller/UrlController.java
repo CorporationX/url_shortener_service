@@ -1,7 +1,6 @@
 package faang.school.url_shortener_service.controller;
 
-import faang.school.url_shortener_service.config.swagger.annotations.ApiCreateShortUrl;
-import faang.school.url_shortener_service.config.swagger.annotations.ApiGetOriginalUrl;
+import faang.school.url_shortener_service.config.swagger.annotations.SwaggerControllerAnnotation;
 import faang.school.url_shortener_service.dto.UrlRequestDto;
 import faang.school.url_shortener_service.dto.UrlResponseDto;
 import faang.school.url_shortener_service.service.UrlService;
@@ -24,17 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 @Tag(name = "URL Controller", description = "Handles URL shortening and retrieval of original URLs")
-public class UrlController {
+public class UrlController implements SwaggerControllerAnnotation {
     private final UrlService urlService;
 
-    @ApiCreateShortUrl
+    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UrlResponseDto createShortURL(@Validated @RequestBody UrlRequestDto requestDto) {
         return urlService.createShortUrl(requestDto);
     }
 
-    @ApiGetOriginalUrl
+    @Override
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
     public ResponseEntity<Void> redirect(@PathVariable("hash") String hash) {
