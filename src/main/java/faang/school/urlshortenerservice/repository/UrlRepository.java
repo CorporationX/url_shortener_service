@@ -15,7 +15,6 @@ import java.util.Optional;
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Transactional
-
     @Query(value = "DELETE FROM url WHERE created_at < :timeLimit RETURNING hash", nativeQuery = true)
     List<Hash> deleteExpiredUrlsAndReturnHashes(@Param("timeLimit") LocalDateTime timeLimit);
 
