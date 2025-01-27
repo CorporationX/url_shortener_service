@@ -53,7 +53,7 @@ public class HashCache {
 
   @Transactional
   public void addHashes() {
-    if (isMinQtyReached()) {
+    if (isMinQtyReachedAndNotFilling()) {
       isFilling.set(true);
       List<String> hashes = hashRepository.takeHashBatch();
       List<List<String>> batches = splitIntoBatches(hashes);
@@ -74,7 +74,7 @@ public class HashCache {
     addHashes();
   }
 
-  private boolean isMinQtyReached() {
+  private boolean isMinQtyReachedAndNotFilling() {
     return 100 * localCache.size() / capacity < minLevel && !isFilling.get();
   }
 
