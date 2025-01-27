@@ -42,10 +42,16 @@ public class HashCache {
         caches = new ArrayBlockingQueue<>(queueCapacity);
         try {
             hashGenerator.generateBatch();
-            caches.addAll(hashRepository.getHashBatch(redisBatchSize));
+            CompletableFuture.runAsync(() -> {
+                caches.addAll(hashRepository.getHashBatch(redisBatchSize));
+                log.info("Cache successfully initialized during startup");
+            }).exceptionally(e -> {
+                log.error("Failed to initialize cache during startup", e);
+                throw new IllegalStateException("Failed to initialize cache during startup", e);
+            }).join();
         } catch (Exception e) {
-            log.error("Failed to initialize cache during startup", e);
-            throw new IllegalStateException("Failed to initialize cache during startup", e);
+            log.error("Unexpected error during cache initialization", e);
+            throw new IllegalStateException("Unexpected error during cache initialization", e);
         }
     }
 
