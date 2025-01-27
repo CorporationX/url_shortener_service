@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.hesh.HashCache;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,6 +31,12 @@ public class UrlService {
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
+        Optional<Url> existingUrl = urlRepository.findByUrl(urlDto.url());
+        if (existingUrl.isPresent()) {
+            String existingHash = existingUrl.get().getHash();
+            log.info("URL already exists, returning existing hash: {}", existingHash);
+            return urlPath.concat(existingHash);
+        }
         String hash = hashCoach.getHash();
         log.info("Generated hash: {}", hash);
         Url urlEntity = new Url(hash, urlDto.url(), LocalDateTime.now());
