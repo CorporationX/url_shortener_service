@@ -15,7 +15,7 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "${scheduler.cleaner.cron}")
     @Transactional
     public void removeOldAssociations() {
         List<String> hashes = urlRepository.deleteOldUrl();

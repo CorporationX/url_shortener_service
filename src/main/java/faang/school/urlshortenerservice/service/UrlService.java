@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.localcache.HashCache;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.validator.UrlValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,7 @@ public class UrlService {
     private final HashCache hash;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final UrlValidator urlValidator;
 
     @CachePut(value = "cache", key = "#result.hash")
     public Url putUrl(String url) {
@@ -46,9 +48,8 @@ public class UrlService {
         if (cacheUrl == null) {
             cacheUrl = urlRepository.findUrlByHash(hash);
         }
-        if (cacheUrl == null) {
-            throw new  IllegalArgumentException("URL не найден для хэша: " + hash);
-        }
+
+        urlValidator.validateUrl(cacheUrl, hash);
 
         return cacheUrl;
     }

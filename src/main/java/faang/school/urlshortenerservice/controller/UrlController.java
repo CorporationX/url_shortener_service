@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.entity.Cache;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.validator.UrlValidator;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlController extends HttpServlet {
     private final UrlService urlService;
+    private final UrlValidator urlValidator;
 
     @PostMapping("/url")
     public ResponseEntity<?> putUrl(@RequestParam String url) {
@@ -42,21 +44,8 @@ public class UrlController extends HttpServlet {
 
     @GetMapping("/{hash}")
     public void getHash(@PathVariable String hash, HttpServletResponse response) throws IOException {
-        try {
-            String originalUrl = urlService.getHash(hash);
-            response.sendRedirect(originalUrl);
-
-            if (originalUrl == null || originalUrl.isEmpty()) {
-                throw new IllegalArgumentException("URL не найден для hash: " + hash);
-            }
-
-            if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
-                throw new IllegalStateException("Некорректный формат URL: " + originalUrl);
-            }
-        } catch (IllegalArgumentException e) {
-            System.err.println("Ошибка: " + e.getMessage());
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-        }
+        String originalUrl = urlService.getHash(hash);
+        response.sendRedirect(originalUrl);
     }
 
     @GetMapping("/getRedis")

@@ -30,15 +30,6 @@ public class HashGenerator {
         hashRepository.saveAll(hashes);
     }
 
-//    @Transactional
-//    public List<Hash> getHashes(long amount) {
-//        List<Hash> hashes = hashRepository.getHashes(amount);
-//        if (hashes.size() < amount) {
-//            generateBatch();
-//        }
-//        return hashes;
-//    }
-
     @Transactional
     public List<String> getHashes(long amount) {
         List<Hash> hashes = hashRepository.getHashes(amount);

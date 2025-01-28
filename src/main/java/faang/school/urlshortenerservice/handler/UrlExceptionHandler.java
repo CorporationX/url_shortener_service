@@ -11,6 +11,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class UrlExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Ошибка: " + e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Ошибка: " + e.getMessage());
+    }
+
     @ExceptionHandler(InternalError.class)
     public ResponseEntity<String> internalSystemErrors(InternalError e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -22,8 +34,4 @@ public class UrlExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Ошибка сервера: " + e.getMessage());
     }
-
-//    public ResponseEntity<String> errorOfValidation() {
-//        return
-//    }
 }
