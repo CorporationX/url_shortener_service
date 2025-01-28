@@ -48,4 +48,4 @@ scheduler:
   cron: "0 0 0 * * *"
   year: 1
 
-protocol: http://localhost:8080/
+prefix: http://localhost:8080/

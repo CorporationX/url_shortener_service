@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping
 @RequiredArgsConstructor
 public class UrlController {
-    @Value("${protocol}")
+    @Value("${prefix}")
     private String protocol;
     private final UrlService urlService;
 
