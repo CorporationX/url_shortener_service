@@ -52,14 +52,14 @@ public class LocalHashCache {
         String hashValue = hashCache.poll();
         log.info("Retrieved hash from cache. Cache size: {}", hashCache.size());
 
-        if (hashValue != null && shouldRefill()) {
+        if (hashValue != null && isNeedRefill()) {
             log.info("Cache size below threshold ({}%). Triggering refill...", refillThresholdPercent);
             triggerAsyncRefill();
         }
         return hashValue;
     }
 
-    private boolean shouldRefill() {
+    private boolean isNeedRefill() {
         int currentSize = hashCache.size();
         int onePercent = cacheCapacity / 100;
         if (onePercent == 0) return true;
