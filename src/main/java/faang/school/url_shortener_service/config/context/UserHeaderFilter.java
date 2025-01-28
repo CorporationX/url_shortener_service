@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context;
+package faang.school.url_shortener_service.config.context;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +17,13 @@ public class UserHeaderFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
+
+        String requestURI = req.getRequestURI();
+        if (requestURI.contains("/swagger") || requestURI.contains("/api-docs") || requestURI.contains("/v3/api-docs")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String userId = req.getHeader("x-user-id");
         if (userId != null) {
             userContext.setUserId(Long.parseLong(userId));
