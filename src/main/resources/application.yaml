@@ -40,7 +40,7 @@ logging:
 
 
 hash:
-  range: 8000
+  range: 100
 
 thread:
   pool:
@@ -56,7 +56,7 @@ executorService:
     capacity: 100
 
 hashCache:
-  capacity: 5000
+  capacity: 100
   percentage: 20
 
 short-url:
