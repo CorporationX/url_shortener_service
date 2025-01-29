@@ -32,4 +32,11 @@ public class HashGenerator {
         hashRepository.saveAll(hashList);
     }
 
+    @Transactional
+        public void generateBatchForInitialFilling() {
+        List<Long> hashBatch = hashRepository.getUniqueNumbers(batch);
+        List<Hash> hashList = base62Encoder.encode(hashBatch);
+        hashRepository.saveAll(hashList);
+    }
+
 }

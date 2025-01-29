@@ -24,7 +24,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
 
-    @Value("${hashCache.capacity:5000}")
+    @Value("${hashCache.capacity:100}")
     private int hashCacheCapacity;
     @Value("${hashCache.percentage:20}")
     private int minimumPercentage;
@@ -36,10 +36,11 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
+        hashGenerator.generateBatchForInitialFilling();
         hashCache = new ArrayBlockingQueue<>(hashCacheCapacity);
-        hashCache.addAll(hashRepository.getHashBatch(batch).stream().map(Hash::new).toList());
-    }
 
+        hashCache.addAll(hashRepository.getHashBatch(hashCacheCapacity).stream().map(Hash::new).toList());
+    }
 
     @Transactional
     public Hash getHash() {
