@@ -41,7 +41,7 @@ public class HashService {
         return CompletableFuture.completedFuture(hashRepository.getHashes(urlShortenerProperties.hashAmountToLocalCache()));
     }
 
-    private List<Hash> generateBatch(Long amountOfNumbersFromSequence) {
+    public List<Hash> generateBatch(Long amountOfNumbersFromSequence) {
         List<Long> numbersToDecode = hashRepository.getUniqueNumbersFromSequence(amountOfNumbersFromSequence);
 
         return numbersToDecode.parallelStream()

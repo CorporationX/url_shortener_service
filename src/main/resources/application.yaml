@@ -16,7 +16,7 @@ spring:
         order_updates: true
         format_sql: false
         jdbc:
-          batch_size: 50
+          batch_size: 1000
         generate_statistics: false
         batch_versioned_data: true
 

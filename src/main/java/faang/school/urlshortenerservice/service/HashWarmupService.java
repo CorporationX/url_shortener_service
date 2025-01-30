@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.UrlShortenerProperties;
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -15,12 +14,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 @Service
 @RequiredArgsConstructor
 public class HashWarmupService implements CommandLineRunner {
-    private final HashCacheService hashCacheService;
+    private final HashService hashService;
+    private final UrlShortenerProperties urlShortenerProperties;
+    private final ArrayBlockingQueue<Hash> localCache;
 
     @Override
     public void run(String... args) {
-            hashCacheService.getHashesFromDatabaseAndWaitUntilDone();
-            hashCacheService.addHashToLocalCacheIfNecessary();
-            log.info("Cache warmup complete");
+        List<Hash> hashesToLocalCache = hashService.generateBatch(urlShortenerProperties.hashAmountToLocalCache());
+        localCache.addAll(hashesToLocalCache);
+        hashService.uploadHashInDatabaseIfNecessary();
+        log.info("Cache warmup complete");
     }
 }

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class HashRepositoryTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14")
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");

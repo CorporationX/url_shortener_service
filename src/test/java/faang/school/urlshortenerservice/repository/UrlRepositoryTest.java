@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class UrlRepositoryTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14")
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
@@ -44,7 +44,7 @@ class UrlRepositoryTest {
     @DisplayName("Test clearing database of expired links: three of three deleted")
     void test_getExpiredHashes_ThreeOfThreeDeleted() {
         populateDbWithThreeEntries();
-        LocalDateTime clearingDate = LocalDateTime.of(2025, 1, 25, 0,0);
+        LocalDateTime clearingDate = LocalDateTime.of(2030, 1, 25, 0,0);
 
         List<String> result = urlRepository.getExpiredHashes(clearingDate);
 
