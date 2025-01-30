@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.encoder;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

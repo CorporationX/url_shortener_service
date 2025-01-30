@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repozitory.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,16 @@ import java.util.List;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
 
     @Value("${spring.url.hash.butch.size}")
     private int batchSize;
 
-    //TODO сделать реализацию генерации списка хэшей
     @Async
     @Transactional
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-        List<Hash> hashes = new ArrayList<>();
-        //List<Hash> hashes = encode(uniqueNumbers);
+        List<String> hashes = base62Encoder.applyBase62Encoding(uniqueNumbers);
         hashRepository.saveAll(hashes);
     }
 }
