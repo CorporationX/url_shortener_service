@@ -20,26 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlController extends HttpServlet {
     private final UrlService urlService;
-    private final UrlValidator urlValidator;
 
     @PostMapping("/url")
-    public ResponseEntity<?> putUrl(@RequestParam String url) {
-        if (url == null || url.isBlank()) {
-            return ResponseEntity.badRequest().body("URL не может быть пустым");
-        }
-
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new IllegalStateException("Некорректный формат URL: " + url);
-        }
-
-        try {
-            Url saveUrl = urlService.putUrl(url);
-            return ResponseEntity.ok(saveUrl);
-        } catch (Exception e) {
-            System.err.println("Ошибка при сохранении URL: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ошибка сервера: " + e.getMessage());
-        }
+    public Url putUrl(@RequestParam String url) {
+        return urlService.putUrl(url);
     }
 
     @GetMapping("/{hash}")

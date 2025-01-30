@@ -25,6 +25,7 @@ public class UrlService {
 
     @CachePut(value = "cache", key = "#result.hash")
     public Url putUrl(String url) {
+        urlValidator.validateUrlForPutUrl(url);
         String generatedHash = hash.getHash();
         Url entity = new Url(generatedHash, url, LocalDateTime.now());
 
