@@ -15,10 +15,9 @@ import lombok.NoArgsConstructor;
 public class Hash {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
-    private String hash;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "hash", referencedColumnName = "hash")
-    private Url url;
+    @Column(nullable = false, unique = true)
+    private String hash;
 }

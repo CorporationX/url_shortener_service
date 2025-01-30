@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -18,13 +17,15 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 6, nullable = false, unique = true)
     private String hash;
 
-    @Column(name = "url", nullable = false)
+    @Column(nullable = false)
     private String url;
 
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

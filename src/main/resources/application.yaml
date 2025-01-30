@@ -19,8 +19,13 @@ spring:
 
   url:
     hash:
-      butch:
-        size: 5
+      maxRange: 5
+
+  thread:
+    pool:
+      core-pool-size: 10
+      max-pool-size: 20
+      queue-capacity: 50
 
 server:
   port: 8080
