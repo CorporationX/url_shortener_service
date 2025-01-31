@@ -38,16 +38,20 @@ public class HashCache {
 
     private void refillCache() {
         if (isRefilling.compareAndExchange(false, true)) {
-            CompletableFuture.runAsync(() -> {
-                try {
-                    List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
-                    hashCache.addAll(hashes);
-
-                    hashGenerator.generateBatch();
-                } finally {
-                    isRefilling.set(false);
-                }
-            }, executorService);
+            CompletableFuture.supplyAsync(() -> {
+                        List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
+                        hashCache.addAll(hashes);
+                        return null;
+                    }, executorService)
+                    .thenAcceptAsync(v -> {
+                        hashGenerator.generateBatch();
+                    }, executorService)
+                    .whenComplete((v, ex) -> {
+                        isRefilling.set(false);
+                        if (ex != null) {
+                            ex.printStackTrace();
+                        }
+                    });
         }
     }
 }
