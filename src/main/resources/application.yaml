@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
     username: user
     password: password
 
@@ -12,14 +12,53 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        order_inserts: true
+        order_updates: true
+        format_sql: false
+        jdbc:
+          batch_size: 1000
+        generate_statistics: false
+        batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  async:
+    local-cache:
+      core-pool-size: 1
+      max-pool-size: 2
+      name-prefix: LocalCache-
+    hash:
+      core-pool-size: 3
+      max-pool-size: 5
+      queue-capacity: 100
+      name-prefix: HashService-
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl-seconds: 7200
+
 server:
-  port: 8080
+  port: 8099
 
 logging:
   level:
     root: info
+
+encoder:
+  base62:
+    alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+url-shortener:
+  host-name: http://localhost:8099/
+  local-cache-capacity: 12_000
+  hash-amount-to-local-cache: 10_000
+  local-cache-threshold-ratio: 0.2
+  hash-amount-to-generate: 100_000
+  hash-database-threshold-ratio: 0.2
+
+scheduler:
+  hash-cleaner-schedule: 0 0 0 * * *
+  interval-to-clean: 365d
