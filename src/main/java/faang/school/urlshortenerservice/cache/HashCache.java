@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -42,13 +43,9 @@ public class HashCache {
         caches = new ArrayBlockingQueue<>(queueCapacity);
         try {
             hashGenerator.generateBatch();
-            CompletableFuture.runAsync(() -> {
-                caches.addAll(hashRepository.getHashBatch(redisBatchSize));
-                log.info("Cache successfully initialized during startup");
-            }).exceptionally(e -> {
-                log.error("Failed to initialize cache during startup", e);
-                throw new IllegalStateException("Failed to initialize cache during startup", e);
-            }).join();
+            List<Hash> hashes = hashRepository.getHashBatch(redisBatchSize);
+            caches.addAll(hashes);
+            log.info("Cache successfully initialized during startup");
         } catch (Exception e) {
             log.error("Unexpected error during cache initialization", e);
             throw new IllegalStateException("Unexpected error during cache initialization", e);
