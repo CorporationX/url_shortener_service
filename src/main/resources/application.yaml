@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -28,9 +33,22 @@ hash:
   generator:
     batch:
       size: 10
+  cache:
+    executor:
+      pool_size: 10
+    refill_threshold: 0.2
+    max_size: 1000
+
 async:
   executor:
     core_pool_size: 10
     max_pool_size: 20
     queue_capacity: 100
     thread_name_prefix: hash-task
+
+scheduler:
+  cron:
+    expression: 0 0 0 * * ?
+
+shortener:
+  base_url: localhost:8080/api/v1/shortener/shortUrl/redirect/

@@ -1,0 +1,57 @@
+package faang.school.urlshortenerservice.cache;
+
+import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
+
+@Component
+@RequiredArgsConstructor
+public class HashCache {
+    private final HashRepository hashRepository;
+    private final HashGenerator hashGenerator;
+    private final ExecutorService executorService;
+    private final AtomicBoolean isRefilling = new AtomicBoolean(false);
+    private final Queue<String> hashCache = new ConcurrentLinkedQueue<>();
+
+    @Value("${hash.cache.max_size}")
+    private int maxSize;
+
+    @Value("${hash.cache.refill_threshold}")
+    private double refillThreshold;
+
+    public String getHash() {
+        if (hashCache.size() > maxSize * refillThreshold) {
+            refillCache();
+        }
+        return hashCache.peek();
+    }
+
+    private void refillCache() {
+        if (isRefilling.compareAndExchange(false, true)) {
+            CompletableFuture.supplyAsync(() -> {
+                        List<String> hashes = hashRepository.getHashBatch(maxSize / 2);
+                        hashCache.addAll(hashes);
+                        return null;
+                    }, executorService)
+                    .thenAcceptAsync(v -> {
+                        hashGenerator.generateBatch();
+                    }, executorService)
+                    .whenComplete((v, ex) -> {
+                        isRefilling.set(false);
+                        if (ex != null) {
+                            ex.printStackTrace();
+                        }
+                    });
+        }
+    }
+}
