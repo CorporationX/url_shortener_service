@@ -20,7 +20,7 @@ public class UrlController {
         if (!isValidUrl(urlDto.url())) {
             return ResponseEntity.badRequest().body("Invalid URL format.");
         }
-        String shortUrl = urlService.createShortUrl(urlDto.url());
+        String shortUrl = urlService.createShortUrlAndSave(urlDto.url());
         return ResponseEntity.ok(shortUrl);
     }
 

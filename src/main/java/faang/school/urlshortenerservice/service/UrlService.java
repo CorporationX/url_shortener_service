@@ -1,12 +1,14 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,30 +20,22 @@ public class UrlService {
     private final HashCache hashCache;
 
     private final UrlRepository urlRepository;
-    private final UrlCacheRepository urlCacheRepository;
 
+    @CachePut(value = "url", key = "#result")
     @Transactional
-    public String createShortUrl(@NotNull String url) {
+    public String createShortUrlAndSave(@NotNull String url) {
         String hash = hashCache.getHash();
         if (hash == null) {
             log.error("Cannot get a hash for url: {}", url);
             throw new IllegalStateException("Failed to generate a hash for the URL.");
         }
-        urlCacheRepository.saveUrl(hash, url);
         urlRepository.save(new Url(hash, url));
         return hash;
     }
 
+    @Cacheable(value = "url", key = "#hash")
     public String getUrlByHash(String hash) {
-        String url = urlCacheRepository.findUrlByHash(hash);
-        if (url != null) {
-            return url;
-        }
         return urlRepository.findByHash(hash)
-                .map(entity -> {
-                    urlCacheRepository.saveUrl(hash, entity.getUrl());
-                    return entity.getUrl();
-                })
-                .orElseThrow(() -> new IllegalArgumentException("URL not found for hash: " + hash));
+                .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash)).getUrl();
     }
 }

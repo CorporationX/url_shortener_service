@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.model.Url;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,9 +23,6 @@ class UrlServiceTest {
     @Mock
     private UrlRepository urlRepository;
 
-    @Mock
-    private UrlCacheRepository urlCacheRepository;
-
     @InjectMocks
     private UrlService urlService;
 
@@ -41,11 +38,10 @@ class UrlServiceTest {
 
         when(hashCache.getHash()).thenReturn(hash);
 
-        String result = urlService.createShortUrl(url);
+        String result = urlService.createShortUrlAndSave(url);
 
         assertEquals(hash, result);
         verify(hashCache).getHash();
-        verify(urlCacheRepository).saveUrl(hash, url);
         verify(urlRepository).save(new Url(hash, url));
     }
 
@@ -55,27 +51,13 @@ class UrlServiceTest {
 
         when(hashCache.getHash()).thenReturn(null);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> urlService.createShortUrl(url));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> urlService.createShortUrlAndSave(url));
         assertEquals("Failed to generate a hash for the URL.", exception.getMessage());
 
         verify(hashCache).getHash();
-        verifyNoInteractions(urlCacheRepository);
         verifyNoInteractions(urlRepository);
     }
 
-    @Test
-    void getUrlByHashFoundInCacheSuccessTest() {
-        String hash = "abc123";
-        String url = "https://example.com";
-
-        when(urlCacheRepository.findUrlByHash(hash)).thenReturn(url);
-
-        String result = urlService.getUrlByHash(hash);
-
-        assertEquals(url, result);
-        verify(urlCacheRepository).findUrlByHash(hash);
-        verifyNoInteractions(urlRepository);
-    }
 
     @Test
     void getUrlByHashSuccessTest() {
@@ -83,28 +65,23 @@ class UrlServiceTest {
         String url = "https://example.com";
         Url urlEntity = new Url(hash, url);
 
-        when(urlCacheRepository.findUrlByHash(hash)).thenReturn(null);
         when(urlRepository.findByHash(hash)).thenReturn(Optional.of(urlEntity));
 
         String result = urlService.getUrlByHash(hash);
 
         assertEquals(url, result);
-        verify(urlCacheRepository).findUrlByHash(hash);
         verify(urlRepository).findByHash(hash);
-        verify(urlCacheRepository).saveUrl(hash, url);
     }
 
     @Test
     void getUrlByHashFailTest() {
         String hash = "abc123";
 
-        when(urlCacheRepository.findUrlByHash(hash)).thenReturn(null);
         when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> urlService.getUrlByHash(hash));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> urlService.getUrlByHash(hash));
         assertEquals("URL not found for hash: abc123", exception.getMessage());
 
-        verify(urlCacheRepository).findUrlByHash(hash);
         verify(urlRepository).findByHash(hash);
     }
 }
