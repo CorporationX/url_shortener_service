@@ -1,25 +1,51 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    url: jdbc:postgresql://localhost:5432/postgres # Update with your actual database name if not `postgres`
+    username: user                                 # Update with your actual username
+    password: password                             # Update with your actual password
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: none # Hibernate will not create tables since Liquibase handles schema creation
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog/db.changelog-master.yaml # Path to your master changelog file
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
-  port: 8080
+  port: 8080 # Port where your application will run
 
 logging:
   level:
-    root: info
+    root: info # General logging level
+    org.hibernate.SQL: debug # Logs Hibernate SQL statements
+
+hash:
+  cache:
+    max-size: 1000
+    refill-threshold: 20
+  batch-size: 100
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-size: 50
+
+executor:
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-size: 50
+
+cleaner:
+  schedule:
+    cron: "0 0 0 * * ?"

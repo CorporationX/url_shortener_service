@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/testdb # Use a separate test database
+    username: user # Your test database username
+    password: password # Your test database password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop # Automatically drop and recreate schema for tests
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    enabled: false # Disable Liquibase for tests
+
+hash:
+  batch-size: 100
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-size: 50
+
+redis:
+  enabled: false
