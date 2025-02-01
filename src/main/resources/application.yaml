@@ -12,10 +12,18 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: 5
+          order_inserts:  true
         format_sql: true
+        generate_statistics: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
   port: 8095
@@ -23,3 +31,22 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  scheduled: "0 2 * * * ?"
+  limit-repeat-numbers: 3
+  limit-repeat-waiting-time: 5000
+  hash:
+    max-hash-length: 6
+    capacity: 10000
+    cache:
+      fill:
+        percent: 20
+      solWord: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  redis:
+    redis-ttl-minutes: 1440
+    prefixes:
+      url-prefix: a01.
+  test-url:
+    url-name : "http://url-shortner-service.com/"
+
