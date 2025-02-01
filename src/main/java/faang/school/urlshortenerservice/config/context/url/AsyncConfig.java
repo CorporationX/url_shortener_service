@@ -10,13 +10,13 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
-    @Value("${thread.pool.core-pool-size}")
+    @Value("${spring.thread.pool.core-pool-size}")
     private int corePoolSize;
 
-    @Value("${thread.pool.max-pool-size}")
+    @Value("${spring.thread.pool.max-pool-size}")
     private int maxPoolSize;
 
-    @Value("${thread.pool.queue-capacity}")
+    @Value("${spring.thread.pool.queue-capacity}")
     private int queueCapacity;
 
     @Bean(name = "hashGeneratorExecutor")

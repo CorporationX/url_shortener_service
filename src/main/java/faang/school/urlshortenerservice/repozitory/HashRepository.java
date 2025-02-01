@@ -17,12 +17,6 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             """)
     List<Long> getUniqueNumbers(@Param("maxRange") long maxRange);
 
-    @Modifying
-    @Query(nativeQuery = true, value = """
-            INSERT INTO hash (hash) VALUES (:hashes)
-            """)
-    void save(@Param("hashes") List<String> hashes);
-
     @Query(nativeQuery = true, value = """
             DELETE FROM hash WHERE id IN(
                 SELECT id FROM hash ORDER BY RANDOM() LIMIT :amount

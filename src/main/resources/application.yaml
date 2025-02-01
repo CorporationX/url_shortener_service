@@ -13,13 +13,25 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        jdbc.batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   url:
     hash:
-      maxRange: 5
+      generator:
+        max-range: 5
+        hash-butch-size: 10
+        cron: 0 0 1 * * ?
+      cache:
+        pool-size: 10
+        size: 20
+        threshold: 0.2
 
   thread:
     pool:
