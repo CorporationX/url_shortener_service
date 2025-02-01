@@ -1,3 +1,12 @@
+hash:
+  cash:
+    capaсity: 10
+    perсent: 20
+
+scheduler:
+  cleaner:
+    cron: "0 0 0 * * *"
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
