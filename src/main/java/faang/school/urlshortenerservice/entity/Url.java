@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "url")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Url {
 
     @Id
@@ -28,4 +26,9 @@ public class Url {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public Url(String hash, String url) {
+        this.hash = hash;
+        this.url = url;
+    }
 }
