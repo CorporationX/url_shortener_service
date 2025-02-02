@@ -23,4 +23,11 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
+    @GetMapping("/{hash}")
+    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
+        String LongUrl = urlService.getLongUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", LongUrl)
+                .build();
+    }
 }

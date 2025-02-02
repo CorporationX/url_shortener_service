@@ -9,6 +9,10 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(nativeQuery = true, value = """
             SELECT u.hash FROM Url u WHERE u.url = :url
             """)
-    String returnHashForUrlIfExists(String url);
+    String returnHashByUrlIfExists(String url);
 
+    @Query(nativeQuery = true, value = """
+            SELECT u.url FROM Url u WHERE u.hash = :hash
+            """)
+    String findUrlByHash(String hash);
 }

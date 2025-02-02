@@ -8,7 +8,10 @@ import faang.school.urlshortenerservice.repozitory.redis.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Slf4j
@@ -21,7 +24,7 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final String shortUrlTemplate = "http://faang.url/api/v1/url/";
 
-
+    @Transactional
     public String shortUrl(String longUrl) {
         log.info("Received request to create short URL for: {}", longUrl);
         String shortUrl = shortUrlInDb(longUrl);
@@ -50,7 +53,7 @@ public class UrlService {
     }
 
     private String shortUrlInDb(String longUrl) {
-        String storedHash = urlRepository.returnHashForUrlIfExists(longUrl);
+        String storedHash = urlRepository.returnHashByUrlIfExists(longUrl);
         if (storedHash != null) {
             return shortUrlTemplate + storedHash;
         } else {
@@ -58,4 +61,18 @@ public class UrlService {
         }
     }
 
+    public String getLongUrl(String hash) {
+        String longUrl = urlCacheRepository.findUrlByHash(hash);
+        if (longUrl != null) {
+            return longUrl;
+        }
+        longUrl = urlRepository.findUrlByHash(hash);
+
+        if (longUrl != null){
+            urlCacheRepository.save(hash, longUrl);
+            return longUrl;
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found");
+    }
 }
