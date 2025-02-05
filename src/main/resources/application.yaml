@@ -32,11 +32,14 @@ spring:
       generator:
         max-range: 5
         hash-butch-size: 10
-        cron: 0 0 1 * * ?
+        cron: 0/10 * * * * ?
+      cleaner:
+        cron: 0 0 0 1 1 *
       cache:
         pool-size: 10
         size: 20
         threshold: 0.2
+
 
   thread:
     pool:
@@ -45,7 +48,7 @@ spring:
       queue-capacity: 50
 
 server:
-  port: 8080
+  port: 8087
 
 logging:
   level:

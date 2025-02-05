@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.managers.HashCache;
 import faang.school.urlshortenerservice.repozitory.HashRepository;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -74,5 +78,19 @@ public class UrlService {
         }
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found");
+    }
+
+    @Transactional
+    public void cleanOldUrls() {
+        List<String> oldHashes = urlRepository.deleteOldUrlsAndReturnHashes();
+
+        if (!oldHashes.isEmpty()) {
+            List<Hash> hashEntities = oldHashes.stream()
+                    .map(hash -> new Hash(null, hash))
+                    .collect(Collectors.toList());
+            hashRepository.saveAll(hashEntities);
+
+            urlCacheRepository.deleteOldHashes(oldHashes);
+        }
     }
 }

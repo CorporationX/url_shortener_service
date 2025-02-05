@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.managers.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.repozitory.HashJdbcRepository;
 import faang.school.urlshortenerservice.repozitory.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
+    private final HashJdbcRepository hashJdbcRepository;
     private final Base62Encoder base62Encoder;
 
     @Value("${spring.url.hash.generator.max-range}")
@@ -33,25 +35,23 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(maxRange);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
-        List<Hash> hashEntities = hashes.stream()
-                .map(hash -> new Hash(null, hash))
-                .collect(Collectors.toList());
-        hashRepository.saveAll(hashEntities);
+        hashJdbcRepository.saveBatch(hashes);
     }
 
     @Transactional
     @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<Hash>> getHashesAsync() {
-        return CompletableFuture.completedFuture(getHashes());
-    }
-
-    @Transactional
-    public List<Hash> getHashes() {
+    public CompletableFuture<List<Hash>> getHashes() {
         List<Hash> hashes = hashRepository.getHashBatch(hashButchSize);
         if (hashes.size() < hashButchSize) {
             generateBatch();
             hashes.addAll(hashRepository.getHashBatch(hashButchSize));
         }
+        return CompletableFuture.completedFuture(hashes);
+    }
+
+    @Transactional
+    public List<Hash> getHashesSync() {
+        List<Hash> hashes = hashRepository.getHashBatch(hashButchSize);
         return hashes;
     }
 }

@@ -36,17 +36,8 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        log.info("Initializing hash cache...");
-        try {
-            List<Hash> initialHashes = hashGenerator.getHashes();
-            initialHashes.stream()
-                    .map(Hash::getHash)
-                    .forEach(hashQueue::offer);
-            log.info("Hash cache initialized with {} hashes", hashQueue.size());
-        } catch (Exception e) {
-            log.error("Failed to initialize hash cache", e);
-            throw new IllegalStateException("Critical error: Unable to initialize HashCache", e);
-        }
+        hashQueue = new ArrayBlockingQueue<>(cacheSize);
+        hashGenerator.getHashesSync().stream().map(Hash::getHash).forEach(hashQueue::add);
     }
 
     public String getHash() {
@@ -58,22 +49,23 @@ public class HashCache {
 
     private void triggerAsyncFetch() {
         if (isFetching.compareAndSet(false, true)) {
-            CompletableFuture.supplyAsync(() -> {
-                log.info("Fetching hashes from generator...");
-                return hashGenerator.getHashes();
-            }, hashExecutor).thenAccept(hashes -> {
-                if (hashes.isEmpty()) {
-                    log.info("Generating new hashes...");
-                    hashGenerator.generateBatch();
-                }
-                hashes.stream()
-                        .map(Hash::getHash)
-                        .forEach(hashQueue::offer);
-                log.info("Hash cache refilled, size: {}", hashQueue.size());
-            }).exceptionally(ex -> {
-                log.error("Error fetching hashes", ex);
-                return null;
-            }).whenComplete((res, ex) -> isFetching.set(false));
+            hashGenerator.getHashes()
+                    .thenAcceptAsync(hashes -> {
+                        if (hashes.isEmpty()) {
+                            log.info("Generating new hashes...");
+                            hashGenerator.generateBatch();
+                        }
+                        hashes.stream()
+                                .map(Hash::getHash)
+                                .forEach(hashQueue::offer);
+                        log.info("Hash cache refilled, size: {}", hashQueue.size());
+                    }, hashExecutor)
+                    .exceptionally(ex -> {
+                        log.error("Error fetching hashes", ex);
+                        return null;
+                    })
+                    .whenComplete((res, ex) -> isFetching.set(false));
         }
     }
+
 }
