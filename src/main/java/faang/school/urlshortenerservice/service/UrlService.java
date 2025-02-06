@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.managers.HashCache;
+import faang.school.urlshortenerservice.repozitory.HashJdbcRepository;
 import faang.school.urlshortenerservice.repozitory.HashRepository;
 import faang.school.urlshortenerservice.repozitory.UrlRepository;
 import faang.school.urlshortenerservice.repozitory.redis.UrlCacheRepository;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +25,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
+    private final HashJdbcRepository hashJdbcRepository;
     private final String shortUrlTemplate = "http://faang.url/api/v1/url/";
 
     @Transactional
@@ -83,14 +83,7 @@ public class UrlService {
     @Transactional
     public void cleanOldUrls() {
         List<String> oldHashes = urlRepository.deleteOldUrlsAndReturnHashes();
-
-        if (!oldHashes.isEmpty()) {
-            List<Hash> hashEntities = oldHashes.stream()
-                    .map(hash -> new Hash(null, hash))
-                    .collect(Collectors.toList());
-            hashRepository.saveAll(hashEntities);
-
-            urlCacheRepository.deleteOldHashes(oldHashes);
-        }
+        hashJdbcRepository.saveBatch(oldHashes);
+        urlCacheRepository.deleteOldHashes(oldHashes);
     }
 }

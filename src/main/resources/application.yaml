@@ -32,9 +32,9 @@ spring:
       generator:
         max-range: 5
         hash-butch-size: 10
-        cron: 0/10 * * * * ?
+        cron: 0 0 0 * * *
       cleaner:
-        cron: 0 0 0 1 1 *
+        cron: 0 0 0 * * *
       cache:
         pool-size: 10
         size: 20
