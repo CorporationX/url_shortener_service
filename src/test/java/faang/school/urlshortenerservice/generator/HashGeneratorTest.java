@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.service.TransactionService;
+import faang.school.urlshortenerservice.service.HashService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ public class HashGeneratorTest {
     private HashGenerator hashGenerator;
 
     @Mock
-    private TransactionService transactionService;
+    private HashService transactionService;
 
     private final int batchSize = 5;
 

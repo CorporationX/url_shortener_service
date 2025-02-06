@@ -25,7 +25,7 @@ public class TransactionServiceTest {
     private Base62Encoder base62Encoder;
 
     @InjectMocks
-    private TransactionService transactionService;
+    private HashService transactionService;
 
     private final int batchSize = 3;
 

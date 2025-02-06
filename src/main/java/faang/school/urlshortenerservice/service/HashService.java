@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TransactionService {
+public class HashService {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.service.TransactionService;
+import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    private final TransactionService transactionService;
+    private final HashService transactionService;
     @Value("${hashBatch.batchSize}")
     private int batchSize;
 

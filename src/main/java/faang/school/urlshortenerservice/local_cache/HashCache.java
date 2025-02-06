@@ -33,7 +33,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (!isAtLeast20PercentLeft() && isProcessing.compareAndExchange(false, true)) {
+        if (!isAtLeast20PercentLeft() && isProcessing.compareAndSet(false, true)) {
             getHashesAsync(cacheSize).thenAccept(cache::addAll)
                     .thenRun(() -> isProcessing.set(false));
         }
@@ -42,7 +42,7 @@ public class HashCache {
 
     @Async
     public CompletableFuture<List<String>> getHashesAsync(int batchSize) {
-        return CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(batchSize));
+        return CompletableFuture.completedFuture(hashGenerator.getHashes(batchSize));
     }
 
     private boolean isAtLeast20PercentLeft() {
