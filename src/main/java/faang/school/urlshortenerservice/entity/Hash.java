@@ -20,4 +20,9 @@ public class Hash {
 
     @Column(nullable = false, unique = true)
     private String hash;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
+
 }

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repozitory.redis;
+package faang.school.urlshortenerservice.repository.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

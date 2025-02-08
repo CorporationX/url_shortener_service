@@ -2,10 +2,10 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.managers.HashCache;
-import faang.school.urlshortenerservice.repozitory.HashJdbcRepository;
-import faang.school.urlshortenerservice.repozitory.HashRepository;
-import faang.school.urlshortenerservice.repozitory.UrlRepository;
-import faang.school.urlshortenerservice.repozitory.redis.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.HashJdbcRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;

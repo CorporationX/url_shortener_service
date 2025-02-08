@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repozitory;
+package faang.school.urlshortenerservice.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

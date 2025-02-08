@@ -2,8 +2,9 @@ package faang.school.urlshortenerservice.managers;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
-import faang.school.urlshortenerservice.repozitory.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Data
 public class HashCache {
 
     private final HashRepository hashRepository;
@@ -34,8 +36,11 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
+        log.info("Initializing HashCache with cache size: {}", cacheSize);
         hashQueue = new ArrayBlockingQueue<>(cacheSize);
         hashGenerator.getHashesSync().stream().map(Hash::getHash).forEach(hashQueue::add);
+        hashQueue.forEach(hash -> log.info("Hash in cache: {}", hash));
+        log.info("HashCache initialized with {} hashes", hashQueue.size());
     }
 
     public String getHash() {
