@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 500
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +25,21 @@ server:
 logging:
   level:
     root: info
+
+hashCache:
+  cacheSize: 10000
+  percent: 20
+
+hashBatch:
+  batchSize: 100000
+
+hashGenerator:
+  every-midnight: "0 0 0 * * *"
+
+async:
+  executor:
+    capacity: 500
+
+cleaner:
+  cron:
+    expression: "0 0 0 * * *"

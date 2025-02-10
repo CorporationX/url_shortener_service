@@ -1,0 +1,15 @@
+CREATE SEQUENCE unique_numbers_seq
+    START WITH 1
+    INCREMENT BY 1;
+
+CREATE TABLE hashes
+(
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE urls
+(
+    hash       VARCHAR(6) PRIMARY KEY,
+    url        VARCHAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
