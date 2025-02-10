@@ -33,7 +33,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (!isAtLeast20PercentLeft() && isProcessing.compareAndSet(false, true)) {
+        if (!isBelowThreshHold() && isProcessing.compareAndSet(false, true)) {
             getHashesAsync(cacheSize).thenAccept(cache::addAll)
                     .thenRun(() -> isProcessing.set(false));
         }
@@ -45,7 +45,7 @@ public class HashCache {
         return CompletableFuture.completedFuture(hashGenerator.getHashes(batchSize));
     }
 
-    private boolean isAtLeast20PercentLeft() {
+    private boolean isBelowThreshHold() {
         return cache.size() <= (cacheSize * percent) / 100;
     }
 
