@@ -29,15 +29,18 @@ public class HashGenerator {
     private int hashButchSize;
 
     @Async("hashGeneratorExecutor")
-    @Transactional
     @Scheduled(cron = "${spring.url.hash.generator.cron}")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(maxRange);
         List<String> hashes = base62Encoder.encode(uniqueNumbers);
-        hashJdbcRepository.saveBatch(hashes);
+        saveBatchAsync(hashes);
     }
 
     @Transactional
+    public void saveBatchAsync(List<String> hashes) {
+        hashJdbcRepository.saveBatch(hashes);
+    }
+
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<Hash>> getHashes() {
         List<Hash> hashes = hashRepository.getHashBatch(hashButchSize);

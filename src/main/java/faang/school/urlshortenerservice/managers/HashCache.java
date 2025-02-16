@@ -18,10 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Data
 public class HashCache {
 
-    private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService hashExecutor;
     private Queue<String> hashQueue;
