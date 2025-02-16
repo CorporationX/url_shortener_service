@@ -37,5 +37,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             INSERT INTO url_hashes (hash)
                         SELECT hash FROM selected_rows
             """)
-    void getHistoryCleaner();
+    void cleanDataOlder1Year();
 }

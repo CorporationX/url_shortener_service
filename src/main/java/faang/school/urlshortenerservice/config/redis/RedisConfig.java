@@ -20,20 +20,23 @@ public class RedisConfig {
 
     @Value("${hash.redis.redis-ttl-minutes}")
     private long redisTtlMinutes;
-    @Value("${spring.data.redis.host}")
-    private String host;
-    @Value("${spring.data.redis.port}")
-    private int port;
+//    @Value("${spring.data.redis.host}")
+//    private String host;
+//    @Value("${spring.data.redis.port}")
+//    private int port;
 
     @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
+    JedisConnectionFactory jedisConnectionFactory(
+            @Value("${spring.data.redis.host}") String host,
+            @Value("${spring.data.redis.port}") int port
+    ) {
         return new JedisConnectionFactory(new RedisStandaloneConfiguration(host,port));
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate(){
+    public RedisTemplate<String, String> redisTemplate(JedisConnectionFactory jedisConnectionFactory){
         RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(jedisConnectionFactory());
+        template.setConnectionFactory(jedisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         return template;

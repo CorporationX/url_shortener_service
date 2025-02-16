@@ -51,10 +51,4 @@ public class HashGenerator {
         log.error("Start Async get hashes. Numbers: {}", number);
         return CompletableFuture.completedFuture(getHashes(number));
     }
-
-    public String generateSingleHash() {
-        log.error("System generated a single hash!");
-        List<Long> numbers = hashRepository.getUniqueNumbers(1);
-        return base62Encoder.encodeList(numbers).get(0);
-    }
 }

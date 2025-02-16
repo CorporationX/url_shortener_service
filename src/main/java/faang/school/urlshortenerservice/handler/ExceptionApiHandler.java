@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,7 +28,7 @@ public class ExceptionApiHandler {
     public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException exception) {
         log.error(String.format("Error entity not found, message : ", exception));
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.BAD_GATEWAY )
                 .body(new ErrorMessage(exception.getMessage()));
     }
 

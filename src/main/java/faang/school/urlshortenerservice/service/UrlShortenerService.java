@@ -4,15 +4,12 @@ import faang.school.urlshortenerservice.cache.LocalCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.dto.UrlsDto;
 import faang.school.urlshortenerservice.mapper.UrlsDtoMapper;
-import faang.school.urlshortenerservice.model.UrlRedis;
 import faang.school.urlshortenerservice.repository.RedisRepository;
 import faang.school.urlshortenerservice.repository.UrlsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service

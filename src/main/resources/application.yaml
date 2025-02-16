@@ -33,12 +33,10 @@ logging:
     root: info
 
 hash:
-  scheduled: "0 2 * * * ?"
-  limit-repeat-numbers: 3
-  limit-repeat-waiting-time: 5000
+  scheduled: "0 0 3 * * ?"
   hash:
     max-hash-length: 6
-    capacity: 10000
+    capacity: 10
     cache:
       fill:
         percent: 20
