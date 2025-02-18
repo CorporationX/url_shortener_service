@@ -77,10 +77,12 @@ tasks.bootJar {
  * JaCoCo settings
  */
 val jacocoInclude = listOf(
+    "**/cache/**",
     "**/controller/**",
-    "**/service/**",
-    "**/validator/**",
-    "**/mapper/**"
+    "**/generator/**",
+    "**/mapper/**",
+    "**/modules/**",
+    "**/service/**"
 )
 jacoco {
     toolVersion = "0.8.9"

@@ -25,16 +25,16 @@ public class RedisRepository {
     public void setUrl(String hash, String url) {
         log.info("Save to Redis:{}, {}, {}", redisUrlPrefix, hash, url);
         try {
-            redisTemplate.opsForValue().set(redisUrlPrefix+hash, url, redisTtlMinutes, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(redisUrlPrefix + hash, url, redisTtlMinutes, TimeUnit.MINUTES);
         } catch (Exception e) {
-            log.error("Redis is not available, prefix:{}, hash: {} url: {} ",redisUrlPrefix,  hash, url, e);
+            log.error("Redis is not available, prefix:{}, hash: {} url: {} ", redisUrlPrefix, hash, url, e);
         }
     }
 
     public String getUrl(String hash) {
-        log.info("Get from Redis: {}, {}",redisUrlPrefix,  hash);
+        log.info("Get from Redis: {}, {}", redisUrlPrefix, hash);
         try {
-            return redisTemplate.opsForValue().get(redisUrlPrefix+hash);
+            return redisTemplate.opsForValue().get(redisUrlPrefix + hash);
         } catch (Exception e) {
             log.info("Redis is not available, hash:{} {}", redisUrlPrefix, hash, e);
             return null;

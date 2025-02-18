@@ -19,7 +19,7 @@ public class HistoryCleaner {
         log.info("Start scheduled history cleaner.");
         try {
             hashRepository.cleanDataOlder1Year();
-        } catch (Exception e){
+        } catch (Exception e) {
             log.info("Error execution hashRepository.cleanDataOlder1Year");
         }
         log.info("End scheduled history cleaner.");

@@ -1,11 +1,11 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exception.InternalValidationException;
 import faang.school.urlshortenerservice.service.UrlShortenerService;
 import faang.school.urlshortenerservice.utilites.UrlUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,8 +77,8 @@ public class UrlShortenerController {
         try {
             new URL(longUrl).toURI();
         } catch (MalformedURLException | URISyntaxException e) {
-            log.error("Url: {}  Validation Exception", longUrl);
-            throw new ValidationException("Url Validation Exception");
+            log.error("Incorrect url: {}", longUrl);
+            throw new InternalValidationException("Incorrect url");
         }
     }
 
@@ -88,7 +88,7 @@ public class UrlShortenerController {
 
         if (!matcher.matches()) {
             log.error("Url has incorrect name {}, expected name {}", shortUrl, urlName);
-            throw new ValidationException(String.format("Url has incorrect name %s, expected %s ", shortUrl, urlName));
+            throw new InternalValidationException(String.format("Incorrect url: %s", shortUrl));
         }
         return matcher;
     }
@@ -101,8 +101,8 @@ public class UrlShortenerController {
 
     private void isValidHashLength(String hash) {
         if (hash.length() <= 0 || hash.length() > maxHashLength) {
-            log.error("Url has incorrect hash {}", hash);
-            throw new ValidationException(String.format("Url has incorrect hash %s", hash));
+            log.error("Url has incorrect, maxHashLength {}, hash {}", maxHashLength, hash);
+            throw new InternalValidationException(String.format("Url has incorrect hash %s", hash));
         }
     }
 }

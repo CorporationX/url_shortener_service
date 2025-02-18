@@ -40,10 +40,10 @@ public class UrlShortenerService {
         log.info("Get by hash : {}", hashCode);
 
         String urlRedis = redisRepository.getUrl(hashCode);
-        if (urlRedis != null){
+        if (urlRedis != null) {
             log.info("Found in cache, url : {}", urlRedis);
             return UrlDto.builder().url(urlRedis).build();
-        }else {
+        } else {
             log.info("Go to DB, hash : {}", hashCode);
 
             UrlDto urlDto = urlsDtoMapper.toUrlDtoLongUrl(urlsRepository.findByHash(hashCode));

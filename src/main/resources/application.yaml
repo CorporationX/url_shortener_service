@@ -9,14 +9,14 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         jdbc:
           batch_size: 5
           order_inserts:  true
         format_sql: true
-        generate_statistics: true
+        generate_statistics: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
