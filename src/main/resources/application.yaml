@@ -48,3 +48,6 @@ hash:
   test-url:
     url-name : "http://url-shortner-service.com/"
 
+locale:
+  request:
+    name-parameter-in-header: Accept-Language

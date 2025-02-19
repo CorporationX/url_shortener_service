@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
+    private final MessageSource messageSource;
 
     @Value("${hash.test-url.url-name}")
     private String urlName;
@@ -78,7 +81,10 @@ public class UrlShortenerController {
             new URL(longUrl).toURI();
         } catch (MalformedURLException | URISyntaxException e) {
             log.error("Incorrect url: {}", longUrl);
-            throw new InternalValidationException("Incorrect url");
+            throw new InternalValidationException(
+                    messageSource.getMessage("exception.internal.validation.incorrect.url",
+                            new Object[]{longUrl},
+                            LocaleContextHolder.getLocale()));
         }
     }
 
@@ -88,7 +94,10 @@ public class UrlShortenerController {
 
         if (!matcher.matches()) {
             log.error("Url has incorrect name {}, expected name {}", shortUrl, urlName);
-            throw new InternalValidationException(String.format("Incorrect url: %s", shortUrl));
+            throw new InternalValidationException(
+                    messageSource.getMessage("exception.internal.validation.incorrect.url",
+                            new Object[]{shortUrl},
+                            LocaleContextHolder.getLocale()));
         }
         return matcher;
     }
@@ -102,7 +111,11 @@ public class UrlShortenerController {
     private void isValidHashLength(String hash) {
         if (hash.length() <= 0 || hash.length() > maxHashLength) {
             log.error("Url has incorrect, maxHashLength {}, hash {}", maxHashLength, hash);
-            throw new InternalValidationException(String.format("Url has incorrect hash %s", hash));
+            throw new InternalValidationException(
+                    messageSource.getMessage("exception.internal.validation.incorrect.hash",
+                            new Object[]{hash},
+                            LocaleContextHolder.getLocale())
+            );
         }
     }
 }

@@ -4,16 +4,25 @@ import faang.school.urlshortenerservice.exception.CacheEmptyException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LocalCacheRetryTest {
+    @Mock
+    private MessageSource messageSource;
 
     @InjectMocks
     private LocalCacheRetry localCache;
@@ -31,7 +40,10 @@ class LocalCacheRetryTest {
     @Test
     void getCachedHashNoElementInQueueExceptionFailTest() {
         Queue<String> hashes = new ArrayBlockingQueue<>(capacityTest);
-        String message = "There are a lot requests. Please, try again later.";
+        String message = "There are a lot of requests. Please, try again later.";
+
+        when(messageSource.getMessage(eq("exception.cache.empty"), any(), any()))
+                .thenReturn(message);
 
         Exception exception = assertThrows(CacheEmptyException.class, () -> localCache.getCachedHash(hashes));
 

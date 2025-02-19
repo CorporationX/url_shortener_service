@@ -36,3 +36,7 @@ hash:
       url-prefix: a01.
   test-url:
     url-name : "http://url-test-u-s.com/"
+
+locale:
+  request:
+    name-parameter-in-header: Accept-Language

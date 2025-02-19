@@ -179,7 +179,7 @@ class UrlShortenerControllerIT {
         mockMvc.perform(get(urlController + "/" + errorHashExtension))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Url not find by: " + errorHashExtension))
+                .andExpect(jsonPath("$.message").value("Url not find by " + errorHashExtension))
                 .andReturn();
 
         log.info("====================== End: getLongUrlByHashNotFindHashFailTest()");
@@ -206,7 +206,7 @@ class UrlShortenerControllerIT {
     void getShortUrlIsValidLongUrlFailTest() throws Exception {
         log.info("====================== Start: getShortUrlIsValidLongUrlFailTest()");
 
-        String errorMessage = "Incorrect url";
+        String errorMessage = "Incorrect url ";
         String wrongLongUrl = "http://www.test-urlshortener.com\\long-url/v1/there-is-a-long-url-here";
         UrlDto longUrlDto = new UrlDto(wrongLongUrl);
 
@@ -215,7 +215,7 @@ class UrlShortenerControllerIT {
                         .content(new ObjectMapper().writeValueAsString(longUrlDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(errorMessage));
+                .andExpect(jsonPath("$.message").value(errorMessage + wrongLongUrl));
 
         log.info("====================== End: getShortUrlIsValidLongUrlFailTest()");
     }
@@ -225,7 +225,7 @@ class UrlShortenerControllerIT {
     void isValidShortUrlIsValidLongUrlFailTest() throws Exception {
         log.info("====================== Start: getLongUrlIsValidLongUrlFailTest()");
 
-        String errorMessage = "Incorrect url: ";
+        String errorMessage = "Incorrect url ";
         String wrongLongUrl = "http://www.test-urlshortener.com\\22";
         UrlDto shortUrlDto = new UrlDto(wrongLongUrl);
 

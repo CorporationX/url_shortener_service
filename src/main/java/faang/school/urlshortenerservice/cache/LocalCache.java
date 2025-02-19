@@ -29,8 +29,6 @@ public class LocalCache {
     private Queue<String> hashes;
     private int minQueueSize;
 
-    private final String cacheEmptyExceptionMessage = "There are a lot of requests. Please, repeat in a couple of minutes.";
-
     @PostConstruct
     public void init() {
         log.info(" Start local cash.");

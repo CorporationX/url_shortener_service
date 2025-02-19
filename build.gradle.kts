@@ -79,6 +79,7 @@ tasks.bootJar {
 val jacocoInclude = listOf(
     "**/cache/**",
     "**/controller/**",
+    "**/locale/**",
     "**/generator/**",
     "**/mapper/**",
     "**/modules/**",
