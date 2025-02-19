@@ -15,7 +15,6 @@ import java.util.Locale;
 @Slf4j
 public class LocaleChangeFilter extends OncePerRequestFilter {
 
-    //@Value("${locale.request.name-parameter-in-header}")
     private String acceptLanguageName = "Accept-Language";
 
     @Override

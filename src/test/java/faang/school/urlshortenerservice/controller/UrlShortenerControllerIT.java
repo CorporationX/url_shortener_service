@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.handler.ExceptionApiHandler;
+import faang.school.urlshortenerservice.locale.LocaleChangeFilter;
 import faang.school.urlshortenerservice.model.Urls;
 import faang.school.urlshortenerservice.repository.RedisRepository;
 import faang.school.urlshortenerservice.repository.interfaces.UrlsJpaRepository;
@@ -12,11 +13,14 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -49,6 +53,9 @@ class UrlShortenerControllerIT {
     @Autowired
     private UrlsJpaRepository urlsJpaRepository;
 
+    @InjectMocks
+    private LocaleChangeFilter localeChangeFilter;
+
     private MockMvc mockMvc;
 
     private static final Logger log = LoggerFactory.getLogger(UrlShortenerControllerIT.class);
@@ -68,6 +75,7 @@ class UrlShortenerControllerIT {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(urlShortenerController)
                 .setControllerAdvice(new ExceptionApiHandler())
+                .addFilter(localeChangeFilter)
                 .build();
     }
 
@@ -106,7 +114,8 @@ class UrlShortenerControllerIT {
 
         MvcResult urlDtoResult = mockMvc.perform(post(urlController)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(longUrlDto)))
+                        .content(new ObjectMapper().writeValueAsString(longUrlDto))
+                        .header("Accept-Language", "en-US"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -143,7 +152,8 @@ class UrlShortenerControllerIT {
 
         MvcResult urlDtoResult = mockMvc.perform(get(urlController)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(shortUrlDto)))
+                        .content(new ObjectMapper().writeValueAsString(shortUrlDto))
+                        .header("Accept-Language", "dn"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
