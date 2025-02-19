@@ -14,12 +14,4 @@ public class LocaleConfig {
         registrationBean.addUrlPatterns("/*");
         return registrationBean;
     }
-
-//    @Bean
-//    public ResourceBundleMessageSource messageSource() {
-//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//        messageSource.setBasename("messages"); // Указываем базовое имя для ресурсов
-//        messageSource.setDefaultEncoding("UTF-8"); // Устанавливаем кодировку
-//        return messageSource;
-//    }
 }
