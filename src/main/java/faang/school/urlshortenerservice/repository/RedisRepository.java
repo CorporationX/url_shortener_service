@@ -36,7 +36,7 @@ public class RedisRepository {
         try {
             return redisTemplate.opsForValue().get(redisUrlPrefix + hash);
         } catch (Exception e) {
-            log.info("Redis is not available, hash:{} {}", redisUrlPrefix, hash, e);
+            log.error("Redis is not available, hash:{} {}", redisUrlPrefix, hash, e);
             return null;
         }
     }
