@@ -5,21 +5,20 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/application-log.json</file>
-
+        <file>logs/application-log-test.json</file>
         <encoder>
             <pattern>
                 {
-                "timestamp": %d{yyyy-MM-dd HH:mm:ss.SSS},
-                "level": "%level",
-                "logger": %logger{36},
-                "thread": "%thread",
-                "message": "%msg%n"
+                    "timestamp": %d{yyyy-MM-dd HH:mm:ss.SSS},
+                    "level": "%level",
+                    "logger": %logger{36},
+                    "thread": "%thread",
+                    "message": "%msg%n"
                 }
             </pattern>
         </encoder>
     </appender>
-    <root >
+    <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>

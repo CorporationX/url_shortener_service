@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -19,9 +20,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache:3.4.1")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
+    implementation("org.springframework.retry:spring-retry")
+    implementation("org.springframework:spring-aspects")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
@@ -41,6 +45,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
     /**
      * Test containers
@@ -66,4 +71,55 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+/**
+ * JaCoCo settings
+ */
+val jacocoInclude = listOf(
+    "**/cache/**",
+    "**/controller/**",
+    "**/locale/**",
+    "**/generator/**",
+    "**/mapper/**",
+    "**/modules/**",
+    "**/service/**"
+)
+jacoco {
+    toolVersion = "0.8.9"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
+}
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        //html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            include(jacocoInclude)
+        }
+    )
+}
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+            classDirectories.setFrom(
+                sourceSets.main.get().output.asFileTree.matching {
+                    include(jacocoInclude)
+                }
+            )
+            enabled = true
+            limit {
+                minimum = BigDecimal(0.7).setScale(2, BigDecimal.ROUND_HALF_UP) // Задаем минимальный уровень покрытия
+            }
+        }
+    }
 }

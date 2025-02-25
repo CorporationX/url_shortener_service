@@ -1,0 +1,42 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+       hibernate:
+        jdbc:
+          batch_size: 5
+          order_inserts:  true
+        format_sql: true
+        generate_statistics: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: 48095
+
+logging:
+  level:
+    root: info
+
+hash:
+  scheduled: "0 0 3 * * ?"
+  hash:
+    max-hash-length: 6
+    capacity: 10
+    cache:
+      fill:
+        percent: 20
+      solWord: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  redis:
+    redis-ttl-minutes: 1440
+    prefixes:
+      url-prefix: a01.
+  test-url:
+    url-name : "http://url-test-u-s.com/"
+
+locale:
+  request:
+    name-parameter-in-header: Accept-Language

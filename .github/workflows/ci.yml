@@ -1,0 +1,62 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - Murloc-ms7-bo-url-BJS2-00000
+  pull_request:
+    branches:
+      - Murloc-ms7-bo-url-BJS2-00000
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Java
+        uses: actions/setup-java@v4.5.0
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4.1.2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Set up PostgreSQL with Docker Compose
+        run: |
+          docker-compose down
+          docker-compose up -d
+          
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U user; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Run tests
+        run: ./gradlew test --no-daemon
+
+      - name: Upload test results
+        if: always() # Ensures this step runs even if tests fail
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: test-results
+          path: build/test-results
+
+      - name: Build the project
+        run: ./gradlew clean build --no-daemon

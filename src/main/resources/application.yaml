@@ -9,17 +9,45 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
+        jdbc:
+          batch_size: 5
+          order_inserts:  true
         format_sql: true
+        generate_statistics: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
-  port: 8080
+  port: 8095
 
 logging:
   level:
     root: info
+
+hash:
+  scheduled: "0 0 3 * * ?"
+  hash:
+    max-hash-length: 6
+    capacity: 10
+    cache:
+      fill:
+        percent: 20
+      solWord: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  redis:
+    redis-ttl-minutes: 1440
+    prefixes:
+      url-prefix: a01.
+  test-url:
+    url-name : "http://url-shortner-service.com/"
+
+locale:
+  request:
+    name-parameter-in-header: Accept-Language
