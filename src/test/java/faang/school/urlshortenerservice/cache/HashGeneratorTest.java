@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,22 +32,24 @@ class HashGeneratorTest {
     @Mock
     private Base62Encoder base62Encoder;
 
+    private HashGeneratorProperties hashGeneratorProperties;
+
     @BeforeEach
     public void setUp() {
-        HashGeneratorProperties hashGeneratorProperties = new HashGeneratorProperties(10);
+        hashGeneratorProperties = new HashGeneratorProperties(10);
         hashGenerator = new HashGenerator(hashRepository, hashGeneratorProperties, base62Encoder);
     }
 
     @Test
     @DisplayName("Generate batch: success case")
     void testGenerateAndSaveHashes_Success() {
-        when(hashRepository.generateUniqueNumbers(any())).thenReturn(List.of(1L, 2L));
-        when(base62Encoder.encode(any())).thenReturn(List.of(new Hash("1"), new Hash("2")));
+        List<Hash> hashList = List.of(new Hash("1"), new Hash("2"));
+        when(hashRepository.generateUniqueNumbers(eq(hashGeneratorProperties.hashBatchSize()))).thenReturn(List.of(1L, 2L));
+        when(base62Encoder.encode(any())).thenReturn(hashList);
 
         hashGenerator.generateAndSaveHashes();
 
         verify(base62Encoder, times(1)).encode(any());
-        verify(hashRepository, times(1)).generateUniqueNumbers(any());
-        verify(hashRepository, times(1)).saveAll(any());
+        verify(hashRepository, times(1)).saveAll(hashList);
     }
 }
