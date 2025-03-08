@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,7 +31,8 @@ public class HashCache {
     public void init() {
         log.info("Initializing Hash Cache with capacity: {}", capacity);
         hashes = new ArrayBlockingQueue<>(capacity);
-        hashGenerator.getHashesAsync(capacity).thenAccept(hashes::addAll);
+        List<String> initialHashes = hashGenerator.getHashes(capacity);
+        hashes.addAll(initialHashes);
         log.info("Hash Cache on init: {}", hashes);
     }
 
