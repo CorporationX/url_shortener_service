@@ -1,9 +1,14 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DATASOURCE_USERNAME:user}
+    password: ${DATASOURCE_PASSWORD:password}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,9 +22,39 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+# OpenAPI / Swagger настройки
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  show-actuator: true
+  packages-to-scan: faang.school.urlshortenerservice
+
 server:
   port: 8080
+  url: ${SERVER_URL:http://localhost:8080}
 
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        sql: DEBUG
+    springdoc: DEBUG
+    org.springdoc: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+url:
+  cache:
+    min-requests: 10
+    ttl-hours: 24

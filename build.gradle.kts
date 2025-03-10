@@ -24,6 +24,11 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
+     * Swagger / OpenAPI
+     */
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+
+    /**
      * Database
      */
     implementation("org.liquibase:liquibase-core")
@@ -47,7 +52,6 @@ dependencies {
     implementation(platform("org.testcontainers:testcontainers-bom:1.20.5"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:1.4.6")
 
     /**
      * Tests
