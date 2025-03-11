@@ -30,7 +30,6 @@ public class UrlCache {
         String urlKey = URL_KEY_PREFIX + hash;
         String counterKey = COUNTER_PREFIX + hash;
 
-        // Увеличиваем счетчик запросов в любом случае
         Long requestCount = redisTemplate.opsForValue().increment(counterKey);
 
         if (requestCount == null) {
@@ -39,24 +38,20 @@ public class UrlCache {
                     .orElseThrow(() -> new EntityNotFoundException("Url not found"))
                     .getOriginalUrl();
         }
-        
-        // Устанавливаем TTL для счетчика при первом запросе
+
         if (requestCount == 1) {
             redisTemplate.expire(counterKey, cacheTtlHours, TimeUnit.HOURS);
         }
 
-        // Проверяем кеш
         String cachedUrl = redisTemplate.opsForValue().get(urlKey);
         if (cachedUrl != null) {
             return cachedUrl;
         }
 
-        // Получаем URL из базы данных
         String originalUrl = urlRepository.findByHash(hash)
                 .orElseThrow(() -> new EntityNotFoundException("Url not found"))
                 .getOriginalUrl();
 
-        // Кешируем URL только если количество запросов превысило порог
         if (requestCount >= minRequestsForCaching) {
             redisTemplate.opsForValue().set(urlKey, originalUrl, cacheTtlHours, TimeUnit.HOURS);
             log.info("URL with hash {} cached after {} requests", hash, requestCount);
