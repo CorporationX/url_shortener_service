@@ -28,17 +28,6 @@ server:
 logging:
   level:
     root: info
-    org:
-      hibernate:
-        sql: DEBUG
-    springdoc: DEBUG
-    org.springdoc: DEBUG
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 
 url:
   cache:
