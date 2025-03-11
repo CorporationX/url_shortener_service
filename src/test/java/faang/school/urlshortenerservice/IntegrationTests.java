@@ -28,22 +28,22 @@ public class IntegrationTests {
     private static final String COUNTER_PREFIX = "counter:";
 
     @Container
-    static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:13.2")
+    static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:13.2")
             .withDatabaseName("test")
             .withUsername("test")
             .withPassword("test");
 
     @Container
-    static final GenericContainer<?> redisContainer = new GenericContainer<>("redis:6.2")
+    static final GenericContainer<?> REDIS_CONTAINER = new GenericContainer<>("redis:6.2")
             .withExposedPorts(6379);
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgresContainer::getUsername);
-        registry.add("spring.datasource.password", postgresContainer::getPassword);
-        registry.add("spring.redis.host", redisContainer::getHost);
-        registry.add("spring.redis.port", () -> redisContainer.getMappedPort(6379));
+        registry.add("spring.datasource.url", POSTGRESQL_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRESQL_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", POSTGRESQL_CONTAINER::getPassword);
+        registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
+        registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(6379));
     }
 
     @Autowired
