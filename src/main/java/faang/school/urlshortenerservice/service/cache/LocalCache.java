@@ -37,7 +37,7 @@ public class LocalCache {
 
     @SneakyThrows
     public String getHash() {
-        if (hashes.size() < (capacity * fillPercentage)) {
+        if (hashes.size() < (capacity * fillPercentage / 100)) {
             if (isFilling.compareAndSet(false, true)) {
                 hashService.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)

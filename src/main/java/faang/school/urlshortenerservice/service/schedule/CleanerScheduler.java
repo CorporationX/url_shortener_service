@@ -32,7 +32,7 @@ public class CleanerScheduler {
     @Value("${url.expiration.months:1}")
     private int urlExpirationMonths;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${url.cleanup.cron:0 0 0 * * *}")
     public void cleanupUrls() {
         LocalDateTime expirationDate = LocalDateTime.now().minusMonths(urlExpirationMonths);
 
