@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+thread_pool:
+  encode:
+    pool_size: 5
+
+hash:
+  batch:
+    size: 10
