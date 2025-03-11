@@ -23,7 +23,7 @@ public class GlobalHandlerException {
         return buildErrorMessage(exception, request);
     }
 
-    @ExceptionHandler({RedirectException.class})
+    @ExceptionHandler({RedirectException.class, DataAccessException.class, Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRedirectException(RedirectException exception, WebRequest request) {
         return buildErrorMessage(exception, request);
@@ -43,18 +43,6 @@ public class GlobalHandlerException {
                 .path(getPath(request))
                 .details(validationErrors)
                 .build();
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleDataAccessException(DataAccessException exception, WebRequest request) {
-        return buildErrorMessage(exception, request);
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(Exception exception, WebRequest request) {
-        return buildErrorMessage(exception, request);
     }
 
     private ErrorResponse buildErrorMessage(Exception exception, WebRequest request) {

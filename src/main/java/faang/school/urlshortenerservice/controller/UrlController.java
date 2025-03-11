@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,6 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @SneakyThrows
     @PostMapping("/api/shorten")
     @Operation(summary = "Создать сокращенный URL", description = "Создает сокращенную версию переданного URL")
     @ApiResponses(value = {
