@@ -37,7 +37,6 @@ springdoc:
 
 server:
   port: 8080
-  url: ${SERVER_URL:http://localhost:8080}
 
 logging:
   level:
