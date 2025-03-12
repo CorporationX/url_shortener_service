@@ -22,7 +22,16 @@
 - Node.js 16+
 - Docker и Docker Compose
 
-### Пошаговая инструкция
+### Быстрый запуск
+1. для Windows
+```powershell
+.\build-and-run.ps1
+```
+2. для Linux/MacOS
+```bash
+.\build-and-run.sh
+```
+### Пошаговая инструкция для ручного запуска
 
 1. Клонируйте репозиторий:
 ```bash
