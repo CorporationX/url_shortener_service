@@ -9,7 +9,7 @@ import java.util.List;
 public class Base62Encoder {
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    public static List<String> encode(@NotNull List<Long> numbers) {
+    public List<String> encode(@NotNull List<Long> numbers) {
         return numbers.stream()
                 .map(number -> {
                     if (number == 0) {
