@@ -27,3 +27,7 @@ logging:
 hash:
   batch:
     size: 10
+
+thread_pool:
+  encode:
+    pool_size: 5
