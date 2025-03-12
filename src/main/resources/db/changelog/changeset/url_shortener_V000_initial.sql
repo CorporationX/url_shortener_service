@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS url
 (
-    hash       CHAR(6) PRIMARY KEY,
+    hash       VARCHAR(6) PRIMARY KEY,
     url        TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash (hash)
