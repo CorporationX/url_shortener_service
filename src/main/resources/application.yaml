@@ -12,10 +12,17 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        jdbc:
+          batch_size: ${BATCH_SIZE}
+        order_inserts: true
+        order_updates: true
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+url-shortener-service:
+  batch-size: ${BATCH_SIZE}
 
 server:
   port: 8080
