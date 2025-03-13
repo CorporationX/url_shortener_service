@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS url;
+DROP TABLE IF EXISTS hash;
+
+DELETE FROM databasechangelog;
