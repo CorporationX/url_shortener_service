@@ -2,6 +2,8 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Url;
 import feign.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +17,5 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     Url findByHash(String hash);
 
-    @Modifying
-    @Query(nativeQuery = true, value = """
-            DELETE * FROM url WHERE created_at < :threshold RETURNING hash
-            """)
-    List<String> deleteOldUrls(@Param("threshold") LocalDateTime threshold);
+    Page<Url> findByCreatedAtBefore(LocalDateTime expirationDate, Pageable pageable);
 }

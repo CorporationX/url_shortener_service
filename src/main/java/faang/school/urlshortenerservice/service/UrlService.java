@@ -8,8 +8,13 @@ import faang.school.urlshortenerservice.service.cache.UrlCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,5 +61,14 @@ public class UrlService {
 
         log.info("Created a short URL {} for a long URL {}", shortUrl, longUrl);
         return shortUrl;
+    }
+
+    public Page<Url> getPageExpiredUrls(LocalDateTime expirationDate, Pageable pageable) {
+        return urlRepository.findByCreatedAtBefore(expirationDate, pageable);
+    }
+
+    @Transactional
+    public void deleteUrls(List<Url> urls) {
+        urlRepository.deleteAll(urls);
     }
 }
