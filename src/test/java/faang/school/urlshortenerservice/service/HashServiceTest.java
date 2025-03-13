@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,8 @@ public class HashServiceTest {
     private HashRepository hashRepository;
     @Mock
     private Base62Encoder base62Encoder;
+    @Mock
+    private JdbcTemplate jdbcTemplate;
     @Spy
     @InjectMocks
     private HashService hashService;
@@ -41,14 +44,12 @@ public class HashServiceTest {
 
         CompletableFuture<Void> future = hashService.generateBatch();
         future.get();
-        verify(hashRepository, times(1)).saveAll(argThat(iterable -> {
-            List<Hash> list = new ArrayList<>();
-            iterable.forEach(list::add);
-            return list.size() == 3 &&
-                    list.get(0).getHash().equals("a") &&
-                    list.get(1).getHash().equals("b") &&
-                    list.get(2).getHash().equals("c");
-        }));
+        verify(jdbcTemplate, times(1)).batchUpdate(
+                eq("INSERT INTO hash (hash) VALUES (?)"),
+                eq(encodedHashes),
+                eq(encodedHashes.size()),
+                any()
+        );
     }
 
     @Test

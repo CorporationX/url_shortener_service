@@ -3,13 +3,14 @@ package faang.school.urlshortenerservice.service.cache;
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class HashCache {
     private int capacity;
     @Value("${hash.cache.fill-percentage:20}")
     private float fillPercentage;
-    private Queue<String> hashes;
+    private BlockingQueue<String> hashes;
 
     @PostConstruct
     public void init() {
@@ -33,6 +34,7 @@ public class HashCache {
         log.info("Initialized cache with {} hashes", initialHashes.size());
     }
 
+    @SneakyThrows
     public String getHash() {
         if (hashes.size() < (capacity * fillPercentage / 100.0)) {
             if (isFilling.compareAndSet(false, true)) {
@@ -46,6 +48,6 @@ public class HashCache {
             }
         }
 
-        return hashes.poll();
+        return hashes.take();
     }
 }

@@ -6,8 +6,10 @@ import faang.school.urlshortenerservice.utils.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class HashService {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+    private final JdbcTemplate jdbcTemplate;
 
     @Value("${hash.generate.amount:10000}")
     private int hashAmount;
@@ -32,11 +35,8 @@ public class HashService {
         log.info("Starting asynchronous batch generation of {} hashes", hashAmount);
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashAmount);
         List<String> encodedHashes = base62Encoder.encode(uniqueNumbers);
-        List<Hash> hashes = encodedHashes.stream()
-                .map(encoded -> new Hash(null, encoded))
-                .collect(Collectors.toList());
-        hashRepository.saveAll(hashes);
-        log.info("Batch generation complete, saved {} hashes", hashes.size());
+        saveHashes(encodedHashes);
+        log.info("Batch generation complete, saved {} hashes", encodedHashes.size());
         return CompletableFuture.completedFuture(null);
     }
 
@@ -51,5 +51,19 @@ public class HashService {
         }
         log.info("Fetched {} hashes from database", hashes.size());
         return hashes.stream().map(Hash::getHash).toList();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveHashes(List<String> freedHashes) {
+        if (freedHashes.isEmpty()) {
+            return;
+        }
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
+        jdbcTemplate.batchUpdate(
+                sql,
+                freedHashes,
+                freedHashes.size(),
+                (ps, hash) -> ps.setString(1, hash)
+        );
     }
 }
