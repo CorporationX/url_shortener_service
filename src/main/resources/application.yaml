@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+url-shortener-service:
+  hash-batch-size: 10
