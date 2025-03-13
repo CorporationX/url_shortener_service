@@ -1,0 +1,14 @@
+CREATE TABLE url (
+    id         BIGSERIAL PRIMARY KEY,
+    hash       VARCHAR(7)    NOT NULL,
+    url        text,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE hash (
+     id   BIGSERIAL   PRIMARY KEY,
+     hash VARCHAR(6) NOT NULL
+);
+
+ALTER TABLE url ADD FOREIGN KEY (hash_id) REFERENCES hash(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 1;
