@@ -40,8 +40,8 @@ dependencies {
     implementation("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
+    implementation("org.unbroken-dome.base62:base62:1.1.0")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
-
     /**
      * Test containers
      */
