@@ -23,3 +23,11 @@ server:
 logging:
   level:
     root: info
+
+hash_repo:
+  unique_max_size: 100
+  save_batch_size: 10
+  hash_batch_size: 10
+
+thread_pool:
+  hash_generator_size: 10
