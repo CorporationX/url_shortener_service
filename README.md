@@ -4,9 +4,14 @@
 
 ## Технологии
 - Java 17
-- Spring Boot 3.4.3
-- React 18
-- TypeScript
+- Spring Boot 3.4.3 (Data, Web, JPA, Hibernate)
+- Мониторинг: ELK
+- NoSQL: Redis
+- SQL: PostgreSQL
+- Контейнеризация: Docker/Docker Compose
+- Документация:  Swagger
+- Миграции:  Liquibase
+- Тестирование: JUnit/Mockito/TestContainers
 
 ## Функциональность
 - Создание коротких URL
@@ -65,5 +70,4 @@ docker-compose up -d
 ## Лицензия
 
 Этот проект является открытым исходным кодом и распространяется под лицензией MIT.
-
 Вы можете свободно использовать, изменять и распространять код проекта в соответствии с условиями лицензии MIT.
