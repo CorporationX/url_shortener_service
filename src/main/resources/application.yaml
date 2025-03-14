@@ -26,8 +26,14 @@ logging:
 
 hash:
   batch:
-    size: 10
+    size: 10000
+  unique-numbers-amount: 1000
 
-thread_pool:
+
+thread-pool:
   encode:
-    pool_size: 5
+    pool-size: 5
+  hash-generator:
+    core-pool-size: 5
+    max-pool-size: 25
+    queue-capacity: 100
