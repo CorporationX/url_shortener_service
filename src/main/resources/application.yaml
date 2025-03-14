@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+encode-base:
+  base: 62
+  alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
