@@ -23,3 +23,13 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  thread:
+    size: 10
+  cache:
+    size: 100
+    thread:
+      size: 10
+  batch:
+    size: 100
