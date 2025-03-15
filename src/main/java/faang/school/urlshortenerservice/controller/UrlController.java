@@ -26,6 +26,6 @@ public class UrlController {
     @GetMapping("/{hash}")
     public ModelAndView redirectToLongUrl(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        return new ModelAndView("redirect" + originalUrl);
+        return new ModelAndView("redirect:" + originalUrl);
     }
 }

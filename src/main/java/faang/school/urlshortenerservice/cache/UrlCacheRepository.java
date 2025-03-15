@@ -2,20 +2,32 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.CacheManager;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UrlCacheRepository {
 
     private final UrlRepository urlRepository;
-    private final CacheManager cacheManager;
 
-    @Cacheable(value = "url")
-    public Url getUrl(String hash) {
-        return urlRepository.getReferenceById(hash);
+    @CachePut(value = "url", key = "#url.hash")
+    public Url save(Url url) {
+        log.info("Сохранение в БД новой ссылки");
+        return urlRepository.save(url);
+    }
+
+    @Cacheable(value = "url", key = "#hash")
+    public Url find(String hash) {
+        log.info("Запрос к базе данных для хэша: {}", hash);
+        return urlRepository.findById(hash)
+                .orElseThrow(() -> new EntityNotFoundException("Оригинальная ссылка не найден для хэша :" + hash));
     }
 }

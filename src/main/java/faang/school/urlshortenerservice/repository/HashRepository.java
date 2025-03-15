@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HashRepository {
+public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(
             value = "SELECT nextval('unique_number_seq') FROM generate_series (1, :amount)",
@@ -18,12 +18,12 @@ public interface HashRepository {
     )
     List<Long> getUniqueNumbers(@Param("amount") int amount);
 
-    @Modifying
-    @Query(
-            value = "INSERT INTO hash (hash) VALUES (:hash)",
-            nativeQuery = true
-    )
-    void save(@Param("hash") List<String> hashes);
+//    @Modifying
+//    @Query(
+//            value = "INSERT INTO hash (hash) VALUES (:hash)",
+//            nativeQuery = true
+//    )
+//    void save(@Param("hash") List<String> hashes);
 
 
     @Query(

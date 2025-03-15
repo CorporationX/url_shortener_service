@@ -6,15 +6,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,9 +27,7 @@ public class HashCache {
     @Value("${hash.min-cache-percentage}")
     private double minCachePercentage;
 
-    private final CacheManager cacheManager;
-
-    private final Queue<String> hashQueue = new ArrayBlockingQueue<>(hashCacheSize);
+    private Queue<String> hashQueue;
 
     private final HashRepository hashRepository;
 
@@ -44,6 +39,7 @@ public class HashCache {
 
     @PostConstruct
     public void warmUpCache() {
+        hashQueue = new ArrayBlockingQueue<>(hashCacheSize);
         hashGenerator.generateBatch();
         List<String> hashes = hashRepository.getHashBatch(hashCacheSize);
         hashQueue.addAll(hashes);
@@ -51,6 +47,7 @@ public class HashCache {
     }
 
     public String getHash() {
+        log.info("Текущее количество хэшей в кеше: {}", hashQueue.size());
         String hash = hashQueue.poll();
         if (hash != null) {
             return hash;

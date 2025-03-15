@@ -7,6 +7,6 @@ import java.time.LocalDateTime;
 @Data
 public class UrlReadDto {
     private String originalUrl;
-    private String shortUrl;
+    private String hash;
     private LocalDateTime createdAt;
 }
