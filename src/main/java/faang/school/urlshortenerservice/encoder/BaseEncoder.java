@@ -12,7 +12,7 @@ public class BaseEncoder {
     @Value("${encode-base.alphabet}")
     private String alphabet;
 
-    @Value("${encode-base.base}")
+    @Value("${encode-base.base:62}")
     private int base;
 
     public List<String> encode(List<Long> numbers) {

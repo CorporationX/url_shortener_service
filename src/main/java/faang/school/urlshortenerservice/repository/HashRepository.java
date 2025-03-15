@@ -21,12 +21,13 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(@Param("batchSize") long batchSize);
 
     @Modifying
+    @Transactional
     @Query(nativeQuery = true,
             value = """
                     INSERT INTO hash (hash_value)
-                    VALUES (?1)
+                    SELECT * FROM UNNEST(:hashes)
                     """)
-    void saveHashBatch(List<String> hashes);
+    void saveHashBatch(@Param("hashes") List<String> hashes);
 
     @Modifying
     @Transactional
@@ -39,5 +40,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                     LIMIT :batchSize)
                     RETURNING hash
                     """)
-    List<String> getAndDeleteHashBatch(@Param("batchSize") long batchSize);
+    List<Hash> getAndDeleteHashBatch(@Param("batchSize") long batchSize);
 }

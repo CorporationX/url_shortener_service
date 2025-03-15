@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/url-shortener
     username: user
     password: password
 
@@ -27,3 +27,9 @@ logging:
 encode-base:
   base: 62
   alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+hash:
+  generator:
+    batch-size: 10000
+    thread-pool-size: 5
+    queue-capacity: 50
