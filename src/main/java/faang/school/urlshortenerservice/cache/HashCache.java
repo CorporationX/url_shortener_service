@@ -43,7 +43,7 @@ public class HashCache {
         hashGenerator.generateBatch();
         List<String> hashes = hashRepository.getHashBatch(hashCacheSize);
         hashQueue.addAll(hashes);
-        log.info("Кэш хэшей инициализирован");
+        log.info("Кэш хэшей инициализирован. Загружено {} элементов", hashQueue.size());
     }
 
     public String getHash() {

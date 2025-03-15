@@ -18,14 +18,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     )
     List<Long> getUniqueNumbers(@Param("amount") int amount);
 
-//    @Modifying
-//    @Query(
-//            value = "INSERT INTO hash (hash) VALUES (:hash)",
-//            nativeQuery = true
-//    )
-//    void save(@Param("hash") List<String> hashes);
-
-
     @Query(
             value = "DELETE FROM hash WHERE hash IN " +
                     "(SELECT hash from hash LIMIT :amount) " +

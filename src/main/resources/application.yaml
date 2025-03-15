@@ -31,6 +31,8 @@ hash:
 
 url:
   domain: http://localhost:${server.port}/
+  schedule:
+      cleaner: "0 0 * * * ?" #every day at 00:00
 
 cache:
   type: redis

@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.dto.UrlReadDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UrlService {
 
+    @Getter
     @Value("${url.domain}")
     private String domain;
 
@@ -31,17 +33,12 @@ public class UrlService {
         url.setUrl(createDto.getOriginalUrl());
         url.setHash(hashCache.getHash());
 
-        urlCacheRepository.save(url);
+        url = urlCacheRepository.save(url);
         return urlMapper.toDto(url);
     }
 
-
-    @Transactional
     public String getOriginalUrl(String hash) {
         Url url = urlCacheRepository.find(hash);
-        log.info("Получаю ссылку по хэшу: {}", hash);
-        log.info("Ccылка: {} ", url.getUrl());
-        log.info("Хэш: {} ", url.getHash());
         return url.getUrl();
     }
 
