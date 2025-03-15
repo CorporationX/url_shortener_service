@@ -13,18 +13,19 @@ import java.util.List;
 public interface HashRepository {
 
     @Query(
-            value = "SELECT nextval('unique_number_seq') FROM generated_series (1, :amount)",
+            value = "SELECT nextval('unique_number_seq') FROM generate_series (1, :amount)",
             nativeQuery = true
     )
     List<Long> getUniqueNumbers(@Param("amount") int amount);
 
+    @Modifying
     @Query(
             value = "INSERT INTO hash (hash) VALUES (:hash)",
             nativeQuery = true
     )
     void save(@Param("hash") List<String> hashes);
 
-    @Modifying
+
     @Query(
             value = "DELETE FROM hash WHERE hash IN " +
                     "(SELECT hash from hash LIMIT :amount) " +
