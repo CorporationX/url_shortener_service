@@ -1,14 +1,12 @@
+DROP TABLE IF EXISTS url;
 CREATE TABLE url (
-    id         BIGSERIAL PRIMARY KEY,
-    hash       VARCHAR(7)    NOT NULL,
-    url        text,
+    hash       VARCHAR(7) PRIMARY KEY,
+    url        text NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+DROP TABLE IF EXISTS hash;
 CREATE TABLE hash (
-     id   BIGSERIAL   PRIMARY KEY,
-     hash VARCHAR(6) NOT NULL
+     hash VARCHAR(6) PRIMARY KEY
 );
-
-ALTER TABLE url ADD FOREIGN KEY (hash_id) REFERENCES hash(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DROP SEQUENCE IF EXISTS unique_number_seq;
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 1;
