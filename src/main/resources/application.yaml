@@ -23,6 +23,15 @@ spring:
 
 url-shortener-service:
   batch-size: ${BATCH_SIZE}
+  hash-generator-thread-pool:
+    corePoolSize: 1
+    maxPoolSize: 1
+    queueCapacity: 1
+  executor-service:
+    corePoolSize: 2
+    maxPoolSize: 4
+    keepAliveTime: 20
+  minimumHashLengthInPercent: 20
 
 server:
   port: 8080

@@ -4,17 +4,11 @@ INCREMENT BY 1
 START WITH 1;
 
 CREATE TABLE hash (
-    id BIGINT PRIMARY KEY,
-    hash VARCHAR(6) NOT NULL
+    hash varchar(6) PRIMARY KEY
 );
 
 CREATE TABLE url (
-    id uuid PRIMARY KEY,
+    hash varchar(6) PRIMARY KEY,
     url VARCHAR NOT NULL,
-    hash_id bigint NOT NULL,
-    created_at timestamptz DEFAULT current_timestamp NOT NULL,
-
-    CONSTRAINT fk_hash_id FOREIGN KEY (hash_id) REFERENCES hash (id)
+    created_at timestamptz DEFAULT current_timestamp NOT NULL
 );
-
-create index hash_idx on url (hash_id);
