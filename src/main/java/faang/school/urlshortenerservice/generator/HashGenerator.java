@@ -36,8 +36,8 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<Hash> getHashes() {
-        List<Hash> hashes = hashRepository.getAndDeleteHashBatch(batchSize);
+    public List<String> getHashes() {
+        List<String> hashes = hashRepository.getAndDeleteHashBatch(batchSize);
         if (hashes.size() < batchSize) {
             generateHash();
             hashes.addAll(hashRepository.getAndDeleteHashBatch(batchSize - hashes.size()));
@@ -46,7 +46,7 @@ public class HashGenerator {
     }
 
     @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<Hash>> getHashesAsync() {
+    public CompletableFuture<List<String>> getHashesAsync() {
         return CompletableFuture.supplyAsync(this::getHashes);
     }
 }
