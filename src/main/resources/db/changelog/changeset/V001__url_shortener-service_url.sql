@@ -1,12 +1,11 @@
-DROP TABLE IF EXISTS url;
 CREATE TABLE url (
     hash       VARCHAR(7) PRIMARY KEY,
     url        text NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-DROP TABLE IF EXISTS hash;
+
 CREATE TABLE hash (
      hash VARCHAR(6) PRIMARY KEY
 );
-DROP SEQUENCE IF EXISTS unique_number_seq;
+
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 1;
