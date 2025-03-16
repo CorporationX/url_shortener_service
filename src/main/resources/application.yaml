@@ -13,9 +13,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+hash:
+  generator:
+    batch-size: 50
+    thread-pool-size: 10
 
 server:
   port: 8080
