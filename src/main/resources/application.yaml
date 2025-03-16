@@ -47,3 +47,8 @@ hash:
     fill-threshold: 0.2
     thread-pool-size: 5
     queue-capacity: 50
+  hash-cleanup:
+    period: P1Y
+
+scheduler:
+  cleanup-cron: "0 0 0 * * *"
