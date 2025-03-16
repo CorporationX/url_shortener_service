@@ -26,6 +26,8 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    context-path: /url/shortener/api
 
 logging:
   level:
@@ -49,6 +51,10 @@ hash:
     queue-capacity: 50
   hash-cleanup:
     period: P1Y
+
+url:
+  cache:
+   expiration-time: 86400
 
 scheduler:
   cleanup-cron: "0 0 0 * * *"
