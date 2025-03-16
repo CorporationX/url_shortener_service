@@ -24,7 +24,11 @@ spring:
 hash:
   generator:
     batch-size: 50
-    thread-pool-size: 10
+    thread-pool-size-hashing: 15
+    thread-pool-size-caching: 10
+  cache:
+    size: 1000
+    threshold: 0.2
 
 server:
   port: 8080

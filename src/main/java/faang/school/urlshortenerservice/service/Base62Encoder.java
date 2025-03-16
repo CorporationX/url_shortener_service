@@ -18,6 +18,7 @@ public class Base62Encoder {
     }
 
     public String encodeLong(Long number) {
+        if (number == 0) return "A";
         StringBuilder base62 = new StringBuilder();
         while (number > 0) {
             int remainder = (int) (number % 62);
