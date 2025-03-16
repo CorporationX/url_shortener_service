@@ -5,13 +5,17 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Duration;
+
 @Data
 @ConfigurationProperties(prefix = "url-shortener-service")
 public class UrlShortenerProperties {
     private int batchSize;
+    private Long maxHashesInStore;
     private ExecutorProperties hashGeneratorThreadPool;
     private ExecutorProperties executorService;
     private int minimumHashLengthInPercent;
+    private Duration urlToCleanOlderThan;
 
     @Data
     @Validated

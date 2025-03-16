@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5433/postgres?reWriteBatchedInserts=true
     username: user
     password: password
 
@@ -21,20 +21,25 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+api-version: /api/v1
+
 url-shortener-service:
   batch-size: ${BATCH_SIZE}
+  max-hashes-in-store: 700
   hash-generator-thread-pool:
-    corePoolSize: 1
-    maxPoolSize: 1
-    queueCapacity: 1
+    corePoolSize: 2
+    maxPoolSize: 5
+    queueCapacity: 2
   executor-service:
     corePoolSize: 2
     maxPoolSize: 4
     keepAliveTime: 20
-  minimumHashLengthInPercent: 20
+  minimum-hash-length-in-percent: 20
+  clean-old-url-cron: "0 0 12 * * *"
+  url-to-clean-older-than: 365d
 
 server:
-  port: 8080
+  port: 8090
 
 logging:
   level:

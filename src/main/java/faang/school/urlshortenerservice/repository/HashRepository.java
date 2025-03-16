@@ -1,29 +1,32 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Hash;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+public interface HashRepository extends JpaRepository<Hash, String>, HashCustomRepository {
 
-    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query(value = """
             SELECT nextval('hash_id_seq')
             FROM generate_series(1, ?1);
             """,
             nativeQuery = true)
-    List<Long> getUniqueNumbers(int n);
+    List<Long> getUniqueNumbers(Long n);
 
-    @Query(nativeQuery = true, value = """
-                    SELECT *
-                    FROM hash h
-                    LIMIT ?1 OFFSET ?2
-            """)
-    List<Hash> findAllLimit(Integer start, Integer limit);
+    @Modifying
+    @Query(value = """
+        DELETE FROM hash
+        WHERE ctid IN (
+            SELECT ctid
+            FROM hash
+            LIMIT ?1
+        )
+        RETURNING *
+    """, nativeQuery = true)
+    List<Hash> hashBatchDeleteAndReturn(int size);
 }

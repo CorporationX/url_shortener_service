@@ -6,9 +6,11 @@ import java.util.List;
 
 public interface HashService {
 
-    List<Long> getNewNumbers();
+    List<Long> getNewNumbers(Long n);
 
-    void saveHashes(List<Hash> hashes);
+    Long getHashesCount();
 
-    List<Hash> getBatchHashesAndDelete();
+    List<Hash> getBatchHashesAndDelete(int size);
+
+    void saveHashesBatch(List<Hash> hashes);
 }
