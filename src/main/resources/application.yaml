@@ -23,6 +23,12 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+app:
+  base-url: "http://localhost:8080/url/"
+
+redis:
+  ttl-hours: 24
+
 hash:
   generator:
     batch-size: 50

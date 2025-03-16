@@ -21,6 +21,11 @@ public class HashGenerator {
     @Value("${hash.generator.batch-size}")
     private int batchFromFile;
 
+    @PostConstruct
+    public void init() {
+        generateBatch();
+    }
+
     @Async("hashThreadPool")
     public CompletableFuture<List<String>> generateBatch() {
         List<Long> batches = hashRepository.getUniqueNumbers(batchFromFile);

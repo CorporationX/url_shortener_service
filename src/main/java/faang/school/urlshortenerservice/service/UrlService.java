@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,8 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
 
-    private static final String BASE_URL = "http://localhost:8080/url/";
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Transactional
     public String createShortUrl(String longUrl) {
@@ -26,7 +28,7 @@ public class UrlService {
         urlRepository.save(url);
         urlCacheRepository.save(hash, longUrl);
 
-        return BASE_URL + hash;
+        return baseUrl + hash;
     }
 
     public String getOriginalUrl(String hash) {

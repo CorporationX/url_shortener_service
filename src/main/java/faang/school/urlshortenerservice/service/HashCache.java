@@ -28,11 +28,21 @@ public class HashCache {
     private final Semaphore loadingSemaphore = new Semaphore(1);
 
     public String getHash() {
-        if (cache.size() > cacheSize * threshold) {
-            return cache.poll();
+        String hash = cache.poll();
+        if (hash != null) {
+            return hash;
         }
-        triggerAsyncFill();
-        return cache.poll();
+
+        if (cache.size() <= cacheSize * threshold) {
+            triggerAsyncFill();
+        }
+
+        try {
+            return cache.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for hash", e);
+        }
     }
 
     @Async("cacheThreadPool")

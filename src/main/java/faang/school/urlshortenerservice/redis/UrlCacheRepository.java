@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.redis;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 public class UrlCacheRepository {
 
     private final StringRedisTemplate redisTemplate;
-    private static final long TTL_HOURS = 24;
+
+    @Value("${redis.ttl-hours:24}")
+    private long ttlHours;
 
     public void save(String hash, String url) {
         redisTemplate.opsForValue()
-                .set(hash, url, TTL_HOURS, TimeUnit.HOURS);
+                .set(hash, url, ttlHours, TimeUnit.HOURS);
     }
 
     public Optional<String> findByHash(String hash) {

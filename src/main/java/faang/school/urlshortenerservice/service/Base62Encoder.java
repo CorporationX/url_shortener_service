@@ -6,10 +6,11 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private static final String BASE62_CHARS =
-            "ABCDEFGHIJKLMNOPQR" +
-            "STUVWXYZabcdefghijklm" +
-            "nopqrstuvwxyz0123456789";
+    private static final char[] BASE62_CHARS =
+            ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnopqrstuvwxyz" +
+            "0123456789")
+            .toCharArray();
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -21,8 +22,7 @@ public class Base62Encoder {
         if (number == 0) return "A";
         StringBuilder base62 = new StringBuilder();
         while (number > 0) {
-            int remainder = (int) (number % 62);
-            base62.insert(0, BASE62_CHARS.charAt(remainder));
+            base62.insert(0, BASE62_CHARS[(int)(number % 62)]);
             number /= 62;
         }
         return base62.toString();
