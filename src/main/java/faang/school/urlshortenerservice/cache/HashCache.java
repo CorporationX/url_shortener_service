@@ -50,8 +50,6 @@ public class HashCache {
     }
 
     public String getHash() {
-        log.info("Текущее количество хэшей в кеше: {}", hashQueue.size());
-
         if (hashQueue.size() < hashCacheSize * minCachePercentage) {
             if (isGenerating.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
@@ -68,6 +66,7 @@ public class HashCache {
         if (hash == null) {
             throw new NoSuchElementException("Отсутствуют свободные хэши");
         } else {
+            log.info("Использован хэш. Текущее количество хэшей в кеше: {}", hashQueue.size());
             return hash;
         }
 
