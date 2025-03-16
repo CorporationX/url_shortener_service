@@ -3,12 +3,14 @@ package faang.school.urlshortenerservice.cache;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Getter
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -48,21 +51,25 @@ public class HashCache {
 
     public String getHash() {
         log.info("Текущее количество хэшей в кеше: {}", hashQueue.size());
-        String hash = hashQueue.poll();
-        if (hash != null) {
-            return hash;
-        }
 
         if (hashQueue.size() < hashCacheSize * minCachePercentage) {
             if (isGenerating.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
                             hashGenerator.generateBatch();
                             List<String> newHashes = hashRepository.getHashBatch(hashCacheSize - hashQueue.size());
+                            log.info("Получены новые хэши: {}", newHashes);
                             hashQueue.addAll(newHashes);
                         }, executorService)
                         .thenRun(() -> isGenerating.set(false));
             }
         }
-        return null;
+
+        String hash = hashQueue.poll();
+        if (hash == null) {
+            throw new NoSuchElementException("Отсутствуют свободные хэши");
+        } else {
+            return hash;
+        }
+
     }
 }

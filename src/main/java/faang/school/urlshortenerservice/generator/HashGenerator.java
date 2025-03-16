@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -31,5 +33,6 @@ public class HashGenerator {
                 .toList();
 
         hashRepository.saveAll(hashes);
+        log.info("В БД сохранены новые сгенерированные хэши");
     }
 }
