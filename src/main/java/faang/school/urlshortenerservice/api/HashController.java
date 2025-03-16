@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.api;
 
-import faang.school.urlshortenerservice.dto.InsertDataDto;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
