@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 @Component
 public class ThreadPoolHashing {
     @Bean(name = "hashThreadPool")
-    public ExecutorService executorService(@Value("${hash.generator.thread-pool-size-hashing}") int threadPoolSize) {
+    public ExecutorService executorService(@Value("${hash.cache.thread-pool-size-hashing}") int threadPoolSize) {
         return Executors.newFixedThreadPool(threadPoolSize);
     }
 }

@@ -5,5 +5,3 @@ databaseChangeLog:
       file: db/changelog/changeset/V002_hash__table.sql
   - include:
       file: db/changelog/changeset/V003_sequence__unique_number.sql
-  - include:
-      file: db/changelog/changeset/V004_add_hash_delete_second_url.sql

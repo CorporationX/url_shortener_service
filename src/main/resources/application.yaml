@@ -24,7 +24,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 app:
-  base-url: "http://localhost:8080/url/"
+  base-url: "http://norairShort/url/"
 
 redis:
   ttl-hours: 24
@@ -32,11 +32,11 @@ redis:
 hash:
   generator:
     batch-size: 50
-    thread-pool-size-hashing: 15
-    thread-pool-size-caching: 10
   cache:
     size: 1000
     threshold: 0.2
+    thread-pool-size-hashing: 15
+    thread-pool-size-caching: 10
 
 cleaner:
   scheduler:

@@ -25,7 +25,7 @@ public class CleanerScheduler {
     @Value("${cleaner.scheduler.cron}")
     private String cronExpression;
 
-    @Scheduled(cron = "#{@cleanerScheduler.cronExpression}")
+    @Scheduled(cron = "${cleaner.scheduler.cron}")
     @Transactional
     public void cleanOldUrls() {
         log.info("Starting cleanup process for old URLs");
