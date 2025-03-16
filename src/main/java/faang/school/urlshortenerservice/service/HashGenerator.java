@@ -17,28 +17,15 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final HashService hashService;
     private final Base62Encoder base62Encoder;
-    private final ThreadPoolHashing threadPoolHashing;
-    private ExecutorService executor;
 
     @Value("${hash.generator.batch-size}")
     private int batchFromFile;
 
-    @PostConstruct
-    public void init() {
-        this.executor = threadPoolHashing.createExecutorService();
-    }
-
-    @Async
+    @Async("hashThreadPool")
     public CompletableFuture<List<String>> generateBatch() {
-
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    List<Long> batches = hashRepository.getUniqueNumbers(batchFromFile);
-                    List<String> resultOfEncoder = base62Encoder.encode(batches);
-                    hashService.saveHashes(resultOfEncoder);
-                    return resultOfEncoder;
-                },
-                executor
-        );
+        List<Long> batches = hashRepository.getUniqueNumbers(batchFromFile);
+        List<String> resultOfEncoder = base62Encoder.encode(batches);
+        hashService.saveHashes(resultOfEncoder);
+        return CompletableFuture.completedFuture(resultOfEncoder);
     }
 }

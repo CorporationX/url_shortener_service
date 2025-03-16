@@ -13,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashService {
     private final JdbcTemplate jdbcTemplate;
-    private static final int batchCounter = 5;
 
     public void saveHashes(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
@@ -26,7 +25,7 @@ public class HashService {
 
             @Override
             public int getBatchSize() {
-                return batchCounter;
+                return hashes.size();
             }
         });
     }
