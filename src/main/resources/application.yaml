@@ -23,3 +23,32 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  min-hash-database-reserve: 10
+  min-hash-cache-size: 10
+  batch-get-amount: 10
+  batch-get-unique-numbers-amount: 10
+  generator:
+    thead-pool:
+      core-pool-size: 10
+      max-pool-size: 50
+      queue-capacity: 100
+      keep-alive-seconds: 60
+  cache:
+    thead-pool:
+      core-pool-size: 10
+      max-pool-size: 50
+      queue-capacity: 100
+      keep-alive-seconds: 60
+
+redis-time-to-live-seconds:
+  new-url: 60
+  requested-url: 30
+
+url-data:
+  protocol: "http"
+  domain: "localhost"
+
+clean:
+  cron: "0 0 4 * * *"
