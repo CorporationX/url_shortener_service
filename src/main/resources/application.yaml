@@ -30,6 +30,10 @@ hash:
     size: 1000
     threshold: 0.2
 
+cleaner:
+  scheduler:
+    cron: "0 0 0 * * ?"
+
 server:
   port: 8080
 
