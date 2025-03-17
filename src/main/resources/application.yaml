@@ -31,6 +31,9 @@ hash_repo:
 
 hash:
   partition_size: 10
+  cache_size: 10
+  min_percent: 1
 
 thread_pool:
   hash_generator_size: 10
+  hash_cache_size: 10

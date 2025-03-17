@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.generator;
+package faang.school.urlshortenerservice.hashes;
 
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class HashGenerator {
         List<CompletableFuture<List<String>>> futureList = ListUtils
                 .partition(uniqueNumbers, PARTITION_SIZE)
                 .stream()
-                .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values)))
+                .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values), pool))
                 .toList();
         CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
         List<String> hashes = futureList.stream()
@@ -48,7 +47,5 @@ public class HashGenerator {
                 .toList();
         repository.save(hashes);
         return CompletableFuture.completedFuture(null);
-
-
     }
 }

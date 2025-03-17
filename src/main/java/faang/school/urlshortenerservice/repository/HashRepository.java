@@ -14,8 +14,8 @@ public class HashRepository {
     @Value("${hash_repo.save_batch_size}")
     private int SAVE_BATCH;
 
-    @Value("${hash_repo.hash_batch_size}")
-    private int HASH_SIZE;
+//    @Value("${hash_repo.hash_batch_size}")
+//    private int HASH_SIZE;
 
     private final JdbcTemplate template;
 
@@ -30,12 +30,12 @@ public class HashRepository {
                 (ps, hash) -> ps.setString(1, hash));
     }
 
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(int hashSize) {
         String sql = """
                 DELETE FROM hash
                 WHERE hash IN (SELECT hash FROM hash LIMIT ?)
                 RETURNING hash;
                 """;
-        return template.queryForList(sql, String.class, HASH_SIZE);
+        return template.queryForList(sql, String.class, hashSize);
     }
 }
