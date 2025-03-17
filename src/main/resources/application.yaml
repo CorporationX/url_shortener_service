@@ -31,3 +31,7 @@ thread_pool:
 hash:
   batch:
     size: 10
+
+clean-expired-url:
+  available-interval: 1 year
+  cron: 0 0 2 * * *
