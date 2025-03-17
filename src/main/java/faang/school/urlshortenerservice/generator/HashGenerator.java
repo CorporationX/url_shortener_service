@@ -33,4 +33,14 @@ public class HashGenerator {
 
         entityManager.flush();
     }
+
+    @Transactional
+    public List<Hash> getHashes(long amount) {
+        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        if (hashes.size() < amount) {
+            generateHash();
+            hashes.addAll(getHashes(amount - hashes.size()));
+        }
+        return hashes;
+    }
 }

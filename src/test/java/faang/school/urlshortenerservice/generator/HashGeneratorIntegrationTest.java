@@ -6,7 +6,10 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -21,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HashGeneratorIntegrationTest {
 
     @Container
@@ -54,12 +58,14 @@ public class HashGeneratorIntegrationTest {
     }
 
     @Test
-    void testGenerateHash_Success() {
+    @Order(1)
+    void testGenerateHashSuccess() {
         properties.setBatchSize(3);
 
         hashGenerator.generateHash();
 
         List<Hash> hashes = hashRepository.findAll();
+        //List<Hash> hashes = hashRepository.findAndDelete(3);
         assertEquals(3, hashes.size());
 
         List<String> expectedHashes = List.of(
@@ -72,5 +78,33 @@ public class HashGeneratorIntegrationTest {
                 .map(Hash::getHash)
                 .toList();
         assertEquals(expectedHashes, actualHashes);
+    }
+
+    @Test
+    @Order(2)
+    void testGetAndDeleteHashSuccess() {
+        properties.setBatchSize(100);
+
+        hashGenerator.generateHash();
+
+        List<Hash> hashes = hashRepository.findAndDelete(100);
+        assertEquals(100, hashes.size());
+
+        hashes = hashRepository.findAndDelete(100);
+        assertEquals(0, hashes.size());
+    }
+
+    @Test
+    @Order(3)
+    void testGetHashesSuccess() {
+        properties.setBatchSize(100);
+
+        hashGenerator.generateHash();
+
+        List<Hash> hashes = hashGenerator.getHashes(100);
+        assertEquals(100, hashes.size());
+
+        hashes = hashGenerator.getHashes(100);
+        assertEquals(100, hashes.size());
     }
 }
