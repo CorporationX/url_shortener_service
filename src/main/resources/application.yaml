@@ -23,6 +23,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+thread-pool:
+  pool-size: 5
+  queue-size: 20
+
+hash-queue:
+  max-size: 5
+  refresh-percentage: 0.2
+
+batch:
+  generation-size: 30
 
 
 server:

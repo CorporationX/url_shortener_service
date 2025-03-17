@@ -1,8 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -22,7 +19,7 @@ public class UrlService {
 
     @Transactional
     public String shortenUrl(String originalUrl) {
-        String hash = hashCache.getHash();
+        String hash = hashCache.getHash().getHash();
 
         Url url = Url.builder()
                 .hash(hash)
@@ -31,7 +28,7 @@ public class UrlService {
 
         Url saved = urlRepository.save(url);
         redisService.setValue(hash, originalUrl);
-        log.info("Saved new url object: {}", url);
+        log.info("Saved new url object: {}", saved);
         return hash;
     }
 

@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -20,11 +23,11 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ResponseEntity<String> shortenUrl(@Valid @RequestBody @NotBlank @URL @Length(max = 255) String url) {
-        log.info("URL: " + url);
+    public ResponseEntity<Map<String, String>> shortenUrl(@Valid @RequestBody @NotBlank @URL @Length(max = 255) String url) {
         String shortUrl = urlService.shortenUrl(url);
-        log.info("Shortened URL: " + shortUrl);
-        return ResponseEntity.ok(shortUrl);
+        Map<String, String> response = new HashMap<>();
+        response.put("url", shortUrl);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{hash}")
@@ -35,5 +38,4 @@ public class UrlController {
         headers.add("Location", url);
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
-
 }
