@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Url;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,26 +7,25 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UrlRepositoryTest {
+public class HashRepositoryTest {
 
     @Autowired
-    private UrlRepository urlRepository;
+    private HashRepository hashRepository;
 
     @Container
     public static PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
@@ -46,17 +44,26 @@ public class UrlRepositoryTest {
     }
 
     @Test
-    public void testRemoveExpiredUrls() {
-        Url url1 = new Url("hash1", "http://example1.com", LocalDateTime.now());
-        Url url2 = new Url("hash2", "http://example2.com", LocalDateTime.now());
-        urlRepository.saveAll(List.of(url1, url2));
-        url1 = urlRepository.getReferenceById("hash1");
-        url1.setCreatedAt(LocalDateTime.now().minusYears(2));
+    @Sql("/test-hash-table.sql")
+    public void testGetHashes() {
+        long initialCount = hashRepository.count();
+        assertThat(initialCount).isEqualTo(3);
 
-        List<String> removedHashes = urlRepository.removeExpiredUrls();
+        List<String> hashes = hashRepository.getHashBatch(2);
 
-        assertEquals(1, removedHashes.size());
-        assertTrue(removedHashes.contains("hash1"));
+        assertThat(hashes).hasSize(2);
+        assertThat(hashes).contains("hash1", "hash2");
+
+        long remainingCount = hashRepository.count();
+        assertThat(remainingCount).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetUniqueNumbers() {
+        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(3);
+
+        assertThat(uniqueNumbers).hasSize(3);
+        assertThat(uniqueNumbers).doesNotHaveDuplicates();
     }
 
 }
