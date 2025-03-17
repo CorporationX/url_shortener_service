@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS url
     CONSTRAINT url_hash_length CHECK (LENGTH(hash) = 6)
 );
 
-CREATE SEQUENCE unique_hash_number_seq
-    START WITH 1
+CREATE SEQUENCE IF NOT EXISTS unique_hash_number_seq
+    START WITH 916132832
     INCREMENT BY 1;
 
