@@ -23,9 +23,10 @@ public class LocalCache {
     public void init() {
         hashes = new ArrayBlockingQueue<>(properties.getCapacity());
         hashes.addAll(hashGenerator.getHashes(properties.getCapacity()));
+        log.info("LocalHash initialization completed.");
     }
 
-    public Hash getHash() {
+    public String getHash() {
         if (hashes.size() < (properties.getCapacity() * properties.getFillPercentage() / 100)) {
             if (isFilling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(properties.getCapacity())
@@ -33,6 +34,10 @@ public class LocalCache {
                         .thenRun(() -> isFilling.set(false));
             }
         }
-        return hashes.poll();
+        Hash hash = hashes.poll();
+        if (hash == null) {
+            throw new RuntimeException("No hashes available in the cache");
+        }
+        return hash.getHash();
     }
 }
