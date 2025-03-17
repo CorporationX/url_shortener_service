@@ -33,6 +33,9 @@ logging:
   level:
     root: info
 
+shortener:
+  base-url: "http://corpx.url/"
+
 encode-base:
   base: 62
   alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -49,7 +52,7 @@ hash:
     fill-threshold: 0.2
     thread-pool-size: 5
     queue-capacity: 50
-  hash-cleanup:
+  cleanup:
     period: P1Y
 
 url:
