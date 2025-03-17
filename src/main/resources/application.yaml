@@ -27,3 +27,13 @@ logging:
 hash:
   generator:
     batchSize: 100
+  local-cache:
+    capacity: 1000
+    fillPercentage: 25
+
+
+generate:
+  cron: "0 */1 * * * *"
+
+clean:
+  cron: "0 0 0 * * *"

@@ -8,8 +8,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -39,8 +41,15 @@ public class HashGenerator {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
             generateHash();
-            hashes.addAll(getHashes(amount - hashes.size()));
+            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
         return hashes;
+    }
+
+    @Transactional
+    @Async
+    // @Async(hashGeneratorExecutor)
+    public CompletableFuture<List<Hash>> getHashesAsync(long amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }
