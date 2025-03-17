@@ -4,8 +4,10 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.UrlCache;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.publisher.UrlEventPublisher;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Slf4j
@@ -27,15 +29,17 @@ public class UrlService {
     private final HashRepository hashRepository;
     private final UrlCache urlCache;
     private final HashCache hashCache;
+    private final UrlEventPublisher urlEventPublisher;
 
     @Value("${hash.cleanup.period}")
-    private Duration hashCleanupPeriod;
+    private Period hashCleanupPeriod;
 
     @Value("${shortener.base-url}")
     private String baseUrl;
 
     @Transactional
-    public UrlResponseDto createShortUrl(UrlRequestDto urlRequestDto) {
+    public UrlResponseDto createShortUrl(UrlRequestDto urlRequestDto,
+                                         String userId) {
         String hash = hashCache.getHash();
         Url url = Url.builder()
                 .hash(hash)
@@ -43,6 +47,7 @@ public class UrlService {
                 .build();
         urlRepository.save(url);
         urlCache.saveUrlByHash(hash, url.getUrl());
+        urlEventPublisher.publishShortUrlCreated(hash, url.getUrl(), userId);
 
         return UrlResponseDto.builder()
                 .shortUrl(baseUrl + hash)
@@ -64,9 +69,10 @@ public class UrlService {
     @Transactional
     public void deleteOldUrl() {
         LocalDateTime fromDate = LocalDateTime.now().minus(hashCleanupPeriod);
-        List<String> hashes = urlRepository.removeOldUrlAndGetFreeHashes(fromDate);
+        List<Hash> hashes = urlRepository.removeOldUrlAndGetFreeHashes(fromDate);
+
         if (!hashes.isEmpty()) {
-            hashRepository.saveHashBatch(hashes);
+            hashRepository.saveAll(hashes);
             log.info("Очистка завершена: {} хешей теперь свободны.", hashes.size());
         }
     }

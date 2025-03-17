@@ -30,9 +30,9 @@ public class HashGenerator {
         if (uniqueNumbers.isEmpty()) {
             throw new EntityNotFoundException("Не удалось получить уникальные числа для генерации хэшей");
         }
-        List<String> hashes = baseEncoder.encode(uniqueNumbers);
+        List<Hash> hashes = baseEncoder.encode(uniqueNumbers);
 
-        hashRepository.saveHashBatch(hashes);
+        hashRepository.saveAll(hashes);
     }
 
     @Transactional

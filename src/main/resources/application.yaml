@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 10000
+          order_inserts: true
+          batch_versioned_data: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -21,6 +25,9 @@ spring:
     redis:
       port: 6379
       host: localhost
+      channels:
+        url-short:
+          name: short_url_created
     redisson:
       address: redis://localhost:6379
 

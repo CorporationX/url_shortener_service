@@ -24,15 +24,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Transactional
     @Query(nativeQuery = true,
             value = """
-                    INSERT INTO hash (hash_value)
-                    SELECT * FROM UNNEST(:hashes)
-                    """)
-    void saveHashBatch(@Param("hashes") List<String> hashes);
-
-    @Modifying
-    @Transactional
-    @Query(nativeQuery = true,
-            value = """
                     DELETE FROM hash
                     WHERE hash IN(
                     SELECT hash

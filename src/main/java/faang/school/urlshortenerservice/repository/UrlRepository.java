@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,5 +26,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
                     WHERE url.created_at < :from
                     RETURNING hash
                     """)
-    List<String> removeOldUrlAndGetFreeHashes(@Param("from") LocalDateTime from);
+    List<Hash> removeOldUrlAndGetFreeHashes(@Param("from") LocalDateTime from);
 }

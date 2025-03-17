@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -23,7 +22,7 @@ public class RedisConfig {
     private int port;
 
     @Value("${spring.data.redisson.address}")
-    private String redisAddress;
+    private String redissonAddress;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -42,7 +41,7 @@ public class RedisConfig {
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.useSingleServer().setAddress(redisAddress);
+        config.useSingleServer().setAddress(redissonAddress);
         return Redisson.create(config);
     }
 }
