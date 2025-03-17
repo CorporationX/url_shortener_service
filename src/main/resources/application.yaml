@@ -1,4 +1,9 @@
 spring:
+  date:
+    redis:
+      port: 6379
+      host: localhost
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -9,10 +14,11 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +29,18 @@ server:
 logging:
   level:
     root: info
+
+app:
+  hash_generator:
+    db_hashes_limit: 5000
+    initial_delay: 10000
+    fixed_rate: 86400000
+    initial_hashes: 1000
+  scheduler:
+    url_cleaner:
+      cron: "0 0 0 * * *"
+      url_lifetime_days: 30
+
+ttl:
+  hour:
+    url: 24
