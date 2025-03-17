@@ -29,5 +29,8 @@ hash_repo:
   save_batch_size: 10
   hash_batch_size: 10
 
+hash:
+  partition_size: 10
+
 thread_pool:
   hash_generator_size: 10
