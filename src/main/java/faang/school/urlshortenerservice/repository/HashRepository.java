@@ -14,9 +14,6 @@ public class HashRepository {
     @Value("${hash_repo.save_batch_size}")
     private int SAVE_BATCH;
 
-//    @Value("${hash_repo.hash_batch_size}")
-//    private int HASH_SIZE;
-
     private final JdbcTemplate template;
 
     public List<Long> getUniqueNumbers(int UNIQUE_MAX_SIZE) {

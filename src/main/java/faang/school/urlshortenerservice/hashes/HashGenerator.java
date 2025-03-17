@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.hashes;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -41,6 +43,7 @@ public class HashGenerator {
                 .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values), pool))
                 .toList();
         CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
+        log.info("Parallel hash generation has been completed");
         List<String> hashes = futureList.stream()
                 .map(CompletableFuture::join)
                 .flatMap(List::stream)
