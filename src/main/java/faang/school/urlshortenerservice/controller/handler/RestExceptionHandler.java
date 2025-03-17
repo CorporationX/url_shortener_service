@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.HashNotExistException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,12 +38,20 @@ public class RestExceptionHandler {
         return buildErrorResponse(ErrorCode.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleValidationException(EntityNotFoundException ex) {
+        log.info("EntityNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(ErrorCode.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleValidationException(Exception ex) {
         log.error(ex.getMessage(), ex);
         return buildErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
+
 
     private ErrorResponse buildErrorResponse(ErrorCode errorCode, String errorMessage) {
         return new ErrorResponse(LocalDateTime.now(),

@@ -18,6 +18,11 @@ spring:
         order_updates: true
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -37,6 +42,7 @@ url-shortener-service:
   minimum-hash-length-in-percent: 20
   clean-old-url-cron: "0 0 12 * * *"
   url-to-clean-older-than: 365d
+  cache-lifetime: 30m
 
 server:
   port: 8090

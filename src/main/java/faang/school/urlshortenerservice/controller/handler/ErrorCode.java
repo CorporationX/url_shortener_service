@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller.handler;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    NOT_FOUND("NOT_FOUND", HttpStatus.NOT_FOUND),
     BAD_REQUEST("BAD_REQUEST", HttpStatus.BAD_REQUEST),
     TOO_EARLY("TOO_EARLY", HttpStatus.TOO_EARLY),
     INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", HttpStatus.INTERNAL_SERVER_ERROR);

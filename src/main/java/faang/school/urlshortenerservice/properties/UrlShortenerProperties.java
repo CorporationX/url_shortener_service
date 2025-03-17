@@ -16,6 +16,7 @@ public class UrlShortenerProperties {
     private ExecutorProperties executorService;
     private int minimumHashLengthInPercent;
     private Duration urlToCleanOlderThan;
+    private Duration cacheLifetime;
 
     @Data
     @Validated

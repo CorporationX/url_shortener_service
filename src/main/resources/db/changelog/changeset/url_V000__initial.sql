@@ -9,6 +9,8 @@ CREATE TABLE hash (
 
 CREATE TABLE url (
     hash varchar(6) PRIMARY KEY,
-    url VARCHAR NOT NULL,
+    url varchar NOT NULL,
     created_at timestamptz DEFAULT current_timestamp NOT NULL
 );
+
+create index url_created_idx on url (created_at);

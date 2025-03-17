@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
@@ -19,4 +20,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     RETURNING *;
     """, nativeQuery = true)
     List<Url> deleteAndReturnByCreatedAtBefore(LocalDateTime createdAt);
+
+    Optional<Url> findByHash(String hash);
 }
