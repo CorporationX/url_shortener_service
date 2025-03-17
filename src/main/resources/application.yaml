@@ -24,6 +24,10 @@ logging:
   level:
     root: info
 
+url:
+  service:
+    baseShortUrl: "https://short.url/"
+
 hash:
   generator:
     batchSize: 100
