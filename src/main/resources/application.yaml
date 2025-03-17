@@ -30,6 +30,7 @@ hash:
   cache:
     capacity: 10000
     fill-percentage: 20
+    ttl-in-seconds: 31536000
   generate:
     amount: 10000
 
