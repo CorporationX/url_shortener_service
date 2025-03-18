@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
+    private final UrlCacheService urlCacheService;
     private final LocalCache localCache;
     private final UrlServiceProperties properties;
 
@@ -28,16 +29,19 @@ public class UrlServiceImpl implements UrlService {
         validateUrl(urlDto.url());
         String hash = localCache.getHash();
         urlRepository.save(new Url(hash, urlDto.url(), LocalDateTime.now()));
-        //ToDo: save to redis cache
+        urlCacheService.saveUrl(hash, urlDto.url());
         return new ShortUrlDto(properties.getBaseShortUrl() + hash);
     }
 
     @Override
     public UrlDto getUrl(String hash) {
-        //ToDo: find in redis cache
-        Url url = urlRepository.findById(hash)
+        String url = urlCacheService.getUrl(hash);
+        if (url != null) {
+            return new UrlDto(url);
+        }
+        Url urlEntity = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Url for hash %s not found", hash)));
-        return new UrlDto(url.getUrl());
+        return new UrlDto(urlEntity.getUrl());
     }
 
     private void validateUrl(String url) {

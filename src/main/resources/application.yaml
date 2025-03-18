@@ -14,6 +14,12 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 72
+
   mvc:
     servlet:
       path: /api/v1

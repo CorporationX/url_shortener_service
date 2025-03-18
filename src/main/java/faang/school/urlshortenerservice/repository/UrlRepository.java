@@ -16,4 +16,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
                     RETURNING hash
                     """)
     List<Hash> findHashesWithExpiredDates(@Param("from") LocalDateTime from);
+
 }
