@@ -30,13 +30,10 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    @Transactional
     public UrlDto getUrl(String hash) {
         //ToDo: find in redis cache
         Url url = urlRepository.findById(hash)
-                .orElseThrow(
-                        () -> new EntityNotFoundException(String.format("Url for hash %s not found", hash))
-                );
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Url for hash %s not found", hash)));
         return new UrlDto(url.getUrl());
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Component
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final HashGeneratorProperties properties;
+    private final Executor hashGeneratorExecutor;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -37,7 +39,7 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<Hash> getHashes(long amount) {
+    public List<Hash> getHashes(int amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
             generateHash();
@@ -46,10 +48,17 @@ public class HashGenerator {
         return hashes;
     }
 
+
+    @Transactional
+    @Async("hashGeneratorExecutor")
+    public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
+        return CompletableFuture.supplyAsync(() -> getHashes(amount), hashGeneratorExecutor);
+    }
+/*
     @Transactional
     @Async
-    // @Async(hashGeneratorExecutor)
     public CompletableFuture<List<Hash>> getHashesAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }
+ */
 }

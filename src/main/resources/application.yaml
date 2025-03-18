@@ -14,6 +14,10 @@ spring:
       hibernate:
         format_sql: true
 
+  mvc:
+    servlet:
+      path: /api/v1
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -26,15 +30,20 @@ logging:
 
 url:
   service:
-    baseShortUrl: "https://short.url/"
+    baseShortUrl: "http://api/v1/shortener/urls/"
+
+thread:
+  pool:
+    corePoolSize: 5
+    maxPoolSize: 5
+    queueCapacity: 100
 
 hash:
   generator:
     batchSize: 100
   local-cache:
-    capacity: 1000
-    fillPercentage: 25
-
+    capacity: 50
+    fillPercentage: 20
 
 generate:
   cron: "0 */1 * * * *"
