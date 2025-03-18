@@ -20,7 +20,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final HashGeneratorProperties properties;
-    private final Executor hashGeneratorExecutor;
+    //private final Executor hashGeneratorExecutor;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -49,11 +49,11 @@ public class HashGenerator {
     }
 
 
-    @Transactional
+    /* @Transactional
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<Hash>> getHashesAsync(int amount) {
         return CompletableFuture.supplyAsync(() -> getHashes(amount), hashGeneratorExecutor);
-    }
+    } */
 /*
     @Transactional
     @Async

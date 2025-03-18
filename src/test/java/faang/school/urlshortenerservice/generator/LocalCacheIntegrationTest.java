@@ -3,30 +3,18 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Testcontainers
 @SpringBootTest
+@Transactional
 public class LocalCacheIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
 
     @Autowired
     private LocalCache localCache;
@@ -46,6 +34,7 @@ public class LocalCacheIntegrationTest {
     @BeforeEach
     void setUp() {
         hashRepository.deleteAll();
+        localCache.fillCacheSync(properties.getCapacity());
     }
 
     @Test
@@ -60,12 +49,14 @@ public class LocalCacheIntegrationTest {
     }
 
     @Test
-    void testGetHashAsyncFill() {
+    void testGetHashAsyncFill() throws InterruptedException {
         properties.setFillPercentage(50);
 
-        for (int i = 0; i < properties.getCapacity() * 2; i++) {
+        for (int i = 0; i < (properties.getCapacity() * 2); i++) {
+            Thread.sleep(10);
             String hash = localCache.getHash();
             assertNotNull(hash);
         }
+
     }
 }

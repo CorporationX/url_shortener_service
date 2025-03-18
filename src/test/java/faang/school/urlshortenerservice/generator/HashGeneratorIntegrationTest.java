@@ -6,6 +6,8 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -13,30 +15,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Transactional
 public class HashGeneratorIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
 
     @Autowired
     private HashGenerator hashGenerator;
@@ -45,6 +36,7 @@ public class HashGeneratorIntegrationTest {
     private HashRepository hashRepository;
 
     @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
@@ -64,15 +56,12 @@ public class HashGeneratorIntegrationTest {
     @Test
     @Order(1)
     void testGenerateHashSuccess() {
+        resetSequence();
         properties.setBatchSize(3);
-        threadPoolProperties.setCorePoolSize(1);
-        threadPoolProperties.setMaxPoolSize(1);
-        threadPoolProperties.setQueueCapacity(3);
 
         hashGenerator.generateHash();
 
         List<Hash> hashes = hashRepository.findAll();
-        //List<Hash> hashes = hashRepository.findAndDelete(3);
         assertEquals(3, hashes.size());
 
         List<String> expectedHashes = List.of(
@@ -113,5 +102,23 @@ public class HashGeneratorIntegrationTest {
 
         hashes = hashGenerator.getHashes(100);
         assertEquals(100, hashes.size());
+    }
+
+    @Test
+    @Order(4)
+    public void testGetAndCheckUniqueHashesSuccess() {
+        resetSequence();
+        List<Hash> hashes = hashGenerator.getHashes(10);
+
+        assertEquals(10, hashes.size());
+
+        Set<String> uniqueHashes = hashes.stream()
+                .map(Hash::getHash)
+                .collect(Collectors.toSet());
+        assertEquals(10, uniqueHashes.size());
+    }
+
+    public void resetSequence() {
+        entityManager.createNativeQuery("ALTER SEQUENCE unique_numbers_seq RESTART WITH 1").executeUpdate();
     }
 }

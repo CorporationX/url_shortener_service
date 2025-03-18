@@ -40,13 +40,13 @@ thread:
 
 hash:
   generator:
-    batchSize: 100
+    batchSize: 10
   local-cache:
     capacity: 50
     fillPercentage: 20
 
 generate:
-  cron: "0 */1 * * * *"
+  cron: "0 */2 * * * *"
 
 clean:
   cron: "0 0 0 * * *"
