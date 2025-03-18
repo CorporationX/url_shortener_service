@@ -22,7 +22,7 @@ public class UrlController {
 
     @ResponseStatus(HttpStatus.FOUND)
     @GetMapping("/hash/{hash}")
-    public UrlDto createShortUrl(@PathVariable String hash) {
+    public UrlDto getLongUrl(@PathVariable String hash) {
         return urlService.getLongUrl(hash);
     }
 }

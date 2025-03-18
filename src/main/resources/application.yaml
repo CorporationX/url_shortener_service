@@ -42,5 +42,6 @@ thread-pool:
 
 service:
   name: url-shortener-service
+
 base:
   url: /api/v1
