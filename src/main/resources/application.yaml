@@ -27,6 +27,6 @@ logging:
   level:
     root: info
 
-app:
-  number_hash_to_delete: 100
+hash:
+  number_hash_to_delete: 1000
 
