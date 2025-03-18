@@ -24,10 +24,16 @@ logging:
   level:
     root: info
 
-thread_pool:
-  encode:
-    pool_size: 5
-
 hash:
   batch:
-    size: 10
+    size: 10000
+  unique-numbers-amount: 1000
+
+
+thread-pool:
+  encode:
+    pool-size: 5
+  hash-generator:
+    core-pool-size: 5
+    max-pool-size: 25
+    queue-capacity: 100
