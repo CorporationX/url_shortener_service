@@ -25,6 +25,8 @@ logging:
     root: info
 
 hash:
+  hash-cache:
+    min-size: 1000
   batch:
     size: 10000
   unique-numbers-amount: 1000
