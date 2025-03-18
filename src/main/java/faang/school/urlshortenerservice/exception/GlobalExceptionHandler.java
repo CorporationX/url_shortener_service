@@ -31,6 +31,13 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Entity not found exception", ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("IllegalArgumentException: {}", e.getMessage());
+        return new ErrorDto("IllegalArgumentException", e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorDto handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
