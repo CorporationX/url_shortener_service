@@ -26,3 +26,7 @@ server:
 logging:
   level:
     root: info
+
+app:
+  number_hash_to_delete: 100
+
