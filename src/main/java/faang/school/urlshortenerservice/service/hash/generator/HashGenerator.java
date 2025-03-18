@@ -1,9 +1,9 @@
-package faang.school.urlshortenerservice.service.hash;
+package faang.school.urlshortenerservice.service.hash.generator;
 
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.properties.UrlShortenerProperties;
 import faang.school.urlshortenerservice.service.encoder.Encoder;
-import jakarta.annotation.PostConstruct;
+import faang.school.urlshortenerservice.service.hash.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -21,14 +21,18 @@ public class HashGenerator {
     private final Encoder encoder;
     private final HashService hashService;
 
-    @PostConstruct
-    public void init() {
-        generateBatch();
-    }
-
     @Async("hashGeneratorThreadPool")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void asyncGenerateBatch() {
+        generate();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateBatch() {
+        generate();
+    }
+
+    private void generate() {
         log.info("Generate hashes for batch");
 
         long maxAvailableBatch = properties.getMaxHashesInStore() - hashService.getHashesCount();

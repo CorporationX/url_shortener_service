@@ -1,10 +1,9 @@
-package faang.school.urlshortenerservice.service.hash.impl;
+package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.exception.HashNotExistException;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.properties.UrlShortenerProperties;
-import faang.school.urlshortenerservice.service.hash.HashGenerator;
-import faang.school.urlshortenerservice.service.hash.HashService;
+import faang.school.urlshortenerservice.service.hash.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +29,7 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
+        hashGenerator.generateBatch();
         refillCacheIfNeeded();
     }
 
@@ -52,7 +52,7 @@ public class HashCache {
             Collections.shuffle(newHashes);
             queue.addAll(newHashes);
             log.info("Cache is refilled, size of new hashes: {}", newHashes.size());
-            hashGenerator.generateBatch();
+            hashGenerator.asyncGenerateBatch();
         }
 
         log.info("Finish refillCacheIfNeeded");

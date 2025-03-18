@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service.url.impl;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.service.hash.impl.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashCache;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
