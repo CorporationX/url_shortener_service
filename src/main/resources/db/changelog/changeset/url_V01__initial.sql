@@ -1,16 +1,17 @@
 CREATE TABLE hash
 (
+    id SERIAL PRIMARY KEY,
     hash VARCHAR(7) NOT NULL UNIQUE
 );
 
 CREATE TABLE url
 (
+    id SERIAL PRIMARY KEY,
     hash VARCHAR(7) NOT NULL UNIQUE,
     url VARCHAR NOT NULL,
-    created_at timestamptz DEFAULT current_timestamp,
-    CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash (hash)
+    created_at timestamptz DEFAULT current_timestamp
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1;

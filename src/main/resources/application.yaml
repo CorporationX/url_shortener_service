@@ -23,8 +23,33 @@ spring:
     max-pool-size: 30
     queue-capacity: 0
 
+  hash-pull-up:
+    pool-size: 10
+    max-pool-size: 30
+    queue-capacity: 0
+
+  cache:
+    capacity: 10
+    max-item-count: 100
+    warning-percent-border: 20
+    url-expiration-in-minutes: 1440
+    url-prefix: redirect-couple
+
+  scheduler:
+    hash-url-cleaner:
+      cron: 0 0 0 * * *
+      couple-expiration-in-days: 365
+
+  shortlink-interlayer: s
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8080
+  host: localhost
 
 logging:
   level:
