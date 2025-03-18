@@ -5,7 +5,7 @@ CREATE TABLE url (
 );
 
 CREATE TABLE hash (
-     hash VARCHAR(6) PRIMARY KEY
+     hash VARCHAR(6) UNIQUE NOT NULL
 );
 
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 1;
