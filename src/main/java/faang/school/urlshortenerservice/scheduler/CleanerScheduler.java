@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

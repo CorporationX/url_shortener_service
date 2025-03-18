@@ -21,7 +21,6 @@ public class LocalCache {
     private final Executor hashGeneratorExecutor;
     private final LocalCacheProperties properties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
-    //private final Lock lock = new ReentrantLock();
     private BlockingQueue<Hash> hashes;
 
     @PostConstruct
@@ -38,9 +37,7 @@ public class LocalCache {
                 fillCacheAsync(properties.getCapacity());
             }
         }
-        //lock.lock();
         Hash hash = hashes.poll();
-        //lock.unlock();
         if (hash == null) {
             throw new RuntimeException("No hashes available in the cache");
         }
@@ -57,9 +54,7 @@ public class LocalCache {
         CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount), hashGeneratorExecutor)
                 .thenAccept(newHashes -> {
                     synchronized (hashes) {
-                        //lock.lock();
                         hashes.addAll(newHashes);
-                        //lock.unlock();
                     }
                 })
                 .exceptionally(ex -> {
