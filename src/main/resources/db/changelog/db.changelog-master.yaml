@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/003_create_sequence.sql
+  - include:
+      file: db/changelog/changeset/002_create_hash_table.sql
+  - include:
+      file: db/changelog/changeset/001_create_url_table.sql
