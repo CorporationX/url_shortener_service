@@ -13,9 +13,9 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(
             nativeQuery = true,
             value = "SELECT nextval('unique_id_seq') " +
-                    "AS next_value FROM generate_series(1, :n)"
+                    "AS next_value FROM generate_series(1, :toUniqueNumber)"
     )
-    List<Long> getUniqueNumbers(@Param("n") int n);
+    List<Long> getUniqueNumbers(@Param("toUniqueNumber") int toUniqueNumber);
 
     @Query(
             nativeQuery = true,

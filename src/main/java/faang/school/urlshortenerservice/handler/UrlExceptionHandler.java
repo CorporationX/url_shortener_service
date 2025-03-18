@@ -53,18 +53,10 @@ public class UrlExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @Data
-    private static class ErrorResponse {
-        private final int status;
-        private final String message;
-        private final Map<String, String> details;
-        private final LocalDateTime timestamp;
+    private record ErrorResponse(int status,
+                                 String message,
+                                 Map<String, String> details,
+                                 LocalDateTime timestamp) {
 
-        public ErrorResponse(int status, String message, Map<String, String> details, LocalDateTime timestamp) {
-            this.status = status;
-            this.message = message;
-            this.details = details;
-            this.timestamp = timestamp;
-        }
     }
 }
