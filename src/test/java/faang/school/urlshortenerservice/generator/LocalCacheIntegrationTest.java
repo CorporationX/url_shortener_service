@@ -52,7 +52,7 @@ public class LocalCacheIntegrationTest {
     void testGetHashAsyncFill() throws InterruptedException {
         properties.setFillPercentage(50);
 
-        for (int i = 0; i < (properties.getCapacity() * 2); i++) {
+        for (int i = 0; i < (properties.getCapacity() * 20); i++) {
             Thread.sleep(10);
             String hash = localCache.getHash();
             assertNotNull(hash);

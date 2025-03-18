@@ -6,15 +6,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -24,7 +21,7 @@ public class LocalCache {
     private final Executor hashGeneratorExecutor;
     private final LocalCacheProperties properties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
-    private final Lock lock = new ReentrantLock();
+    //private final Lock lock = new ReentrantLock();
     private BlockingQueue<Hash> hashes;
 
     @PostConstruct
@@ -41,9 +38,9 @@ public class LocalCache {
                 fillCacheAsync(properties.getCapacity());
             }
         }
-        lock.lock();
+        //lock.lock();
         Hash hash = hashes.poll();
-        lock.unlock();
+        //lock.unlock();
         if (hash == null) {
             throw new RuntimeException("No hashes available in the cache");
         }
@@ -59,44 +56,17 @@ public class LocalCache {
     public void fillCacheAsync(int amount) {
         CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount), hashGeneratorExecutor)
                 .thenAccept(newHashes -> {
-                    //synchronized (hashes)
-                    {
-                        lock.lock();
+                    synchronized (hashes) {
+                        //lock.lock();
                         hashes.addAll(newHashes);
-                        lock.unlock();
+                        //lock.unlock();
                     }
                 })
                 .exceptionally(ex -> {
                     log.error("Failed to fill the cache with new hashes", ex);
+                    isFilling.set(false);
                     return null;
                 })
                 .thenRun(() -> isFilling.set(false));
     }
 }
-
-/*
-        if (hashes.size() < (properties.getCapacity() * properties.getFillPercentage() / 100)) {
-            if (isFilling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(properties.getCapacity())
-                        .thenAccept(hashes::addAll)
-                        .thenRun(() -> isFilling.set(false));
-            }
-        }*/
-        /*
-        // Проверяем, нужно ли заполнять кэш
-        if (hashes.remainingCapacity() > (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100)) {
-            if (isFilling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(properties.getCapacity())
-                        .thenAccept(newHashes -> {
-                            synchronized (hashes) {
-                                hashes.addAll(newHashes);
-                            }
-                        })
-                        .exceptionally(ex -> {
-                            log.error("Failed to fill the cache with new hashes", ex);
-                            return null;
-                        })
-                        .thenRun(() -> isFilling.set(false));
-            }
-        }
-         */
