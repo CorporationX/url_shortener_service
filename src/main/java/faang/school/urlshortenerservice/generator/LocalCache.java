@@ -60,9 +60,8 @@ public class LocalCache {
                         hashGeneratorExecutor)
                 .thenAccept(this::queuePush)
                 .exceptionally(ex -> {
-                    log.error("Failed to fill the cache with new hashes", ex);
                     isFilling.set(false);
-                    return null;
+                    throw new RuntimeException(ex);
                 })
                 .thenRun(() -> isFilling.set(false));
     }

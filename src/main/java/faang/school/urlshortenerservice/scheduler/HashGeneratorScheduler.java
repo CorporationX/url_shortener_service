@@ -22,7 +22,7 @@ public class HashGeneratorScheduler {
         try {
             hashGenerator.generateHash();
         } catch (Exception e) {
-            log.error("Error during hash generation", e);
+            throw new RuntimeException(e);
         }
     }
 }
