@@ -54,6 +54,12 @@ public class LocalCache {
         List<Hash> newHashes = hashGenerator.getHashes(amount);
         if (hashes.remainingCapacity() >= amount) {
             hashes.addAll(newHashes);
+        } else {
+            for (Hash hash : newHashes) {
+                if (!hashes.offer(hash)) {
+                    break;
+                }
+            }
         }
     }
 
@@ -64,6 +70,12 @@ public class LocalCache {
                     synchronized (hashes) {
                         if (hashes.remainingCapacity() >= amount/poolProperties.getMaxPoolSize()) {
                             hashes.addAll(newHashes);
+                        } else {
+                            for (Hash hash : newHashes) {
+                                if (!hashes.offer(hash)) {
+                                    break;
+                                }
+                            }
                         }
                     }
                 })
