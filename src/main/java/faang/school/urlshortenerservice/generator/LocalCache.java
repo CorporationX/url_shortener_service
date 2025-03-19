@@ -52,38 +52,26 @@ public class LocalCache {
 
     public void fillCacheSync(int amount) {
         List<Hash> newHashes = hashGenerator.getHashes(amount);
-        if (hashes.remainingCapacity() >= amount) {
-            hashes.addAll(newHashes);
-        } else {
-            for (Hash hash : newHashes) {
-                if (!hashes.offer(hash)) {
-                    break;
-                }
-            }
-        }
+        queuePush(newHashes);
     }
 
     public void fillCacheAsync(int amount) {
         CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getMaxPoolSize()),
                         hashGeneratorExecutor)
-                .thenAccept(newHashes -> {
-                    synchronized (hashes) {
-                        if (hashes.remainingCapacity() >= amount/poolProperties.getMaxPoolSize()) {
-                            hashes.addAll(newHashes);
-                        } else {
-                            for (Hash hash : newHashes) {
-                                if (!hashes.offer(hash)) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                })
+                .thenAccept(this::queuePush)
                 .exceptionally(ex -> {
                     log.error("Failed to fill the cache with new hashes", ex);
                     isFilling.set(false);
                     return null;
                 })
                 .thenRun(() -> isFilling.set(false));
+    }
+
+    public void queuePush(List<Hash> newHashes) {
+        for (Hash hash : newHashes) {
+            if (!hashes.offer(hash)) {
+                break;
+            }
+        }
     }
 }
