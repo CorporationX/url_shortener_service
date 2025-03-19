@@ -12,18 +12,18 @@ import java.util.List;
 public class HashRepository {
 
     @Value("${hash_repo.save_batch_size}")
-    private int SAVE_BATCH;
+    private int saveBatch;
 
     private final JdbcTemplate template;
 
-    public List<Long> getUniqueNumbers(int UNIQUE_MAX_SIZE) {
+    public List<Long> getUniqueNumbers(int uniqueMaxSize) {
         String sql = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?);";
-        return template.queryForList(sql, Long.class, UNIQUE_MAX_SIZE);
+        return template.queryForList(sql, Long.class, uniqueMaxSize);
     }
 
     public void save(List<String> hashes) {
         String sql = "INSERT INTO hash(hash) VALUES(?)";
-        template.batchUpdate(sql, hashes, SAVE_BATCH,
+        template.batchUpdate(sql, hashes, saveBatch,
                 (ps, hash) -> ps.setString(1, hash));
     }
 

@@ -22,23 +22,25 @@ import java.util.concurrent.ExecutorService;
 public class HashGenerator {
 
     @Value("${hash_repo.unique_max_size}")
-    private int UNIQUE_MAX_SIZE;
+    private int uniqueMaxSize;
 
     @Value("${hash.partition_size}")
-    private int PARTITION_SIZE;
+    private int partitionSize;
 
     private final HashRepository repository;
     private final Base62Encoder encoder;
+
     @Autowired
     @Qualifier("hashGeneratorThreadPool")
     private ExecutorService pool;
 
+
     @Transactional
     @Async("hashGeneratorThreadPool")
     public CompletableFuture<Void> generateBatch() {
-        List<Long> uniqueNumbers = repository.getUniqueNumbers(UNIQUE_MAX_SIZE);
+        List<Long> uniqueNumbers = repository.getUniqueNumbers(uniqueMaxSize);
         List<CompletableFuture<List<String>>> futureList = ListUtils
-                .partition(uniqueNumbers, PARTITION_SIZE)
+                .partition(uniqueNumbers, partitionSize)
                 .stream()
                 .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values), pool))
                 .toList();
@@ -49,6 +51,7 @@ public class HashGenerator {
                 .flatMap(List::stream)
                 .toList();
         repository.save(hashes);
+        log.info("The generated hashes are saved to the database");
         return CompletableFuture.completedFuture(null);
     }
 }

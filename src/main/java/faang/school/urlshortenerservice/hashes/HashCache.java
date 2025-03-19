@@ -41,6 +41,7 @@ public class HashCache {
         hashGenerator.generateBatch().join();
         List<String> hashes = repository.getHashBatch(cacheSize);
         hashCache.addAll(hashes);
+        log.info("Primary hash generation hashes been completed successfully");
     }
 
     @Transactional
@@ -53,11 +54,7 @@ public class HashCache {
                 isFilling.set(false);
             }, pool);
         }
-        String hash = hashCache.poll();
-        if (hash == null || hash.isBlank()) {
-            throw new IllegalArgumentException("Cache is Empty");
-        }
-        return hash;
+        return hashCache.poll();
     }
 
     private boolean needsFilling() {

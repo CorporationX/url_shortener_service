@@ -31,7 +31,3 @@ public class UrlController {
         return urlService.getShortUrl(url);
     }
 }
-
-
-
-

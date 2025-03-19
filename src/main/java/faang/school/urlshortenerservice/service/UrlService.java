@@ -42,7 +42,7 @@ public class UrlService {
         urlRepository.save(hashedUrl);
         urlCacheRepository.save(hashedUrl.getHash(), hashedUrl.getUrl());
         try {
-            return new URL(url.getProtocol(), url.getHost(), url.getPort(), "/" + hash);
+            return new URL(url.getProtocol(), url.getHost(), url.getPort(), hash);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

@@ -1,10 +1,12 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class Base62Encoder {
 
@@ -24,16 +26,19 @@ public class Base62Encoder {
                 number /= BASE_62_SIZE;
             }
             hash.add(builder.toString());
+            log.info("Hash generation is successful");
         });
         return hash;
     }
 
     private void checkNumbers(List<Long> numbers) {
         if (numbers == null || numbers.isEmpty()) {
+            log.warn("List numbers is null or empty");
             throw new IllegalArgumentException("List must not be null or empty.");
         }
         for (Long numb : numbers) {
             if (numb < 0) {
+                log.warn("One of the numbers in the list {} contains negative numbers", numbers);
                 throw new IllegalArgumentException("List must contain only Long values.");
             }
         }

@@ -11,10 +11,10 @@ import java.util.concurrent.Executors;
 public class HashGeneratorPool {
 
     @Value("${thread_pool.hash_generator_size}")
-    private int HASH_GENERATOR_POOL_SIZE;
+    private int hashGeneratorPoolSize;
 
     @Bean
     public ExecutorService hashGeneratorThreadPool() {
-        return Executors.newFixedThreadPool(HASH_GENERATOR_POOL_SIZE);
+        return Executors.newFixedThreadPool(hashGeneratorPoolSize);
     }
 }

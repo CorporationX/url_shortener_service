@@ -34,8 +34,8 @@ hash_repo:
   save_batch_size: 10
   hash_batch_size: 10
 
-redis-url-repo:
-  time-to-leave-hours: 10
+redis_url_repo:
+  time-to_leave_hours: 10
 
 hash:
   partition_size: 10
