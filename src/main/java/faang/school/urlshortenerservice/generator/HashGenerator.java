@@ -21,7 +21,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final JdbcTemplate jdbcTemplate;
 
     @Value("${hash.number_hash_to_delete:1000}")
     @Setter
@@ -32,6 +31,6 @@ public class HashGenerator {
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers();
         List<String> encode = base62Encoder.encode(numbers);
-//            jdbcTemplate.batchUpdate();
+
     }
 }
