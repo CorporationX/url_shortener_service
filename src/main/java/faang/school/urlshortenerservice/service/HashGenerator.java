@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -17,9 +18,14 @@ public class HashGenerator {
     private final Base62Encoder encoder;
     private final HashRepository hashRepository;
 
-    @Async("threadPoolTaskExecutor")
+    @Transactional
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
+        encodeAndSaveAsync(numbers);
+    }
+
+    @Async("threadPoolTaskExecutor")
+    public void encodeAndSaveAsync(List<Long> numbers) {
         encoder.encode(numbers).thenAccept(hashRepository::save);
     }
 }
