@@ -24,6 +24,11 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
+     * Swagger / OpenAPI
+     */
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+
+    /**
      * Database
      */
     implementation("org.liquibase:liquibase-core")
@@ -36,6 +41,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
     implementation("org.slf4j:slf4j-api:2.0.17")
     implementation("ch.qos.logback:logback-classic:1.5.17")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.6.3")
@@ -47,7 +53,6 @@ dependencies {
     implementation(platform("org.testcontainers:testcontainers-bom:1.20.5"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:1.4.6")
 
     /**
      * Tests

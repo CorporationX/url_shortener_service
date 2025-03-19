@@ -1,0 +1,16 @@
+{
+  "short_name": "Linkit",
+  "name": "Linkit - Сокращатель ссылок",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#6366f1",
+  "background_color": "#1e1b4b"
+} 
