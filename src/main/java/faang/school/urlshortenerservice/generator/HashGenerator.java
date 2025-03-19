@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,8 +29,9 @@ public class HashGenerator {
     @Async("cachedThreadPool")
     @Transactional
     public void generateBatch() {
+        List<Hash> hashes = new ArrayList<>();
         List<Long> numbers = hashRepository.getUniqueNumbers();
-        List<String> encode = base62Encoder.encode(numbers);
-
+        base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
+        hashRepository.saveAll(hashes);
     }
 }
