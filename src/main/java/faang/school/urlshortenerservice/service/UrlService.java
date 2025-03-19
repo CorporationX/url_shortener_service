@@ -42,7 +42,7 @@ public class UrlService {
         Url url = Url.builder()
                 .url(request.endPoint())
                 .hash(hash.getHash())
-                .created_at(OffsetDateTime.now())
+                .createdAt(OffsetDateTime.now())
                 .build();
 
         log.info("saving shortlink in DB");

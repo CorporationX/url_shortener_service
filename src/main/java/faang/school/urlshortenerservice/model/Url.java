@@ -27,5 +27,5 @@ public class Url {
     private String url;
 
     @Column(name = "created_at")
-    private OffsetDateTime created_at;
+    private OffsetDateTime createdAt;
 }

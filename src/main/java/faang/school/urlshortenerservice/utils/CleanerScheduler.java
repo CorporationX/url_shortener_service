@@ -22,9 +22,8 @@ public class CleanerScheduler {
     @Transactional
     @Scheduled(cron = "${spring.scheduler.hash-url-cleaner.cron}")
     public void clean() {
-        List<Url> urls = urlRepository.findAll();
-        List<Url> needToDelete = urls.stream().filter(url ->
-                url.getCreated_at().isBefore(OffsetDateTime.now().minusDays(expirationDays))).toList();
+        OffsetDateTime threshold = OffsetDateTime.now().minusDays(expirationDays);
+        List<Url> needToDelete = urlRepository.findUrlsByCreatedAtBefore(threshold);
         urlRepository.deleteAll(needToDelete);
     }
 }

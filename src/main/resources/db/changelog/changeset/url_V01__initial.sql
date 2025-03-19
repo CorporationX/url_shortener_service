@@ -15,3 +15,6 @@ CREATE TABLE url
 CREATE SEQUENCE unique_number_seq
     START WITH 2
     INCREMENT BY 1;
+
+CREATE UNIQUE INDEX url__hash_index
+    ON url (hash);
