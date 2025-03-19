@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.config.HashGeneratorProperties;
-import faang.school.urlshortenerservice.config.ThreadPoolProperties;
+import faang.school.urlshortenerservice.config.GeneratorPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
@@ -46,7 +46,7 @@ public class HashGeneratorIntegrationTest {
     private HashGeneratorProperties properties;
 
     @Autowired
-    private ThreadPoolProperties threadPoolProperties;
+    private GeneratorPoolProperties threadPoolProperties;
 
     @BeforeEach
     void setUp() {

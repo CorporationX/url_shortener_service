@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "thread.pool")
-public class ThreadPoolProperties {
+public class GeneratorPoolProperties {
     private int corePoolSize;
     private int maxPoolSize;
     private int queueCapacity;

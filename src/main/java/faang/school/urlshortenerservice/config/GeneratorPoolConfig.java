@@ -9,8 +9,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 @Configuration
 @RequiredArgsConstructor
-public class ThreadPoolConfig {
-    private final ThreadPoolProperties properties;
+public class GeneratorPoolConfig {
+    private final GeneratorPoolProperties properties;
 
     @Bean(name = "hashGeneratorExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
