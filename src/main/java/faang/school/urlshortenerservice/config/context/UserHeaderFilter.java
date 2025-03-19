@@ -17,11 +17,14 @@ public class UserHeaderFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
-        String userId = req.getHeader("x-user-id");
-        if (userId != null) {
-            userContext.setUserId(Long.parseLong(userId));
-        }else {
-            throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+        String userIdHeader = req.getHeader("x-user-id");
+        if (userIdHeader != null) {
+            try {
+                Long userId = Long.parseLong(userIdHeader);
+                userContext.setUserId(userId);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid user ID format");
+            }
         }
         try {
             chain.doFilter(request, response);

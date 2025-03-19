@@ -9,13 +9,38 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: secret
+      top-urls-size: 500
+
+  base_url: http://localhost:8080
+
+  hash-cache:
+    max-size: 10000
+    refill-threshold-percent: 20
+    executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+
+  url:
+    expiration-period: 365d
+
+  scheduler:
+    cleanup:
+      cron: "0 0 0 * * *"
+      lock-name: "url_cleanup_lock"
 
 server:
   port: 8080
