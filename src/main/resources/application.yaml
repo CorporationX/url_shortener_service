@@ -47,13 +47,13 @@ thread:
 
 hash:
   generator:
-    batchSize: 10
+    batchSize: 1000
   local-cache:
-    capacity: 100
+    capacity: 1000
     fillPercentage: 20
 
 generate:
-  cron: "0 */10 * * * *"
+  cron: "0 */1 * * * *"
   pool:
     size: 5
 
