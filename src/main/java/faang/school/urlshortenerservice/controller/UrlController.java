@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/shortener/urls")
 public class UrlController {
-    UrlService urlService;
+    private final UrlService urlService;
 
     @PostMapping()
     public ShortUrlDto createShortUrl(@RequestBody @Valid UrlDto urlDto) {
@@ -30,14 +30,4 @@ public class UrlController {
     public UrlDto getUrl(@PathVariable @NotNull String hash) {
         return urlService.getUrl(hash);
     }
-
-    /*
-    String originalUrl = urlService.getOriginalUrl(shortUrl);
-        try {
-            response.sendRedirect(originalUrl);
-        } catch (IOException e) {
-            log.error("Error sending redirect to {}", originalUrl, e);
-            throw new RedirectException("Error sending redirect to " + originalUrl);
-        }
-     */
 }

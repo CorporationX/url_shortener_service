@@ -18,7 +18,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      ttl: 72
+      ttl: 5 # day
 
   mvc:
     servlet:
@@ -36,7 +36,8 @@ logging:
 
 url:
   service:
-    baseShortUrl: "http://api/v1/shortener/urls/"
+    baseShortUrl: "/api/v1/shortener/urls/"
+    #baseShortUrl: "http://api/v1/shortener/urls/"
 
 thread:
   pool:
@@ -46,13 +47,13 @@ thread:
 
 hash:
   generator:
-    batchSize: 1000
+    batchSize: 10
   local-cache:
-    capacity: 500
+    capacity: 100
     fillPercentage: 20
 
 generate:
-  cron: "0 */1 * * * *"
+  cron: "0 */10 * * * *"
   pool:
     size: 5
 

@@ -1,23 +1,23 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.RedisProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlCacheServiceImpl implements UrlCacheService {
-    private final RedisTemplate<String, String> redisTemplate;
-    private final RedisProperties properties;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void saveUrl(String hash, String url) {
         if (hash == null || url == null) {
             throw new IllegalArgumentException("Hash and URL must not be null");
         }
-        redisTemplate.opsForValue().set(hash, url, properties.getTtl(), TimeUnit.HOURS);
+        log.info("Redis SaveUrl hash {} url {}", hash, url);
+        redisTemplate.opsForValue().set(hash, url);
     }
 
     @Override

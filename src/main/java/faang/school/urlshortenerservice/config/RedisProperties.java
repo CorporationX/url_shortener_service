@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "spring.redis.ttl")
 public class RedisProperties {
-    private long ttl;
+    private int ttl;
 }
