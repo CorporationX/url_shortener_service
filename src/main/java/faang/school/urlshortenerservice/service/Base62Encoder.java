@@ -1,23 +1,25 @@
 package faang.school.urlshortenerservice.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class Base62Encoder {
-
-    @Value("${hash.thread-count}")
+    @Value("${hash.generate.thread-count}")
     private int threadPoolSize;
 
-    private final ExecutorService executor;
+    private final Executor executor;
+
+    public Base62Encoder(@Qualifier("generateHashExecutor") Executor executor) {
+        this.executor = executor;
+    }
 
     public CompletableFuture<List<String>> encode(List<Long> numbers) {
         List<CompletableFuture<List<String>>> futures = splitList(numbers).stream()
@@ -54,15 +56,18 @@ public class Base62Encoder {
     }
 
     private String encodeOne(Long number) {
-        StringBuilder sb = new StringBuilder();
-        int base = 62;
         String base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        StringBuilder sb = new StringBuilder();
 
-        do {
-            sb.insert(0, base62Chars.charAt((int) (number % base)));
-            number /= base;
-        } while (number > 0);
+        while (number > 0) {
+            sb.append(base62Chars.charAt((int) (number % 62)));
+            number /= 62;
+        }
 
-        return sb.length() > 6 ? sb.substring(0, 6) : sb.toString();
+        while (sb.length() < 6) {
+            sb.append('0');
+        }
+
+        return sb.reverse().substring(0,6);
     }
 }

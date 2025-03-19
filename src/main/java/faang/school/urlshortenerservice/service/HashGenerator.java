@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +20,19 @@ public class HashGenerator {
     private final HashRepository hashRepository;
 
     @Transactional
-    public void generateBatch() {
+    public CompletableFuture<List<String>> generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-        encodeAndSaveAsync(numbers);
+        if (numbers.isEmpty()) {
+            return CompletableFuture.completedFuture(List.of());
+        }
+        return encodeAndSaveAsync(numbers);
     }
 
-    @Async("threadPoolTaskExecutor")
-    public void encodeAndSaveAsync(List<Long> numbers) {
-        encoder.encode(numbers).thenAccept(hashRepository::save);
+    @Async("saveHashExecutor")
+    public CompletableFuture<List<String>> encodeAndSaveAsync(List<Long> numbers) {
+        return encoder.encode(numbers).thenApply(hashes -> {
+            hashRepository.save(hashes);
+            return hashes;
+        });
     }
 }

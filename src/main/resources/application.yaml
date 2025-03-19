@@ -25,6 +25,13 @@ logging:
     root: info
 
 hash:
-  thread-count: 4
+  cache:
+    thread-count: 3
+    size: 100
+  generate:
+    queue: 100
+    thread-count: 4
+  save:
+    thread-count: 1
   batch:
-    size: 10
+    size: 10000
