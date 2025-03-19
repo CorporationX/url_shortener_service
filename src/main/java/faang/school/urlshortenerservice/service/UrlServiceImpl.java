@@ -1,0 +1,42 @@
+package faang.school.urlshortenerservice.service;
+
+import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UrlServiceImpl implements UrlService {
+
+    private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+
+    @Value("${app.older_than_year}")
+    @Setter
+    private int olderThanYear;
+
+    @Override
+    @Transactional
+    public void cleanOutdatedUrls() {
+        LocalDateTime date = LocalDateTime.now().minusYears(olderThanYear);
+        List<String> hash = urlRepository.deleteOutdatedUrls(date);
+        log.info("Deleted {} rows from url table.", hash.size());
+        hashRepository.saveAll(hash.stream().map(Hash::new).toList());
+        log.info("Saved {} rows to hash table.", hash.size());
+    }
+
+    @Override
+    public String getUrl(String hash) {
+
+    }
+}
