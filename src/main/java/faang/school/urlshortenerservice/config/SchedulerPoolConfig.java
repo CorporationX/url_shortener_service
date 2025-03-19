@@ -1,22 +1,22 @@
 package faang.school.urlshortenerservice.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
-public class ExecutorConfig {
-
-    @Value("${generate.pool.size}")
-    private int poolSize;
+@RequiredArgsConstructor
+public class SchedulerPoolConfig {
+    private final SchedulerPoolProperties properties;
 
     @Bean(name = "hashGeneratorExecutorForScheduler")
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(poolSize);
-        executor.setMaxPoolSize(poolSize);
-        executor.setQueueCapacity(100);
+        executor.setCorePoolSize(properties.getCorePoolSize());
+        executor.setMaxPoolSize(properties.getMaxPoolSize());
+        executor.setQueueCapacity(properties.getQueueCapacity());
         executor.setThreadNamePrefix("HashGeneratorExecutorForScheduler-");
         executor.initialize();
         return executor;
