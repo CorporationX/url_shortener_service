@@ -28,7 +28,8 @@ dependencies {
      * Database
      */
     implementation("org.liquibase:liquibase-core")
-    implementation("redis.clients:jedis:4.3.2")
+//    implementation("redis.clients:jedis:4.3.2")
+    implementation("io.lettuce:lettuce-core:6.3.0.RELEASE")
     runtimeOnly("org.postgresql:postgresql")
 
     /**
