@@ -46,7 +46,7 @@ public class HashGeneratorIntegrationTest {
     private HashGeneratorProperties properties;
 
     @Autowired
-    private GeneratorPoolProperties threadPoolProperties;
+    private GeneratorPoolProperties generatorPoolProperties;
 
     @BeforeEach
     void setUp() {
