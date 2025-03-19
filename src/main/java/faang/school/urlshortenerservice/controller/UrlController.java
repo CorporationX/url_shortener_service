@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Validated
 @RestController
@@ -27,7 +28,11 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public UrlDto getUrl(@PathVariable @NotNull String hash) {
-        return urlService.getUrl(hash);
+    public RedirectView getUrl(@PathVariable @NotNull String hash) {
+        UrlDto urlDto = urlService.getUrl(hash);
+        if (urlDto == null || urlDto.url() == null || urlDto.url().isBlank()) {
+            return new RedirectView("/error/404");
+        }
+        return new RedirectView(urlDto.url());
     }
 }
