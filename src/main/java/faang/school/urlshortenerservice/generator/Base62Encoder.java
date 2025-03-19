@@ -19,11 +19,11 @@ public class Base62Encoder {
     public List<String> encode(List<Long> numbers) {
         List<String> encode = new ArrayList<>();
 
-        numbers.forEach(number->{
+        numbers.forEach(number -> {
             String encodeNumber = encodeToStr(number);
             encode.add(encodeNumber);
         });
-
+        return encode;
     }
 
     private String encodeToStr(Long number) {
