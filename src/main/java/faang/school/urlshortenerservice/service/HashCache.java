@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -27,22 +28,17 @@ public class HashCache {
     private final BlockingQueue<String> cache = new LinkedBlockingQueue<>();
     private final Semaphore loadingSemaphore = new Semaphore(1);
 
+    @PostConstruct
+    public void init() {
+        fillCache();
+    }
+
     public String getHash() {
         String hash = cache.poll();
-        if (hash != null) {
-            return hash;
-        }
-
         if (cache.size() <= cacheSize * threshold) {
             triggerAsyncFill();
         }
-
-        try {
-            return cache.take();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while waiting for hash", e);
-        }
+        return hash;
     }
 
     @Async("cacheThreadPool")
