@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,12 +16,13 @@ public class HashRepositoryJDBCImpl implements HashRepositoryJDBC {
 
     private final JdbcTemplate jdbcTemplate;
 
-
     @Override
     @Transactional
-    public void save(List<String> hashes){
+    public void save(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
-        jdbcTemplate.update(sql, SqlParameterSourceUtils.createBatch(hashes));
+        jdbcTemplate.batchUpdate(sql, hashes, hashes.size(), (ps, hash) -> {
+            ps.setString(1, hash);
+        });
     }
 
     @Override
