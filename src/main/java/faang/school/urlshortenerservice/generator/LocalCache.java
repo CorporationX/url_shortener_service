@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
+import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class LocalCache {
     private final HashGenerator hashGenerator;
     private final Executor hashGeneratorExecutor;
     private final LocalCacheProperties properties;
+    private final ThreadPoolProperties poolProperties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
     private BlockingQueue<Hash> hashes;
 
@@ -31,12 +33,16 @@ public class LocalCache {
     }
 
     public String getHash() {
+        if (hashes.isEmpty()) {
+            fillCacheSync(1);
+        }
         if (hashes.remainingCapacity() > (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100)) {
             if (isFilling.compareAndSet(false, true)) {
                 log.info("Start fill cache async");
                 fillCacheAsync(properties.getCapacity());
             }
         }
+
         Hash hash = hashes.poll();
         if (hash == null) {
             throw new RuntimeException("No hashes available in the cache");
@@ -46,15 +52,19 @@ public class LocalCache {
 
     public void fillCacheSync(int amount) {
         List<Hash> newHashes = hashGenerator.getHashes(amount);
-        hashes.addAll(newHashes);
-        //hashes.addAll(hashGenerator.getHashes(properties.getCapacity()));
+        if (hashes.remainingCapacity() >= amount) {
+            hashes.addAll(newHashes);
+        }
     }
 
     public void fillCacheAsync(int amount) {
-        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount), hashGeneratorExecutor)
+        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getMaxPoolSize()),
+                        hashGeneratorExecutor)
                 .thenAccept(newHashes -> {
                     synchronized (hashes) {
-                        hashes.addAll(newHashes);
+                        if (hashes.remainingCapacity() >= amount/poolProperties.getMaxPoolSize()) {
+                            hashes.addAll(newHashes);
+                        }
                     }
                 })
                 .exceptionally(ex -> {
