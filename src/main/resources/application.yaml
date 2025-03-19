@@ -25,5 +25,6 @@ logging:
     root: info
 
 hash:
+  thread-count: 4
   batch:
     size: 10

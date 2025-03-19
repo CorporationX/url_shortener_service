@@ -23,5 +23,4 @@ public class Url {
     @OneToOne
     @JoinColumn(name = "hash", referencedColumnName = "hash", insertable = false, updatable = false)
     private Hash hashReference;
-
 }

@@ -1,0 +1,68 @@
+package faang.school.urlshortenerservice.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class Base62Encoder {
+
+    @Value("${hash.thread-count}")
+    private int threadPoolSize;
+
+    private final ExecutorService executor;
+
+    public CompletableFuture<List<String>> encode(List<Long> numbers) {
+        List<CompletableFuture<List<String>>> futures = splitList(numbers).stream()
+                .map(subList -> CompletableFuture.supplyAsync(() -> encodeBatch(subList), executor))
+                .toList();
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .flatMap(future -> future.join().stream())
+                        .collect(Collectors.toList()));
+    }
+
+    private List<List<Long>> splitList(List<Long> list) {
+        int blockSize = (int) Math.ceil((double) list.size() / threadPoolSize);
+        int totalBlocks = (int) Math.ceil((double) list.size() / (double) blockSize);
+        List<List<Long>> result = new ArrayList<>();
+
+
+        for (int i = 0; i < totalBlocks; i++) {
+            int start = i * blockSize;
+            int end = Math.min(start + blockSize, list.size());
+            if (start < end) {
+                result.add(list.subList(start, end));
+            }
+        }
+
+        return result;
+    }
+
+    private List<String> encodeBatch(List<Long> numbers) {
+        return numbers.stream()
+                .map(this::encodeOne)
+                .collect(Collectors.toList());
+    }
+
+    private String encodeOne(Long number) {
+        StringBuilder sb = new StringBuilder();
+        int base = 62;
+        String base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        do {
+            sb.insert(0, base62Chars.charAt((int) (number % base)));
+            number /= base;
+        } while (number > 0);
+
+        return sb.length() > 6 ? sb.substring(0, 6) : sb.toString();
+    }
+}
