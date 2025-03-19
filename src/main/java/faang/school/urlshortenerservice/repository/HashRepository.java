@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends CrudRepository<Hash, Long> {
+public interface HashRepository extends CrudRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = "select nextval('unique_number_seq') from generate_series(1, 1000)")
     List<Long> getUniqueNumbers();
