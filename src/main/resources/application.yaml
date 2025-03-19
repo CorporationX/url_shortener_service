@@ -29,6 +29,7 @@ logging:
 
 hash:
   number_hash_to_delete: 1000
+  cache_size: 1000
 
 cron:
   expression:
