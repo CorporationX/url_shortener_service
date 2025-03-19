@@ -13,6 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 100 # Размер пакета
+        order_inserts: true # Оптимизация порядка вставок
+        order_updates: true # Оптимизация порядка обновлений
+        batch_versioned_data: true # Пакетная обработка версионных данных
 
   data:
     redis:

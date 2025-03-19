@@ -29,6 +29,7 @@ public class CleanerScheduler {
         if ((freeHashes != null) && (!freeHashes.isEmpty())) {
             freeHashes.forEach(entityManager::persist);
             entityManager.flush();
+            entityManager.clear();
         }
     }
 }

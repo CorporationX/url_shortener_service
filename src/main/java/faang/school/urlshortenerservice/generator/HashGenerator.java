@@ -8,9 +8,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -20,8 +23,9 @@ public class HashGenerator {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    @Transactional
+    @Transactional()
     public void generateHash() {
+        log.info("Generating hashes started");
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(properties.getBatchSize());
         if ((uniqueNumbers == null) || uniqueNumbers.isEmpty()) {
             throw new RuntimeException("uniqueNumbers is not read");
@@ -32,6 +36,8 @@ public class HashGenerator {
                 .forEach(entityManager::persist);
 
         entityManager.flush();
+        entityManager.clear();
+        log.info("Generating hashes completed");
     }
 
     @Transactional
