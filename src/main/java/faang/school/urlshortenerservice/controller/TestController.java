@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.service.HashCache;
-import faang.school.urlshortenerservice.service.HashGenerator;
+import faang.school.urlshortenerservice.service.hash.HashCache;
+import faang.school.urlshortenerservice.service.hash.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

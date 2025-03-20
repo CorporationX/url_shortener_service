@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.repository.Hash.HashRepository;
 import jakarta.transaction.Transactional;
