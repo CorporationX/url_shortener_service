@@ -19,6 +19,6 @@ public class UrlRequestDto {
             regexp = "^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?$",
             message = "Некорректный URL"
     )
-    @Size(max = 4096)
+    @Size(max = 2048)
     private String originalUrl;
 }

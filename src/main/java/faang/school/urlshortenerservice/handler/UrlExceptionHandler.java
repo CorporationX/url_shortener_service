@@ -2,6 +2,8 @@ package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,19 @@ public class UrlExceptionHandler {
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException e,
                                                                     HttpServletRequest request) {
-        log.warn("Ошибка: {}", e.getMessage(), e);
+        log.warn("URL не найден: {}", e.getMessage(), e);
         return response(e.getMessage(), request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e,
+                                                                            HttpServletRequest request) {
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining("; "));
+
+        log.warn("Ошибка валидации параметров: {}", errorMessage);
+        return response(errorMessage, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
