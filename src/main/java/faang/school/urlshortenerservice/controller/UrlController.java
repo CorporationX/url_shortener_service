@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.util.UriBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -14,17 +15,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @RequiredArgsConstructor
 @Validated
+@RestController
 public class UrlController {
     private final UrlService urlService;
+    private final UriBuilder uriBuilder;
 
     @PostMapping("/url")
     public String createShortUrl(
             @Valid @RequestParam(name = "url") @NotEmpty @URL String url,
             @RequestHeader("x-user-id") long userId) {
-        return urlService.createShortUrl(url, userId);
+        String hash = urlService.createShortUrl(url, userId);
+        return uriBuilder.response(hash);
     }
 
     @GetMapping("/{hash}")
