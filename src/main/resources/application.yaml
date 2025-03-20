@@ -20,6 +20,17 @@ spring:
 properties:
   batch-size: 10000
 
+data:
+  thread:
+    pool:
+      core-pool-size: 10
+      max-pool-size: 20
+      queue-capacity: 50
+
+  url:
+    hash:
+      maxRange: 1000
+
 server:
   port: 8080
 
