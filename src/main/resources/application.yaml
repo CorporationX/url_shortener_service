@@ -23,3 +23,10 @@ server:
 logging:
   level:
     root: info
+
+url-shortener:
+  batch-size: 100
+  count-hash: 20
+  thread-pool-size: 5
+  scheduler:
+    delete-old-url: "0 0 * * * *"
