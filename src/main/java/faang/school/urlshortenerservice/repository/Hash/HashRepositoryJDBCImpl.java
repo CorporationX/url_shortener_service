@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.repository.Hash;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +21,17 @@ public class HashRepositoryJDBCImpl implements HashRepositoryJDBC {
     @Transactional
     public void save(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
-        jdbcTemplate.batchUpdate(sql, hashes, hashes.size(), (ps, hash) -> {
-            ps.setString(1, hash);
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
+                ps.setString(1, hashes.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return hashes.size();
+            }
         });
     }
 
