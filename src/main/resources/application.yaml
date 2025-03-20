@@ -26,7 +26,7 @@ logging:
 
 url-shortener-service:
   hash-batch-size: 10
-  unique-numbers-count: 15
+  unique-numbers-count: 1000
   thread-pool:
     core-size: 3
     max-size: 10

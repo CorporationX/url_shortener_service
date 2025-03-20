@@ -14,6 +14,6 @@ import lombok.Setter;
 public class Hash {
 
   @Id
-  @Column(name = "hash", length = 6, nullable = false)
+  @Column(name = "hash", unique = true, length = 6, nullable = false)
   private String hash;
 }
