@@ -1,11 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
