@@ -16,12 +16,6 @@ public class AsyncConfig {
     @Value("${hash.generator.queue-capacity:50}")
     private int queueCapacity;
 
-    @Value("${hash.cache.thread-pool-size:5}")
-    private int cacheThreadPoolSize;
-
-    @Value("${hash.cache.queue-capacity:50}")
-    private int cacheQueueCapacity;
-
     @Bean
     public Executor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -29,17 +23,6 @@ public class AsyncConfig {
         executor.setMaxPoolSize(threadPoolSize);
         executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix("HashGenerator-Thread-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Bean
-    public Executor hashCacheExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(cacheThreadPoolSize);
-        executor.setMaxPoolSize(cacheThreadPoolSize);
-        executor.setQueueCapacity(cacheQueueCapacity);
-        executor.setThreadNamePrefix("HashCache-Thread-");
         executor.initialize();
         return executor;
     }

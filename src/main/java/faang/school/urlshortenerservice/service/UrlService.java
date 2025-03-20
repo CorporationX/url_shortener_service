@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.publisher.UrlEventPublisher;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -45,8 +44,8 @@ public class UrlService {
                 .hash(hash)
                 .url(urlRequestDto.getOriginalUrl())
                 .build();
-        urlRepository.save(url);
-        urlCache.saveUrlByHash(hash, url.getUrl());
+
+        urlCache.saveUrlByHash(url);
         urlEventPublisher.publishShortUrlCreated(hash, url.getUrl(), userId);
 
         return UrlResponseDto.builder()
@@ -55,15 +54,7 @@ public class UrlService {
     }
 
     public String getUrlFromHash(String hash) {
-        return urlCache.getUrlByHash(hash)
-                .orElseGet(() -> urlRepository
-                        .findByHash(hash)
-                        .map(url -> {
-                            urlCache.saveUrlByHash(hash, url.getUrl());
-                            return url.getUrl();
-                        })
-                        .orElseThrow(() -> new UrlNotFoundException(
-                                String.format("URL для хеша: %s не найден", hash))));
+        return urlCache.getUrlByHash(hash);
     }
 
     @Transactional

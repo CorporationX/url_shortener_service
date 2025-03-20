@@ -1,64 +1,61 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
 
-    private final RedisTemplate<String, String> redisTemplate;
-    private final RedissonClient redissonClient;
     private final HashGenerator hashGenerator;
+    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+    private Queue<String> hashQueue;
 
-    @Value("${hash.cache.max-size}")
-    private int maxSize;
+    @Value("${hash.cache.min-fill-percent:0.2}")
+    private double minFillPercent;
 
-    @Value("${hash.cache.fill-threshold}")
-    private double fillThreshold;
-
-    @Value("${hash.cache.key}")
-    private String key;
-
-    @Value("${hash.cache.lock}")
-    private String lock;
+    @Value("${hash.cache.size:10000}")
+    private int cacheSize;
 
     @PostConstruct
     public void initCash() {
-        fillCache();
+        hashQueue = new LinkedBlockingDeque<>(cacheSize);
+        hashQueue.addAll(hashGenerator.getHashes());
+        log.info("Кэш хэшей инициализирован");
     }
 
     public String getHash() {
-        Long cacheSize = redisTemplate.opsForList().size(key);
-        if (cacheSize != null && cacheSize > maxSize * fillThreshold) {
-            return redisTemplate.opsForList().rightPop(key);
+        if (hashQueue.size() < cacheSize * minFillPercent) {
+            if (isGenerating.compareAndSet(false, true)) {
+                hashGenerator.getHashesAsync()
+                        .thenAccept(hashQueue::addAll)
+                        .thenRun(() -> isGenerating.set(false));
+                log.info("Получены новые хэши");
+            }
         }
 
-        fillCacheAsync();
-        return redisTemplate.opsForList().rightPop(key);
-    }
+        try {
+            String hash = hashQueue.poll();
+            if (hash == null) {
+                log.error("Свободный хэш отсутствует");
+                throw new HashCacheException("Свободный хэш отсутствует");
+            }
 
-    @Async("hashCacheExecutor")
-    private void fillCacheAsync() {
-        RLock block = redissonClient.getLock(lock);
-        if (block.tryLock()) {
-            hashGenerator.getHashesAsync()
-                    .thenAccept(hashes -> redisTemplate.opsForList().leftPushAll(key, hashes))
-                    .thenRun(block::unlock);
+            return hash;
+        } catch (Exception e) {
+            log.error("Операция прервана", e);
+            Thread.currentThread().interrupt();
+            throw new HashCacheException("Операция прервана");
         }
-    }
-
-    private void fillCache() {
-        List<String> hashes = hashGenerator.getHashes();
-        redisTemplate.opsForList().leftPushAll(key, hashes);
     }
 }

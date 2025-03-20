@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Validated
 @Controller
@@ -35,13 +36,13 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<String> getOriginalUrl(
+    public RedirectView getOriginalUrl(
             @PathVariable
             @Pattern(regexp = "^[a-zA-Z0-9]{1,6}$",
                     message = "Некорректный формат hash")
             String hash) {
+        String originalUrl = urlService.getUrlFromHash(hash);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .body(urlService.getUrlFromHash(hash));
+        return new RedirectView(originalUrl);
     }
 }
