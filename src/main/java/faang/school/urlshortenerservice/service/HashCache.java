@@ -24,7 +24,6 @@ public class HashCache {
         if (queue.size() < hashCacheSize * 0.2) {
             fillCache();
         }
-
         return hash;
     }
 

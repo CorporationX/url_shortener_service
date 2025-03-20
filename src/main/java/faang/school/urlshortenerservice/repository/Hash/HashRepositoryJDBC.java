@@ -1,6 +1,5 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.Hash;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
