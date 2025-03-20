@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -8,11 +8,11 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UrlCacheRepository {
+public class UrlCache {
 
     private final StringRedisTemplate redisTemplate;
 
-    public void save(String hash, String longUrl) {
+    public void save(String longUrl, String hash) {
         redisTemplate.opsForValue().set(hash, longUrl);
     }
 

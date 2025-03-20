@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.dto.UrlShortDto;
+import faang.school.urlshortenerservice.cache.UrlCache;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ class UrlServiceImplTest {
     private UrlRepository urlRepository;
 
     @Mock
-    private UrlCacheRepository urlCacheRepository;
+    private UrlCache urlCache;
 
     @Mock
     private HashCache hashCache;
@@ -35,7 +36,7 @@ class UrlServiceImplTest {
         UrlDto urlDto = new UrlDto("https://example.com");
         when(hashCache.getHash()).thenReturn("abc123");
         doNothing().when(urlRepository).save(urlDto.url(), "abc123");
-        doNothing().when(urlCacheRepository).save("abc123", urlDto.url());
+        doNothing().when(urlCache).save(urlDto.url(), "abc123");
 
         UrlShortDto result = urlService.createShortUrl(urlDto);
 
@@ -43,7 +44,7 @@ class UrlServiceImplTest {
         assertEquals("https://short.url/abc123", result.shortUrl());
         verify(hashCache).getHash();
         verify(urlRepository).save(urlDto.url(), "abc123");
-        verify(urlCacheRepository).save("abc123", urlDto.url());
+        verify(urlCache).save(urlDto.url(), "abc123");
     }
 
 }
