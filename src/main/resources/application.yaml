@@ -44,3 +44,9 @@ app:
 ttl:
   hour:
     url: 24
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
