@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@Configuration
 @ConfigurationProperties(prefix = "hash.local-cache")
 public class LocalCacheProperties {
     private int capacity;

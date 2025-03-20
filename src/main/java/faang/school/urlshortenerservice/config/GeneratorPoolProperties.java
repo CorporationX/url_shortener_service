@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@Configuration
 @ConfigurationProperties(prefix = "thread.pool")
 public class GeneratorPoolProperties {
     private int corePoolSize;

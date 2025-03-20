@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@Configuration
 @ConfigurationProperties(prefix = "generate.pool")
 public class SchedulerPoolProperties {
     private int corePoolSize;
