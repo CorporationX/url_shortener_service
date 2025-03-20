@@ -17,5 +17,7 @@ public interface HashService {
 
     CompletableFuture<List<Hash>> readFreeHashesAsync();
 
+    void generateAndSaveHashes();
+
 
 }

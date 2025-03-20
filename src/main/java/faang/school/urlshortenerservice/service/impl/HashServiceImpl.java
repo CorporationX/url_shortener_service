@@ -56,14 +56,13 @@ public class HashServiceImpl implements HashService {
     @Transactional
     public void saveHashes(List<Hash> hashes) {
         int batchSize = shortenerProperties.batchSize();
-        List<List<Hash>> batches = IntStream.range(0, (hashes.size() + batchSize - 1) / batchSize)
+        IntStream.range(0, (hashes.size() + batchSize - 1) / batchSize)
                 .mapToObj(i -> hashes.subList(i * batchSize, Math.min((i + 1) * batchSize, hashes.size())))
-                .toList();
+                .forEach(hashRepository::saveAll);
 
-        for (List<Hash> batch : batches) {
-            hashRepository.saveAll(batch);
-            log.info("Saved batch of hashes. Batch size: {}", batch.size());
-        }
+        log.info("Hashes was saved to database. Hashes quantity: {}", hashes.size());
+
+
     }
 
     @Async("asyncTaskExecutor")
@@ -72,12 +71,12 @@ public class HashServiceImpl implements HashService {
     }
 
     public List<Hash> readFreeHashes() {
-        int hashesSize = shortenerProperties.queueSize();
-        log.info("Reading free hashes from database for queue size = {}", hashesSize);
-        List<Hash> hashes = hashRepository.getFreeHashesBatch(hashesSize);
-        if (hashes.size() < hashesSize) {
-            saveHashes(generateHashes(hashesSize));
-            hashes = hashRepository.getFreeHashesBatch(hashesSize);
+        int queueSize = shortenerProperties.queueSize();
+        log.info("Reading free hashes from database for queue size = {}", queueSize);
+        List<Hash> hashes = hashRepository.getFreeHashesBatch(queueSize);
+        if (hashes.size() < queueSize) {
+            saveHashes(generateHashes(queueSize));
+            hashes = hashRepository.getFreeHashesBatch(queueSize);
         }
         return hashes;
     }

@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -17,7 +17,7 @@ public class LocalHashCache {
 
     private final ShortenerProperties shortenerProperties;
     private final HashService hashService;
-    private final BlockingDeque<Hash> hashes;
+    private final BlockingQueue<Hash> hashes;
 
     private AtomicBoolean canUpdateHashes = new AtomicBoolean(true);
 
@@ -29,7 +29,7 @@ public class LocalHashCache {
         }
         this.shortenerProperties = shortenerProperties;
         this.hashService = hashService;
-        hashes = new LinkedBlockingDeque<>(shortenerProperties.queueSize());
+        hashes = new ArrayBlockingQueue<>(shortenerProperties.queueSize());
     }
 
     @PostConstruct
@@ -44,14 +44,14 @@ public class LocalHashCache {
             updateHashesIfNeeded();
             canUpdateHashes.set(false);
         }
-        return hashes.pop();
+        return hashes.poll();
     }
 
     private void updateHashesIfNeeded() {
-        int thresholdSize = shortenerProperties.queueSize() * shortenerProperties.minArrayHashPercentage() / 100;
+        int minPercentage = shortenerProperties.minArrayHashPercentage();
+        int thresholdSize = shortenerProperties.queueSize() * minPercentage / 100;
         if (hashes.size() < thresholdSize) {
-            log.info("Current hash queue size {} less than minimum percentage {}",
-                    hashes.size(), shortenerProperties.minArrayHashPercentage());
+            log.info("Current hash queue size {} less than minimum percentage {}", hashes.size(), minPercentage);
             hashService.readFreeHashesAsync().thenAccept(hashes::addAll);
         }
     }

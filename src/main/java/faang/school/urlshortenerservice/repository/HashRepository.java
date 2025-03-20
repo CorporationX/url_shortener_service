@@ -20,7 +20,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM hash WHERE hash IN "
-            + "(SELECT hash FROM hash LIMIT :limit) "
+            + "(SELECT hash FROM hash ORDER BY random() LIMIT :limit) "
             + "RETURNING *",
             nativeQuery = true)
     List<Hash> getFreeHashesBatch(@Param("limit") int limit);

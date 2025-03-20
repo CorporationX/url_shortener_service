@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -57,6 +58,8 @@ public class UrlServiceImpl implements UrlService {
 
     @Cacheable(value = "redirect_url", key = "#hash")
     public UrlResponseDto getUrlByHash(String hash) {
-        return urlMapper.toUrlResponseDto(urlRepository.getReferenceById(hash));
+        Optional<Url> optionalUrl = urlRepository.findById(hash);
+        Url url = optionalUrl.orElse(new Url());
+        return urlMapper.toUrlResponseDto(url);
     }
 }
