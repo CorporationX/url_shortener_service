@@ -20,4 +20,15 @@ public class HashCache {
         this.cacheSize = cacheSize;
         this.hashQueue  = new ArrayBlockingQueue<>(cacheSize);
     }
+
+    public String getHash(){
+        if ((hashQueue.size() * 100) / cacheSize < 20 ){
+//            вызываем
+        }
+        try {
+            return hashQueue.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
