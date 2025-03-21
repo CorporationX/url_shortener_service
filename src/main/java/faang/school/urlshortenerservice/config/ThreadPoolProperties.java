@@ -6,9 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "generate.pool")
-public class SchedulerPoolProperties {
-    private int corePoolSize;
-    private int maxPoolSize;
+@ConfigurationProperties(prefix = "thread.pool")
+public class ThreadPoolProperties {
+    private int poolSize;
     private int queueCapacity;
 }

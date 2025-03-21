@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+public interface HashRepository extends JpaRepository<Hash, String>, HashRepositoryCustom {
 
     @Query(nativeQuery = true,
             value = """
@@ -27,5 +28,4 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                     RETURNING hash
                     """)
     List<Hash> findAndDelete(@Param("amount") long amount);
-
 }

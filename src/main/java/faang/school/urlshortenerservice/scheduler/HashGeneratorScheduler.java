@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
+import faang.school.urlshortenerservice.config.HashBatchProperties;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class HashGeneratorScheduler {
     private final HashGenerator hashGenerator;
+    private final HashBatchProperties properties;
 
     @Scheduled(cron = "${generate.cron}")
     @Transactional
@@ -20,7 +22,7 @@ public class HashGeneratorScheduler {
     public void generateHashes() {
         log.info("Starting generating of new hashes");
         try {
-            hashGenerator.generateHash();
+            hashGenerator.generateHash(properties.getBatchSize());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

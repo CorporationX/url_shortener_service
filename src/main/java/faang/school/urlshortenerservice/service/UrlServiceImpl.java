@@ -11,9 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -28,7 +25,6 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional
     public ShortUrlDto createShortUrl(UrlDto urlDto) {
-        validateUrl(urlDto.url());
         String hash = localCache.getHash();
         urlRepository.save(new Url(hash, urlDto.url(), LocalDateTime.now()));
         urlCacheService.saveUrl(hash, urlDto.url());
@@ -44,17 +40,6 @@ public class UrlServiceImpl implements UrlService {
         Url urlEntity = urlRepository.findById(hash)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Url for hash %s not found", hash)));
         return new UrlDto(urlEntity.getUrl());
-    }
-
-    private void validateUrl(String url) {
-        if (url == null || url.isBlank()) {
-            throw new IllegalArgumentException("url can not be null or blank");
-        }
-        try {
-            new URI(url).toURL();
-        } catch (URISyntaxException | IllegalArgumentException | MalformedURLException e) {
-            throw new IllegalArgumentException(String.format("%s is not valid url", url));
-        }
     }
 }
 

@@ -9,13 +9,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @RequiredArgsConstructor
 public class SchedulerPoolConfig {
-    private final SchedulerPoolProperties properties;
+    private final ThreadPoolProperties properties;
 
     @Bean(name = "hashGeneratorExecutorForScheduler")
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(properties.getCorePoolSize());
-        executor.setMaxPoolSize(properties.getMaxPoolSize());
+        executor.setCorePoolSize(properties.getPoolSize());
+        executor.setMaxPoolSize(properties.getPoolSize());
         executor.setQueueCapacity(properties.getQueueCapacity());
         executor.setThreadNamePrefix("HashGeneratorExecutorForScheduler-");
         executor.initialize();

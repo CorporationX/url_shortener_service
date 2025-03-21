@@ -13,11 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 100 # Размер пакета
         order_inserts: true # Оптимизация порядка вставок
         order_updates: true # Оптимизация порядка обновлений
-        batch_versioned_data: true # Пакетная обработка версионных данных
+        jdbc:
+          batch_size: 100 # Размер пакета
+          batch_versioned_data: true # Пакетная обработка версионных данных
 
   data:
     redis:
@@ -46,23 +46,16 @@ url:
 
 thread:
   pool:
-    corePoolSize: 5
-    maxPoolSize: 5
+    poolSize: 5
     queueCapacity: 100
 
 hash:
-  generator:
-    batchSize: 100
   local-cache:
     capacity: 50
     fillPercentage: 20
 
 generate:
   cron: "0 */1 * * * *"
-  pool:
-    corePoolSize: 5
-    maxPoolSize: 5
-    queueCapacity: 100
 
 clean:
   cron: "0 0 0 * * *"

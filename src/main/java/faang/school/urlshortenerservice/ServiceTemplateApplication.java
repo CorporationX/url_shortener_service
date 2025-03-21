@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice;
 
-import faang.school.urlshortenerservice.config.GeneratorPoolProperties;
-import faang.school.urlshortenerservice.config.HashGeneratorProperties;
+import faang.school.urlshortenerservice.config.ThreadPoolProperties;
+import faang.school.urlshortenerservice.config.HashBatchProperties;
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
 import faang.school.urlshortenerservice.config.RedisProperties;
-import faang.school.urlshortenerservice.config.SchedulerPoolProperties;
 import faang.school.urlshortenerservice.config.UrlServiceProperties;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +17,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAsync
 @EnableFeignClients("faang.school.urlshortenerservice.client")
-@EnableConfigurationProperties({GeneratorPoolProperties.class, HashGeneratorProperties.class, LocalCacheProperties.class,
-RedisProperties.class, SchedulerPoolProperties.class, UrlServiceProperties.class})
+@EnableConfigurationProperties({ThreadPoolProperties.class, HashBatchProperties.class, LocalCacheProperties.class,
+RedisProperties.class, UrlServiceProperties.class})
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)

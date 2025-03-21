@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping()
+    @PostMapping
     public ShortUrlDto createShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.createShortUrl(urlDto);
     }
@@ -32,7 +33,7 @@ public class UrlController {
     public ResponseEntity<Void> getUrl(@PathVariable @NotNull String hash) {
         UrlDto urlDto = urlService.getUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", urlDto.url())
+                .header(HttpHeaders.LOCATION, urlDto.url())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
-import faang.school.urlshortenerservice.config.GeneratorPoolProperties;
+import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class LocalCache {
     private final HashGenerator hashGenerator;
     private final Executor hashGeneratorExecutor;
     private final LocalCacheProperties properties;
-    private final GeneratorPoolProperties poolProperties;
+    private final ThreadPoolProperties poolProperties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
     private BlockingQueue<Hash> hashes;
 
@@ -56,7 +56,7 @@ public class LocalCache {
     }
 
     public void fillCacheAsync(int amount) {
-        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getMaxPoolSize()),
+        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getPoolSize()),
                         hashGeneratorExecutor)
                 .thenAccept(this::queuePush)
                 .exceptionally(ex -> {

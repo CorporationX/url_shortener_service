@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.config.HashGeneratorProperties;
-import faang.school.urlshortenerservice.config.GeneratorPoolProperties;
+import faang.school.urlshortenerservice.config.HashBatchProperties;
+import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
@@ -43,10 +43,10 @@ public class HashGeneratorIntegrationTest {
     private Base62Encoder base62Encoder;
 
     @Autowired
-    private HashGeneratorProperties properties;
+    private HashBatchProperties properties;
 
     @Autowired
-    private GeneratorPoolProperties generatorPoolProperties;
+    private ThreadPoolProperties generatorPoolProperties;
 
     @BeforeEach
     void setUp() {
@@ -57,9 +57,7 @@ public class HashGeneratorIntegrationTest {
     @Order(1)
     void testGenerateHashSuccess() {
         resetSequence();
-        properties.setBatchSize(3);
-
-        hashGenerator.generateHash();
+        hashGenerator.generateHash(3);
 
         List<Hash> hashes = hashRepository.findAll();
         assertEquals(3, hashes.size());
@@ -79,9 +77,7 @@ public class HashGeneratorIntegrationTest {
     @Test
     @Order(2)
     void testGetAndDeleteHashSuccess() {
-        properties.setBatchSize(100);
-
-        hashGenerator.generateHash();
+        hashGenerator.generateHash(100);
 
         List<Hash> hashes = hashRepository.findAndDelete(100);
         assertEquals(100, hashes.size());
@@ -93,9 +89,7 @@ public class HashGeneratorIntegrationTest {
     @Test
     @Order(3)
     void testGetHashesSuccess() {
-        properties.setBatchSize(100);
-
-        hashGenerator.generateHash();
+        hashGenerator.generateHash(100);
 
         List<Hash> hashes = hashGenerator.getHashes(100);
         assertEquals(100, hashes.size());

@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "hash.generator")
-public class HashGeneratorProperties {
+@ConfigurationProperties(prefix = "spring.jpa.properties.hibernate.jdbc")
+public class HashBatchProperties {
     private int batchSize;
 }
