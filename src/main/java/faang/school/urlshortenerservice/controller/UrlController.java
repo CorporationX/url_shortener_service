@@ -1,10 +1,10 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +26,10 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> getUrl(@PathVariable(name = "hash") String hash) {
-//        ProcessBuilder.Redirect
-        return null;
+        String url = urlService.getUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
     }
 
     @PostMapping("/url")

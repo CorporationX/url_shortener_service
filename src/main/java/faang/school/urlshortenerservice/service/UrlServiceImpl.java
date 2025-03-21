@@ -43,11 +43,12 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getUrl(String hash) {
-//       String hashForUrl =  hashCache.getHash();
-//       if (hashForUrl.isBlank()) {
-//           hashRepository.
-//       }
-        return "";
+        String hashForUrl = urlCacheRepository.getByHash(hash);
+        if (!hashForUrl.isEmpty()){
+            return hashForUrl;
+        }
+        Url url = urlRepository.findByHash(hash).orElseThrow(()->new IllegalArgumentException(""));
+        return url.getUrl();
     }
 
     @Override
