@@ -28,13 +28,15 @@ public class UrlShortenerController {
 
     @PostMapping("/create")
     UrlResponseDto createShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
+        log.info("Received request: {}", urlRequestDto);
         return urlUtilService.shortenUrl(urlRequestDto);
     }
 
-    @PostMapping("/get")
-    UrlResponseDto getRedirectUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
+/*    @PostMapping("/get")
+    UrlResponseDto getRedirectUrl(@Validated @RequestBody UrlRequestDto urlRequestDto) {
+        log.info("Received request: {}", urlRequestDto);
         return urlUtilService.getFullUrl(urlRequestDto);
-    }
+    }*/
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToUrl(@PathVariable String hash) {

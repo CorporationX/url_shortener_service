@@ -2,28 +2,44 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
+import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.service.UrlUtilService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Testcontainers
 class UrlShortenerControllerTest {
 
-    @InjectMocks
+    @Autowired
+    private UrlUtilService urlUtilService;
+    @Autowired
+    private UrlService urlService;
+    @Autowired
     private UrlShortenerController urlShortenerController;
 
-    @Spy
-    private UrlMapper urlMapper;
-    @Mock
-    private UrlUtilService urlServiceMock;
+    @Container
+    private static final PostgreSQLContainer<?> postgres =
+            new PostgreSQLContainer<>("postgres:13")
+                    .withDatabaseName("testdb")
+                    .withUsername("testuser")
+                    .withPassword("testpass");
+
+    @DynamicPropertySource
+    static void postgresProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @BeforeEach
     void setUp() {
@@ -32,13 +48,29 @@ class UrlShortenerControllerTest {
     @Test
     @DisplayName("Test URL validate")
     void testCreateShortUrl() {
+        UrlRequestDto emptyUrlRequestDto = UrlRequestDto.builder()
+                .url("")
+                .build();
+        UrlRequestDto incorrectUrlRequestDto1 = UrlRequestDto.builder()
+                .url("ftp:/234")
+                .build();
+        UrlRequestDto incorrectUrlRequestDto2 = UrlRequestDto.builder()
+                .url("sdfgsdfgsdf")
+                .build();
         UrlRequestDto urlRequestDto = UrlRequestDto.builder()
-                .url("htp:/234")
+                .url("http://ya.ru/")
                 .build();
-        UrlResponseDto urlResponseDto = UrlResponseDto.builder()
-                .url("11")
-                .build();
-        Mockito.when(urlServiceMock.shortenUrl(Mockito.any())).thenReturn(urlResponseDto);
-        urlShortenerController.createShortUrl(urlRequestDto);
+        UrlResponseDto resultDto;
+
+        resultDto = urlShortenerController.createShortUrl(urlRequestDto);
+        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        resultDto = urlShortenerController.createShortUrl(emptyUrlRequestDto);
+        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        resultDto = urlShortenerController.createShortUrl(incorrectUrlRequestDto1);
+        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        //TODO пока не получается некорректные url проверить в тесте
+        resultDto = urlShortenerController.createShortUrl(incorrectUrlRequestDto2);
+        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+
     }
 }

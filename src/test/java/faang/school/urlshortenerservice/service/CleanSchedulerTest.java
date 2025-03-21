@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,12 +66,12 @@ class CleanSchedulerTest {
     @DisplayName("Test deletion of expired urls")
     void testDeleteExpiredUrls() {
         List<Url> urlsBefore = urlRepository.findAll();
-        Assert.assertEquals(2, urlsBefore.size());
+        Assertions.assertEquals(2, urlsBefore.size());
 
         urlRepository.deleteExpiredUrls();
 
         List<Url> urlsAfter = urlRepository.findAll();
-        Assert.assertEquals(1, urlsAfter.size());
-        Assert.assertEquals(notExpiredUrl.getUrl(), urlsAfter.get(0).getUrl());
+        Assertions.assertEquals(1, urlsAfter.size());
+        Assertions.assertEquals(notExpiredUrl.getUrl(), urlsAfter.get(0).getUrl());
     }
 }

@@ -66,17 +66,19 @@ public class HashServiceImpl implements HashService {
     }
 
     @Async("asyncTaskExecutor")
-    public CompletableFuture<List<Hash>> readFreeHashesAsync() {
-        return CompletableFuture.completedFuture(readFreeHashes());
+    public CompletableFuture<List<Hash>> readFreeHashesAsync(int quantity) {
+        return CompletableFuture.completedFuture(readFreeHashes(quantity));
     }
 
-    public List<Hash> readFreeHashes() {
-        int queueSize = shortenerProperties.queueSize();
-        log.info("Reading free hashes from database for queue size = {}", queueSize);
-        List<Hash> hashes = hashRepository.getFreeHashesBatch(queueSize);
-        if (hashes.size() < queueSize) {
-            saveHashes(generateHashes(queueSize));
-            hashes = hashRepository.getFreeHashesBatch(queueSize);
+    public List<Hash> readFreeHashes(int quantity) {
+        log.info("Reading {} free hashes from database", quantity);
+        List<Hash> hashes = hashRepository.getFreeHashesBatch(quantity);
+        int hashesSize = hashes.size();
+        int additionalQuantity = quantity - hashesSize;
+        if (hashesSize < quantity) {
+            saveHashes(generateHashes(additionalQuantity));
+            List<Hash> additionalHashes = hashRepository.getFreeHashesBatch(additionalQuantity);
+            hashes.addAll(additionalHashes);
         }
         return hashes;
     }

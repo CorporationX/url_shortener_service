@@ -23,6 +23,7 @@ public class Url {
     @Column(name = "hash", nullable = false,  unique = true, length = 8)
     String hash;
 
+    //@URL
     @Column(name = "url", nullable = false, unique = true, length = 16384)
     String url;
 

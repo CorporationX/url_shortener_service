@@ -13,9 +13,9 @@ public interface HashService {
 
     void saveHashes(List<Hash> hashes);
 
-    List<Hash> readFreeHashes();
+    List<Hash> readFreeHashes(int quantity);
 
-    CompletableFuture<List<Hash>> readFreeHashesAsync();
+    CompletableFuture<List<Hash>> readFreeHashesAsync(int quantity);
 
     void generateAndSaveHashes();
 

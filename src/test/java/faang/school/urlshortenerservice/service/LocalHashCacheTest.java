@@ -2,8 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.model.Hash;
-import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +42,10 @@ class LocalHashCacheTest {
     @DisplayName("Test get free hashes from queue")
     void testGetFreeHashFromQueue() {
         Hash hash1 = localHashCache.getFreeHashFromQueue();
-        Assert.assertEquals("NX2KAG", hash1.getHash());
+        Assertions.assertEquals("NX2KAG", hash1.getHash());
 
         Hash hash2 = localHashCache.getFreeHashFromQueue();
-        Assert.assertEquals("NX2LAG", hash2.getHash());
+        Assertions.assertEquals("NX2LAG", hash2.getHash());
 
     }
 }

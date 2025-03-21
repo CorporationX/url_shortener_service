@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.encoder.Encoder;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.HashService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ class HashServiceImplTest {
         int quantity = shortenerProperties.batchSize() * shortenerProperties.multiplier();
         hashService.generateAndSaveHashes();
         List<Hash> hashes =  hashRepository.findAll();
-        Assert.assertEquals(quantity, hashes.size());
+        Assertions.assertEquals(quantity, hashes.size());
     }
 
     @Test
@@ -76,7 +76,7 @@ class HashServiceImplTest {
     void testGenerateHashes() {
         int quantity = 5;
         List<Hash> hashes = hashService.generateHashes(quantity);
-        Assert.assertEquals(quantity, hashes.size());
+        Assertions.assertEquals(quantity, hashes.size());
     }
 
     @Test
@@ -84,7 +84,7 @@ class HashServiceImplTest {
     void testGenerateHashesAsync() {
         int quantity = 5;
         CompletableFuture<List<Hash>> hashes = hashService.generateHashesAsync(quantity);
-        Assert.assertEquals(quantity, hashes.join().size());
+        Assertions.assertEquals(quantity, hashes.join().size());
     }
 
     @Test
@@ -97,17 +97,17 @@ class HashServiceImplTest {
 
         List<Hash> readedHashes =  hashRepository.findAll();
 
-        Assert.assertEquals(hash1, readedHashes.get(0));
-        Assert.assertEquals(hash2, readedHashes.get(1));
+        Assertions.assertEquals(hash1, readedHashes.get(0));
+        Assertions.assertEquals(hash2, readedHashes.get(1));
     }
 
     @Test
     @DisplayName("Test reading new hashes")
     void testReadFreeHashes() {
         int queueSize = shortenerProperties.queueSize();
-        List<Hash> hashes = hashService.readFreeHashes();
+        List<Hash> hashes = hashService.readFreeHashes(queueSize);
 
-        Assert.assertEquals(queueSize, hashes.size());
+        Assertions.assertEquals(queueSize, hashes.size());
 
     }
 
@@ -115,8 +115,8 @@ class HashServiceImplTest {
     @DisplayName("Test async reading new hashes")
     void testReadFreeHashesAsync() {
         int queueSize = shortenerProperties.queueSize();
-        CompletableFuture<List<Hash>> hashes = hashService.readFreeHashesAsync();
+        CompletableFuture<List<Hash>> hashes = hashService.readFreeHashesAsync(queueSize);
 
-        Assert.assertEquals(queueSize, hashes.join().size());
+        Assertions.assertEquals(queueSize, hashes.join().size());
     }
 }

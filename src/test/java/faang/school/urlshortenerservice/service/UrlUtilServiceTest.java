@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,26 +47,24 @@ class UrlUtilServiceTest {
     @Test
     @DisplayName("Test shortening url")
     void testShortenUrl() {
+        String siteAddress = shortenerProperties.url().prefix();
         String url = "https://excalidraw.com/#json=aC2xh4e2J1DfKKiR2ZL1w,ELE95ANJQjpNZThWhPrpUQ";
         UrlRequestDto dto = UrlRequestDto.builder().url(url).build();
         UrlResponseDto resultDto = urlUtilService.shortenUrl(dto);
 
-        Assert.assertEquals(dto.url(), resultDto.url());
-        Assert.assertTrue(resultDto.shortUrl().length() < dto.url().length());
+        Assertions.assertEquals(dto.url(), resultDto.url());
+        Assertions.assertEquals(resultDto.shortUrl().length(), siteAddress.length() + resultDto.hash().length());
     }
 
     @Test
-    @DisplayName("Test getting url")
-    void getFullUrl() {
-        // TODO доделать тест
-/*
-        String url = "https://excalidraw.com/#json=aC2xh4e2J1DfKKiR2ZL1w,ELE95ANJQjpNZThWhPrpUQ";
+    @DisplayName("Test shortening incorrect url")
+    void testShortenIncorrectUrl() {
+        String url = "hhh.ru/test/sdfsdsdfsdfsdf/sdfsdfsdfsdf/sdfsdf";
         UrlRequestDto dto = UrlRequestDto.builder().url(url).build();
         UrlResponseDto resultDto = urlUtilService.shortenUrl(dto);
 
-        UrlRequestDto requestDto = UrlRequestDto.builder().shortUrl(resultDto.shortUrl()).build();
-        UrlResponseDto responseDto = urlUtilService.getFullUrl(requestDto);
-
-        Assert.assertEquals(url, responseDto.url());*/
+        Assertions.assertEquals(dto.url(), resultDto.url());
+        Assertions.assertTrue(resultDto.shortUrl().length() < dto.url().length());
     }
+
 }

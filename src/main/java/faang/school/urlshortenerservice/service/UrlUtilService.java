@@ -26,7 +26,7 @@ public class UrlUtilService {
         return urlResponseDto;
     }
 
-    public UrlResponseDto getFullUrl(UrlRequestDto urlRequestDto) {
+    /*public UrlResponseDto getFullUrl(UrlRequestDto urlRequestDto) {
         log.info("Try to get redirect url for short url: {}", urlRequestDto.shortUrl());
         String hash = urlRequestDto.shortUrl().substring(shortenerProperties.url().prefix().length());
 
@@ -37,6 +37,6 @@ public class UrlUtilService {
         } else {
             throw new IllegalArgumentException("Unknown url " + urlRequestDto.shortUrl());
         }
-    }
+    }*/
 
 }

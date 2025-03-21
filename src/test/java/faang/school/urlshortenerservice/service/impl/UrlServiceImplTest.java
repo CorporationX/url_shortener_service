@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.LocalHashCache;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -111,15 +112,15 @@ class UrlServiceImplTest {
 
         String hash1 =  "h11111";
         UrlResponseDto testedUrl1 = urlService.getUrlByHash(hash1);
-        Assert.assertEquals(hash1, testedUrl1.hash());
+        Assertions.assertEquals(hash1, testedUrl1.hash());
 
         String hash2 =  "h22222";
         UrlResponseDto testedUrl2= urlService.getUrlByHash(hash2);
-        Assert.assertEquals(hash2, testedUrl2.hash());
+        Assertions.assertEquals(hash2, testedUrl2.hash());
 
         String hash3 =  "notExists";
         UrlResponseDto testedUrl3 = urlService.getUrlByHash(hash3);
-        Assert.assertEquals(null, testedUrl3.hash());
+        Assertions.assertNull(testedUrl3.hash());
 
     }
 }

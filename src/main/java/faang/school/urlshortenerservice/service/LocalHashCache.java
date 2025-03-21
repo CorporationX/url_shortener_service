@@ -35,24 +35,23 @@ public class LocalHashCache {
     @PostConstruct
     public void init() {
         System.out.println("Hash local cache initialization");
-        hashes.addAll(hashService.readFreeHashes());
+        hashes.addAll(hashService.readFreeHashes(shortenerProperties.queueSize()));
     }
 
     public Hash getFreeHashFromQueue() {
         log.info("Get free hash from queue");
-        if (canUpdateHashes.compareAndSet(false, true)) {
-            updateHashesIfNeeded();
-            canUpdateHashes.set(false);
+        int queueSize = shortenerProperties.queueSize();
+        int minPercentage = shortenerProperties.minArrayHashPercentage();
+        int minThresholdSize = queueSize * minPercentage / 100;
+        log.info("Free hashes: {}/{}, threshold: {}", hashes.size(), queueSize, minThresholdSize);
+        if (hashes.size() < minThresholdSize) {
+            if (canUpdateHashes.compareAndSet(true, false)) {
+                log.info("Current hash queue size {} less than minimum percentage {}", hashes.size(), minPercentage);
+                hashService.readFreeHashesAsync(queueSize - hashes.size()).thenAccept(hashes::addAll);
+                canUpdateHashes.set(true);
+            }
         }
         return hashes.poll();
     }
 
-    private void updateHashesIfNeeded() {
-        int minPercentage = shortenerProperties.minArrayHashPercentage();
-        int thresholdSize = shortenerProperties.queueSize() * minPercentage / 100;
-        if (hashes.size() < thresholdSize) {
-            log.info("Current hash queue size {} less than minimum percentage {}", hashes.size(), minPercentage);
-            hashService.readFreeHashesAsync().thenAccept(hashes::addAll);
-        }
-    }
 }

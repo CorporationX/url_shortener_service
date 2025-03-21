@@ -45,12 +45,12 @@ server:
 
 shortener:
   batch-size: 10
-  queue-size: 100
+  queue-size: 20
   multiplier: 2
   encoder: base58
   hash-cron: "0 */1 * * * *"
   url-cron: "0 0 * * * *"
-  min-array-hash-percentage: 10
+  min-array-hash-percentage: 25
   url:
     ttl-days: 1
     prefix: http://site.com/
