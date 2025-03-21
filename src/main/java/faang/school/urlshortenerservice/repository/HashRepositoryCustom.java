@@ -7,6 +7,4 @@ import java.util.List;
 public interface HashRepositoryCustom {
 
     void save(List<Hash> hashes);
-
-    void saveHashBatch(List<Object[]> hashes);
 }

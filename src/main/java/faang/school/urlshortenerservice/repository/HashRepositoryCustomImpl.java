@@ -19,20 +19,19 @@ public class HashRepositoryCustomImpl implements HashRepositoryCustom {
 
     @Override
     @Transactional
-    public void saveHashBatch(List<Object[]> hashes) {
-
-        String sql = "INSERT INTO hash (hash) VALUES (?)";
-        jdbcTemplate.batchUpdate(sql, hashes);
-    }
-
-    @Override
-    @Transactional
     public void save(List<Hash> hashes) {
         List<List<Object[]>> batches = createBatches(hashes);
         batches.forEach(batch -> {
             saveHashBatch(batch);
             log.info("Saved batch of hashes. Batch size: {}", batch.size());
         });
+    }
+
+    @Transactional
+    private void saveHashBatch(List<Object[]> hashes) {
+
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
+        jdbcTemplate.batchUpdate(sql, hashes);
     }
 
     private List<List<Object[]>> createBatches(List<Hash> freeHashes) {
