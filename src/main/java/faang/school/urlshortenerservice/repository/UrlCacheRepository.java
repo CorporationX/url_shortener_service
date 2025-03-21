@@ -23,10 +23,6 @@ public class UrlCacheRepository {
 
     public String getEndPointByHash(String hash) {
         Object value = redisTemplate.opsForValue().get(prefix + hash);
-        if (value == null) {
-            return null;
-        } else {
-            return (String) value;
-        }
+        return value == null ? null : value.toString();
     }
 }

@@ -29,9 +29,6 @@ public class UrlService {
     private final UrlValidator validator;
     private final String hostUrl;
 
-    @Value("${spring.shortlink-interlayer}")
-    private final String interlayer;
-
     @Transactional
     public UrlShortenerResponse create(UrlShortenerRequest request) {
         log.info("creating a short link");
@@ -42,7 +39,6 @@ public class UrlService {
         Url url = Url.builder()
                 .url(request.endPoint())
                 .hash(hash.getHash())
-                .createdAt(OffsetDateTime.now())
                 .build();
 
         log.info("saving shortlink in DB");
@@ -50,7 +46,7 @@ public class UrlService {
         log.info("caching shortlink");
         urlCacheRepository.cacheCouple(hash.getHash(), url.getUrl());
 
-        String shortLink = hostUrl + interlayer + "/" + hash.getHash();
+        String shortLink = hostUrl + "url/" + hash.getHash();
 
         return new UrlShortenerResponse(shortLink, request.endPoint());
     }
@@ -60,7 +56,7 @@ public class UrlService {
         log.info("getting endPoint");
         String shortLink = hostUrl + hash;
         String cachedEndPoint = urlCacheRepository.getEndPointByHash(hash);
-        if (cachedEndPoint == null) {
+        if (cachedEndPoint == null || cachedEndPoint.isEmpty()) {
             Url url = urlRepository.getUrlByHash(hash).orElseThrow(() -> new EntityNotFoundException("url not found"));
             urlCacheRepository.cacheCouple(hash, url.getUrl());
             return new UrlShortenerResponse(shortLink, url.getUrl());

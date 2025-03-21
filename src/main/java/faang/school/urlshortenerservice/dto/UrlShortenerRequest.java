@@ -6,6 +6,6 @@ import jakarta.validation.constraints.Size;
 
 public record UrlShortenerRequest(@NotBlank
                                   @Size(min = 9)
-                                  @Pattern(regexp = "^https?:\\/\\/.+\\..+$")
+                                  @Pattern(regexp = "^https?:\\/\\/.+\\..+$", message = "Url invalid")
                                   String endPoint) {
 }

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.OffsetDateTime;
 
@@ -26,6 +28,7 @@ public class Url {
     @Column(name = "url")
     private String url;
 
+    @CreatedDate
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 }
