@@ -21,20 +21,27 @@ spring:
     redis:
       port: 6379
       host: localhost
-task:
-  execution:
-    pool:
-     core-size: 4
-     max-size: 8
-     keep-alive: 60
+
 hash:
-  batch-size: 10
+  hash-generator:
+      batch-size: 1000
+      core-size: 4
+      max-size: 8
+      keep-alive: 60
+      queue-capacity: 10
+  local-cache:
+      cache-size: 100
+      core-size: 4
+      max-size: 8
+      keep-alive: 60
+      queue-capacity: 10
+      max-fill-threshold: 0.2
 
 
 server:
   port: 8080
   servlet:
-    context-path: "url-shortener/api"
+    context-path: "/url-shortener/api"
 
 logging:
   level:

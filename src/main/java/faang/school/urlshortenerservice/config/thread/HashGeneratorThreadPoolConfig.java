@@ -12,16 +12,18 @@ import java.util.concurrent.Executor;
 @Slf4j
 @EnableAsync
 @Configuration
-public class ThreadPoolConfig {
+public class HashGeneratorThreadPoolConfig {
 
-    @Value("${task.execution.pool.core-size}")
+    @Value("${hash.hash-generator.core-size}")
     private int corePoolSize;
 
-    @Value("${task.execution.pool.max-size}")
+    @Value("${hash.hash-generator.max-size}")
     private int maxPoolSize;
 
-    @Value("${task.execution.pool.keep-alive}")
+    @Value("${hash.hash-generator.keep-alive}")
     private int keepAliveSeconds;
+    @Value("${hash.hash-generator.queue-capacity}")
+    private int queueCapacity;
 
     @Bean("hashGenerationThreadPool")
     public Executor hashGenerationThreadPool() {
@@ -33,6 +35,7 @@ public class ThreadPoolConfig {
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setKeepAliveSeconds(keepAliveSeconds);
+        executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix("HashGenerationThreadPool-");
         executor.initialize();
 

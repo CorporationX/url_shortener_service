@@ -20,7 +20,7 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
             SELECT hash
             FROM hash
             ORDER BY random()
-            LIMIT :n
+            LIMIT :amount
             )
         RETURNING hash
         """, nativeQuery = true)

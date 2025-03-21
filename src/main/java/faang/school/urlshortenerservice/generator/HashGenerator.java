@@ -16,11 +16,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    @Value("${hash.batch-size}")
+    @Value("${hash.hash-generator.batch-size}")
     private int batchSize;
 
     private final HashRepository hashRepo;
-    private Base62Encoder base62Encoder;
+    private final Base62Encoder base62Encoder;
 
     @Async("hashGenerationThreadPool")
     @Transactional
