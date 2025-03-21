@@ -2,9 +2,8 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.dto.UrlShortDto;
 import faang.school.urlshortenerservice.exceptions.UrlNotFoundException;
-import faang.school.urlshortenerservice.cache.UrlCache;
+import faang.school.urlshortenerservice.cache.UrlRedisCache;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,28 +16,28 @@ import java.util.Optional;
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
-    private final UrlCache urlCache;
+    private final UrlRedisCache urlRedisCache;
     private final HashCache hashCache;
 
     @Transactional
     @Override
-    public UrlShortDto createShortUrl(UrlDto dto) {
+    public UrlDto createShortUrl(UrlDto dto, String domain) {
         String hash = hashCache.getHash();
         urlRepository.save(dto.url(), hash);
-        urlCache.save(dto.url(), hash);
-        return new UrlShortDto("https://short.url/" + hash);
+        urlRedisCache.save(dto.url(), hash);
+        return new UrlDto(domain + hash);
     }
 
     @Override
     public UrlDto getLongUrl(String hash) {
-        Optional<String> longUrlFromCache = urlCache.getUrlByHash(hash);
+        Optional<String> longUrlFromCache = urlRedisCache.getUrlByHash(hash);
         if (longUrlFromCache.isPresent()) {
             return new UrlDto(longUrlFromCache.get());
         }
 
         Optional<String> longUrl = urlRepository.getUrlByHash(hash);
         if (longUrl.isPresent()) {
-            urlCache.save(hash, longUrl.get());
+            urlRedisCache.save(hash, longUrl.get());
             return new UrlDto(longUrl.get());
         }
 

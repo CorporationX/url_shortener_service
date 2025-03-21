@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,8 @@ public class UrlJdbcRepository implements UrlRepository {
     @Transactional
     @Override
     public void save(String url, String hash) {
-        String sql = "INSERT INTO hash (url, hash_value) VALUES(?,?)";
-        jdbcTemplate.update(sql, url, hash);
+        String sql = "INSERT INTO url (url, hash, created_at) VALUES(?, ?, ?)";
+        jdbcTemplate.update(sql, url, hash, LocalDateTime.now());
     }
 
     @Override

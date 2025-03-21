@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-public class HashCache {
+public class HashCache implements Cache {
 
     private final ThreadPoolProperties threadPoolProperties;
     private final ExecutorService executorService;
@@ -26,15 +26,19 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashQueue = new ConcurrentLinkedQueue<>();
+        generatorService.generateHashBatch();
+        hashQueue.addAll(hashRepository.getHashBatch());
     }
 
     public String getHash() {
-        if (hashQueue.size() > threadPoolProperties.getCacheSize() * threadPoolProperties.getRefillThreshold()) {
-            return hashQueue.poll();
-        } else {
+        if (isQueueMinSize()) {
             refillCache();
-            return hashQueue.poll();
         }
+        return hashQueue.poll();
+    }
+
+    private boolean isQueueMinSize() {
+        return hashQueue.size() > threadPoolProperties.getCacheSize() * threadPoolProperties.getRefillThreshold();
     }
 
     private void refillCache() {

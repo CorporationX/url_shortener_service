@@ -21,7 +21,7 @@ class HashGeneratorServiceTest {
     private HashJdbcRepository hashJdbcRepository;
 
     @Mock
-    private BaseEncoderService baseEncoderService;
+    private BaseEncoder baseEncoder;
 
     @InjectMocks
     private HashGeneratorService hashGeneratorService;
@@ -31,13 +31,13 @@ class HashGeneratorServiceTest {
         List<Long> uniqueNumbers = Arrays.asList(1L, 2L, 3L);
         List<String> hashes = Arrays.asList("hash1", "hash2", "hash3");
         when(hashJdbcRepository.getUniqueNumbers()).thenReturn(uniqueNumbers);
-        when(baseEncoderService.encode(uniqueNumbers)).thenReturn(hashes);
+        when(baseEncoder.encode(uniqueNumbers)).thenReturn(hashes);
         doNothing().when(hashJdbcRepository).save(hashes);
 
         hashGeneratorService.generateHashBatch();
 
         verify(hashJdbcRepository).getUniqueNumbers();
-        verify(baseEncoderService).encode(uniqueNumbers);
+        verify(baseEncoder).encode(uniqueNumbers);
         verify(hashJdbcRepository).save(hashes);
     }
 }

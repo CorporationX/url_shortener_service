@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "hash")
-public class HashProperties {
+@ConfigurationProperties(prefix = "hash-cache")
+public class HashCacheProperties {
 
-    private int cacheSize;
+    private int size;
 
     private int batchSize;
 
-    private int cacheTtl;
+    private int ttl;
 }

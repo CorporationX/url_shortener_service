@@ -24,10 +24,10 @@ logging:
   level:
     root: info
 
-hash:
-  cache-ttl: 1 #day
+hash-cache:
+  ttl: 1 #day
   batch-size: 10
-  cache-size: 1000
+  size: 1000
 
 url:
   cleaner:

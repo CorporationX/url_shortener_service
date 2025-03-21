@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UrlCache {
+public class UrlRedisCache {
 
     private final StringRedisTemplate redisTemplate;
 

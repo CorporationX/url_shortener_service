@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import faang.school.urlshortenerservice.properties.HashProperties;
+import faang.school.urlshortenerservice.properties.HashCacheProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +14,12 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    private final HashProperties hashProperties;
+    private final HashCacheProperties hashCacheProperties;
 
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(hashProperties.getCacheTtl()))
+                .entryTtl(Duration.ofDays(hashCacheProperties.getTtl()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }
