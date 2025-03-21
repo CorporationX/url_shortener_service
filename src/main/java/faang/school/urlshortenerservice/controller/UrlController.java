@@ -26,7 +26,7 @@ public class UrlController {
         return redirectView;
     }
 
-    @PostMapping
+    @PostMapping("/short")
     public URL getShortUrl(@RequestBody URL url) {
         return urlService.getShortUrl(url);
     }
