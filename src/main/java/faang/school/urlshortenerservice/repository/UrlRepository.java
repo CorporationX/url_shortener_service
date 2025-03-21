@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, String> {
 
@@ -15,4 +16,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING u.hash
             """)
     List<String> deleteOutdatedUrls(LocalDateTime date);
+
+    Optional<Url> findByHash(String hash);
 }
