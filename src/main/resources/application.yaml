@@ -24,8 +24,8 @@ spring:
 
   async:
     core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 25
+    max-pool-size: 20
+    queue-capacity: 30
     thread-name-prefix: AsyncThread-
 
   data:
@@ -44,8 +44,8 @@ server:
   port: 8080
 
 shortener:
-  batch-size: 10
-  queue-size: 20
+  batch-size: 100
+  queue-size: 1000
   multiplier: 2
   encoder: base58
   hash-cron: "0 */1 * * * *"
@@ -61,7 +61,7 @@ logging:
     root: info
     org:
       hibernate:
-        SQL: DEBUG
+        SQL: INFO
         engine:
           jdbc:
             batch:

@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -51,7 +53,21 @@ public class LocalHashCache {
                 canUpdateHashes.set(true);
             }
         }
-        return hashes.poll();
+
+        Hash hash;
+        try {
+            hash = hashes.remove();
+        }catch(NoSuchElementException e) {
+            log.info("Alert! Need to fill queue urgently!");
+            hashService.readFreeHashes(queueSize);
+        }
+
+        try {
+            hash = hashes.poll(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Error getting value from queue!");
+        }
+        return hash;
     }
 
 }

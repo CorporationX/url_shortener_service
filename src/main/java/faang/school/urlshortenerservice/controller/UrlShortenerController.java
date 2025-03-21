@@ -27,7 +27,7 @@ public class UrlShortenerController {
     private final UrlService urlService;
 
     @PostMapping("/create")
-    UrlResponseDto createShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
+    public UrlResponseDto createShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
         log.info("Received request: {}", urlRequestDto);
         return urlUtilService.shortenUrl(urlRequestDto);
     }
