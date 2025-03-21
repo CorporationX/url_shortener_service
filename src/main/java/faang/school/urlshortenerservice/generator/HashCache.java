@@ -31,6 +31,7 @@ public class HashCache {
             if (!isRunNewGenerator.compareAndExchange(false, true)) {
                 hashGenerator.generateBatch();
                 isRunNewGenerator.set(true);
+//                TODO чтобы ставить на false
             }
         }
         try {
