@@ -30,6 +30,7 @@ public class HashCache {
     @PostConstruct
     public void initCash() {
         hashQueue = new LinkedBlockingDeque<>(cacheSize);
+        hashGenerator.generateHash();
         hashQueue.addAll(hashGenerator.getHashes());
         log.info("Кэш хэшей инициализирован");
     }

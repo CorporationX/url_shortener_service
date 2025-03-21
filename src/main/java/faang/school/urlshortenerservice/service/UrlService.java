@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 @Slf4j
@@ -30,27 +29,28 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlEventPublisher urlEventPublisher;
 
-    @Value("${hash.cleanup.period}")
-    private Period hashCleanupPeriod;
-
     @Value("${shortener.base-url}")
     private String baseUrl;
 
     @Transactional
     public UrlResponseDto createShortUrl(UrlRequestDto urlRequestDto,
                                          String userId) {
+        String originalUrl = urlRequestDto.getOriginalUrl();
+
+        String hashByUrl = urlCache.getHashByUrl(originalUrl);
+        if (hashByUrl != null && !hashByUrl.isEmpty()) {
+            return new UrlResponseDto(baseUrl + hashByUrl);
+        }
+
         String hash = hashCache.getHash();
         Url url = Url.builder()
+                .url(originalUrl)
                 .hash(hash)
-                .url(urlRequestDto.getOriginalUrl())
                 .build();
+        urlCache.saveUrl(url);
+        urlEventPublisher.publishShortUrlCreated(hash, originalUrl, userId);
 
-        urlCache.saveUrlByHash(url);
-        urlEventPublisher.publishShortUrlCreated(hash, url.getUrl(), userId);
-
-        return UrlResponseDto.builder()
-                .shortUrl(baseUrl + hash)
-                .build();
+        return new UrlResponseDto(baseUrl + hash);
     }
 
     public String getUrlFromHash(String hash) {
@@ -58,8 +58,7 @@ public class UrlService {
     }
 
     @Transactional
-    public void deleteOldUrl() {
-        LocalDateTime fromDate = LocalDateTime.now().minus(hashCleanupPeriod);
+    public void deleteOldUrl(LocalDateTime fromDate) {
         List<Hash> hashes = urlRepository.removeOldUrlAndGetFreeHashes(fromDate);
 
         if (!hashes.isEmpty()) {

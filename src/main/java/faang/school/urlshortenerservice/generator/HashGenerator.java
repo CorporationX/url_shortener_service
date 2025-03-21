@@ -5,15 +5,16 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -24,15 +25,17 @@ public class HashGenerator {
     @Value("${hash.generator.batch-size:1000}")
     private int batchSize;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void generateHash() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         if (uniqueNumbers.isEmpty()) {
             throw new EntityNotFoundException("Не удалось получить уникальные числа для генерации хэшей");
         }
         List<Hash> hashes = baseEncoder.encode(uniqueNumbers);
+        log.info("Сгенерировано {} хэшей", hashes.size());
 
         hashRepository.saveAll(hashes);
+        log.info("Save in repository");
     }
 
     @Transactional
@@ -47,6 +50,10 @@ public class HashGenerator {
 
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<String>> getHashesAsync() {
-        return CompletableFuture.supplyAsync(this::getHashes);
+        return CompletableFuture.supplyAsync(this::getHashes)
+                .thenApply(hashes -> {
+                    log.info("Получено {} новых хэшей", hashes.size());
+                    return hashes;
+                });
     }
 }
