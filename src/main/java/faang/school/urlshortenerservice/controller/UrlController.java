@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/url")
+@RestController
+@RequestMapping("/url")
 @Slf4j
 @RequiredArgsConstructor
 public class UrlController {
