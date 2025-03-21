@@ -28,6 +28,7 @@ hash:
   queue-capacity: 10
   cache-size: 100
   min-cache-percentage: 0.2
+  max-length: 6
 
 url:
   domain: http://localhost:${server.port}/

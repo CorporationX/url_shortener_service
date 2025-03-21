@@ -18,6 +18,10 @@ public class CleanerScheduler {
     private final HashRepository hashRepository;
 
     @Scheduled(cron = "${url.schedule.cleaner}")
+    public void startCleaner() {
+        cleanExpiredUrls();
+    }
+
     @Transactional
     public void cleanExpiredUrls() {
         List<Hash> freeHashes = urlRepository.removeExpiredUrls().stream()
