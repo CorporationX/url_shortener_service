@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/url__V000__init_seq.sql
+
+  - include:
+      file: db/changelog/changeset/url__V001__init.sql
