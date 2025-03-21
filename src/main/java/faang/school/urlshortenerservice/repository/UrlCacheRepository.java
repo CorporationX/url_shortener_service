@@ -1,4 +1,16 @@
 package faang.school.urlshortenerservice.repository;
 
-public interface UrlCacheRepository {
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class UrlCacheRepository {
+
+    private final StringRedisTemplate stringRedisTemplate;
+
+    public void save(String hash, String url) {
+        stringRedisTemplate.opsForValue().set(hash, url);
+    }
 }

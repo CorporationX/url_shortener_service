@@ -1,8 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,6 +25,7 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final HashCache hashCache;
+    private final UrlCacheRepository urlCacheRepository;
 
     @Value("${app.older_than_year}")
     @Setter
@@ -43,5 +47,14 @@ public class UrlServiceImpl implements UrlService {
 //       if (hashForUrl.isBlank()) {
 //           hashRepository.
 //       }
+        return "";
+    }
+
+    @Override
+    public UrlDto shortenUrl(UrlDto urlDto) {
+        String hash = hashCache.getHash();
+        urlRepository.save(new Url(hash, urlDto.getUrl()));
+        urlCacheRepository.save(hash, urlDto.getUrl());
+        return new UrlDto(hash);
     }
 }

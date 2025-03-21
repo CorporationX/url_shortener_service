@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,16 +15,17 @@ public class HashCache {
     @Value("${hash.cache_size:1000}") // Значение по умолчанию: 1000
     private int cacheSize;
 
-    private final BlockingQueue<String> hashQueue;
+    private final HashGenerator hashGenerator;
+    private BlockingQueue<String> hashQueue;
 
-    public HashCache(int cacheSize) {
-        this.cacheSize = cacheSize;
-        this.hashQueue  = new ArrayBlockingQueue<>(cacheSize);
+    @PostConstruct
+    public void init() {
+        this.hashQueue = new ArrayBlockingQueue<>(cacheSize);
     }
 
     public String getHash(){
         if ((hashQueue.size() * 100) / cacheSize < 20 ){
-//            вызываем
+            hashGenerator.generateBatch();
         }
         try {
             return hashQueue.take();
