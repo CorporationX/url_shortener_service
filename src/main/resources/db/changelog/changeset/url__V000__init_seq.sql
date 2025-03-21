@@ -1,0 +1,3 @@
+CREATE SEQUENCE IF NOT EXISTS unique_hash_number_sequence
+    START WITH 1
+    INCREMENT BY 50;
