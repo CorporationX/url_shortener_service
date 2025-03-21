@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
 
     @Transactional()
     public void generateHash(int size) {
@@ -25,7 +24,7 @@ public class HashGenerator {
         }
 
         List<Hash> hashes = uniqueNumbers.stream()
-                .map(number -> new Hash(base62Encoder.encodeSingle(number)))
+                .map(number -> new Hash(Base62Encoder.encode(number)))
                 .toList();
 
         hashRepository.save(hashes);

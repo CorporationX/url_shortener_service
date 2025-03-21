@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice;
 
+import faang.school.urlshortenerservice.config.SchedulerProperties;
 import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.config.HashBatchProperties;
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
@@ -18,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 @EnableConfigurationProperties({ThreadPoolProperties.class, HashBatchProperties.class, LocalCacheProperties.class,
-RedisProperties.class, UrlServiceProperties.class})
+RedisProperties.class, UrlServiceProperties.class, SchedulerProperties.class})
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)

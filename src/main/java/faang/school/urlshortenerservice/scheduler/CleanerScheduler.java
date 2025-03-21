@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.config.HashBatchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -18,13 +17,12 @@ import java.util.List;
 public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
-    private final HashBatchProperties properties;
 
     @Scheduled(cron = "${clean.cron}")
     @Transactional
     public void cleanExpiredUrls() {
         log.info("Starting clean expired urls");
-        List<Hash> freeHashes = urlRepository.findHashesWithExpiredDates(LocalDateTime.now().minusYears(1));
+        List<Hash> freeHashes = urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(1));
         if ((freeHashes != null) && (!freeHashes.isEmpty())) {
             hashRepository.save(freeHashes);
             log.info("Saved array of hashes with size: {}", freeHashes.size());

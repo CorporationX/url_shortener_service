@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.config.HashBatchProperties;
+import faang.school.urlshortenerservice.config.LocalCacheProperties;
 import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -16,11 +16,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
@@ -36,20 +35,23 @@ public class HashGeneratorIntegrationTest {
     private HashRepository hashRepository;
 
     @Autowired
+    private Executor hashGeneratorExecutor;
+
+    @Autowired
+    private LocalCacheProperties properties;
+
+    @Autowired
+    private ThreadPoolProperties poolProperties;
+
+    @Autowired
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private Base62Encoder base62Encoder;
-
-    @Autowired
-    private HashBatchProperties properties;
-
-    @Autowired
-    private ThreadPoolProperties generatorPoolProperties;
+    private LocalCache localCache;
 
     @BeforeEach
     void setUp() {
+
         hashRepository.deleteAll();
     }
 
@@ -63,9 +65,9 @@ public class HashGeneratorIntegrationTest {
         assertEquals(3, hashes.size());
 
         List<String> expectedHashes = List.of(
-                base62Encoder.encodeSingle(1L),
-                base62Encoder.encodeSingle(2L),
-                base62Encoder.encodeSingle(3L)
+                Base62Encoder.encode(1L),
+                Base62Encoder.encode(2L),
+                Base62Encoder.encode(3L)
         );
 
         List<String> actualHashes = hashes.stream()

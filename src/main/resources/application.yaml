@@ -13,17 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        order_inserts: true # Оптимизация порядка вставок
-        order_updates: true # Оптимизация порядка обновлений
+        order_inserts: true           # Оптимизация порядка вставок
+        order_updates: true           # Оптимизация порядка обновлений
         jdbc:
-          batch_size: 100 # Размер пакета
-          batch_versioned_data: true # Пакетная обработка версионных данных
+          batch_size: 100             # Размер пакета
+          batch_versioned_data: true  # Пакетная обработка версионных данных
 
   data:
     redis:
       host: localhost
       port: 6379
-      ttl: 5 # day
+      ttl: 5                           # TTL для Url в кэше - 5 дней
 
   mvc:
     servlet:
@@ -41,8 +41,7 @@ logging:
 
 url:
   service:
-    baseShortUrl: "/api/v1/shortener/urls/"
-    #baseShortUrl: "http://api/v1/shortener/urls/"
+    baseShortUrl: "http://api/v1/shortener/urls/"
 
 thread:
   pool:
@@ -51,11 +50,13 @@ thread:
 
 hash:
   local-cache:
-    capacity: 50
+    capacity: 1000
     fillPercentage: 20
 
-generate:
-  cron: "0 */1 * * * *"
+generate:                       # Scheduler для регулярного запуска хэш генератора
+  cron: "0 */1 * * * *"         # запускать каждую минуту
+  hash:
+    quantity: 1000              # генерировать количество хэшей
 
-clean:
-  cron: "0 0 0 * * *"
+clean:                          # Scheduler для регулярного запуска удаления устаревших URL из базы
+  cron: "0 0 0 * * *"           # один раз в сутки в полночь

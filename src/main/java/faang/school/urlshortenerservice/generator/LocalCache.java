@@ -24,19 +24,23 @@ public class LocalCache {
     private final ThreadPoolProperties poolProperties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
     private BlockingQueue<Hash> hashes;
+    private int maxFreeSize;
+
 
     @PostConstruct
     public void init() {
         hashes = new ArrayBlockingQueue<>(properties.getCapacity());
+        maxFreeSize = (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100);
         fillCacheSync(properties.getCapacity());
-        log.info("LocalHash initialization completed.");
+        log.info("LocalCache initialization completed.");
     }
 
     public String getHash() {
         if (hashes.isEmpty()) {
-            fillCacheSync(1);
+            isFilling.compareAndSet(false, true);
+            return hashGenerator.getHashes(1).get(0).getHash();
         }
-        if (hashes.remainingCapacity() > (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100)) {
+        if (hashes.remainingCapacity() > maxFreeSize) {
             if (isFilling.compareAndSet(false, true)) {
                 log.info("Start fill cache async");
                 fillCacheAsync(properties.getCapacity());
@@ -50,12 +54,12 @@ public class LocalCache {
         return hash.getHash();
     }
 
-    public void fillCacheSync(int amount) {
+    private void fillCacheSync(int amount) {
         List<Hash> newHashes = hashGenerator.getHashes(amount);
         queuePush(newHashes);
     }
 
-    public void fillCacheAsync(int amount) {
+    private void fillCacheAsync(int amount) {
         CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getPoolSize()),
                         hashGeneratorExecutor)
                 .thenAccept(this::queuePush)
@@ -66,7 +70,7 @@ public class LocalCache {
                 .thenRun(() -> isFilling.set(false));
     }
 
-    public void queuePush(List<Hash> newHashes) {
+    private void queuePush(List<Hash> newHashes) {
         for (Hash hash : newHashes) {
             if (!hashes.offer(hash)) {
                 break;

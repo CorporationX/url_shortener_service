@@ -12,9 +12,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(nativeQuery = true,
             value = """
                     DELETE FROM url
-                    WHERE url.created_at < :from
+                    WHERE url.created_at < :before
                     RETURNING hash
                     """)
-    List<Hash> findHashesWithExpiredDates(@Param("from") LocalDateTime from);
+    List<Hash> deleteOldUrlsAndGetReleasedHashes(@Param("before") LocalDateTime createdBefore);
 
 }
