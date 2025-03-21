@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
@@ -18,6 +19,8 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private BlockingQueue<String> hashQueue;
 
+    private AtomicBoolean isRunNewGenerator = new AtomicBoolean(false);
+
     @PostConstruct
     public void init() {
         this.hashQueue = new ArrayBlockingQueue<>(cacheSize);
@@ -25,7 +28,10 @@ public class HashCache {
 
     public String getHash(){
         if ((hashQueue.size() * 100) / cacheSize < 20 ){
-            hashGenerator.generateBatch();
+            if (!isRunNewGenerator.compareAndExchange(false, true)) {
+                hashGenerator.generateBatch();
+                isRunNewGenerator.set(true);
+            }
         }
         try {
             return hashQueue.take();
