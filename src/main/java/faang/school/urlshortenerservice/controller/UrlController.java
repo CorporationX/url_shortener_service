@@ -27,7 +27,7 @@ public class UrlController {
     }
 
     @PostMapping
-    public URL getShortUrl(@RequestBody URL url){
+    public URL getShortUrl(@RequestBody URL url) {
         return urlService.getShortUrl(url);
     }
 }

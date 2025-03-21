@@ -22,9 +22,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     List<String> deleteRecordsAndReturnHash(LocalDateTime maxTimeClear);
 
     @Query(nativeQuery = true, value = """
-        SELECT url 
-        FROM url 
-        WHERE hash = :hash
-    """)
+                SELECT url 
+                FROM url 
+                WHERE hash = :hash
+            """)
     Optional<String> findUrlByHash(@Param("hash") String hash);
 }

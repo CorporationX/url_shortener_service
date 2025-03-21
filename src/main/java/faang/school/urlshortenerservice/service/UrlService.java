@@ -24,7 +24,7 @@ public class UrlService {
     public String getOriginalUrl(String hash) {
         String cacheUrl = urlCacheRepository.get(hash)
                 .orElseThrow(() -> new UrlNotFoundException("Url was not found in cache redis"));
-        if (cacheUrl == null) {
+        if (cacheUrl.isBlank()) {
             String urlDataSource = urlRepository.findUrlByHash(hash)
                     .orElseThrow(() -> new UrlNotFoundException("Url was not found in dataSource"));
             urlCacheRepository.save(hash, urlDataSource);

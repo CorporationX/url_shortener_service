@@ -27,7 +27,7 @@ public class HashCache {
     private AtomicBoolean isFilling = new AtomicBoolean(false);
 
     @Autowired
-    @Qualifier("hashCachePool")
+    @Qualifier("hashCacheThreadPool")
     private ExecutorService pool;
 
     @Value("${hash.cache_size}")
@@ -45,7 +45,7 @@ public class HashCache {
     }
 
     @Transactional
-    @Async("hashCachePool")
+    @Async("hashCacheThreadPool")
     public String getHash() {
         if (needsFilling()) {
             CompletableFuture.runAsync(() -> {

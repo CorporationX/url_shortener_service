@@ -21,7 +21,7 @@ public class Base62Encoder {
         numbers.forEach((number) -> {
             StringBuilder builder = new StringBuilder();
             while (number > 0) {
-                int rem = (int) (BASE_62_SIZE % number);
+                int rem = (int) (number % BASE_62_SIZE);
                 builder.append(BASE_62_CHARACTERS.charAt(rem));
                 number /= BASE_62_SIZE;
             }

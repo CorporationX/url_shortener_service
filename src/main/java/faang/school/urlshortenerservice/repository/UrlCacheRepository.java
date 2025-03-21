@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.util.Optional;
 
+@Repository
 @Slf4j
 @RequiredArgsConstructor
-@Repository
 public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -21,8 +21,10 @@ public class UrlCacheRepository {
 
     public Optional<String> get(String hash) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(hash))
-                .or(() -> { log.info("Hash not found in redis.");
-                    return Optional.empty(); });
+                .or(() -> {
+                    log.info("Hash not found in redis.");
+                    return Optional.empty();
+                });
     }
 
     public void save(String hash, String url) {

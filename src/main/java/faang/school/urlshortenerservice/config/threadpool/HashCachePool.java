@@ -10,11 +10,11 @@ import java.util.concurrent.Executors;
 @Configuration
 public class HashCachePool {
 
-    @Value("thread_pool.hash_cache_size")
+    @Value("${thread_pool.hash_cache_size}")
     private int poolSize;
 
     @Bean
-    public ExecutorService hashCachePool() {
+    public ExecutorService hashCacheThreadPool() {
         return Executors.newFixedThreadPool(poolSize);
     }
 }
