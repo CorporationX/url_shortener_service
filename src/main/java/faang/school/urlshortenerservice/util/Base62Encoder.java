@@ -20,6 +20,6 @@ public class Base62Encoder {
     private String encodeToBase62(Long number) {
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
         byte[] bytes = buffer.putLong(number).array();
-        return new String(base62.encode(bytes)).substring(3, 9);
+        return new String(base62.encode(bytes));
     }
 }
