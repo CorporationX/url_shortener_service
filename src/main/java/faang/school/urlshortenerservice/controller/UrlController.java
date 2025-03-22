@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +26,14 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public String redirectToOriginalUrl(@PathVariable("hash") String hash) {
+    public String redirectToOriginalUrl(@PathVariable("hash") String hash, HttpServletResponse response) {
         try {
             String url = urlService.findUrlByHash(hash);
+            response.setStatus(HttpStatus.FOUND.value());
             return "redirect:" + url;
         } catch (UrlNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
 }

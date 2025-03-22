@@ -18,7 +18,7 @@ public class UrlService {
 
     private final HashCache cache;
     private final UrlRepository urlRepository;
-    private final UrlCacheRepository cacheRepository;
+    private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
     public String shorten(UrlRequestDto requestDto) {
@@ -31,13 +31,13 @@ public class UrlService {
         shortenUrl.setCreatedAt(LocalDateTime.now());
 
         urlRepository.save(shortenUrl);
-        cacheRepository.save(hash, url);
+        urlCacheRepository.save(hash, url);
 
         return hash;
     }
 
     public String findUrlByHash(String hash) {
-        return cacheRepository.findByHash(hash).orElseGet(() -> findUrlInDB(hash));
+        return urlCacheRepository.findByHash(hash).orElseGet(() -> findUrlInDB(hash));
 
     }
 

@@ -30,9 +30,8 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(UrlNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleUrlNotFoundException(UrlNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("URL не найден: " + ex.getMessage());
+    public String handleUrlNotFoundException(UrlNotFoundException ex) {
+        return "URL не найден: " + ex.getMessage();
     }
 
     @ExceptionHandler(Exception.class)
