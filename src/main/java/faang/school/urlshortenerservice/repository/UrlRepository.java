@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.model.Url;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,5 +22,10 @@ public class UrlRepository {
         """;
 
     return jdbcTemplate.queryForList(sql, String.class);
+  }
+
+  public void saveUrl(Url url) {
+    String sql = "INSERT INTO url (hash, url, created_at) VALUES (?, ?, ?)";
+    jdbcTemplate.update(sql, url.getHash(), url.getUrl(), url.getCreatedAt());
   }
 }

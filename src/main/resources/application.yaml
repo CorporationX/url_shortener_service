@@ -25,6 +25,7 @@ logging:
     root: info
 
 url-shortener-service:
+  api-version: /api/v1
   hash-batch-size: 10
   unique-numbers-count: 1000
   cleaner-cron: "0 0 1 * * ?"
