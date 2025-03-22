@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.dto.ApiError;
 import faang.school.urlshortenerservice.util.ValidationErrorUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiError<String>> handleException(final WebRequest request,
+                                                            final EntityNotFoundException exception) {
+        return handleThrowable(request, HttpStatus.NOT_FOUND, exception);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError<String>> handleException(final WebRequest request,
