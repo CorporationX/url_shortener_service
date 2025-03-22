@@ -1,0 +1,37 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT}:${POSTGRES_INTERNAL_PORT}"
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "${REDIS_EXTERNAL_PORT}:${REDIS_INTERNAL_PORT}"
+
+  redisCommander:
+    image: ghcr.io/joeferner/redis-commander:latest
+    build: .
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:${REDIS_INTERNAL_PORT}
+    ports:
+      - "${REDIS_COMMANDER_EXTERNAL_PORT}:${REDIS_COMMANDER_INTERNAL_PORT}"
+    user: redis
+
+#  app_service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    env_file: .env
+#    ports:
+#      - "${APP_SERVICE_EXTERNAL_PORT}:${APP_SERVICE_INTERNAL_PORT}"
+#    depends_on:
+#      - redisCommander
+#      - postgres
+#      - redis
