@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Url;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,5 +28,10 @@ public class UrlRepository {
   public void saveUrl(Url url) {
     String sql = "INSERT INTO url (hash, url, created_at) VALUES (?, ?, ?)";
     jdbcTemplate.update(sql, url.getHash(), url.getUrl(), url.getCreatedAt());
+  }
+
+  public Optional<String> findUrlByHash(String hash) {
+    String sql = "SELECT url FROM url WHERE hash = ?";
+    return jdbcTemplate.query(sql, rs -> rs.next() ? Optional.of(rs.getString("url")) : Optional.empty(), hash);
   }
 }

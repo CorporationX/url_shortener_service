@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -18,8 +19,8 @@ public class UrlCacheRepository {
     redisTemplate.opsForValue().set(PREFIX + hash, longUrl, 1, TimeUnit.DAYS);
   }
 
-  public String getUrl(String hash) {
-    return redisTemplate.opsForValue().get(PREFIX + hash);
+  public Optional<String> getUrl(String hash) {
+    return Optional.ofNullable(redisTemplate.opsForValue().get(PREFIX + hash));
   }
 
   public void deleteUrl(String hash) {
