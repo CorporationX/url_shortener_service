@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class UrlShortenerProperties {
   private int hashBatchSize;
   private int uniqueNumbersCount;
+  private long cacheSize;
+  private int cacheLowPercent;
 
   private ThreadPoolConfig threadPool;
 

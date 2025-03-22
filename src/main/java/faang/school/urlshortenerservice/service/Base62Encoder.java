@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Base62Encoder {
 
-  public static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  private static final String BASE_62_CHARACTERS =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   private static final int BASE_LENGTH = BASE_62_CHARACTERS.length();
 
   public List<String> encode(List<Long> numbers) {

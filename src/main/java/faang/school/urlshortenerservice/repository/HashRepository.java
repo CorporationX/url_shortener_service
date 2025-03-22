@@ -1,12 +1,11 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.properties.UrlShortenerProperties;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Slf4j
 @Repository
@@ -27,8 +26,8 @@ public class HashRepository {
         (ps, hash) -> ps.setString(1, hash));
   }
 
-  public List<String> getHashBatch() {
-    String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT ?) RETURNING hash";
-    return jdbcTemplate.queryForList(sql, String.class, properties.getHashBatchSize());
+  public List<String> findAndDelete(Long size) {
+    String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING hash";
+    return jdbcTemplate.queryForList(sql, String.class, size);
   }
 }

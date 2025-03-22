@@ -28,6 +28,8 @@ url-shortener-service:
   hash-batch-size: 10
   unique-numbers-count: 1000
   cleaner-cron: "0 0 1 * * ?"
+  cache-size: 1000
+  cache-low-percent: 20
   thread-pool:
     core-size: 3
     max-size: 10

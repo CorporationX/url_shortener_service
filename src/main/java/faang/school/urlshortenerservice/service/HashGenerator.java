@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -21,5 +22,16 @@ public class HashGenerator {
     List<String> encodedHashes = base62Encoder.encode(uniqueNumbers);
 
     hashRepository.save(encodedHashes);
+  }
+
+  @Transactional
+  @Async("threadPoolTaskExecutor")
+  public CompletableFuture<List<String>> getHashes(long amount) {
+    List<String> hashes = hashRepository.findAndDelete(amount);
+    if (hashes.size() < amount) {
+      generateBatch();
+      hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+    }
+    return CompletableFuture.completedFuture(hashes);
   }
 }
