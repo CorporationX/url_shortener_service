@@ -2,18 +2,18 @@ package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
@@ -27,24 +27,29 @@ public class HashCache {
     private int cacheSize;
 
     @Value("${hash.local-cache.max-fill-threshold}")
-    private int thresholdPercent;
+    private double thresholdPercent;
 
-    @Value("${hash.cache.batch.size}")
-    private int batchSize;
-
-    private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>(cacheSize);
+    private BlockingQueue<String> hashQueue;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
-    public String getHash() throws InterruptedException {
-        if (shouldRefill()) {
+    @PostConstruct
+    public void init() {
+        hashQueue = new LinkedBlockingQueue<>(cacheSize);
+        log.info("Очередь для хэшей инициализирована с размером: {}", cacheSize);
+        hashGenerator.generateBatch();
+
+    }
+
+    public String getHash() {
+        if (!shouldRefill()) {
             refillCache();
         }
-        return hashQueue.take();
+        return hashQueue.poll();
     }
 
     private boolean shouldRefill() {
         int currentSize = hashQueue.size();
-        int threshold = cacheSize * thresholdPercent / 100;
+        double threshold = cacheSize * thresholdPercent;
         return currentSize <= threshold && isRefilling.compareAndSet(false, true);
     }
 
@@ -52,17 +57,14 @@ public class HashCache {
         hashCacheThreadPool.execute(() -> {
             try {
                 log.info("Пополнение кэша...");
-                List<String> hashes = hashRepository.getHashBatch(batchSize);
+                List<String> hashes = hashRepository.getHashBatch(cacheSize - hashQueue.size());
                 hashQueue.addAll(hashes);
                 log.info("Добавлено {} хэшей в кэш.", hashes.size());
 
-                hashCacheThreadPool.execute(() -> {
-                    log.info("Генерация новых хэшей в БД...");
-                    hashGenerator.generateBatch();
-                });
-            } catch (DataAccessException e) {
-                log.error("Ошибка доступа к данным при пополнении кэша", e);
-            } catch (Exception e) {
+                log.info("Генерация новых хэшей в БД...");
+                hashGenerator.generateBatch();
+
+            } catch (RuntimeException e) {
                 log.error("Ошибка при пополнении кэша", e);
             } finally {
                 isRefilling.set(false);

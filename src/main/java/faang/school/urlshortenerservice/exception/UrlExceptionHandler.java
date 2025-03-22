@@ -21,4 +21,10 @@ public class UrlExceptionHandler {
     public ResponseEntity<String> handleDefaultException(Exception ex) {
         return new ResponseEntity<>("Произошла ошибка на сервере. Пожалуйста, попробуйте позже.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<String> handleUrlNotFoundException(UrlNotFoundException ex) {
+        return new ResponseEntity<>("URL не найден для предоставленного хэша.", HttpStatus.NOT_FOUND);
+    }
+
 }
