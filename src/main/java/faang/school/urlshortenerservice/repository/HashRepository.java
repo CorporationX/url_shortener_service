@@ -29,7 +29,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(value = """
                 SELECT nextval('unique_number_seq')
-                FROM generate_series(1, :number)
+                FROM generate_series(916132832, :number)
             """, nativeQuery = true)
     List<Long> getUniqueNumbers(long number);
 

@@ -18,9 +18,6 @@ public class UrlService {
 
     @Transactional
     public String createShortUrl(String longUrl, long userId) {
-        return urlCacheRepository.findByHash(longUrl)
-                .or(() -> urlRepository.findByUrl(longUrl).map(Url::getHash))
-                .orElseGet(() -> {
                     String hash = getAvailableHash();
 
                     Url url = new Url(hash, longUrl, userId);
@@ -28,7 +25,6 @@ public class UrlService {
                     urlCacheRepository.save(hash, longUrl);
 
                     return hash;
-                });
     }
 
     @Transactional
