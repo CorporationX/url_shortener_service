@@ -1,14 +1,13 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.config.HashBatchProperties;
-import faang.school.urlshortenerservice.entity.Hash;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Repository
@@ -16,33 +15,16 @@ import java.util.stream.IntStream;
 public class HashRepositoryCustomImpl implements HashRepositoryCustom {
     private final JdbcTemplate jdbcTemplate;
     private final HashBatchProperties properties;
-    private final static String SAVE_HASH_VALUES = "INSERT INTO hash (hash) VALUES (?)";
+    private static final String SAVE_HASH_VALUES = "INSERT INTO hash (hash) VALUES (?)";
 
     @Override
     @Transactional
-    public void saveAll(List<Hash> hashes) {
-        List<List<Object[]>> batches = createBatches(hashes);
+    public void saveAll(List<String> hashes) {
+        List<List<String>> batches = ListUtils.partition(hashes, properties.getBatchSize());
         batches.forEach(batch -> {
-            saveHashBatch(batch);
+            jdbcTemplate.batchUpdate(SAVE_HASH_VALUES, batch, properties.getBatchSize(),
+                    (ps, hash) -> ps.setString(1, hash));
             log.info("Saved batch of hashes. Batch size: {}", batch.size());
         });
-    }
-
-    @Override
-    @Transactional
-    public void saveHashBatch(List<Object[]> hashes) {
-
-        jdbcTemplate.batchUpdate(SAVE_HASH_VALUES, hashes);
-    }
-
-    private List<List<Object[]>> createBatches(List<Hash> freeHashes) {
-        int batchSize = properties.getBatchSize();
-        return IntStream.range(0, (freeHashes.size() + batchSize - 1) / batchSize)
-                .mapToObj(i -> freeHashes.subList(i * batchSize, Math.min((i + 1)
-                        * batchSize, freeHashes.size())))
-                .map(batch -> batch.stream()
-                        .map(hash -> new Object[]{hash.getHash()})
-                        .toList())
-                .toList();
     }
 }

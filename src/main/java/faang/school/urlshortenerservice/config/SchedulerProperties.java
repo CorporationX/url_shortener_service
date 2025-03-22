@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "generate.hash")
+@ConfigurationProperties(prefix = "hash.generator.scheduler")
 public class SchedulerProperties {
     private int quantity;
 }

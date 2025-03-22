@@ -23,7 +23,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      ttl: 5                           # TTL для Url в кэше - 5 дней
+      ttl: 5                           # TTL для хранения Url в кэше - 5 дней
 
   mvc:
     servlet:
@@ -39,10 +39,6 @@ logging:
   level:
     root: info
 
-url:
-  service:
-    baseShortUrl: "http://api/v1/shortener/urls/"
-
 thread:
   pool:
     poolSize: 5
@@ -52,11 +48,14 @@ hash:
   local-cache:
     capacity: 1000
     fillPercentage: 20
+  generator:
+    scheduler:                      # Scheduler для регулярного запуска хэш генератора
+      cron: "0 */1 * * * *"         # запускать каждую минуту
+      quantity: 1000                # генерировать количество хэшей
 
-generate:                       # Scheduler для регулярного запуска хэш генератора
-  cron: "0 */1 * * * *"         # запускать каждую минуту
-  hash:
-    quantity: 1000              # генерировать количество хэшей
-
-clean:                          # Scheduler для регулярного запуска удаления устаревших URL из базы
-  cron: "0 0 0 * * *"           # один раз в сутки в полночь
+url:
+  service:
+    baseShortUrl: "http://localhost:8080/api/v1/shortener/urls/"
+  cleaner:
+    scheduler:                      # Scheduler для регулярного запуска удаления устаревших URL из базы
+      cron: "0 0 0 * * *"           # один раз в сутки в полночь

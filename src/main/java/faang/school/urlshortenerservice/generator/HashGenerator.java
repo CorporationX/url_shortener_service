@@ -24,11 +24,9 @@ public class HashGenerator {
         if (CollectionUtils.isEmpty(uniqueNumbers)) {
             throw new RuntimeException("uniqueNumbers is not read");
         }
-
-        List<Hash> hashes = uniqueNumbers.stream()
-                .map(number -> new Hash(Base62Encoder.encode(number)))
+        List<String> hashes = uniqueNumbers.stream()
+                .map(Base62Encoder::encode)
                 .toList();
-
         hashRepository.saveAll(hashes);
         log.info("Generating hashes completed");
     }

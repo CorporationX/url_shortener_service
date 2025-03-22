@@ -15,7 +15,7 @@ public class HashGeneratorScheduler {
     private final HashGenerator hashGenerator;
     private final SchedulerProperties properties;
 
-    @Scheduled(cron = "${generate.cron}")
+    @Scheduled(cron = "${hash.generator.scheduler.cron}")
     @Async("hashGeneratorExecutorForScheduler")
     public void generateHashes() {
         log.info("Starting generating of new hashes");
