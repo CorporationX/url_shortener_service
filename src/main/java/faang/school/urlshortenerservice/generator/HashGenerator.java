@@ -35,7 +35,6 @@ public class HashGenerator {
         log.info("Сгенерировано {} хэшей", hashes.size());
 
         hashRepository.saveAll(hashes);
-        log.info("Save in repository");
     }
 
     @Transactional

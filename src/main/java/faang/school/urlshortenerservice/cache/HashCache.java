@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class HashCache {
 
     @PostConstruct
     public void initCash() {
-        hashQueue = new LinkedBlockingDeque<>(cacheSize);
+        hashQueue = new ArrayBlockingQueue<>(cacheSize);
         hashGenerator.generateHash();
         hashQueue.addAll(hashGenerator.getHashes());
         log.info("Кэш хэшей инициализирован");

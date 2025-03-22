@@ -24,8 +24,8 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Transactional
     @Query(nativeQuery = true,
             value = """
-                    DELETE FROM url
-                    WHERE url.created_at < :from
+                    DELETE FROM urls
+                    WHERE urls.created_at < :from
                     RETURNING hash
                     """)
     List<Hash> removeOldUrlAndGetFreeHashes(@Param("from") LocalDateTime from);

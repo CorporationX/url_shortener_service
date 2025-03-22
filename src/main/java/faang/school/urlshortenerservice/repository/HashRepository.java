@@ -24,10 +24,10 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Transactional
     @Query(nativeQuery = true,
             value = """
-                    DELETE FROM hash
+                    DELETE FROM hashes
                     WHERE hash IN(
                     SELECT hash
-                    FROM hash ORDER BY random()
+                    FROM hashes ORDER BY random()
                     LIMIT :batchSize)
                     RETURNING hash
                     """)

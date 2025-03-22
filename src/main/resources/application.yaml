@@ -51,11 +51,11 @@ encode-base:
 
 hash:
   generator:
-    batch-size: 10
+    batch-size: 10000
     thread-pool-size: 5
     queue-capacity: 50
   cache:
-    size: 10
+    size: 10000
     min-fill-percent: 0.2
   cleanup:
     period: P1Y

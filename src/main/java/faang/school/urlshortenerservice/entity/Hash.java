@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "hash")
+@Table(name = "hashes")
 @Getter
 @Setter
 @Builder
