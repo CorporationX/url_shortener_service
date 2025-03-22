@@ -1,8 +1,9 @@
-package faang.school.urlshortenerservice.generator;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.LocalCacheProperties;
 import faang.school.urlshortenerservice.config.ThreadPoolProperties;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +25,13 @@ public class LocalCache {
     private final ThreadPoolProperties poolProperties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
     private BlockingQueue<Hash> hashes;
-    private int maxFreeSize;
+    private int hashesAmountThreshold;
 
 
     @PostConstruct
     public void init() {
         hashes = new ArrayBlockingQueue<>(properties.getCapacity());
-        maxFreeSize = (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100);
+        hashesAmountThreshold = (properties.getCapacity() * (100 - properties.getFillPercentage()) / 100);
         fillCacheSync(properties.getCapacity());
         log.info("LocalCache initialization completed.");
     }
@@ -40,7 +41,7 @@ public class LocalCache {
             isFilling.compareAndSet(false, true);
             return hashGenerator.getHashes(1).get(0).getHash();
         }
-        if (hashes.remainingCapacity() > maxFreeSize) {
+        if (hashes.remainingCapacity() > hashesAmountThreshold) {
             if (isFilling.compareAndSet(false, true)) {
                 log.info("Start fill cache async");
                 fillCacheAsync(properties.getCapacity());

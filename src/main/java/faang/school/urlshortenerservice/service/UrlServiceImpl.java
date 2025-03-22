@@ -4,7 +4,7 @@ import faang.school.urlshortenerservice.config.UrlServiceProperties;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.generator.LocalCache;
+import faang.school.urlshortenerservice.cache.LocalCache;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

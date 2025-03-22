@@ -16,10 +16,11 @@ import java.util.stream.IntStream;
 public class HashRepositoryCustomImpl implements HashRepositoryCustom {
     private final JdbcTemplate jdbcTemplate;
     private final HashBatchProperties properties;
+    private final static String SAVE_HASH_VALUES = "INSERT INTO hash (hash) VALUES (?)";
 
     @Override
     @Transactional
-    public void save(List<Hash> hashes) {
+    public void saveAll(List<Hash> hashes) {
         List<List<Object[]>> batches = createBatches(hashes);
         batches.forEach(batch -> {
             saveHashBatch(batch);
@@ -27,11 +28,11 @@ public class HashRepositoryCustomImpl implements HashRepositoryCustom {
         });
     }
 
+    @Override
     @Transactional
-    private void saveHashBatch(List<Object[]> hashes) {
+    public void saveHashBatch(List<Object[]> hashes) {
 
-        String sql = "INSERT INTO hash (hash) VALUES (?)";
-        jdbcTemplate.batchUpdate(sql, hashes);
+        jdbcTemplate.batchUpdate(SAVE_HASH_VALUES, hashes);
     }
 
     private List<List<Object[]>> createBatches(List<Hash> freeHashes) {

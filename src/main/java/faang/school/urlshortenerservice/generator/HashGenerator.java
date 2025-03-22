@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 
 @Slf4j
@@ -19,7 +21,7 @@ public class HashGenerator {
     public void generateHash(int size) {
         log.info("Generating hashes started");
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(size);
-        if ((uniqueNumbers == null) || uniqueNumbers.isEmpty()) {
+        if (CollectionUtils.isEmpty(uniqueNumbers)) {
             throw new RuntimeException("uniqueNumbers is not read");
         }
 
@@ -27,7 +29,7 @@ public class HashGenerator {
                 .map(number -> new Hash(Base62Encoder.encode(number)))
                 .toList();
 
-        hashRepository.save(hashes);
+        hashRepository.saveAll(hashes);
         log.info("Generating hashes completed");
     }
 

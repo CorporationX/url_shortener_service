@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,8 +25,8 @@ public class CleanerScheduler {
     public void cleanExpiredUrls() {
         log.info("Starting clean expired urls");
         List<Hash> freeHashes = urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(1));
-        if ((freeHashes != null) && (!freeHashes.isEmpty())) {
-            hashRepository.save(freeHashes);
+        if (!CollectionUtils.isEmpty(freeHashes)) {
+            hashRepository.saveAll(freeHashes);
             log.info("Saved array of hashes with size: {}", freeHashes.size());
         }
     }

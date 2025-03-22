@@ -8,5 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @ConfigurationProperties(prefix = "generate.hash")
 public class SchedulerProperties {
-    int quantity;
+    private int quantity;
 }
