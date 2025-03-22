@@ -24,10 +24,16 @@ public class UrlService {
     private String shortenerUrl;
 
     @Transactional
-    public UrlDto getShortUrl(UrlDto urlDto){
-        String hash = hashCache.getHash();
-        Url url = Url.builder().
-                url(urlDto.getUrl())
+    public UrlDto getShortUrl(UrlDto urlDto) {
+        String hash;
+        try {
+            hash = hashCache.getHash();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Failed to generate short URL due to interruption", e);
+        }
+
+        Url url = Url.builder()
+                .url(urlDto.getUrl())
                 .hash(hash)
                 .build();
 
@@ -37,10 +43,10 @@ public class UrlService {
     }
 
     @Transactional(readOnly = true)
-    public String getLongUrl(String hash){
+    public String getLongUrl(String hash) {
         Optional<String> optionalUrl = urlCacheRepository.findByHash(hash);
 
-        return optionalUrl.orElseGet(()-> urlRepository.getByHash(hash)
-                .orElseThrow(()-> new NotFoundException("The url with the " + hash + " hash cannot be found")));
+        return optionalUrl.orElseGet(() -> urlRepository.getByHash(hash)
+                .orElseThrow(() -> new NotFoundException("The url with the " + hash + " hash cannot be found")));
     }
 }

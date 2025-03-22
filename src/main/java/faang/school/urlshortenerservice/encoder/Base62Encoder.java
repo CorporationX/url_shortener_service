@@ -6,21 +6,25 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
+    private final String BASE62_CHARACTERS =
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-    public String applyBase62Encoding(long number){
-        StringBuilder builder = new StringBuilder();
-        while(number > 0){
-            builder.append(BASE_62_CHARACTERS.charAt((int) number % BASE_62_CHARACTERS.length()));
-            number /= BASE_62_CHARACTERS.length();
-        }
-        return builder.toString();
+    public List<String> encode(List<Long> numbers) {
+        return numbers.stream()
+                .map(this::encodeNumber)
+                .toList();
     }
 
-    public List<String> applyBase62Encoding(List<Long> numbers){
-        return numbers.stream()
-                .map(this::applyBase62Encoding)
-                .toList();
+    private String encodeNumber(Long number) {
+        if (number == 0) {
+            return "0";
+        }
+        StringBuilder result = new StringBuilder();
+        while (number > 0) {
+            int remainder = (int) (number % BASE62_CHARACTERS.length());
+            result.insert(0, BASE62_CHARACTERS.charAt(remainder));
+            number /= BASE62_CHARACTERS.length();
+        }
+        return result.toString();
     }
 }

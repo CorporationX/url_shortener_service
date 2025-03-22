@@ -1,13 +1,17 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,30 +21,52 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    @Value("${hash.range}")
-    private int range;
+
+    @Value("${hash.generator.max_range:100}")
+    private int maxRange;
 
     @Transactional
-    @Async("hashGeneratorExecutorService")
-    public void generateBatch(){
-        List<Long> interval = hashRepository.getUniqueNumbers(range);
-        List<String> hashes = base62Encoder.applyBase62Encoding(interval);
-        hashRepository.saveAll(hashes);
-    }
-
-    @Transactional
-    public List<String> getHashes(long amount){
-        List<String> hashes = hashRepository.getHashBatch(amount);
-        if(hashes.size() < amount){
-            generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+    public void generateHashes() {
+        List<Long> numbers = hashRepository.getNextRange(maxRange);
+        if (numbers.isEmpty()) {
+            return;
         }
-        return hashes;
+        List<String> hashes = base62Encoder.encode(numbers);
+        saveHashes(hashes);
     }
 
     @Transactional
+    public List<String> getHashes(long amount) {
+        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        if (hashes.size() < amount) {
+            generateHashes();
+            List<Hash> additionalHashes = hashRepository.findAndDelete(amount - hashes.size());
+            hashes.addAll(additionalHashes);
+        }
+
+        return hashes.stream()
+                .map(Hash::getHash)
+                .toList();
+    }
+
     @Async("hashGeneratorExecutorService")
-    public CompletableFuture<List<String>> getHashesAsync(long amount){
+    @Transactional
+    public CompletableFuture<List<String>> getHashesAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveHashes(List<String> hashes) {
+        if (hashes == null || hashes.isEmpty()) {
+            return;
+        }
+
+        List<Hash> hashEntities = new ArrayList<>();
+        for (String hashStr : hashes) {
+            Hash hashEntity = new Hash();
+            hashEntity.setHash(hashStr);
+            hashEntities.add(hashEntity);
+        }
+        hashRepository.saveAll(hashEntities);
     }
 }

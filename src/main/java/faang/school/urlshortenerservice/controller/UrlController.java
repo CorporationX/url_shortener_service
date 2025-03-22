@@ -28,7 +28,7 @@ public class UrlController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new short URL")
-    public UrlDto getShortUrl(@RequestBody @Valid UrlDto urlDto){
+    public UrlDto getShortUrl(@RequestBody @Valid UrlDto urlDto) {
         return urlService.getShortUrl(urlDto);
     }
 
@@ -36,7 +36,7 @@ public class UrlController {
     @ResponseStatus(HttpStatus.FOUND)
     @Operation(summary = "Get and redirect to a long URL")
     public void getLongUrl(@Parameter @PathVariable String hash,
-                           HttpServletResponse response){
+                           HttpServletResponse response) {
         String url = urlService.getLongUrl(hash);
         response.addHeader("Location", url);
     }

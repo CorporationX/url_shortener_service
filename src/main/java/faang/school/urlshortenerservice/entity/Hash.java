@@ -1,23 +1,22 @@
 package faang.school.urlshortenerservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@Entity
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "hash")
 public class Hash {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @SequenceGenerator(name = "hash_seq", sequenceName = "unique_number_seq", allocationSize = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hash_seq")
+    private Long id;
+
+    @Column(name = "hash", nullable = false, unique = true)
     private String hash;
 }
