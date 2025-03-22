@@ -7,10 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Repository
@@ -19,7 +17,7 @@ public class UrlCache {
 
     private final UrlRepository urlRepository;
 
-    @Cacheable(value = "url", key = "#hash")
+    @Cacheable(value = "urlCache", key = "#hash")
     public String getUrlByHash(String hash) {
         return urlRepository.findByHash(hash)
                 .map(Url::getUrl)
@@ -27,7 +25,7 @@ public class UrlCache {
                         String.format("URL для хеша: %s не найден", hash)));
     }
 
-    @Cacheable(value = "hash", key = "#url")
+    @Cacheable(value = "urlCache", key = "#url", unless = "#result == null")
     public String getHashByUrl(String url) {
         return urlRepository.findByUrl(url)
                 .map(Url::getHash)
@@ -37,13 +35,10 @@ public class UrlCache {
                 });
     }
 
-    @CachePut(value = "url", key = "#url.hash")
-    public Map<String, String> saveUrl(Url url) {
-        Map<String, String> cache = new HashMap<>();
-        cache.put("hash", url.getHash());
-        cache.put("url", url.getUrl());
-
+    @Caching(put = {
+            @CachePut(value = "urlCache", key = "#url.hash"),
+            @CachePut(value = "urlCache", key = "#url.url")})
+    public void saveUrl(Url url) {
         urlRepository.save(url);
-        return cache;
     }
 }
