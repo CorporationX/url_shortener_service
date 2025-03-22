@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class Base62Encoder {
+
+    private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     @Value("${hash.generate.thread-count}")
     private int threadPoolSize;
 
@@ -56,11 +59,10 @@ public class Base62Encoder {
     }
 
     private String encodeOne(Long number) {
-        String base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         StringBuilder sb = new StringBuilder();
 
         while (number > 0) {
-            sb.append(base62Chars.charAt((int) (number % 62)));
+            sb.append(BASE62_CHARS.charAt((int) (number % 62)));
             number /= 62;
         }
 
