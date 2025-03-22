@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.repository.Hash.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.CleanerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,17 +15,10 @@ import java.util.List;
 
 public class CleanerScheduler {
 
-    private final UrlRepository urlRepository;
-    private final HashRepository hashRepository;
+    private final CleanerService cleanerService;
 
     @Scheduled(cron = "${hash.scheduler.cleanOldUrls.fixed-rate}")
     public void cleanOldUrls() {
-        LocalDateTime yearAgo = LocalDateTime.now().minusYears(1);
-
-        List<String> oldHashes = urlRepository.deleteOldUrls(yearAgo);
-
-        if (!oldHashes.isEmpty()) {
-            hashRepository.save(oldHashes);
-        }
+        cleanerService.cleanOldUrls();
     }
 }
