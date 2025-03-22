@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -16,7 +17,7 @@ public class HashCache {
     private int hashCacheSize;
     private final HashGenerator hashGenerator;
     private final Queue<String> queue = new ConcurrentLinkedQueue<>();
-    private volatile boolean isRunning = false;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final ReentrantLock lock = new ReentrantLock();
 
     public String getHash() {
@@ -29,20 +30,11 @@ public class HashCache {
 
     @Async("hashCacheExecutor")
     public void fillCache() {
-        if (isRunning) {
-            return;
-        }
-        lock.lock();
 
-        try {
-            if (!isRunning) {
-                isRunning = true;
-                hashGenerator.generateBatch()
-                        .thenAccept(queue::addAll)
-                        .whenComplete((res, ex) -> isRunning = false);
-            }
-        } finally {
-            lock.unlock();
+        if (isRunning.compareAndSet(false, true)) {
+            hashGenerator.generateBatch()
+                    .thenAccept(queue::addAll)
+                    .whenComplete((res, ex) -> isRunning.set(false));
         }
     }
 }
