@@ -15,7 +15,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     SELECT nextval('unique_number_seq') 
     FROM generate_series(1, ?1);
     """)
-    List<Integer> getUniqueNumbers(int n);
+    List<Long> getUniqueNumbers(int n);
 
     @Query(nativeQuery = true, value = """
     INSERT INTO hash(hash) VALUES ?1
