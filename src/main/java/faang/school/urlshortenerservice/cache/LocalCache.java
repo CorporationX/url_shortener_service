@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class LocalCache {
     private final HashGenerator hashGenerator;
-    private final Executor hashGeneratorExecutor;
+    private final Executor taskExecutor;
     private final LocalCacheProperties properties;
     private final ThreadPoolProperties poolProperties;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
@@ -61,8 +61,7 @@ public class LocalCache {
     }
 
     private void fillCacheAsync(int amount) {
-        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount/poolProperties.getPoolSize()),
-                        hashGeneratorExecutor)
+        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(amount), taskExecutor)
                 .thenAccept(this::queuePush)
                 .exceptionally(ex -> {
                     isFilling.set(false);
@@ -72,6 +71,7 @@ public class LocalCache {
     }
 
     private void queuePush(List<Hash> newHashes) {
+        log.info("Push {}", newHashes.size());
         for (Hash hash : newHashes) {
             if (!hashes.offer(hash)) {
                 break;

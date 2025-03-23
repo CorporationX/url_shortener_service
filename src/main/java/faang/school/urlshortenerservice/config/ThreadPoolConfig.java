@@ -7,16 +7,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @RequiredArgsConstructor
-public class GeneratorPoolConfig {
+public class ThreadPoolConfig {
     private final ThreadPoolProperties properties;
 
-    @Bean(name = "hashGeneratorExecutor")
+    @Bean(name = "taskExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(properties.getPoolSize());
         executor.setMaxPoolSize(properties.getPoolSize());
         executor.setQueueCapacity(properties.getQueueCapacity());
-        executor.setThreadNamePrefix("HashGenerator-");
+        executor.setThreadNamePrefix("taskExecutor-");
         executor.initialize();
         return executor;
     }

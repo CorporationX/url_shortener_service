@@ -27,7 +27,7 @@ public class LocalCacheIntegrationTest {
     private HashRepository hashRepository;
 
     @Autowired
-    private Executor hashGeneratorExecutor;
+    private Executor taskExecutor;
 
     @Autowired
     private LocalCacheProperties properties;
@@ -45,13 +45,10 @@ public class LocalCacheIntegrationTest {
     @BeforeEach
     void setUp() {
         hashRepository.deleteAll();
-       //localCache = new LocalCache(hashGenerator, hashGeneratorExecutor, properties, poolProperties);
     }
 
     @Test
-    void testGetHashSuccess() throws InterruptedException {
-        hashGenerator.generateHash(10);
-        Thread.sleep(1000);
+    void testGetHashSuccess() {
         String hash1 = localCache.getHash();
         String hash2 = localCache.getHash();
         String hash3 = localCache.getHash();
@@ -62,15 +59,10 @@ public class LocalCacheIntegrationTest {
     }
 
     @Test
-    void testGetHashAsyncFill() throws InterruptedException {
-        hashGenerator.generateHash(properties.getCapacity());
-        Thread.sleep(1000);
-
-        for (int i = 0; i < (properties.getCapacity()); i++) {
-            Thread.sleep(10);
+    void testGetHashWithAsyncFillSuccess() {
+        for (int i = 0; i < (properties.getCapacity() * 20); i++) {
             String hash = localCache.getHash();
             assertNotNull(hash);
         }
-
     }
 }

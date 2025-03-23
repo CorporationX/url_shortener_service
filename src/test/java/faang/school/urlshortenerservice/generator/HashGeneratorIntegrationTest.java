@@ -36,7 +36,7 @@ public class HashGeneratorIntegrationTest {
     private HashRepository hashRepository;
 
     @Autowired
-    private Executor hashGeneratorExecutor;
+    private Executor taskExecutor;
 
     @Autowired
     private LocalCacheProperties properties;
@@ -45,10 +45,11 @@ public class HashGeneratorIntegrationTest {
     private ThreadPoolProperties poolProperties;
 
     @Autowired
+    private LocalCache localCache;
+
+    @Autowired
     @PersistenceContext
     private EntityManager entityManager;
-
-    private LocalCache localCache;
 
     @BeforeEach
     void setUp() {
