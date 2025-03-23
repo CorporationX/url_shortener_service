@@ -22,8 +22,35 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: localhost
   port: 8080
 
 logging:
   level:
     root: info
+
+url:
+  endpoint: "url"
+  expired-time-in-month: 6
+  redis-ttl-in-hours: 24
+  cleanup: "0 0 0 * * *"
+
+hash:
+  batch:
+    size: 32
+  max-limit: 1024
+  queue:
+    size: 128
+  threshold:
+    limit: 0.2
+  encoder:
+    template: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+    base-length: 62
+
+executor:
+  pool:
+    size: 5
+  max-pool:
+    size: 20
+  queue:
+    capacity: 25

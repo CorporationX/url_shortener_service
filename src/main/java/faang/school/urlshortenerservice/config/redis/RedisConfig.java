@@ -1,17 +1,13 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.SocketOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
-
-import java.time.Duration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
@@ -23,29 +19,17 @@ public class RedisConfig {
     private int redisPort;
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-
-        configuration.setPort(redisPort);
-        configuration.setHostName(redisHost);
-
-        ClientOptions clientOptions = ClientOptions.builder()
-                .socketOptions(SocketOptions.builder().connectTimeout(Duration.ofSeconds(5)).build())
-                .build();
-
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .clientOptions(clientOptions)
-                // Можно настроить пул соединений здесь, но Spring Boot делает это автоматически
-                .commandTimeout(Duration.ofSeconds(2))
-                .build();
-
-        return new LettuceConnectionFactory(configuration, clientConfig);
+    public JedisConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
+        return new JedisConnectionFactory(config);
     }
 
     @Bean
-    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        StringRedisTemplate template = new StringRedisTemplate();
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
         return template;
     }
 }

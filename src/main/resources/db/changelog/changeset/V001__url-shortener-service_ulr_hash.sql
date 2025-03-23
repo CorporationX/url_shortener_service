@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS url
 (
     hash        VARCHAR(6)  PRIMARY KEY,
-    url         VARCHAR     NOT NULL
-    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP
+    url         VARCHAR     NOT NULL,
+    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expired_at  TIMESTAMP   NOT NULL
 );
 
@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS hash
     CONSTRAINT hash_length CHECK (length(hash) = 6)
 );
 
-CREATE SEQUENCE unique_int_seq
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq
     START WITH 916312072
     INCREMENT BY 1;
