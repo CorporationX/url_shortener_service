@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -44,18 +45,21 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public String getUrl(String hash) {
         String hashForUrl = urlCacheRepository.getByHash(hash);
-        if (!hashForUrl.isEmpty()){
+        if (!hashForUrl.isEmpty()) {
             return hashForUrl;
         }
-        Url url = urlRepository.findByHash(hash).orElseThrow(()->new IllegalArgumentException(""));
+        Url url = urlRepository.findByHash(hash).orElseThrow(() -> new IllegalArgumentException(""));
         return url.getUrl();
     }
 
     @Override
     public UrlDto shortenUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
+        if (hash.isEmpty()) {
+            throw new DataNotFoundException("There is no free hash in base.");
+        }
         urlRepository.save(new Url(hash, urlDto.getUrl()));
         urlCacheRepository.save(hash, urlDto.getUrl());
-        return new UrlDto(hash);
+        return new UrlDto(String.format("%s/%s", urlDto.getUrl(), hash));
     }
 }

@@ -8,4 +8,4 @@ CREATE TABLE hash (
      hash VARCHAR(6) UNIQUE NOT NULL
 );
 
-CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 1;
+CREATE SEQUENCE unique_number_seq START 1;

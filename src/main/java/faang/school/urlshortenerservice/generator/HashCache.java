@@ -24,20 +24,17 @@ public class HashCache {
     @PostConstruct
     public void init() {
         this.hashQueue = new ArrayBlockingQueue<>(cacheSize);
+//        hashQueue.addAll(hashGenerator.generateBatch());
     }
 
     public String getHash(){
         if ((hashQueue.size() * 100) / cacheSize < 20 ){
             if (!isRunNewGenerator.compareAndExchange(false, true)) {
-                hashGenerator.generateBatch();
+//                hashGenerator.generateBatch()
                 isRunNewGenerator.set(true);
 //                TODO чтобы ставить на false
             }
         }
-        try {
-            return hashQueue.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+            return hashQueue.poll();
     }
 }

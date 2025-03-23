@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
 
@@ -25,16 +25,18 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> getUrl(@PathVariable(name = "hash") String hash) {
+    public RedirectView getUrl(@PathVariable(name = "hash") String hash) {
+        log.info("Received hash {} for url", hash);
         String url = urlService.getUrl(hash);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(url))
-                .build();
+        log.info("Found url {} for hash {}", url, hash);
+        return new RedirectView(url);
     }
 
     @PostMapping("/url")
     public ResponseEntity<UrlDto> shortenUrl(@RequestBody UrlDto url) {
+        log.info("Received url {} to find short url", url.getUrl());
         UrlDto urlDto = urlService.shortenUrl(url);
+        log.info("Found short url {} to url {}", urlDto.getUrl(), url.getUrl());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
