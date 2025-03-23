@@ -14,21 +14,21 @@ public class UrlExceptionHandler {
     @ExceptionHandler(UrlNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleUrlNotFoundException(UrlNotFoundException e) {
-        log.info("Handled url not found exception message:{} \ncause: {}", e.getMessage(), e.getCause());
+        log.info("Handled url not found exception message:{} \ncause: {}", e.getMessage(), e.getCause().toString());
         return e.getMessage();
     }
 
     @ExceptionHandler(BadUrlException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadUrlException(BadUrlException e) {
-        log.info("Handled bad url exception message:{} \ncause: {}", e.getMessage(), e.getCause());
+        log.info("Handled bad url exception message:{} \ncause: {}", e.getMessage(), e.getCause().toString());
         return e.getMessage();
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleUrlNotFoundException(RuntimeException e) {
-        log.info("Some exception occured message:{} \ncause: {}", e.getMessage(), e.getCause());
+        log.info("Some exception occured message:{} \ncause: {}", e.getMessage(), e.getCause().toString());
         return e.getMessage();
     }
 }
