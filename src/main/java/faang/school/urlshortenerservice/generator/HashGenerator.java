@@ -4,7 +4,9 @@ import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
+@Slf4j
+@Data
 @RequiredArgsConstructor
 public class HashGenerator {
 
@@ -60,7 +64,7 @@ public class HashGenerator {
         if (hashes == null || hashes.isEmpty()) {
             return;
         }
-
+        log.info("Saving {} hashes", hashes.size());
         List<Hash> hashEntities = new ArrayList<>();
         for (String hashStr : hashes) {
             Hash hashEntity = new Hash();

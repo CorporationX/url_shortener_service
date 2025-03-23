@@ -1,3 +1,3 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/V01_init.sql
+      file: db/changelog/changeset/V001_init_table_and_seq.sql
