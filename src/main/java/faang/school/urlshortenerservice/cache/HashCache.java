@@ -36,27 +36,32 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashQueue.size() < cacheSize * minFillPercent) {
-            if (isGenerating.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync()
-                        .thenAccept(hashQueue::addAll)
-                        .thenRun(() -> isGenerating.set(false));
-                log.info("Получены новые хэши");
-            }
+        verifySizeCache();
+
+        if (hashQueue == null || hashQueue.isEmpty()) {
+            log.error("Свободный хэш отсутствует");
+            throw new HashCacheException("Свободный хэш отсутствует");
         }
 
         try {
-            String hash = hashQueue.poll();
-            if (hash == null) {
-                log.error("Свободный хэш отсутствует");
-                throw new HashCacheException("Свободный хэш отсутствует");
-            }
-
-            return hash;
+            return hashQueue.poll();
         } catch (Exception e) {
             log.error("Операция прервана", e);
             Thread.currentThread().interrupt();
             throw new HashCacheException("Операция прервана");
+        }
+    }
+
+    private void verifySizeCache() {
+        if (hashQueue.size() < cacheSize * minFillPercent) {
+            if (isGenerating.compareAndSet(false, true)) {
+                hashGenerator.getHashesAsync()
+                        .thenAccept(hashQueue::addAll)
+                        .thenRun(() -> {
+                            isGenerating.set(false);
+                            log.info("Получены новые хэши");
+                        });
+            }
         }
     }
 }

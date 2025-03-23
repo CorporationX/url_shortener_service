@@ -57,7 +57,7 @@ public class UrlServiceTest {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         ReflectionTestUtils.setField(urlService, "baseUrl", "http://base-url/");
         originalUrl = "http://test.com";
         userId = "user123";
