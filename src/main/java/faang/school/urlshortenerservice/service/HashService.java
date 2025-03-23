@@ -1,31 +1,42 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class HashService {
-    private final JdbcTemplate jdbcTemplate;
+
     private final HashRepository hashRepository;
+    private final HashGenerator hashGenerator;
 
-    @Value("${url-shortener.batch-size}")
-    private int batchSize;
+    @Transactional
+    public List<Hash> getHashes(long count) {
+        List<Hash> hashes = hashRepository.getHashBatch(count);
 
-    public void saveHashByBatch(List<Hash> hashes) {
+        if (hashes.size() < count) {
+            hashGenerator.generateBatch();
+            hashes = hashRepository.getHashBatch(count);
+        }
 
-        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes,
-                batchSize,
-                (ps, argument) -> ps.setString(1, argument.getHash()));
+        return hashes;
     }
 
-    public List<Long> getUniqueNumbers(long countNumbers) {
-        return hashRepository.getUniqueNumbers(countNumbers);
+    @Transactional
+    @Async("hashGeneratorThreadPool")
+    public CompletableFuture<List<Hash>> getHashesAsync(long count) {
+        return CompletableFuture.completedFuture(getHashes(count));
+    }
+
+    public void deleteHash(Hash hash) {
+        hashRepository.delete(hash);
     }
 }

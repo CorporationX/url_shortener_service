@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.model.Hash;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,11 +16,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             """)
     List<Long> getUniqueNumbers(@Param("countNumbers") long countNumbers);
 
-    @Modifying
     @Query(nativeQuery = true, value = """
-                        DELETE FROM hash WHERE hash IN (
-                                    SELECT hash FROM hash ORDER BY hash LIMIT :count
-                                ) RETURNING *
+            SELECT * FROM hash ORDER BY hash LIMIT :count
             """)
     List<Hash> getHashBatch(@Param("count") long count);
 }

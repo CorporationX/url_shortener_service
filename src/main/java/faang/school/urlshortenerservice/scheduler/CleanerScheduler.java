@@ -12,7 +12,7 @@ public class CleanerScheduler {
 
     private final UrlService urlService;
 
-    @Async("threadPool")
+    @Async("schedulerThreadPool")
     @Scheduled(cron = "${url-shortener.scheduler.delete-old-url}")
     public void deleteOldUrl() {
         urlService.deleteOldUrl();

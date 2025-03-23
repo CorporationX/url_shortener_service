@@ -5,6 +5,11 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -26,7 +31,11 @@ logging:
 
 url-shortener:
   batch-size: 100
-  count-hash: 20
+  hash:
+    count-hash: 1000
+    capacity: 10000
+    fill-percent: 20
   thread-pool-size: 5
   scheduler:
     delete-old-url: "0 0 * * * *"
+  ttl: 15
