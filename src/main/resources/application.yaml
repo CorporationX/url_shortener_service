@@ -9,10 +9,25 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true           # Оптимизация порядка вставок
+        order_updates: true           # Оптимизация порядка обновлений
+        jdbc:
+          batch_size: 100             # Размер пакета
+          batch_versioned_data: true  # Пакетная обработка версионных данных
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 5                           # TTL для хранения Url в кэше - 5 дней
+
+  mvc:
+    servlet:
+      path: /api/v1
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +38,24 @@ server:
 logging:
   level:
     root: info
+
+thread:
+  pool:
+    poolSize: 5
+    queueCapacity: 100
+
+hash:
+  local-cache:
+    capacity: 1000
+    fillPercentage: 20
+  generator:
+    scheduler:                      # Scheduler для регулярного запуска хэш генератора
+      cron: "0 */1 * * * *"         # запускать каждую минуту
+      quantity: 1000                # генерировать количество хэшей
+
+url:
+  service:
+    baseShortUrl: "http://localhost:8080/api/v1/shortener/urls/"
+  cleaner:
+    scheduler:                      # Scheduler для регулярного запуска удаления устаревших URL из базы
+      cron: "0 0 0 * * *"           # один раз в сутки в полночь
