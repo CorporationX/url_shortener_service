@@ -35,7 +35,8 @@ public class HashCache {
     }
 
     public String getHash() throws InterruptedException {
-        if (hashes.size() / (capacity / 100.0) < minPercentageToFill && filling.compareAndSet(false, true)) {
+        int threshold = (capacity * minPercentageToFill) / 100;
+        if (hashes.size() < threshold && filling.compareAndSet(false, true)) {
             int needed = capacity - hashes.size();
             if (needed > 0) {
                 hashGenerator.getHashesAsync(needed)

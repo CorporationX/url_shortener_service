@@ -6,8 +6,11 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private final String BASE62_CHARACTERS =
+    private static final String BASE62_CHARACTERS =
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    private final ThreadLocal<StringBuilder> stringBuilderThreadLocal =
+            ThreadLocal.withInitial(StringBuilder::new);
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -19,12 +22,13 @@ public class Base62Encoder {
         if (number == 0) {
             return "0";
         }
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = stringBuilderThreadLocal.get();
+        result.setLength(0);
         while (number > 0) {
             int remainder = (int) (number % BASE62_CHARACTERS.length());
-            result.insert(0, BASE62_CHARACTERS.charAt(remainder));
+            result.append(BASE62_CHARACTERS.charAt(remainder));
             number /= BASE62_CHARACTERS.length();
         }
-        return result.toString();
+        return result.reverse().toString();
     }
 }
