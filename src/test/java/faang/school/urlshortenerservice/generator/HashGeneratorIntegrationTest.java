@@ -17,6 +17,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -83,7 +85,7 @@ public class HashGeneratorIntegrationTest {
     void testGetAndDeleteHashSuccess() {
         hashGenerator.generateHash(100);
 
-        List<Hash> hashes = hashRepository.findAndDelete(100);
+        List<String> hashes = hashRepository.findAndDelete(100);
         assertEquals(100, hashes.size());
 
         hashes = hashRepository.findAndDelete(100);
@@ -95,7 +97,7 @@ public class HashGeneratorIntegrationTest {
     void testGetHashesSuccess() {
         hashGenerator.generateHash(100);
 
-        List<Hash> hashes = hashGenerator.getHashes(100);
+        List<String> hashes = hashGenerator.getHashes(100);
         assertEquals(100, hashes.size());
 
         hashes = hashGenerator.getHashes(100);
@@ -106,13 +108,11 @@ public class HashGeneratorIntegrationTest {
     @Order(4)
     public void testGetAndCheckUniqueHashesSuccess() {
         resetSequence();
-        List<Hash> hashes = hashGenerator.getHashes(10);
+        List<String> hashes = hashGenerator.getHashes(10);
 
         assertEquals(10, hashes.size());
 
-        Set<String> uniqueHashes = hashes.stream()
-                .map(Hash::getHash)
-                .collect(Collectors.toSet());
+        Set<String> uniqueHashes = new HashSet<>(hashes);
         assertEquals(10, uniqueHashes.size());
     }
 
