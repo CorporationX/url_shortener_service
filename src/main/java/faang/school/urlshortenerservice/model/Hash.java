@@ -17,5 +17,5 @@ public class Hash {
 
     @Id
     @Column(name = "hash", nullable = false, unique = true, length = 8)
-    String hash;
+    private String hash;
 }

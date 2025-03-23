@@ -102,6 +102,13 @@ class HashServiceImplTest {
         List<Hash> hashes = hashService.readFreeHashes(queueSize);
 
         Assertions.assertEquals(queueSize, hashes.size());
+    }
 
+    @Test
+    @DisplayName("Test reading new 1 hash")
+    void testReadFreeHash() {
+        List<Hash> hashes = hashService.readFreeHashes(1);
+
+        Assertions.assertEquals(1, hashes.size());
     }
 }

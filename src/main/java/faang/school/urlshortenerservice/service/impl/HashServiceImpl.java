@@ -8,13 +8,10 @@ import faang.school.urlshortenerservice.service.HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Slf4j
 @Service
@@ -23,12 +20,11 @@ public class HashServiceImpl implements HashService {
 
     private final HashRepository hashRepository;
     private final Encoder encoder;
-    private final Executor asyncTaskExecutor;
     private final ShortenerProperties shortenerProperties;
 
     @Override
     public List<Hash> generateHashes(int size) {
-        log.debug("Generation of new {} caches", size);
+        log.debug("Generation of new {} hashes", size);
         List<Long> sequenceNumbers = hashRepository.getUniqueNumbers(size);
         List<String> encodedHashes = encoder.encode(sequenceNumbers);
         return encodedHashes.stream()

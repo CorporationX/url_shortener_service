@@ -59,7 +59,7 @@ public class HashLocalCache {
             hash = hashes.remove();
         } catch (NoSuchElementException e) {
             log.info("Alert! Need to fill queue urgently!");
-            hashService.readFreeHashes(queueSize);
+            hashService.readFreeHashes(1);
             hash = hashes.poll();
         }
 
@@ -68,7 +68,6 @@ public class HashLocalCache {
             if (canUpdateHashes.compareAndSet(true, false)) {
                 log.info("Current hash queue size {} less than minimum percentage {}", hashes.size(), minPercentage);
                 readFreeHashesAsync(queueSize - hashes.size()).thenAccept(hashes::addAll);
-                hashService.readFreeHashes(queueSize - hashes.size());
             }
         }
         return hash;
@@ -76,9 +75,11 @@ public class HashLocalCache {
 
     public CompletableFuture<List<Hash>> readFreeHashesAsync(int quantity) {
         return CompletableFuture.supplyAsync(() -> {
-            List<Hash> hashes = hashService.readFreeHashes(quantity);
-            canUpdateHashes.set(true);
-            return hashes;
+            try {
+                return hashService.readFreeHashes(quantity);
+            } finally {
+                canUpdateHashes.set(true);
+            }
         }, asyncTaskExecutor);
     }
 }

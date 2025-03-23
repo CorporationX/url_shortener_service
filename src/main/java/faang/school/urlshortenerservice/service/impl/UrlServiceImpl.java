@@ -7,17 +7,16 @@ import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.HashLocalCache;
+import faang.school.urlshortenerservice.service.UrlCacheService;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -28,12 +27,12 @@ public class UrlServiceImpl implements UrlService {
     private final HashLocalCache hashLocalCache;
     private final UrlMapper urlMapper;
     private final ShortenerProperties shortenerProperties;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final UrlCacheService urlCacheService;
 
     @Transactional
     public UrlResponseDto getOrCreateUrl(String urlAddress) {
 
-        Url url = (Url) redisTemplate.opsForValue().get(urlAddress);
+        Url url = urlCacheService.getUrl(urlAddress);
         if (url != null) {
             log.info("Got url '{}' from cache", urlAddress);
             return urlMapper.toUrlResponseDto(url);
@@ -42,15 +41,15 @@ public class UrlServiceImpl implements UrlService {
         url = urlRepository.findByUrl(urlAddress);
         if (url != null) {
             log.info("Got url '{}' from database", urlAddress);
-            redisTemplate.opsForValue().set(urlAddress, url, shortenerProperties.url().ttlDays(), TimeUnit.DAYS);
+            urlCacheService.setUrl(urlAddress, url);
             return urlMapper.toUrlResponseDto(url);
         }
 
         String hash = hashLocalCache.getFreeHashFromQueue().getHash();
         url = urlRepository.save(new Url(hash, urlAddress,
                 LocalDateTime.now().plusDays(shortenerProperties.url().ttlDays())));
-        redisTemplate.opsForValue().set(urlAddress, url, shortenerProperties.url().ttlDays(), TimeUnit.DAYS);
-        log.info("Create and got url '{}'", urlAddress);
+        urlCacheService.setUrl(urlAddress, url);
+        log.info("Create and get url '{}'", urlAddress);
         return urlMapper.toUrlResponseDto(url);
     }
 

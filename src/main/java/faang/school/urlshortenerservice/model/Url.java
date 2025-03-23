@@ -19,12 +19,11 @@ public class Url {
 
     @Id
     @Column(name = "hash", nullable = false, unique = true, length = 8)
-    String hash;
+    private String hash;
 
-    //@URL
     @Column(name = "url", nullable = false, unique = true, length = 16384)
-    String url;
+    private String url;
 
     @Column(name = "expired_at")
-    LocalDateTime expiredAtDate;
+    private LocalDateTime expiredAtDate;
 }

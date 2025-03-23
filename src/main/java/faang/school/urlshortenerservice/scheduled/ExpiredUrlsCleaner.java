@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class ExpiredUrlsCleaner {
     private final HashService hashService;
 
     @Scheduled(cron = "${shortener.schedule.url-cron}")
+    @Transactional
     public void deleteExpiredUrls() {
         log.info("Start to release hashes of expired urls");
         List<Url> urls = urlRepository.deleteExpiredUrls();

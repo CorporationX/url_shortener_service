@@ -1,18 +1,15 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public abstract class AbstractEncoder implements Encoder {
 
     private final String baseChars;
     private final Integer mixParameter;
-
-    public AbstractEncoder(String baseChars, Integer mixParameter) {
-        this.baseChars = baseChars;
-        this.mixParameter = mixParameter;
-    }
 
     @Override
     public String encode(Long sequenceNumber) {

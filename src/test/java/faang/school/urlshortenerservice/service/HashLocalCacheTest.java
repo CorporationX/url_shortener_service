@@ -42,11 +42,7 @@ class HashLocalCacheTest {
     @DisplayName("Test get free hashes from queue")
     void testGetFreeHashFromQueue() {
         Hash hash1 = hashLocalCache.getFreeHashFromQueue();
-        //Assertions.assertEquals("NX2KAG", hash1.getHash());
-
         Hash hash2 = hashLocalCache.getFreeHashFromQueue();
-        //Assertions.assertEquals("NX2LAG", hash2.getHash());
         Assertions.assertNotEquals(hash1.getHash(), hash2.getHash());
-
     }
 }

@@ -43,7 +43,7 @@ class ServiceStressTest {
     @Test
     @DisplayName("Test creation many urls")
     void testStressCreationUrls() {
-        int start = 2000;
+        int start = 6000;
         int quantity = 2000;
 
         UrlRequestDto urlRequestDto;
@@ -68,7 +68,6 @@ class ServiceStressTest {
 
         UrlRequestDto urlRequestDto;
         UrlResponseDto urlResponseDto;
-        UrlResponseDto urlTestedResponseDto;
         String site = "http://somesite.ru/long/url/with/some/params?param=value&id=1234567890";
         urlRequestDto = UrlRequestDto.builder().url(site).build();
         urlResponseDto = urlShortenerController.createShortUrl(urlRequestDto);
