@@ -1,14 +1,10 @@
-CREATE SEQUENCE IF NOT EXISTS unique_number_seq
-    AS  int  START  WITH  1
-    INCREMENT  BY  1;
-
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq AS int START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE IF NOT EXISTS url (
     hash             VARCHAR(6) NOT NULL PRIMARY KEY,
     url              VARCHAR(255) NOT NULL,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 
 CREATE TABLE IF NOT EXISTS hash (
     hash            VARCHAR(6) NOT NULL PRIMARY KEY

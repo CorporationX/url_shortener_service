@@ -10,16 +10,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "url-shortener-service")
 public class UrlShortenerProperties {
+
+  private String baseUrl;
   private int hashBatchSize;
   private int uniqueNumbersCount;
   private long cacheSize;
-  private int cacheLowPercent;
+  private int cacheLowThresholdPercent;
 
   private ThreadPoolConfig threadPool;
 
   @Getter
   @Setter
   public static class ThreadPoolConfig {
+
     private int coreSize;
     private int maxSize;
     private int queueCapacity;

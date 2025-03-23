@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.controller;
 
-
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import feign.FeignException;
@@ -8,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,30 +15,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Log4j2
 @RestControllerAdvice
 public class UrlExceptionHandler {
-
-  public static final String DEFAULT_SERVICE_NAME = "post-service";
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponse handleRuntimeException(RuntimeException e) {
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.INTERNAL_SERVER_ERROR,
+    log.error("Unexpected internal error occurred: {}", e.getMessage(), e);
+
+    return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
         "INTERNAL_ERROR", e.getMessage());
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(EntityNotFoundException.class)
   public ErrorResponse handleEntityNotFoundException(EntityNotFoundException e) {
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.NOT_FOUND, "ENTITY_NOT_FOUND",
-        e.getMessage() != null ? e.getMessage() : "Entity not found");
-  }
+    log.info("Entity not found: {}", e.getMessage());
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.BAD_REQUEST, "INVALID_ARGUMENT",
-        e.getMessage() != null ? e.getMessage() : "Invalid argument");
+    return buildErrorResponse(HttpStatus.NOT_FOUND, "ENTITY_NOT_FOUND",
+        e.getMessage() != null ? e.getMessage() : "Entity not found");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -54,9 +50,9 @@ public class UrlExceptionHandler {
           return field + ": " + errorMessage;
         })
         .collect(Collectors.joining("; "));
+    log.info("Validation failed: {}", message);
 
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.BAD_REQUEST, "VALIDATION_ERROR",
-        message);
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
@@ -64,19 +60,22 @@ public class UrlExceptionHandler {
   public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
     String errorMessage = e.getConstraintViolations()
         .stream()
-        .map(violation -> String.format("Field '%s': %s", violation.getPropertyPath(),
-            violation.getMessage()))
+        .map(violation ->
+            String.format("Field '%s': %s", violation.getPropertyPath(),
+                violation.getMessage()))
         .collect(Collectors.joining("; "));
+    log.info("Constraint violation: {}", errorMessage);
 
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.BAD_REQUEST, "CONSTRAINT_VIOLATION",
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, "CONSTRAINT_VIOLATION",
         errorMessage);
   }
 
   @ExceptionHandler(UrlNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse handlePostBadRequestException(UrlNotFoundException e) {
-    return new ErrorResponse(e.getServiceName(), HttpStatus.NOT_FOUND,
-        "URL_SHORTENER_NOT_FOUND",
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleUrlNotFoundException(UrlNotFoundException e) {
+    log.info("URL not found: {}", e.getMessage());
+
+    return buildErrorResponse(HttpStatus.NOT_FOUND, "URL_SHORTENER_NOT_FOUND",
         e.getMessage());
   }
 
@@ -84,7 +83,14 @@ public class UrlExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleFeignException(FeignException e) {
     String message = e.contentUTF8();
-    return new ErrorResponse(DEFAULT_SERVICE_NAME, HttpStatus.BAD_REQUEST, "FEIGN_CLIENT_ERROR",
+    log.warn("Feign client error: {}", message);
+
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, "FEIGN_CLIENT_ERROR",
         message != null && !message.isEmpty() ? message : "Feign client error");
+  }
+
+  private ErrorResponse buildErrorResponse(HttpStatus status, String errorCode,
+      String errorMessage) {
+    return new ErrorResponse(status, errorCode, errorMessage);
   }
 }
