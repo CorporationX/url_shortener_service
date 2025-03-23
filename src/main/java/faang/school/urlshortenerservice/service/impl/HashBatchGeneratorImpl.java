@@ -18,7 +18,7 @@ public class HashBatchGeneratorImpl implements HashBatchGenerator {
   @Override
   @Transactional
   public void generateBatch(long size) {
-    List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(); // Указываем размер
+    List<Long> uniqueNumbers = hashRepository.getUniqueNumbers();
     List<String> encodedHashes = base62Encoder.encode(uniqueNumbers);
     hashRepository.save(encodedHashes);
   }
