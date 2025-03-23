@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @Slf4j
@@ -26,12 +29,19 @@ public class HashGenerator {
     @Setter
     private Integer numberHashToDelete;
 
+    @Transactional
+    public List<Hash> generateBatch(int batch) {
+        List<Hash> hashes = new ArrayList<>();
+        List<Long> numbers = hashRepository.getUniqueNumbers(batch);
+        base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
+
+        return StreamSupport.stream(hashRepository.saveAll(hashes).spliterator(),false).toList();
+    }
+
     @Async("cachedThreadPool")
     @Transactional
-    public void generateBatch() {
-        List<Hash> hashes = new ArrayList<>();
-        List<Long> numbers = hashRepository.getUniqueNumbers();
-        base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
-        hashRepository.saveAll(hashes);
+    public CompletableFuture<List<Hash>> generateBatchAsync(int batch) {
+        return CompletableFuture.completedFuture(generateBatch(batch));
     }
+
 }

@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface HashRepository extends CrudRepository<Hash, String> {
 
-    @Query(nativeQuery = true, value = "select nextval('unique_number_seq') from generate_series(1, 1000)")
-    List<Long> getUniqueNumbers();
+    @Query(nativeQuery = true, value = "select nextval('unique_number_seq') from generate_series(1, :count)")
+    List<Long> getUniqueNumbers(Integer count);
 
     @Modifying
     @Query(nativeQuery = true,
