@@ -21,5 +21,5 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             WHERE hash IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT :batchSize) 
             RETURNING hash
             """, nativeQuery = true)
-    List<String> getHashBatch(@Param("batchSize") int batchSize);
+    List<Hash> getHashBatch(@Param("batchSize") int batchSize);
 }

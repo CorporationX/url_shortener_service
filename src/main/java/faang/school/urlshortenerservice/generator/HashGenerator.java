@@ -22,6 +22,9 @@ public class HashGenerator {
     @Value("${data.url.hash.maxRange}")
     private int maxRange;
 
+    @Value("${data.url.hash.hash-batch-size}")
+    private int hashButchSize;
+
     @Transactional
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
@@ -31,5 +34,15 @@ public class HashGenerator {
                 .map(hash -> Hash.builder().hash(hash).build())
                 .collect(Collectors.toList());
         hashRepository.saveAll(hashEntities);
+    }
+
+    @Transactional
+    public List<Hash> getHashes() {
+        List<Hash> hashes = hashRepository.getHashBatch(hashButchSize);
+        if (hashes.size() < hashButchSize) {
+            generateBatch();
+            hashes.addAll(hashRepository.getHashBatch(hashButchSize));
+        }
+        return hashes;
     }
 }
