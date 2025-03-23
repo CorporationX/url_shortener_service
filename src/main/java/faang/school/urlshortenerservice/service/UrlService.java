@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -45,11 +46,12 @@ public class UrlService {
             return cachedUrl;
         }
 
-        return urlRepository.findByHash(hash)
+        return urlRepository.findById(hash)
                 .map(Url::getUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL не найден для хэша: " + hash));
     }
 
+    @Transactional
     public void removeOldUrls(LocalDateTime cutoffDate) {
         urlRepository.deleteOldUrlsAndReturnHashes(cutoffDate)
                 .forEach(hash -> hashRepository.save(Hash.builder().hash(hash).build()));

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.encoder;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,7 +10,8 @@ public class Base62Encoder {
 
     private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = BASE62_CHARS.length();
-    private static final int MAX_HASH_LENGTH = 6;
+    @Value( "${hash.hash-generator.max-hash-length}")
+    private int MAX_HASH_LENGTH;
 
     public List<String> encode(List<Long> numbers) {
         numbers.removeIf(number -> number < 0);

@@ -21,6 +21,10 @@ public class CleanerScheduler {
     private Duration retentionPeriod;
 
     @Scheduled(cron = "${schedule.cleaner-cron}")
+    public void cleanOldUrlsScheduled() {
+        cleanOldUrls();
+    }
+
     @Transactional
     public void cleanOldUrls() {
         log.info("Запуск задачи очистки старых URL...");

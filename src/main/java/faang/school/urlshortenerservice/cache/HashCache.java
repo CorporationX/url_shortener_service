@@ -35,13 +35,14 @@ public class HashCache {
     @PostConstruct
     public void init() {
         hashQueue = new LinkedBlockingQueue<>(cacheSize);
-        log.info("Очередь для хэшей инициализирована с размером: {}", cacheSize);
         hashGenerator.generateBatch();
-
+        List<String> hashes = hashRepository.getHashBatch(cacheSize);
+        hashQueue.addAll(hashes);
+        log.info("Очередь для хэшей инициализирована, загружено элементов: {}", hashQueue.size());
     }
 
     public String getHash() {
-        if (!shouldRefill()) {
+        if (shouldRefill()) {
             refillCache();
         }
         return hashQueue.poll();

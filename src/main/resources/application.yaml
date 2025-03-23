@@ -30,6 +30,7 @@ schedule:
 
 hash:
   hash-generator:
+    max-hash-length: 6
     batch-size: 1000
     core-size: 4
     max-size: 8
