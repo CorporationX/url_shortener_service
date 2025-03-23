@@ -26,13 +26,13 @@ public class CleanerSchedulerTest {
     @Test
     public void cleanExpiredUrls() {
         List<String> hashesAsStrings = List.of("Hash");
-        Mockito.when(urlRepository.removeExpiredUrls()).thenReturn(List.of("Hash"));
+        Mockito.when(urlRepository.removeExpiredUrlsAndGetHashes()).thenReturn(List.of("Hash"));
 
         List<Hash> hashes = hashesAsStrings.stream()
                 .map(Hash::new)
                 .toList();
 
-        cleanerScheduler.cleanExpiredUrls();
+        cleanerScheduler.cleanAndSaveExpiredHashes();
         Mockito.verify(hashRepository).saveAll(hashes);
     }
 }

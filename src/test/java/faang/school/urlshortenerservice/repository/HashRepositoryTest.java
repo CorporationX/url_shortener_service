@@ -49,7 +49,7 @@ public class HashRepositoryTest {
         long initialCount = hashRepository.count();
         assertThat(initialCount).isEqualTo(3);
 
-        List<String> hashes = hashRepository.getHashBatch(2);
+        List<String> hashes = hashRepository.getAndRemoveHashes(2);
 
         assertThat(hashes).hasSize(2);
         assertThat(hashes).contains("hash1", "hash2");

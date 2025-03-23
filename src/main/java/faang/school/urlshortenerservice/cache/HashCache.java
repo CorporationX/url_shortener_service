@@ -44,31 +44,32 @@ public class HashCache {
     public void warmUpCache() {
         hashQueue = new ArrayBlockingQueue<>(hashCacheSize);
         hashGenerator.generateBatch();
-        List<String> hashes = hashRepository.getHashBatch(hashCacheSize);
+        List<String> hashes = hashRepository.getAndRemoveHashes(hashCacheSize);
         hashQueue.addAll(hashes);
         log.info("Кэш хэшей инициализирован. Загружено {} элементов", hashQueue.size());
     }
 
     public String getHash() {
-        if (hashQueue.size() < hashCacheSize * minCachePercentage) {
-            if (isGenerating.compareAndSet(false, true)) {
-                CompletableFuture.runAsync(() -> {
-                            hashGenerator.generateBatch();
-                            List<String> newHashes = hashRepository.getHashBatch(hashCacheSize - hashQueue.size());
-                            log.info("Получены новые хэши: {}", newHashes);
-                            hashQueue.addAll(newHashes);
-                        }, executorService)
-                        .thenRun(() -> isGenerating.set(false));
-            }
+        if (hashQueue.size() < hashCacheSize * minCachePercentage
+                && isGenerating.compareAndSet(false, true)) {
+            addHashes().thenRun(() -> isGenerating.set(false));
         }
 
         String hash = hashQueue.poll();
-        if (hash == null) {
-            throw new NoSuchElementException("Отсутствуют свободные хэши");
-        } else {
+        if (hash != null) {
             log.info("Использован хэш. Текущее количество хэшей в кеше: {}", hashQueue.size());
             return hash;
+        } else {
+            throw new NoSuchElementException("Отсутствуют свободные хэши");
         }
+    }
 
+    private CompletableFuture<Void> addHashes() {
+        return CompletableFuture.runAsync(() -> {
+            hashGenerator.generateBatch();
+            List<String> newHashes = hashRepository.getAndRemoveHashes(hashCacheSize - hashQueue.size());
+            log.info("Получены новые хэши: {}", newHashes);
+            hashQueue.addAll(newHashes);
+        }, executorService);
     }
 }

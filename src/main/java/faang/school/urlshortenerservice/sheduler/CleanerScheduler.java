@@ -19,12 +19,12 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${url.schedule.cleaner}")
     public void startCleaner() {
-        cleanExpiredUrls();
+        cleanAndSaveExpiredHashes();
     }
 
     @Transactional
-    public void cleanExpiredUrls() {
-        List<Hash> freeHashes = urlRepository.removeExpiredUrls().stream()
+    public void cleanAndSaveExpiredHashes() {
+        List<Hash> freeHashes = urlRepository.removeExpiredUrlsAndGetHashes().stream()
                 .map(Hash::new)
                 .toList();
 

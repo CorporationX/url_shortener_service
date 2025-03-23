@@ -53,7 +53,7 @@ public class UrlRepositoryTest {
         url1 = urlRepository.getReferenceById("hash1");
         url1.setCreatedAt(LocalDateTime.now().minusYears(2));
 
-        List<String> removedHashes = urlRepository.removeExpiredUrls();
+        List<String> removedHashes = urlRepository.removeExpiredUrlsAndGetHashes();
 
         assertEquals(1, removedHashes.size());
         assertTrue(removedHashes.contains("hash1"));

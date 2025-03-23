@@ -58,7 +58,7 @@ public class HashCacheTest {
     @Test
     public void getHashTestLessThanRequired() {
         Mockito.doNothing().when(hashGenerator).generateBatch();
-        Mockito.when(hashRepository.getHashBatch(anyInt())).thenReturn(List.of("6", "7", "8"));
+        Mockito.when(hashRepository.getAndRemoveHashes(anyInt())).thenReturn(List.of("6", "7", "8"));
 
         assertEquals("1", hashCache.getHash());
         assertEquals("2", hashCache.getHash());
