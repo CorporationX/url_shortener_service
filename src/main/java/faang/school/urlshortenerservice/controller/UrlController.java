@@ -21,13 +21,11 @@ public class UrlController {
         if (!urlValidator.isValid(urlRequest.getOriginalUrl())) {
             throw new IllegalArgumentException("Invalid URL");
         }
-        String shortUrl = urlService.createShortUrl(urlRequest);
-        return ResponseEntity.ok(shortUrl);
+        return ResponseEntity.ok(urlService.createShortUrl(urlRequest));
     }
 
     @GetMapping("/{hash}")
     public ResponseEntity<String> getLongUrl(@PathVariable String hash) {
-        String longUrl = urlService.getLongUrl(hash);
-        return ResponseEntity.ok(longUrl);
+        return ResponseEntity.ok(urlService.getLongUrl(hash));
     }
 }

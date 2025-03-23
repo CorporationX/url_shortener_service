@@ -11,13 +11,14 @@ import java.util.stream.Collectors;
 public class Base62Encoder {
 
     private static final String BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final int BASE = 62;
+    private static final int BASE = BASE62_CHARS.length();
 
     public List<String> encode(List<Long> number) {
         return number.stream()
                 .map(this::encodeNumbers)
-                .collect(Collectors.toList());
+                .toList();
     }
+
     private String encodeNumbers(Long number) {
         if (number == 0) {
             return "0";

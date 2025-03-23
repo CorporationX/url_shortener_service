@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UrlServiceImpl implements UrlService{
+public class UrlServiceImpl implements UrlService {
+
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
@@ -29,11 +30,11 @@ public class UrlServiceImpl implements UrlService{
 
     public String getLongUrl(String hash) {
         String longUrl = urlCacheRepository.findByHash(hash);
-        if (longUrl != null){
+        if (longUrl != null) {
             return longUrl;
         }
         longUrl = urlRepository.findByHash(hash);
-        if (longUrl != null){
+        if (longUrl != null) {
             urlCacheRepository.saveUrl(hash, longUrl);
             return longUrl;
         }
