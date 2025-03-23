@@ -22,13 +22,4 @@ public abstract class UrlMapper {
 
     public abstract Url toUrl(UrlRequestDto urlRequestDto);
 
-    /*@AfterMapping
-    protected void setDefaultExpiredAtDate(UrlRequestDto urlRequestDto, @MappingTarget Url url) {
-        if (urlRequestDto.expiredAtDate() == null) {
-            url.setExpiredAtDate(LocalDateTime.now().plusDays(shortenerProperties.url().ttlDays()));
-        } else {
-            url.setExpiredAtDate(urlRequestDto.expiredAtDate());
-        }
-    }*/
-
 }

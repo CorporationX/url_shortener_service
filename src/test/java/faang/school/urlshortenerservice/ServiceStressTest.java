@@ -43,25 +43,22 @@ class ServiceStressTest {
     @Test
     @DisplayName("Test creation many urls")
     void testStressCreationUrls() {
+        int start = 2000;
         int quantity = 2000;
 
         UrlRequestDto urlRequestDto;
         UrlResponseDto urlResponseDto;
         String sitePrefix = "http://somesite.ru/long/url/with/some/params?param=value&id=";
-        List<UrlResponseDto> generatedResponses =  new ArrayList<>();
+        List<UrlResponseDto> generatedResponses = new ArrayList<>();
 
-        for (int i = 0; i < quantity; i++)
-        {
-            urlRequestDto =  UrlRequestDto.builder().url(sitePrefix + i).build();
+        for (int i = start; i < start + quantity; i++) {
+            urlRequestDto = UrlRequestDto.builder().url(sitePrefix + i).build();
             urlResponseDto = urlShortenerController.createShortUrl(urlRequestDto);
             generatedResponses.add(urlResponseDto);
             Assertions.assertEquals(urlRequestDto.url(), urlResponseDto.url());
             System.out.println("ITERATION " + i);
-
         }
-
         Assertions.assertEquals(quantity, generatedResponses.size());
-
     }
 
     @Test
@@ -72,13 +69,12 @@ class ServiceStressTest {
         UrlRequestDto urlRequestDto;
         UrlResponseDto urlResponseDto;
         UrlResponseDto urlTestedResponseDto;
-        String site = "http://somesite.ru/long/url/with/some/params?param=value&id=1";
-        urlRequestDto =  UrlRequestDto.builder().url(site).build();
+        String site = "http://somesite.ru/long/url/with/some/params?param=value&id=1234567890";
+        urlRequestDto = UrlRequestDto.builder().url(site).build();
         urlResponseDto = urlShortenerController.createShortUrl(urlRequestDto);
         String hash = urlResponseDto.hash();
 
-        for (int i = 0; i < quantity; i++)
-        {
+        for (int i = 0; i < quantity; i++) {
             ResponseEntity<Void> result = urlShortenerController.redirectToUrl(hash);
             HttpStatusCode httpStatusCode = result.getStatusCode();
             Assertions.assertEquals("302 FOUND", httpStatusCode.toString());

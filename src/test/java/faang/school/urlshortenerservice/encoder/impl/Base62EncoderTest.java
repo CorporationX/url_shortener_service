@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Base62EncoderTest {
 
     @InjectMocks
-    private Base62Encoder base62Encoder;
+    private Base62Encoder base62Encoder = new Base62Encoder(3);
 
     private Long number1;
     private Long number2;

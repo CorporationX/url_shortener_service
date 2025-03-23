@@ -44,17 +44,19 @@ server:
   port: 8080
 
 shortener:
-  batch-size: 100
+  hashes-batch-size: 100
   queue-size: 1000
   multiplier: 2
-  encoder: base58
-  hash-cron: "0 */1 * * * *"
-  url-cron: "0 0 * * * *"
   min-array-hash-percentage: 25
+  encoder:
+    codebase: base58
+    mix-parameter: 3
+  schedule:
+    hash-cron: "0 */1 * * * *"
+    url-cron: "0 0 * * * *"
   url:
     ttl-days: 1
     prefix: http://site.com/
-
 
 logging:
   level:

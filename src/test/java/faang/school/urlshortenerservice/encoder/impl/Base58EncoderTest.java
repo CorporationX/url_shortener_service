@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Base58EncoderTest {
 
     @InjectMocks
-    private Base58Encoder base58Encoder;
+    private Base58Encoder base58Encoder = new Base58Encoder(3);
 
     private Long number1;
     private Long number2;

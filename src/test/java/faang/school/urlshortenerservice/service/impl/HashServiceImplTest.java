@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.encoder.Encoder;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.scheduled.HashGenerator;
 import faang.school.urlshortenerservice.service.HashService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @SpringBootTest
@@ -38,6 +38,8 @@ class HashServiceImplTest {
     private ShortenerProperties shortenerProperties;
     @Autowired
     private HashService hashService;
+    @Autowired
+    private HashGenerator hashGenerator;
 
     private Hash hash1;
     private Hash hash2;
@@ -58,15 +60,15 @@ class HashServiceImplTest {
     }
     @BeforeEach
     void setUp() {
-        hash1 = Hash.builder().hash("1111").build();
-        hash2 = Hash.builder().hash("2222").build();
+        hash1 = new Hash("1111");
+        hash2 = new Hash("2222");
     }
 
     @Test
     @DisplayName("Test of generation batch of hashes")
     void testGenerateAndSaveHashes() {
-        int quantity = shortenerProperties.batchSize() * shortenerProperties.multiplier();
-        hashService.generateAndSaveHashes();
+        int quantity = shortenerProperties.hashesBatchSize() * shortenerProperties.multiplier();
+        hashGenerator.generateAndSaveHashes();
         List<Hash> hashes =  hashRepository.findAll();
         Assertions.assertEquals(quantity, hashes.size());
     }
@@ -80,14 +82,6 @@ class HashServiceImplTest {
     }
 
     @Test
-    @DisplayName("Test of async generation of hashes")
-    void testGenerateHashesAsync() {
-        int quantity = 5;
-        CompletableFuture<List<Hash>> hashes = hashService.generateHashesAsync(quantity);
-        Assertions.assertEquals(quantity, hashes.join().size());
-    }
-
-    @Test
     @DisplayName("Test saving hashes")
     void testSaveHashes() {
         List<Hash> hashes = new ArrayList<>();
@@ -97,8 +91,8 @@ class HashServiceImplTest {
 
         List<Hash> readedHashes =  hashRepository.findAll();
 
-        Assertions.assertEquals(hash1, readedHashes.get(0));
-        Assertions.assertEquals(hash2, readedHashes.get(1));
+        Assertions.assertEquals(hash1.getHash(), readedHashes.get(0).getHash());
+        Assertions.assertEquals(hash2.getHash(), readedHashes.get(1).getHash());
     }
 
     @Test
@@ -109,14 +103,5 @@ class HashServiceImplTest {
 
         Assertions.assertEquals(queueSize, hashes.size());
 
-    }
-
-    @Test
-    @DisplayName("Test async reading new hashes")
-    void testReadFreeHashesAsync() {
-        int queueSize = shortenerProperties.queueSize();
-        CompletableFuture<List<Hash>> hashes = hashService.readFreeHashesAsync(queueSize);
-
-        Assertions.assertEquals(queueSize, hashes.join().size());
     }
 }

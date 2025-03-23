@@ -2,12 +2,12 @@ package faang.school.urlshortenerservice.service.impl;
 
 import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.error.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.service.LocalHashCache;
+import faang.school.urlshortenerservice.service.HashLocalCache;
 import faang.school.urlshortenerservice.service.UrlService;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +31,7 @@ class UrlServiceImplTest {
     @Autowired
     private UrlRepository urlRepository;
     @Autowired
-    private LocalHashCache localHashCache;
+    private HashLocalCache hashLocalCache;
     @Autowired
     private UrlMapper urlMapper;
     @Autowired
@@ -59,56 +59,32 @@ class UrlServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        url1 = Url.builder()
-                .hash("h11111")
-                .url("http://test1.ru/")
-                .expiredAtDate(LocalDateTime.now().plusDays(1))
-                .build();
-        url2 = Url.builder()
-                .hash("h22222")
-                .url("http://test2.ru/")
-                .expiredAtDate(LocalDateTime.now().plusDays(10))
-                .build();
-        urlRepository.save(url1);
-        urlRepository.save(url2);
-    }
-
-    @Test
-    @DisplayName("Test create cached url")
-    void testCreateCachedUrl() {
-        String urlAddress1 =  "http://test1.ru/";
-        UrlResponseDto urlDto = urlService.createCachedUrl(urlAddress1);
-
-        Assert.assertEquals("NX2KAG",urlDto.hash());
-        Assert.assertEquals(urlAddress1,urlDto.url());
-        Assert.assertEquals("http://site.com/NX2KAG",urlDto.shortUrl());
-
-        UrlResponseDto urlDtoFromDb = urlService.getUrl(urlAddress1);
-        Assert.assertEquals(urlAddress1, urlDtoFromDb.url());
 
     }
 
     @Test
-    @DisplayName("Test get url")
-    void testGetUrl() {
+    @DisplayName("Test get or create url")
+    void testGetOrCreateUrl() {
+        String urlAddress1 =  "http://test11231231231.ru/";
+        UrlResponseDto urlDto = urlService.getOrCreateUrl(urlAddress1);
 
-        String urlAddress1 =  "http://test1.ru/";
-        UrlResponseDto testedUrl1 = urlService.getUrl(urlAddress1);
-        Assert.assertEquals(urlAddress1, testedUrl1.url());
-
-        String urlAddress2 =  "http://test2.ru/";
-        UrlResponseDto testedUrl2 = urlService.getUrl(urlAddress2);
-        Assert.assertEquals(urlAddress2, testedUrl2.url());
-
-        String urlAddress3 =  "http://notexists.ru/";
-        UrlResponseDto testedUrl3 = urlService.getUrl(urlAddress3);
-        Assert.assertEquals(emptyUrlResponseDto, testedUrl3);
-
+        Assertions.assertEquals("NX2KAG",urlDto.hash());
+        //Assertions.assertEquals("NX2LAG", urlDto.hash());
+        Assertions.assertEquals(urlAddress1, urlDto.url());
+        Assertions.assertEquals("http://site.com/NX2KAG",urlDto.shortUrl());
+        //Assertions.assertEquals("http://site.com/NX2LAG", urlDto.shortUrl());
+        UrlResponseDto urlDtoFromDb = urlService.getOrCreateUrl(urlAddress1);
+        Assertions.assertEquals(urlAddress1, urlDtoFromDb.url());
     }
 
     @Test
     @DisplayName("Test get url by hash")
     void testGetUrlByHash() {
+
+        url1 = new Url("h11111", "http://test1.ru/", LocalDateTime.now().plusDays(1));
+        url2 = new Url("h22222", "http://test2.ru/", LocalDateTime.now().plusDays(10));
+        urlRepository.save(url1);
+        urlRepository.save(url2);
 
         String hash1 =  "h11111";
         UrlResponseDto testedUrl1 = urlService.getUrlByHash(hash1);
@@ -119,8 +95,15 @@ class UrlServiceImplTest {
         Assertions.assertEquals(hash2, testedUrl2.hash());
 
         String hash3 =  "notExists";
-        UrlResponseDto testedUrl3 = urlService.getUrlByHash(hash3);
-        Assertions.assertNull(testedUrl3.hash());
+        //UrlResponseDto testedUrl3 = urlService.getUrlByHash(hash3);
+        //Assertions.assertNull(testedUrl3.hash());
+
+        UrlNotFoundException exception = Assertions.assertThrows(
+                UrlNotFoundException.class,
+                () -> urlService.getUrlByHash(hash3)
+        );
+
+        Assertions.assertEquals("Url not found, hash: notExists", exception.getMessage());
 
     }
 }

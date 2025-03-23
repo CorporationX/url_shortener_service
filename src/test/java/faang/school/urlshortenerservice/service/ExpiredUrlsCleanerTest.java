@@ -20,7 +20,7 @@ import java.util.List;
 
 @SpringBootTest
 @Testcontainers
-class CleanSchedulerTest {
+class ExpiredUrlsCleanerTest {
 
     @Autowired
     private HashRepository hashRepository;
@@ -47,16 +47,8 @@ class CleanSchedulerTest {
     @BeforeEach
     void setUp() {
 
-        expiredUrl = Url.builder()
-                .hash("h11111")
-                .url("http://expired.ru/")
-                .expiredAtDate(LocalDateTime.now().minusDays(1))
-                .build();
-        notExpiredUrl = Url.builder()
-                .hash("h22222")
-                .url("http://alive.ru/")
-                .expiredAtDate(LocalDateTime.now().plusDays(10))
-                .build();
+        expiredUrl = new Url("h11111", "http://expired.ru/", LocalDateTime.now().minusDays(1));
+        notExpiredUrl = new Url("h22222", "http://alive.ru/", LocalDateTime.now().plusDays(10));
         urlRepository.save(expiredUrl);
         urlRepository.save(notExpiredUrl);
 

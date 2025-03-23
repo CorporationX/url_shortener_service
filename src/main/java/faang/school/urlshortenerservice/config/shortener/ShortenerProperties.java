@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "shortener")
 public record ShortenerProperties(
 
-        Integer batchSize,
+        Integer hashesBatchSize,
 
         Integer multiplier,
 
@@ -15,14 +15,26 @@ public record ShortenerProperties(
 
         Url url,
 
-        String cron,
+        String hashCron,
+
+        String urlCron,
 
         Integer minArrayHashPercentage
 ) {
-    public record Url (
+
+    public record Encoder(
+
+            String codeBase,
+
+            Integer mixParameter
+    ) {
+    }
+
+    public record Url(
 
             Integer ttlDays,
 
             String prefix
-    ) {}
+    ) {
+    }
 }

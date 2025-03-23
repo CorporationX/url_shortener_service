@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import faang.school.urlshortenerservice.service.UrlUtilService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +19,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class UrlShortenerControllerTest {
 
-    @Autowired
-    private UrlUtilService urlUtilService;
     @Autowired
     private UrlService urlService;
     @Autowired
@@ -63,14 +60,14 @@ class UrlShortenerControllerTest {
         UrlResponseDto resultDto;
 
         resultDto = urlShortenerController.createShortUrl(urlRequestDto);
-        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        Assertions.assertNotEquals(null, resultDto.shortUrl());
         resultDto = urlShortenerController.createShortUrl(emptyUrlRequestDto);
-        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        Assertions.assertNotEquals(null, resultDto.shortUrl());
         resultDto = urlShortenerController.createShortUrl(incorrectUrlRequestDto1);
-        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        Assertions.assertNotEquals(null, resultDto.shortUrl());
         //TODO пока не получается некорректные url проверить в тесте
         resultDto = urlShortenerController.createShortUrl(incorrectUrlRequestDto2);
-        Assertions.assertNotEquals(null, resultDto.getShortUrl());
+        Assertions.assertNotEquals(null, resultDto.shortUrl());
 
     }
 }

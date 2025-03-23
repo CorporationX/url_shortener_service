@@ -1,14 +1,27 @@
 package faang.school.urlshortenerservice.encoder;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 public abstract class AbstractEncoder implements Encoder {
 
-    static private final int STRING_MIX_PARAM = 3;
     private final String baseChars;
+    private final Integer mixParameter;
 
-    public AbstractEncoder(String baseChars) {
+    public AbstractEncoder(String baseChars, Integer mixParameter) {
         this.baseChars = baseChars;
+        this.mixParameter = mixParameter;
+    }
+
+    @Override
+    public String encode(Long sequenceNumber) {
+        return commonEncode(sequenceNumber);
+    }
+
+    @Override
+    public List<String> encode(List<Long> sequenceNumbers) {
+        return commonEncode(sequenceNumbers);
     }
 
     protected String commonEncode(Long number) {
@@ -24,7 +37,7 @@ public abstract class AbstractEncoder implements Encoder {
             encodedString.insert(0, baseChars.charAt(remainder));
             number /= charsBase;
         }
-        return mixString(encodedString.reverse().toString(), STRING_MIX_PARAM);
+        return mixString(encodedString.reverse().toString(), mixParameter);
     }
 
     protected List<String> commonEncode(List<Long> numbers) {
@@ -34,8 +47,9 @@ public abstract class AbstractEncoder implements Encoder {
     }
 
     protected String mixString(String input, int shift) {
-        if (input == null || input.isEmpty()) {
-            return input;
+
+        if (StringUtils.isBlank(input)) {
+            return "";
         }
         int length = input.length();
         shift = shift % length;
