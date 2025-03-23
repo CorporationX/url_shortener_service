@@ -13,11 +13,11 @@ public class Base62Encoder {
         this.encoder = encoder;
     }
 
-    public List<String> encode(List<Long> numbers) {
-        UniqueValuesListValidator.validateList(numbers, "Supplied list of numbers is empty!");
-        UniqueValuesListValidator.validateUniqueness(numbers);
+    public List<String> encode(List<Long> randomNumbersList) {
+        UniqueValuesListValidator.validateList(randomNumbersList, "Supplied list of numbers is empty!");
+        UniqueValuesListValidator.validateUniqueness(randomNumbersList);
 
-        return numbers.stream()
+        return randomNumbersList.stream()
             .map(encoder::encode)
             .toList();
     }

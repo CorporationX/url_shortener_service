@@ -4,6 +4,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+
   redis:
     host: localhost
     port: 6379
@@ -22,11 +23,19 @@ spring:
     enabled: false
 
 server:
-  port: 8080
+  port: 18080
+  baseurl: http://localhost:18080
+  hash_count: 5
 
 logging:
   level:
     root: info
+
+api:
+  title: "URL shortener service API"
+  version: "0.1.0.1"
+  description: "URL shortener service API for shortening long URLs"
+
 
 encoder:
   settings:

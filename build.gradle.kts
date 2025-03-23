@@ -30,6 +30,9 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
     // Database and Redis
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:5.2.0")
