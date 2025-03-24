@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context;
+package faang.school.urlshortenerservice.config;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
