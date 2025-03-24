@@ -21,11 +21,6 @@ public class RedisUrlCacheRepositoryImpl implements UrlRepository {
     @Override
     @Transactional
     public Optional<String> findUrlByHash(String hash) {
-        String longUrl = redisTemplate.opsForValue().get(hash);
-        if (longUrl == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(longUrl);
-        }
+        return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
     }
 }

@@ -26,20 +26,18 @@ public class UrlService {
 
     public String getShortUrl(String longUrlString) {
         try {
-            URL longUrl = new URL(longUrlString);
+            new URL(longUrlString);
         } catch (MalformedURLException e) {
             throw new BadUrlException("Can not shorten url, because " + longUrlString + " is incorrect url");
         }
         String hash = hashCache.getHash();
         urlRepository.save(hash, longUrlString);
         urlCacheRepository.save(hash, longUrlString);
-        URL shortUrl;
         try {
-            shortUrl = new URL("http", "localhost", 8080, "/" + hash);
+            return new URL("http", "localhost", 8080, "/" + hash).toExternalForm();
         } catch (MalformedURLException e) {
             throw new RuntimeException("Cannot shorten url");
         }
-        return shortUrl.toExternalForm();
     }
 
     public String getUrlByHash(String hash) {

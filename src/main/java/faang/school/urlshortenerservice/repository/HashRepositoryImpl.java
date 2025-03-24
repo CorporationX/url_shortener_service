@@ -30,8 +30,7 @@ public class HashRepositoryImpl implements HashRepository {
     @Override
     @Transactional
     public void saveAll(List<String> hashes) {
-        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) " +
-                        "VALUES (?)",
+        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)",
                 hashes,
                 batchSize,
                 (PreparedStatement ps, String hash) -> ps.setString(1, hash));
