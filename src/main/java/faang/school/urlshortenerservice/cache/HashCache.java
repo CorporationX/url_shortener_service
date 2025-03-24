@@ -53,15 +53,14 @@ public class HashCache {
     }
 
     private void verifySizeCache() {
-        if (hashQueue.size() < cacheSize * minFillPercent) {
-            if (isGenerating.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync()
-                        .thenAccept(hashQueue::addAll)
-                        .thenRun(() -> {
-                            isGenerating.set(false);
-                            log.info("Получены новые хэши");
-                        });
-            }
+        if (hashQueue.size() < cacheSize * minFillPercent
+                && isGenerating.compareAndSet(false, true)) {
+            hashGenerator.getHashesAsync()
+                    .thenAccept(hashQueue::addAll)
+                    .thenRun(() -> {
+                        isGenerating.set(false);
+                        log.info("Получены новые хэши");
+                    });
         }
     }
 }

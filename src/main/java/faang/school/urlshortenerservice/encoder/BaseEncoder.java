@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -19,12 +18,9 @@ public class BaseEncoder {
     private int base;
 
     public List<Hash> encode(List<Long> numbers) {
-        List<Hash> hashes = new ArrayList<>(numbers.size());
-        for (Long number : numbers) {
-            hashes.add(encodeBase(number));
-        }
-
-        return hashes;
+        return numbers.stream()
+                .map(this::encodeBase)
+                .toList();
     }
 
     private Hash encodeBase(long number) {
