@@ -3,12 +3,14 @@ package faang.school.urlshortenerservice.config.context;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "shortener.security.enabled", havingValue = "true")
+@Component
 public class UserHeaderFilter implements Filter {
 
     private final UserContext userContext;

@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -23,12 +24,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    /**
+     * Monitoring
+     */
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-core")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     /**
      * Database
      */
     implementation("org.liquibase:liquibase-core")
-    implementation("redis.clients:jedis:4.3.2")
+    implementation("io.lettuce:lettuce-core:6.2.4.RELEASE")
     runtimeOnly("org.postgresql:postgresql")
 
     /**
@@ -41,6 +48,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("org.apache.commons:commons-collections4:4.4")
 
     /**
      * Test containers
@@ -60,10 +68,51 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
 val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true }
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
+}
+
+val jacocoExcludePackAgeList = listOf(
+    "**/client/**",
+    "**/config/**",
+    "**/dto/**",
+    "**/entity/**",
+    "**/enums/**",
+    "**/exception/**",
+    "**/repository/**"
+)
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.required.set(true)
+    }
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            exclude(jacocoExcludePackAgeList)
+        })
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            classDirectories.setFrom(tasks.jacocoTestReport.get().classDirectories)
+            limit {
+//                minimum = BigDecimal.valueOf(0.7)
+            }
+        }
+    }
 }
