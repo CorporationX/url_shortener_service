@@ -14,13 +14,15 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
-    @Query("SELECT u.hash FROM Url u WHERE u.url = :url")
+    @Query(nativeQuery = true, value = """
+        SELECT u.hash FROM Url u WHERE u.url = :url
+    """)
     Optional<String> findHashByUrl(@Param("url") String url);
 
     @Modifying
     @Query(nativeQuery = true, value = """
-        DELETE FROM url where created_ad =< :hashDeadline
-        RETUNRNING *
+        DELETE FROM url WHERE created_at <= :hashDeadline
+        RETURNING *
     """)
     List<Hash> cleaningExpiredUrls(@Param("hashDeadline") LocalDateTime deadline);
 }
