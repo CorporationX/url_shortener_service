@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.DataNotFoundException;
 import faang.school.urlshortenerservice.generator.HashCache;
@@ -57,5 +59,15 @@ public class UrlServiceImplTest {
         when(urlRepository.findByHash(HASH)).thenReturn(Optional.of(urlEx));
         String urlExpected =  urlService.getUrl(HASH);
         assertEquals(urlEx.getUrl(), urlExpected);
+    }
+
+    @Test
+    public void testShortenUrlSucceed() {
+        UrlDto urlDto = new UrlDto(URL);
+        Hash hashEnt = new Hash(HASH);
+        when(hashCache.getHash()).thenReturn(hashEnt);
+        urlService.shortenUrl(urlDto);
+        verify(urlRepository, times(1)).save(new Url(HASH, URL));
+        verify(urlCacheRepository, times(1)).save(HASH, URL);
     }
 }
