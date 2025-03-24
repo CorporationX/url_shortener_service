@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service.hash;
 import faang.school.urlshortenerservice.property.HashCacheProperty;
 import faang.school.urlshortenerservice.service.hash.api.HashCache;
 import faang.school.urlshortenerservice.service.hash.api.HashGenerator;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -26,18 +25,15 @@ public class HashCacheImpl implements HashCache {
         this.hashes = new LinkedBlockingQueue<>(hashCacheProperties.getSize());
     }
 
-    @PostConstruct
-    @Override
-    public void initializing() {
-        log.info("Initializing Cache");
-        ensureSufficientHashes();
-        fillCache();
-        log.info("Cache initialized successfully");
-    }
-
     @Override
     public String getHash() {
-        return hashes.poll();
+        try {
+            ensureCacheIsFilled();
+            return hashes.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Thread interrupted while retrieving hash", e);
+        }
     }
 
     @Async("hashCacheFillExecutor")
@@ -53,8 +49,10 @@ public class HashCacheImpl implements HashCache {
             return false;
         }
 
-        return hashes.size() < (hashCacheProperties.getSize() * (hashCacheProperties.getLowPercent() / 100))
-                && isGeneratingHashes.compareAndSet(false, true);
+        double threshold = hashCacheProperties.getSize() * (hashCacheProperties.getLowPercent() / 100.0);
+
+        return hashes.size() < threshold
+            && isGeneratingHashes.compareAndSet(false, true);
     }
 
     private void fillCache() {
@@ -68,9 +66,7 @@ public class HashCacheImpl implements HashCache {
         }
     }
 
-    private int getBatchSizeForCache() {
-        return Math.min(hashCacheProperties.getSize() - hashes.size(), 100);
-    }
+    private int getBatchSizeForCache() { return hashCacheProperties.getSize(); }
 
     private void ensureSufficientHashes() {
         if (hashGenerator.isMinimumThresholdExceeded()) {
