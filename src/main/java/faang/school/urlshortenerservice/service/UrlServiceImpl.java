@@ -46,20 +46,25 @@ public class UrlServiceImpl implements UrlService {
     public String getUrl(String hash) {
         String hashForUrl = urlCacheRepository.getByHash(hash);
         if (!hashForUrl.isEmpty()) {
+            log.info("Founded url {} from Redis", hashForUrl);
             return hashForUrl;
         }
-        Url url = urlRepository.findByHash(hash).orElseThrow(() -> new IllegalArgumentException(""));
+        Url url = urlRepository.findByHash(hash).orElseThrow(() -> {
+            throw new DataNotFoundException("There is no free hash in base.");
+        });
+        log.info("Founded url {} from url repository", url.getUrl());
         return url.getUrl();
     }
 
     @Override
     public UrlDto shortenUrl(UrlDto urlDto) {
-        String hash = hashCache.getHash();
+        String hash = hashCache.getHash().getHash();
         if (hash.isEmpty()) {
             throw new DataNotFoundException("There is no free hash in base.");
         }
+        log.info("Received new hash {} for url {}", hash, urlDto.getUrl());
         urlRepository.save(new Url(hash, urlDto.getUrl()));
         urlCacheRepository.save(hash, urlDto.getUrl());
-        return new UrlDto(String.format("%s/%s", urlDto.getUrl(), hash));
+        return new UrlDto(urlDto.getUrl());
     }
 }

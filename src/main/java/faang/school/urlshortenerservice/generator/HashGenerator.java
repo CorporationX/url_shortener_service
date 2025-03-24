@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import liquibase.database.jvm.HsqlConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 
@@ -25,17 +25,16 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.number_hash_to_delete:1000}")
-    @Setter
-    private Integer numberHashToDelete;
-
     @Transactional
     public List<Hash> generateBatch(int batch) {
         List<Hash> hashes = new ArrayList<>();
         List<Long> numbers = hashRepository.getUniqueNumbers(batch);
+        log.info("Received {} unique numbers from hash repository", numbers.size());
         base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
-
-        return StreamSupport.stream(hashRepository.saveAll(hashes).spliterator(),false).toList();
+        log.info("{} numbers encode to base 62", numbers.size());
+        List<Hash> list = StreamSupport.stream(hashRepository.saveAll(hashes).spliterator(), false).toList();
+        log.info("Hashes {} saved to hash repository", list.size());
+        return list;
     }
 
     @Async("cachedThreadPool")
