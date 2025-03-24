@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 public record UrlRequestDto(
     @NotBlank(message = "URL не должен быть пустым")
     @Pattern(
-        regexp = "^(https?://)?([\\w.-]+)+(:\\d+)?(/\\S*)?$",
+        regexp = "^https?://[\\w.-]+(:\\d+)?(/.*)?$",
         message = "Некорректный формат URL"
     )
     String url
