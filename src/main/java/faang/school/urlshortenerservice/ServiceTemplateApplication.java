@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableJpaAuditing
 @EnableCaching
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 public class ServiceTemplateApplication {
