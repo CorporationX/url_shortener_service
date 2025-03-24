@@ -26,6 +26,19 @@ public class HashAsyncConfig {
     @Value("${hash.generator.thread-pool.keep-alive-seconds}")
     private int keepAliveSeconds;
 
+
+    @Value("${hash.cache.thread-pool.core-pool-size}")
+    private int cacheCorePoolSize;
+
+    @Value("${hash.cache.thread-pool.max-pool-size}")
+    private int cacheMaxPoolSize;
+
+    @Value("${hash.cache.thread-pool.queue-capacity}")
+    private int cacheQueueCapacity;
+
+    @Value("${hash.cache.thread-pool.keep-alive-seconds}")
+    private int cacheKeepAliveSeconds;
+
     @Bean(name = "hashGeneratorThreadPool")
     public Executor hashGeneratorExecutor() {
         log.info("Initializing hashGeneratorThreadPool: corePoolSize={}, maxPoolSize={}, " +
@@ -38,6 +51,18 @@ public class HashAsyncConfig {
         executor.setQueueCapacity(queueCapacity);
         executor.setKeepAliveSeconds(keepAliveSeconds);
         executor.setThreadNamePrefix("HashGenerator-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "hashCacheThreadPool")
+    public Executor hashCacheThreadPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(cacheCorePoolSize);
+        executor.setMaxPoolSize(cacheMaxPoolSize);
+        executor.setQueueCapacity(cacheQueueCapacity);
+        executor.setKeepAliveSeconds(cacheKeepAliveSeconds);
+        executor.setThreadNamePrefix("HashCache-");
         executor.initialize();
         return executor;
     }

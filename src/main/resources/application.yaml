@@ -26,8 +26,20 @@ logging:
 
 hash:
   batch-size: 1000
+  batch-get-amount: 1000
+  batch-get-unique-numbers-amount: 1000
+  min-hash-database-reserve: 1000
+  min-hash-cache-size: 1000
+  cache-percentage-threshold: 0.2 # 20%
 
   generator:
+    thread-pool:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
+      keep-alive-seconds: 60
+
+  cache:
     thread-pool:
       core-pool-size: 4
       max-pool-size: 8
