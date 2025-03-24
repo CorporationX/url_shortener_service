@@ -24,14 +24,14 @@ services:
       - "${REDIS_COMMANDER_EXTERNAL_PORT}:${REDIS_COMMANDER_INTERNAL_PORT}"
     user: redis
 
-#  app_service:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    env_file: .env
-#    ports:
-#      - "${APP_SERVICE_EXTERNAL_PORT}:${APP_SERVICE_INTERNAL_PORT}"
-#    depends_on:
-#      - redisCommander
-#      - postgres
-#      - redis
+  app_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "${APP_SERVICE_EXTERNAL_PORT}:${APP_SERVICE_INTERNAL_PORT}"
+    depends_on:
+      - redisCommander
+      - postgres
+      - redis

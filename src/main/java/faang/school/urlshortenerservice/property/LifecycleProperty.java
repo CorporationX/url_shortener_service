@@ -1,27 +1,20 @@
 package faang.school.urlshortenerservice.property;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@ConfigurationProperties(prefix = "url")
-@Component
+@ConfigurationProperties(prefix = "url.lifecycle")
 public class LifecycleProperty {
     private String unit;
     private int value;
 
-    public LocalDateTime getDeadLine()
-    {
+    public LocalDateTime getDeadLine() {
         ChronoUnit chronoUnit = parseChronoUnit(unit);
         return LocalDateTime.now().minus(value, chronoUnit);
     }

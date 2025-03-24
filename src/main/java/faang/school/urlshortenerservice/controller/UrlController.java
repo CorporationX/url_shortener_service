@@ -1,6 +1,9 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.dto.request.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.response.HashResponseDto;
+import faang.school.urlshortenerservice.service.UrlServiceImpl;
+import faang.school.urlshortenerservice.service.api.UrlService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,15 +27,15 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public String generateShortUrl(@Valid @NotBlank String url) {
-        return urlService.generateShortUrl(url);
+    public ResponseEntity<HashResponseDto> generateShortUrl(@Valid @RequestBody UrlRequestDto urlRequestDto) {
+        String hash = urlService.generateShortUrl(urlRequestDto.url());
+        return ResponseEntity.ok(new HashResponseDto(hash));
     }
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToUrl(@PathVariable @NotBlank String hash) {
-        String originalUrl = urlService.getUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(originalUrl))
+                .location(URI.create(urlService.getUrl(hash)))
                 .build();
     }
 }

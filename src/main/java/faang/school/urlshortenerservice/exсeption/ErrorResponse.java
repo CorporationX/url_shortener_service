@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.exeption;
+package faang.school.urlshortenerservice.exсeption;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
