@@ -58,13 +58,13 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlDto shortenUrl(UrlDto urlDto) {
-        String hash = hashCache.getHash().getHash();
-        if (hash.isEmpty()) {
+        Hash hash = hashCache.getHash();
+        if (hash == null) {
             throw new DataNotFoundException("There is no free hash in base.");
         }
         log.info("Received new hash {} for url {}", hash, urlDto.getUrl());
-        urlRepository.save(new Url(hash, urlDto.getUrl()));
-        urlCacheRepository.save(hash, urlDto.getUrl());
+        urlRepository.save(new Url(hash.getHash(), urlDto.getUrl()));
+        urlCacheRepository.save(hash.getHash(), urlDto.getUrl());
         return new UrlDto(urlDto.getUrl());
     }
 }
