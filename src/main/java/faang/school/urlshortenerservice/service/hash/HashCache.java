@@ -12,32 +12,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @RequiredArgsConstructor
 public class HashCache {
+    @Value("${hash.generate.minimal-percent}")
+    private double MIN_PERCENT;
     @Value("${hash.cache.size}")
     private int hashCacheSize;
-    private final HashGenerator hashGenerator;
+
+    private final HashCacheAsync hashCacheAsync;
     private final Queue<String> queue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     public String getHash() {
         String hash = queue.poll();
-        if (queue.size() < hashCacheSize * 0.2) {
-            fillCache();
+        if (queue.size() < hashCacheSize * MIN_PERCENT) {
+            hashCacheAsync.fillCache(queue, isRunning);
         }
         return hash;
-    }
-
-    @Async("hashCacheExecutor")
-    public void fillCache() {
-        if (isRunning.compareAndSet(false, true)) {
-            try {
-                hashGenerator.generateBatch()
-                        .thenAccept(queue::addAll)
-                        .whenComplete((res, ex) -> {
-                            isRunning.set(false);
-                        });
-            } catch (Exception e) {
-                isRunning.set(false);
-            }
-        }
     }
 }

@@ -12,7 +12,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -34,7 +34,8 @@ hash:
   generate:
     queue: 100
     thread-count: 4
+    minimal-percent: 0.2
   save:
-    thread-count: 1
+    thread-count: 8
   batch:
-    size: 10000
+    size: 100000
