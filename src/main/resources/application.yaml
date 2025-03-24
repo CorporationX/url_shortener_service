@@ -13,9 +13,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc.batch_size: 50
+        jdbc.fetch_size: 3
+        order_inserts: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        url-channel:
+          name: url-channel
+
+hash:
+  generator:
+    thread-pool-size: 5
+  cache:
+    capacity: 10000
+    min-fill: 0.2
+    cleaner:
+      cron: 0 0 0 * * *
 
 server:
   port: 8080
@@ -23,3 +44,5 @@ server:
 logging:
   level:
     root: info
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+    org.postgresql: DEBUG
