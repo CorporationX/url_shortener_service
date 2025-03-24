@@ -17,7 +17,7 @@ public class HashRepository {
     private final JdbcTemplate template;
 
     public List<Long> getUniqueNumbers(int uniqueMaxSize) {
-        String sql = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?);";
+        String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?);";
         return template.queryForList(sql, Long.class, uniqueMaxSize);
     }
 

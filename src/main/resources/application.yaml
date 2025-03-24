@@ -29,6 +29,10 @@ logging:
   level:
     root: info
 
+url:
+  protocol: "http"
+  domain: "localhost"
+
 hash_repo:
   unique_max_size: 100
   save_batch_size: 10

@@ -5,8 +5,6 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -29,11 +27,7 @@ public class HashGenerator {
 
     private final HashRepository repository;
     private final Base62Encoder encoder;
-
-    @Autowired
-    @Qualifier("hashGeneratorThreadPool")
-    private ExecutorService pool;
-
+    private final ExecutorService hashGeneratorThreadPool;
 
     @Transactional
     @Async("hashGeneratorThreadPool")
@@ -42,7 +36,7 @@ public class HashGenerator {
         List<CompletableFuture<List<String>>> futureList = ListUtils
                 .partition(uniqueNumbers, partitionSize)
                 .stream()
-                .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values), pool))
+                .map((values) -> CompletableFuture.supplyAsync(() -> encoder.encode(values), hashGeneratorThreadPool))
                 .toList();
         CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
         log.info("Parallel hash generation has been completed");

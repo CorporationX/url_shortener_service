@@ -4,8 +4,6 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -25,10 +23,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final LinkedBlockingQueue<String> hashCache = new LinkedBlockingQueue<>();
     private AtomicBoolean isFilling = new AtomicBoolean(false);
-
-    @Autowired
-    @Qualifier("hashCacheThreadPool")
-    private ExecutorService pool;
+    private final ExecutorService hashCacheThreadPool;
 
     @Value("${hash.cache_size}")
     private int cacheSize;
@@ -38,21 +33,19 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        hashGenerator.generateBatch().join();
+        hashGenerator.generateBatch();
         List<String> hashes = repository.getHashBatch(cacheSize);
         hashCache.addAll(hashes);
         log.info("Primary hash generation hashes been completed successfully");
     }
 
-    @Transactional
-    @Async("hashCacheThreadPool")
     public String getHash() {
         if (needsFilling()) {
             CompletableFuture.runAsync(() -> {
                 getMoreHashes();
                 log.info("Loaded more hashes to cache");
                 isFilling.set(false);
-            }, pool);
+            }, hashCacheThreadPool);
         }
         return hashCache.poll();
     }
@@ -63,7 +56,9 @@ public class HashCache {
                 && !isFilling.compareAndExchange(false, true);
     }
 
-    private void getMoreHashes() {
+    @Transactional
+    @Async("hashCacheThreadPool")
+    public void getMoreHashes() {
         int sizeBatch = hashCache.remainingCapacity();
         hashGenerator.generateBatch();
         hashCache.addAll(repository.getHashBatch(sizeBatch));
