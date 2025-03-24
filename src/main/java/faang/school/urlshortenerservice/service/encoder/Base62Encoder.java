@@ -7,10 +7,11 @@ import java.util.List;
 @Component
 public class Base62Encoder implements Encoder {
     private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = BASE62_CHARS.length();
+    private static final int BASE_LENGTH = BASE62_CHARS.length();
 
+    @Override
     public List<String> encodeList(List<Long> numbers) {
-        return numbers.parallelStream()
+        return numbers.stream()
                 .map(this::encode)
                 .toList();
     }
@@ -22,9 +23,9 @@ public class Base62Encoder implements Encoder {
 
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
-            int remainder = (int) (number % BASE);
+            int remainder = (int) (number % BASE_LENGTH);
             sb.append(BASE62_CHARS.charAt(remainder));
-            number = number / BASE;
+            number = number / BASE_LENGTH;
         }
         return sb.reverse().toString();
     }

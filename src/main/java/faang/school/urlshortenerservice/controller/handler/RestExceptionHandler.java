@@ -19,7 +19,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        log.info("MethodArgumentNotValidException: {}", ex.getMessage());
+        log.error("MethodArgumentNotValidException: {}", ex.getMessage());
         String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return buildErrorResponse(ErrorCode.BAD_REQUEST, errorMessage);
     }
@@ -27,21 +27,21 @@ public class RestExceptionHandler {
     @ExceptionHandler(HashNotExistException.class)
     @ResponseStatus(HttpStatus.TOO_EARLY)
     public ErrorResponse handleValidationException(HashNotExistException ex) {
-        log.info("HashNotExistException: {}", ex.getMessage());
+        log.error("HashNotExistException: {}", ex.getMessage());
         return buildErrorResponse(ErrorCode.TOO_EARLY, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(IllegalArgumentException ex) {
-        log.info("IllegalArgumentException: {}", ex.getMessage());
+        log.error("IllegalArgumentException: {}", ex.getMessage());
         return buildErrorResponse(ErrorCode.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleValidationException(EntityNotFoundException ex) {
-        log.info("EntityNotFoundException: {}", ex.getMessage());
+        log.error("EntityNotFoundException: {}", ex.getMessage());
         return buildErrorResponse(ErrorCode.NOT_FOUND, ex.getMessage());
     }
 

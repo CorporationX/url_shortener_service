@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service.url.impl;
 
-import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.dto.ResponseDto;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.service.hash.HashCache;
@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UrlServiceImpl implements UrlService {
+    private static final String URL_FORMAT = "%s://%s:%d%s/%s";
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
     @Value("${api-version}")
@@ -32,13 +33,14 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Url createUrl(String longUrl) {
-        log.info("Creating short longUrl {}", longUrl);
-        Hash hash = hashCache.getHash();
+    public ResponseDto createShortUrl(String originalUrl, HttpServletRequest request) {
+        log.info("Start creating short for url: {}", originalUrl);
 
-        Url url = urlCacheRepository.save(new Url(hash.getHash(), longUrl, LocalDateTime.now()));
-        log.info("Created short url {}", url);
-        return url;
+        Url url = urlCacheRepository.save(new Url(hashCache.getHash(), originalUrl, LocalDateTime.now()));
+        String shortUrl = buildUrl(url, request);
+
+        log.info("Created short url: {}", shortUrl);
+        return new ResponseDto(shortUrl);
     }
 
     @Override
@@ -47,10 +49,12 @@ public class UrlServiceImpl implements UrlService {
         return urlCacheRepository.findByHash(hash).getUrl();
     }
 
-    @Override
-    public String buildUrl(Url url, HttpServletRequest request) {
-        String host = request.getServerName();
-        int port = request.getServerPort();
-        return String.format("%s://%s:%d%s/%s", request.getScheme(), host, port, apiVersion, url.getHash());
+    private String buildUrl(Url url, HttpServletRequest request) {
+        return String.format(URL_FORMAT,
+                request.getScheme(),
+                request.getServerName(),
+                request.getServerPort(),
+                apiVersion,
+                url.getHash());
     }
 }

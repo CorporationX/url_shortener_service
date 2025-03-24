@@ -16,7 +16,8 @@ public class HashCustomRepositoryImpl implements HashCustomRepository {
     @Transactional
     @Override
     public void hashBatchSave(List<Hash> hashes) {
-        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)",
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO hash (hash) VALUES (?)",
                 hashes,
                 hashes.size(),
                 (ps, hash) -> ps.setString(1, hash.getHash()));

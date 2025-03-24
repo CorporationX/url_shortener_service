@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.dto.ResponseDto;
 import faang.school.urlshortenerservice.model.Url;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -10,9 +11,7 @@ public interface UrlService {
 
     List<Url> getAndDeleteOldUrls(LocalDateTime olderThan);
 
-    Url createUrl(String url);
+    ResponseDto createShortUrl(String originalUrl, HttpServletRequest request);
 
     String getUrlByHash(String hash);
-
-    String buildUrl(Url url, HttpServletRequest request);
 }

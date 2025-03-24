@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface HashService {
 
-    List<Long> getNewNumbers(Long n);
+    List<Long> generateNewNumbers(Long n);
 
     Long getHashesCount();
 

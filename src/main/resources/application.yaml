@@ -20,8 +20,8 @@ spring:
 
   data:
     redis:
-      port: 6379
-      host: localhost
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -30,7 +30,7 @@ api-version: /api/v1
 
 url-shortener-service:
   batch-size: ${BATCH_SIZE}
-  max-hashes-in-store: 700
+  max-hashes-in-store: ${MAX_BATCH_SIZE}
   hash-generator-thread-pool:
     corePoolSize: 2
     maxPoolSize: 5
@@ -45,7 +45,7 @@ url-shortener-service:
   cache-lifetime: 30m
 
 server:
-  port: 8090
+  port: ${SERVER_PORT}
 
 logging:
   level:

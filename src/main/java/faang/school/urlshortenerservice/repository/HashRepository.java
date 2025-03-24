@@ -20,13 +20,13 @@ public interface HashRepository extends JpaRepository<Hash, String>, HashCustomR
 
     @Modifying
     @Query(value = """
-        DELETE FROM hash
-        WHERE ctid IN (
-            SELECT ctid
-            FROM hash
-            LIMIT ?1
-        )
-        RETURNING *
+            DELETE FROM hash
+            WHERE ctid IN (
+                SELECT ctid
+                FROM hash
+                LIMIT ?1
+            )
+            RETURNING *
     """, nativeQuery = true)
-    List<Hash> hashBatchDeleteAndReturn(int size);
+    List<Hash> getHashBatchAndDelete(int size);
 }

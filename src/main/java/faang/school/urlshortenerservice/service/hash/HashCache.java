@@ -29,33 +29,29 @@ public class HashCache {
 
     @PostConstruct
     public void init() {
-        hashGenerator.generateBatch();
         refillCacheIfNeeded();
     }
 
-    public Hash getHash() {
-        executorService.submit(this::refillCacheIfNeeded);
+    public String getHash() {
+        executorService.execute(this::refillCacheIfNeeded);
 
         Hash poll = queue.poll();
         if (poll == null) {
             log.info(MESSAGE);
             throw new HashNotExistException(MESSAGE);
         }
-        return poll;
+        return poll.getHash();
     }
 
     public synchronized void refillCacheIfNeeded() {
-        log.info("Start refillCacheIfNeeded");
-
         if (getPercentOfFullQueue() < properties.getMinimumHashLengthInPercent()) {
+            log.info("Start refill cache");
             List<Hash> newHashes = hashService.getBatchHashesAndDelete(properties.getBatchSize());
             Collections.shuffle(newHashes);
             queue.addAll(newHashes);
             log.info("Cache is refilled, size of new hashes: {}", newHashes.size());
-            hashGenerator.asyncGenerateBatch();
+            hashGenerator.generateBatch();
         }
-
-        log.info("Finish refillCacheIfNeeded");
     }
 
     private double getPercentOfFullQueue() {

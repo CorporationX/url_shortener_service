@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,15 +21,17 @@ public class CleanerScheduler {
     private final UrlShortenerProperties properties;
     private final UrlService urlService;
     private final HashService hashService;
+    private final TransactionTemplate transactionTemplate;
 
     @Scheduled(cron = "${url-shortener-service.clean-old-url-cron}")
-    @Transactional
     public void cleanOldUrls() {
-        log.info("Cleaning old urls");
-        List<Url> urls = urlService.getAndDeleteOldUrls(LocalDateTime.now().minus(properties.getUrlToCleanOlderThan()));
-        log.info("Cleaned {} urls", urls.size());
-        hashService.saveHashesBatch(urls.stream()
-                .map(url -> new Hash(url.getHash()))
-                .toList());
+        transactionTemplate.executeWithoutResult(status -> {
+            log.info("Cleaning old urls");
+            List<Url> oldUrls = urlService.getAndDeleteOldUrls(LocalDateTime.now().minus(properties.getUrlToCleanOlderThan()));
+            log.info("Cleaned {} urls", oldUrls.size());
+            hashService.saveHashesBatch(oldUrls.stream()
+                    .map(url -> new Hash(url.getHash()))
+                    .toList());
+        });
     }
 }

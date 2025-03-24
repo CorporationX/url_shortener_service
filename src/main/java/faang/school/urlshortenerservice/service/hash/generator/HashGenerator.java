@@ -4,12 +4,11 @@ import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.properties.UrlShortenerProperties;
 import faang.school.urlshortenerservice.service.encoder.Encoder;
 import faang.school.urlshortenerservice.service.hash.HashService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -20,30 +19,27 @@ public class HashGenerator {
     private final UrlShortenerProperties properties;
     private final Encoder encoder;
     private final HashService hashService;
+    private final TransactionTemplate transactionTemplate;
 
-    @Async("hashGeneratorThreadPool")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void asyncGenerateBatch() {
-        generate();
+    @PostConstruct
+    public void init() {
+        generateBatch();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateBatch() {
-        generate();
+        transactionTemplate.executeWithoutResult(status -> {
+            List<Hash> newHashes = encoder.encodeList(getNewNumbers())
+                    .stream()
+                    .map(Hash::new)
+                    .toList();
+
+            log.info("Generated {} new Hashes", newHashes.size());
+            hashService.saveHashesBatch(newHashes);
+        });
     }
 
-    private void generate() {
-        log.info("Generate hashes for batch");
-
+    private List<Long> getNewNumbers() {
         long maxAvailableBatch = properties.getMaxHashesInStore() - hashService.getHashesCount();
-        List<Long> newNumbers = hashService.getNewNumbers(Math.min(properties.getBatchSize(), maxAvailableBatch));
-
-        List<Hash> hashes = encoder.encodeList(newNumbers)
-                .stream()
-                .map(Hash::new)
-                .toList();
-
-        log.info("Generated {} hashes for batch", hashes.size());
-        hashService.saveHashesBatch(hashes);
+        return hashService.generateNewNumbers(Math.min(properties.getBatchSize(), maxAvailableBatch));
     }
 }

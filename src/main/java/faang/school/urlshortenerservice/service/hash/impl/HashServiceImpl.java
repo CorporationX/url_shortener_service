@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,9 +17,8 @@ import java.util.List;
 public class HashServiceImpl implements HashService {
     private final HashRepository hashRepository;
 
-    @Override
-    public List<Long> getNewNumbers(Long n) {
-        log.info("GetNewNumbers, n = {}", n);
+    public List<Long> generateNewNumbers(Long n) {
+        log.info("Generate New Numbers, n = {}", n);
         return hashRepository.getUniqueNumbers(n);
     }
 
@@ -36,9 +34,9 @@ public class HashServiceImpl implements HashService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<Hash> getBatchHashesAndDelete(int size) {
-        List<Hash> hashes = hashRepository.hashBatchDeleteAndReturn(size);
+        List<Hash> hashes = hashRepository.getHashBatchAndDelete(size);
 
         log.info("GetBatchHashesAndDelete size: {}", hashes.size());
         return hashes;

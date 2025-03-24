@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.ResponseDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,12 +28,8 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public String createShortUrl(@Valid @RequestBody UrlDto url, HttpServletRequest request) {
-        log.info("Create short url: {}", url);
-
-        String builtUrl = urlService.buildUrl(urlService.createUrl(url.getUrl()), request);
-        log.info("Built url: {}", builtUrl);
-        return builtUrl;
+    public ResponseDto createShortUrl(@Valid @RequestBody UrlDto url, HttpServletRequest request) {
+        return urlService.createShortUrl(url.getUrl(), request);
     }
 
     @GetMapping("/{hash}")
