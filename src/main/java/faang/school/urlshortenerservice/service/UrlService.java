@@ -20,6 +20,8 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
 
+    private final String SHORT_URL_ADDRESS = "%s://%s:%d/%s";
+
     @Value("${url.protocol}")
     private String protocol;
     @Value("${url.domain}")
@@ -38,7 +40,7 @@ public class UrlService {
         }
         urlCacheRepository.save(hash, longUrl);
 
-        String shortUrl = protocol + "://" + domain + ":" + port + "/" + hash;
+        String shortUrl = String.format(SHORT_URL_ADDRESS, protocol, domain, port, hash);
         return new UrlResponse(shortUrl);
     }
 
@@ -47,10 +49,6 @@ public class UrlService {
         String url = urlCacheRepository.getUrlByHash(hash);
         if (url == null) {
             url = urlRepository.getUrlByHash(hash);
-            if (url == null) {
-                log.error("Url not found for hash: {}", hash);
-                throw new UrlNotFoundException("Url not found for hash: " + hash);
-            }
             urlCacheRepository.save(hash, url);
         }
 

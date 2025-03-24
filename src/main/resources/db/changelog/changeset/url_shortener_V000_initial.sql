@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS url
-(
-    hash       VARCHAR(6) PRIMARY KEY,
-    url        TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash (hash)
-);
-
 CREATE TABLE IF NOT EXISTS hash
 (
-    hash CHAR(6) PRIMARY KEY
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS url
+(
+    id         SERIAL PRIMARY KEY,
+    hash       VARCHAR(6) UNIQUE NOT NULL,
+    url        TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE SEQUENCE unique_number_seq

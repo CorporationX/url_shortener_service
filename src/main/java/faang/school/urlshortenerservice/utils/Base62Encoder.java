@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Component
@@ -26,11 +27,12 @@ public class Base62Encoder {
         int batch_size = numbers.size() / pool_size;
         List<Future<List<String>>> futures = new ArrayList<>();
 
-        for (int i = 0; i < pool_size; i++) {
-            int start = i * batch_size;
-            int end = (i + 1) * batch_size;
-            futures.add(encodeBatch(numbers.subList(start, end)));
-        }
+        IntStream.range(0, pool_size)
+                .forEach(i -> {
+                    int start = i * batch_size;
+                    int end = (i + 1) * batch_size;
+                    futures.add(encodeBatch(numbers.subList(start, end)));
+                });
 
         List<String> hashes = new ArrayList<>();
         futures.forEach(future -> {

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,7 +16,6 @@ public class UrlRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<String> getHashesWithExpiredDates(String interval) {
-        log.info(interval);
         String sql = "DELETE FROM url WHERE created_at < NOW() - ?::INTERVAL RETURNING hash";
         return jdbcTemplate.queryForList(sql, String.class, interval);
     }
@@ -30,7 +30,8 @@ public class UrlRepository {
         try {
             return jdbcTemplate.queryForObject(sql, String.class, hash);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            log.error("Url not found for hash: {}", hash);
+            throw new UrlNotFoundException("Url not found for hash: " + hash);
         }
     }
 
@@ -39,6 +40,7 @@ public class UrlRepository {
         try {
             return jdbcTemplate.queryForObject(sql, String.class, longUrl);
         } catch (EmptyResultDataAccessException e) {
+            log.info("Short url not found for long url: {}", longUrl);
             return null;
         }
     }
