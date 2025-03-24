@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class RedisCacheRepository implements CacheRepository {
+public class RedisRepository implements CacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -12,11 +12,11 @@ public class Base62EncoderImpl implements Base62Encoder {
     @Override
     public String[] encodeNumbers(List<Long> numbers) {
         return numbers.stream()
-            .map(this::encodeNumbers)
+            .map(this::encode)
             .toArray(String[]::new);
     }
 
-    private String encodeNumbers(Long number) {
+    private String encode(Long number) {
         StringBuilder builder = new StringBuilder();
         while (!number.equals(0L)) {
             int index = (int) (number % BASE_62_CHARACTERS.length());
