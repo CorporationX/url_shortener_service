@@ -31,19 +31,19 @@ public class HashCache implements Cache {
     }
 
     public String getHash() {
-        if (isQueueMinSize()) {
+        if (shouldRefillQueue()) {
             refillCache();
         }
         return hashQueue.poll();
     }
 
-    private boolean isQueueMinSize() {
+    private boolean shouldRefillQueue() {
         return hashQueue.size() > threadPoolProperties.getCacheSize() * threadPoolProperties.getRefillThreshold();
     }
 
     private void refillCache() {
         if (isRefilling.compareAndSet(false, true)) {
-            executorService.submit(() -> {
+            executorService.execute(() -> {
                 try {
                     hashQueue.addAll(hashRepository.getHashBatch());
                     generatorService.generateHashBatch();

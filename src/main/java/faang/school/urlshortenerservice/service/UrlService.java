@@ -6,5 +6,5 @@ public interface UrlService {
 
     UrlDto createShortUrl(UrlDto dto, String domain);
 
-    UrlDto getLongUrl(String hash);
+    UrlDto getOriginalUrl(String hash);
 }

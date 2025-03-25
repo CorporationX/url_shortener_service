@@ -29,7 +29,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public UrlDto getLongUrl(String hash) {
+    public UrlDto getOriginalUrl(String hash) {
         Optional<String> longUrlFromCache = urlRedisCache.getUrlByHash(hash);
         if (longUrlFromCache.isPresent()) {
             return new UrlDto(longUrlFromCache.get());
