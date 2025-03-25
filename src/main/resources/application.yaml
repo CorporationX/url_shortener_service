@@ -52,8 +52,8 @@ shortener:
     codebase: base58            # base62/base58
     mix-parameter: 3
   schedule:
-    hash-cron: "0 */1 * * * *"  # cron-expression for scheduled hash-generation
-    url-cron: "0 0 * * * *"     # cron-expression for scheduled url-cleaner
+    hash-cron: "0 */1 * * * *"  # launch every 1 min
+    url-cron: "0 0 0 * * *"     # launch every day at 00:00
   url:
     ttl-days: 1
     prefix: http://site.com/

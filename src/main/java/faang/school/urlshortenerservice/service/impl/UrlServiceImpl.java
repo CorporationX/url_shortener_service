@@ -6,8 +6,8 @@ import faang.school.urlshortenerservice.error.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.service.HashLocalCache;
-import faang.school.urlshortenerservice.service.UrlCacheService;
+import faang.school.urlshortenerservice.cache.HashLocalCache;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +27,12 @@ public class UrlServiceImpl implements UrlService {
     private final HashLocalCache hashLocalCache;
     private final UrlMapper urlMapper;
     private final ShortenerProperties shortenerProperties;
-    private final UrlCacheService urlCacheService;
+    private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
     public UrlResponseDto getOrCreateUrl(String urlAddress) {
 
-        Url url = urlCacheService.getUrl(urlAddress);
+        Url url = urlCacheRepository.getUrl(urlAddress);
         if (url != null) {
             log.info("Got url '{}' from cache", urlAddress);
             return urlMapper.toUrlResponseDto(url);
@@ -41,14 +41,14 @@ public class UrlServiceImpl implements UrlService {
         url = urlRepository.findByUrl(urlAddress);
         if (url != null) {
             log.info("Got url '{}' from database", urlAddress);
-            urlCacheService.setUrl(urlAddress, url);
+            urlCacheRepository.setUrl(urlAddress, url);
             return urlMapper.toUrlResponseDto(url);
         }
 
         String hash = hashLocalCache.getFreeHashFromQueue().getHash();
         url = urlRepository.save(new Url(hash, urlAddress,
                 LocalDateTime.now().plusDays(shortenerProperties.url().ttlDays())));
-        urlCacheService.setUrl(urlAddress, url);
+        urlCacheRepository.setUrl(urlAddress, url);
         log.info("Create and get url '{}'", urlAddress);
         return urlMapper.toUrlResponseDto(url);
     }

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.model.Url;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class UrlCacheService {
+public class UrlCacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ShortenerProperties shortenerProperties;

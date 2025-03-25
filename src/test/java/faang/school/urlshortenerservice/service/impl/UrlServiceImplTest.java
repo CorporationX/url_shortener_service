@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.error.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.service.HashLocalCache;
+import faang.school.urlshortenerservice.cache.HashLocalCache;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

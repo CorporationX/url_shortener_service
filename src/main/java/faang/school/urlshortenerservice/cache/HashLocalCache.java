@@ -1,7 +1,8 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.shortener.ShortenerProperties;
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
