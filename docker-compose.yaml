@@ -1,0 +1,54 @@
+version: '3'
+services:
+  url_shortener_postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - '5433:5432'
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  url_shortener:
+    image: rsticks/url_shortener:1.5
+    container_name: url_shortener
+    ports:
+      - "8080:8080"
+    environment:
+      - BATCH_SIZE=1000
+      - MAX_BATCH_SIZE=1200
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://url_shortener_postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
+      - SERVER_PORT=8080
+    depends_on:
+      url_shortener_postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  app-network:                                                                                                                                                
+    driver: bridge
