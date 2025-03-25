@@ -28,7 +28,7 @@ public class HashCache {
     private int cacheSize;
 
     @PostConstruct
-    public void initCash() {
+    public void initCache() {
         hashQueue = new ArrayBlockingQueue<>(cacheSize);
         hashGenerator.generateHash();
         hashQueue.addAll(hashGenerator.getHashes());

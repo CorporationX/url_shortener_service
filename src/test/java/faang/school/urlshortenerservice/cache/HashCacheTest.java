@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.cache;
 
-
 import faang.school.urlshortenerservice.encoder.BaseEncoder;
 import faang.school.urlshortenerservice.exception.HashCacheException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
@@ -65,7 +64,7 @@ class HashCacheTest {
     @Test
     void testInitCache_Success() {
         when(hashGenerator.getHashes()).thenReturn(hashes);
-        hashCache.initCash();
+        hashCache.initCache();
 
         verify(hashGenerator).generateHash();
         verify(hashGenerator).getHashes();
@@ -79,7 +78,7 @@ class HashCacheTest {
     void testInitCache_EmptyList() {
         queue.clear();
         when(hashGenerator.getHashes()).thenReturn(Collections.emptyList());
-        hashCache.initCash();
+        hashCache.initCache();
 
         verify(hashGenerator).generateHash();
         verify(hashGenerator).getHashes();

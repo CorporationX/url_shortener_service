@@ -30,7 +30,7 @@ public class UrlCache {
         return urlRepository.findByUrl(url)
                 .map(Url::getHash)
                 .orElseGet(() -> {
-                    log.info("Хэш для URL: {} не найден", url);
+                    log.warn("Хэш для URL: {} не найден", url);
                     return null;
                 });
     }
@@ -38,7 +38,7 @@ public class UrlCache {
     @Caching(put = {
             @CachePut(value = "urlCache", key = "#url.hash"),
             @CachePut(value = "urlCache", key = "#url.url")})
-    public void saveUrl(Url url) {
-        urlRepository.save(url);
+    public Url saveUrl(Url url) {
+        return urlRepository.save(url);
     }
 }
