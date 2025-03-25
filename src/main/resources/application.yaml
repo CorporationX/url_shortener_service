@@ -23,3 +23,25 @@ server:
 logging:
   level:
     root: info
+
+hash-cache:
+  ttl: 1 #day
+  batch-size: 10
+  size: 1000
+
+url:
+  cleaner:
+    cron: 0 0 0 * * ?
+
+thread-pool:
+  core-pool-size: 10
+  max-pool-size: 20
+  keep-alive-time: 60
+  queue-capacity: 500
+  refill-threshold: 0.2
+
+service:
+  name: url-shortener-service
+
+base:
+  url: /api/v1
