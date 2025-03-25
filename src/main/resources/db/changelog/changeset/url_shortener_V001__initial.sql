@@ -9,5 +9,5 @@ CREATE TABLE hash (
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 916132832
     INCREMENT BY 1;
