@@ -1,6 +1,10 @@
 package faang.school.urlshortenerservice.config.context;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,9 +22,12 @@ public class UserHeaderFilter implements Filter {
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         String userId = req.getHeader("x-user-id");
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/shortner")) {
+            userId = "1";
+        }
         if (userId != null) {
             userContext.setUserId(Long.parseLong(userId));
-        }else {
+        } else {
             throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
         }
         try {
