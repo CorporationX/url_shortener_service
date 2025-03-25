@@ -63,8 +63,8 @@ public class UrlServiceImpl implements UrlService {
             throw new DataNotFoundException("There is no free hash in base.");
         }
         log.info("Received new hash {} for url {}", hash, urlDto.getUrl());
-        urlRepository.save(new Url(hash.getHash(), urlDto.getUrl()));
+        Url url = urlRepository.save(new Url(hash.getHash(), urlDto.getUrl()));
         urlCacheRepository.save(hash.getHash(), urlDto.getUrl());
-        return new UrlDto(urlDto.getUrl());
+        return new UrlDto(url.getHash());
     }
 }
