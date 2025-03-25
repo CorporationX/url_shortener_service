@@ -67,7 +67,6 @@ public class HashCache {
                 remaining.add(hash);
             }
         }
-
         if(!remaining.isEmpty()) {
             log.info("Cache full. Storing {} leftover hashes to DB", remaining.size());
             hashGenerator.saveHashesToDb(remaining);
