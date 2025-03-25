@@ -9,10 +9,15 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+      order_inserts: true
+      order_updates: true
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
 
   liquibase:
     change-log: classpath:liquibase/changelog-master.yaml
@@ -23,3 +28,6 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  maxRange: 10000
