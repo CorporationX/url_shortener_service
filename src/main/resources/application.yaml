@@ -13,13 +13,61 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 10
+          batch_versioned_data: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  async:
+    core-pool-size: 5
+    max-pool-size: 20
+    queue-capacity: 30
+    thread-name-prefix: AsyncThread-
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      cache:
+        ttl-minutes: 10
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: "yyyy-MM-dd'T'HH:mm:ss"
+
 server:
   port: 8080
+
+shortener:
+  hashes-batch-size: 100
+  queue-size: 1000
+  multiplier: 2
+  min-array-hash-percentage: 25
+  encoder:
+    codebase: base58            # base62/base58
+    mix-parameter: 3
+  schedule:
+    hash-cron: "0 */1 * * * *"  # launch every 1 min
+    url-cron: "0 0 0 * * *"     # launch every day at 00:00
+  url:
+    ttl-days: 1
+    prefix: http://site.com/
 
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        SQL: INFO
+        engine:
+          jdbc:
+            batch:
+              internal:
+                BatchingBatch: DEBUG
+      springframework:
+        cache: DEBUG
