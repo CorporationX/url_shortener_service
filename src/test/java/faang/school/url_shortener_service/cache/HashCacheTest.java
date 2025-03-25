@@ -1,52 +1,60 @@
 package faang.school.url_shortener_service.cache;
 
-import faang.school.url_shortener_service.entity.Hash;
-import faang.school.url_shortener_service.generator.Base62Encoder;
+import faang.school.url_shortener_service.generator.AsynchronousHashGenerator;
 import faang.school.url_shortener_service.generator.HashGenerator;
-import faang.school.url_shortener_service.repository.hash.HashRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class HashCacheTest {
 
-    @Mock
-    private HashRepository hashRepository;
-
-    @Spy
-    private Base62Encoder base62Encoder;
-
     @InjectMocks
+    private HashCache hashCache;
+
+    @Mock
     private HashGenerator hashGenerator;
-    private final HashCache cache = new HashCache(hashGenerator);
+
+    @Mock
+    private AsynchronousHashGenerator asynchronousHashGenerator;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(hashCache, "capacity", 5);
+        ReflectionTestUtils.setField(hashCache, "filledPercentage", 50);
+        ReflectionTestUtils.setField(hashCache, "hashBatchSize", 2);
+    }
 
     @Test
-    void testGetHashSuccess() {
-        int capacity = 10000;
-        List<Hash> hashes = new ArrayList<>(List.of(new Hash("hfs7gf"), new Hash("4iud4")));
-        doReturn(hashes).when(hashRepository).getHashBatch(capacity);
+    void shouldOfferToCacheOrStoreRest_ifCacheIsFull() {
+        ReflectionTestUtils.setField(hashCache, "capacity", 2);
+        ReflectionTestUtils.setField(hashCache, "hashes", new ArrayBlockingQueue<>(2));
+        hashCache.offerToCacheOrStoreRest(List.of("x", "y"));
 
-        ArrayBlockingQueue<String> cacheHash = new ArrayBlockingQueue<>(capacity);
-        ReflectionTestUtils.setField(cache, "hashes", cacheHash);
-        ReflectionTestUtils.setField(cache, "filledPercentage", 20);
-        ReflectionTestUtils.setField(cache, "capacity", capacity);
-        ReflectionTestUtils.setField(cache, "hashGenerator", hashGenerator);
-        String hash = cache.getHash();
-        verify(base62Encoder).encode(anyList());
-        assertThat(hash).isEqualTo("hfs7gf");
+        // Fill it manually
+        hashCache.offerToCacheOrStoreRest(List.of("z"));
+        verify(hashGenerator).saveHashesToDb(List.of("z"));
+    }
+
+    @Test
+    void shouldAddAllToCache_ifSpaceAvailable() {
+        ReflectionTestUtils.setField(hashCache, "capacity", 5);
+        ReflectionTestUtils.setField(hashCache, "hashes", new ArrayBlockingQueue<>(5));
+        List<String> hashes = List.of("a", "b");
+
+        hashCache.offerToCacheOrStoreRest(hashes);
+
+        verify(hashGenerator, never()).saveHashesToDb(anyList());
     }
 }

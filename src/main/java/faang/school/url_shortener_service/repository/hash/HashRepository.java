@@ -18,9 +18,16 @@ public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash
-            WHERE hash IN (SELECT hash FROM hash LIMIT :batchSize)
-            RETURNING *
+            WITH to_delete AS (
+                    SELECT h.hash
+                    FROM hash h
+                    LIMIT :batchSize
+                    FOR UPDATE SKIP LOCKED
+                )
+            DELETE FROM hash h1
+            USING to_delete td
+            WHERE h1.hash = td.hash
+            RETURNING h1.*;
             """)
     List<Hash> getHashBatch(long batchSize);
 }

@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -20,15 +20,20 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  cache:
+    type: redis
   data:
     redis:
       host: localhost
       port: 6379
+      ttl: 1
 
 server:
   port: 9081
 
 logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   level:
     root: info
 
@@ -40,13 +45,26 @@ short:
 hash:
   batch: 1000
   cache:
-    capacity: 100
-    filled-percentage: 20
+    capacity: 10000
+    filled-percentage: 30
+    refill-cron: '0 00 9 * * *'
 
 url:
   cleaner:
-    cron: '0 0 0 * * *'
+    cron: '0 00 11 * * * '
+    list-partitions-size: 100
+    timeout-for-recycling-minutes: 90
 
 executor:
-  threads:
-    count: 3
+  hash-generation:
+    core-pool-size: 10
+    queue-capacity: 100
+    threadNamePrefix: HashGeneration -
+    allowCoreThreadTimeOut: true
+    keep-alive-seconds: 60
+  oldUrlDeletionExecutor:
+    core-pool-size: 3
+    queue-capacity: 20
+    threadNamePrefix: OldUrlDeletion -
+    allowCoreThreadTimeOut: true
+    keep-alive-seconds: 60
