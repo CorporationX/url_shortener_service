@@ -3,19 +3,19 @@ package faang.school.urlshortenerservice.entity;
 import faang.school.urlshortenerservice.common.Identifiable;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.annotation.Id;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "url")
-public class Url extends Identifiable {
+public class Url extends Identifiable implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "hash", length = 6, nullable = false)
