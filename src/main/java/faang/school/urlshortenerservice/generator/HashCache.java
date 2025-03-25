@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
-    @Value("${hash.cache_size:1000}") // Значение по умолчанию: 1000
+    @Value("${hash.cache_size:1000}")
     private int cacheSize;
 
     private final HashGenerator hashGenerator;
