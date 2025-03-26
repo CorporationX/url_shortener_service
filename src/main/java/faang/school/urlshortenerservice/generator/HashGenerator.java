@@ -2,9 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import liquibase.database.jvm.HsqlConnection;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -25,10 +23,13 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
+    @Value("${app.numberRange:1000}")
+    private int numberRange;
+
     @Transactional
-    public List<Hash> generateBatch(int batch) {
+    public List<Hash> generateBatch() {
         List<Hash> hashes = new ArrayList<>();
-        List<Long> numbers = hashRepository.getUniqueNumbers(batch);
+        List<Long> numbers = hashRepository.getUniqueNumbers(numberRange);
         log.info("Received {} unique numbers from hash repository", numbers.size());
         base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
         log.info("{} numbers encode to base 62", numbers.size());
@@ -37,10 +38,20 @@ public class HashGenerator {
         return list;
     }
 
+    @Transactional
+    public List<Hash> getHashes(int count) {
+        List<String> hashes = hashRepository.getHashBatch(count);
+        if (hashes.size() < count) {
+            generateBatch();
+            hashes.addAll(hashRepository.getHashBatch(count - hashes.size()));
+        }
+        return hashes.stream().map(Hash::new).toList();
+    }
+
     @Async("cachedThreadPool")
     @Transactional
-    public CompletableFuture<List<Hash>> generateBatchAsync(int batch) {
-        return CompletableFuture.completedFuture(generateBatch(batch));
+    public CompletableFuture<List<Hash>> generateBatchAsync(int count) {
+        return CompletableFuture.completedFuture(getHashes(count));
     }
 
 }
