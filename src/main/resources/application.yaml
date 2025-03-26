@@ -45,7 +45,7 @@ services:
     capacity: 100
     minPercentageToFill: 20
   redis:
-    ttl-in-seconds: 31536000
+    ttlInSeconds: 31536000
 
 shortener:
   url: http://localhost:8080/

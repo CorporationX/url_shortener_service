@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,7 @@ public class HashGenerator {
     public void generateHashes() {
         List<Long> numbers = hashRepository.getNextRange(maxRange);
         if (numbers.isEmpty()) {
+            log.warn("No numbers received from sequence");
             return;
         }
         List<String> hashes = base62Encoder.encode(numbers);
@@ -41,11 +41,23 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
+        if (amount == 0) {
+            return List.of();
+        }
+
+        List<Hash> hashes = new ArrayList<>(hashRepository.findAndDelete(amount));
         if (hashes.size() < amount) {
+            log.info("Not enough hashes available ({} of {}), generating new ones", hashes.size(), amount);
             generateHashes();
             List<Hash> additionalHashes = hashRepository.findAndDelete(amount - hashes.size());
             hashes.addAll(additionalHashes);
+
+            if (hashes.size() < amount) {
+                log.warn("Still not enough hashes after generation ({} of {})", hashes.size(), amount);
+            }
         }
 
         return hashes.stream()
@@ -62,15 +74,13 @@ public class HashGenerator {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveHashes(List<String> hashes) {
         if (hashes == null || hashes.isEmpty()) {
+            log.warn("Attempt to save empty or null hashes list");
             return;
         }
         log.info("Saving {} hashes", hashes.size());
-        List<Hash> hashEntities = new ArrayList<>();
-        for (String hashStr : hashes) {
-            Hash hashEntity = new Hash();
-            hashEntity.setHash(hashStr);
-            hashEntities.add(hashEntity);
-        }
+        List<Hash> hashEntities = hashes.stream()
+                .map(hash -> Hash.builder().hash(hash).build())
+                .toList();
         hashRepository.saveAll(hashEntities);
     }
 }

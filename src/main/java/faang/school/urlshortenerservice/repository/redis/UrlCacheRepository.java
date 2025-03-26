@@ -14,7 +14,7 @@ public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Value("${services.redis.ttl-in-seconds}")
+    @Value("${services.redis.ttlInSeconds}")
     private long ttlInSeconds;
 
     public void save(String hash, String url) {

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,58 +30,118 @@ class HashGeneratorTest {
     private HashGenerator hashGenerator;
 
     private final int maxRange = 100;
+    private final List<Long> testNumbers = List.of(1L, 2L, 3L);
+    private final List<String> testHashes = List.of("a", "b", "c");
+    private final List<Hash> testHashEntities = List.of(
+            new Hash(1L, "a"),
+            new Hash(2L, "b"),
+            new Hash(3L, "c")
+    );
 
     @BeforeEach
     void setUp() {
-        hashGenerator = new HashGenerator(hashRepository, base62Encoder);
         hashGenerator.setMaxRange(maxRange);
     }
 
     @Test
-    void testGenerateHashes() {
-
-        List<Long> numbers = List.of(1L, 2L, 3L);
-        List<String> hashes = List.of("a", "b", "c");
-
-        when(hashRepository.getNextRange(maxRange)).thenReturn(numbers);
-        when(base62Encoder.encode(numbers)).thenReturn(hashes);
-
+    void testGenerateHashes_Success() {
+        when(hashRepository.getNextRange(maxRange)).thenReturn(testNumbers);
+        when(base62Encoder.encode(testNumbers)).thenReturn(testHashes);
 
         hashGenerator.generateHashes();
 
-        verify(hashRepository, times(1)).getNextRange(maxRange);
-        verify(base62Encoder, times(1)).encode(numbers);
-        verify(hashRepository, times(1)).saveAll(anyList());
+        verify(hashRepository).getNextRange(maxRange);
+        verify(base62Encoder).encode(testNumbers);
+        verify(hashRepository).saveAll(anyList());
     }
 
     @Test
-    void testSaveHashes() {
-        List<String> hashes = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            hashes.add("hash" + i);
-        }
-        hashGenerator.saveHashes(hashes);
+    void testGenerateHashes_EmptyRange() {
+        when(hashRepository.getNextRange(maxRange)).thenReturn(List.of());
+
+        hashGenerator.generateHashes();
+
+        verify(hashRepository).getNextRange(maxRange);
+        verifyNoInteractions(base62Encoder);
+        verify(hashRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    void testGetHashes_EnoughHashesAvailable() {
+        long amount = 2;
+        when(hashRepository.findAndDelete(amount)).thenReturn(testHashEntities.subList(0, 2));
+
+        List<String> result = hashGenerator.getHashes(amount);
+
+        assertEquals(2, result.size());
+        verify(hashRepository).findAndDelete(amount);
+        verifyNoMoreInteractions(hashRepository);
+    }
+
+    @Test
+    void testGetHashesAsync_Success() throws ExecutionException, InterruptedException {
+        long amount = 2;
+        when(hashRepository.findAndDelete(amount)).thenReturn(testHashEntities.subList(0, 2));
+
+        CompletableFuture<List<String>> future = hashGenerator.getHashesAsync(amount);
+        List<String> result = future.get();
+
+        assertEquals(2, result.size());
+        verify(hashRepository).findAndDelete(amount);
+    }
+
+    @Test
+    void testSaveHashes_Success() {
+        hashGenerator.saveHashes(testHashes);
+
+        verify(hashRepository).saveAll(anyList());
     }
 
     @Test
     void testSaveHashes_EmptyList() {
-        List<String> hashes = List.of();
-
-        hashGenerator.saveHashes(hashes);
+        hashGenerator.saveHashes(List.of());
 
         verify(hashRepository, never()).saveAll(anyList());
     }
 
     @Test
-    void testGenerateHashes_EmptyNumbers() {
-        List<Long> numbers = List.of();
+    void testSaveHashes_NullList() {
+        hashGenerator.saveHashes(null);
 
-        when(hashRepository.getNextRange(maxRange)).thenReturn(numbers);
-
-        hashGenerator.generateHashes();
-
-        verify(hashRepository, times(1)).getNextRange(maxRange);
-        verify(base62Encoder, never()).encode(anyList());
         verify(hashRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    void testGetHashes_ZeroAmount() {
+        List<String> result = hashGenerator.getHashes(0);
+
+        assertTrue(result.isEmpty());
+        verifyNoInteractions(hashRepository);
+    }
+
+    @Test
+    void testGetHashes_NegativeAmount() {
+        assertThrows(IllegalArgumentException.class, () -> hashGenerator.getHashes(-1));
+        verifyNoInteractions(hashRepository);
+    }
+
+    @Test
+    void testGenerateHashes_RepositoryThrowsException() {
+        when(hashRepository.getNextRange(maxRange)).thenThrow(new RuntimeException("DB error"));
+
+        assertThrows(RuntimeException.class, () -> hashGenerator.generateHashes());
+        verifyNoInteractions(base62Encoder);
+    }
+
+    @Test
+    void testGetHashes_SecondAttemptAlsoFails() {
+        long amount = 5;
+        when(hashRepository.findAndDelete(amount)).thenReturn(List.of());
+        when(hashRepository.getNextRange(maxRange)).thenReturn(List.of());
+
+        List<String> result = hashGenerator.getHashes(amount);
+
+        assertTrue(result.isEmpty());
+        verify(hashRepository, times(2)).findAndDelete(anyLong());
     }
 }
