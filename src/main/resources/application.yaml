@@ -45,3 +45,11 @@ hash:
       max-pool-size: 8
       queue-capacity: 100
       keep-alive-seconds: 60
+
+url-data:
+  protocol: http
+  domain: localhost
+
+redis-time-to-live-seconds:
+  new-url: 120
+  requested-url: 60

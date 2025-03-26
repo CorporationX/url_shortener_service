@@ -17,4 +17,10 @@ public class UrlRepository {
         String sql = "SELECT url FROM url WHERE hash = ?";
         return jdbcTemplate.queryForObject(sql, String.class, hash);
     }
+
+    public void saveUrl(String hash, String url) {
+        log.info("Saving URL to database: {} -> {}", hash, url);
+        String sql = "INSERT INTO url (hash, url) VALUES (?, ?)";
+        jdbcTemplate.update(sql, hash, url);
+    }
 }

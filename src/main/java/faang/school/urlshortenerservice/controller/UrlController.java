@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.UrlRequest;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,5 +27,11 @@ public class UrlController {
         headers.add("Location", originalUrl);
 
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    @PostMapping("/url")
+    public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlRequest request) {
+        String shortUrl = urlService.convertToShortUrl(request.getUrl());
+        return ResponseEntity.ok(shortUrl);
     }
 }
