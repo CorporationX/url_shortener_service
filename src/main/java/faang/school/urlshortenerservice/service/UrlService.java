@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,6 +53,20 @@ public class UrlService {
         urlCacheRepository.saveUrl(hash, url.getUrl());
 
         return savedUrl;
+    }
+
+    public String getUrl(String hash) {
+        String result = urlCacheRepository.getUrl(hash);
+
+        if (!StringUtils.hasText(result)) {
+            result = urlRepository.findByHash(hash);
+
+            if (!StringUtils.hasText(result)) {
+                throw new UrlNotFoundException(hash);
+            }
+        }
+
+        return result;
     }
 
     private List<Long> generateUniqueRandomNumbers(int count) {

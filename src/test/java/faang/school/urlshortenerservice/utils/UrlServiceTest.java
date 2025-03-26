@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.utils;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -115,5 +117,41 @@ class UrlServiceTest {
         assertEquals(hashCount, randomNumbers.size());
 
         assertEquals(randomNumbers.size(), randomNumbers.stream().distinct().count());
+    }
+
+    @Test
+    void getUrl_FoundInCache_ReturnsUrl() {
+        when(urlCacheRepository.getUrl(hash)).thenReturn(originalUrl);
+
+        String result = urlService.getUrl(hash);
+
+        assertEquals(originalUrl, result);
+        verify(urlCacheRepository).getUrl(hash);
+        verify(urlRepository, never()).findByHash(anyString());
+    }
+
+    @Test
+    void getUrl_NotFoundInCacheButFoundInDb_ReturnsUrl() {
+        when(urlCacheRepository.getUrl(hash)).thenReturn("");
+        when(urlRepository.findByHash(hash)).thenReturn(originalUrl);
+
+        String result = urlService.getUrl(hash);
+
+        assertEquals(originalUrl, result);
+        verify(urlCacheRepository).getUrl(hash);
+        verify(urlRepository).findByHash(hash);
+    }
+
+    @Test
+    void getUrl_NotFoundAnywhere_ThrowsException() {
+        when(urlCacheRepository.getUrl(hash)).thenReturn("");
+        when(urlRepository.findByHash(hash)).thenReturn("");
+
+        UrlNotFoundException exception = assertThrows(UrlNotFoundException.class,
+                () -> urlService.getUrl(hash));
+
+        assertEquals(hash, exception.getHash());
+        verify(urlCacheRepository).getUrl(hash);
+        verify(urlRepository).findByHash(hash);
     }
 }
