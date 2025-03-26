@@ -22,9 +22,12 @@ import java.net.URI;
 @Slf4j
 public class UrlController {
 
+    private static final String HASH_PATH = "/{hash}";
+    private static final String URL_PATH = "/url";
+
     private final UrlService urlService;
 
-    @GetMapping("/{hash}")
+    @GetMapping(HASH_PATH)
     public RedirectView getUrl(@PathVariable(name = "hash") String hash) {
         log.info("Received hash {} for url", hash);
         String url = urlService.getUrl(hash);
@@ -32,7 +35,7 @@ public class UrlController {
         return new RedirectView(url);
     }
 
-    @PostMapping("/url")
+    @PostMapping(URL_PATH)
     public ResponseEntity<UrlDto> shortenUrl(@RequestBody UrlDto url) {
         log.info("Received url {} to find short url", url.getUrl());
         UrlDto urlDto = urlService.shortenUrl(url);
