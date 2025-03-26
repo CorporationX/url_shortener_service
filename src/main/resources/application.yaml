@@ -31,3 +31,9 @@ logging:
 
 hash:
   maxRange: 10000
+
+hash-generator:
+  pool:
+    size: 10
+  queue:
+    capacity: 500
