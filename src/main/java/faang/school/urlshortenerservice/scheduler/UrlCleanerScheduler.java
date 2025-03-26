@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class UrlCleanerScheduler {
+
     private final UrlCleanerService urlCleanerService;
 
     @Scheduled(cron = "${app.scheduler.url_cleaner.cron}")

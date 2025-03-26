@@ -1,20 +1,14 @@
 package faang.school.urlshortenerservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Table(name = "url")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,16 +19,16 @@ public class Url {
     @Column(name = "url", length = 2000, nullable = false)
     private String url;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public Url(String hash, String url, Long userId) {
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+
+    public Url(String hash, String url, LocalDateTime expiresAt) {
         this.hash = hash;
         this.url = url;
-        this.userId = userId;
+        this.expiresAt = expiresAt;
     }
 }

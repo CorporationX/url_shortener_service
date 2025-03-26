@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.util;
 import io.seruco.encoding.base62.Base62;
 import org.springframework.stereotype.Component;
 
-import java.nio.ByteBuffer;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +18,7 @@ public class Base62Encoder {
     }
 
     private String encodeToBase62(Long number) {
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        byte[] bytes = buffer.putLong(number).array();
-        return new String(base62.encode(bytes));
+        byte[] encoded = base62.encode(BigInteger.valueOf(number).toByteArray());
+        return new String(encoded);
     }
 }

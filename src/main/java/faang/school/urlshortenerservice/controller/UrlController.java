@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,18 +22,16 @@ public class UrlController {
     private final UriBuilder uriBuilder;
 
     @PostMapping("/url")
-    public String createShortUrl(
-            @Valid @RequestParam(name = "url") @NotEmpty @URL String url,
-            @RequestHeader("x-user-id") long userId) {
-        String hash = urlService.createShortUrl(url, userId);
+    public String createShortUrl(@Valid @RequestParam(name = "url")
+                                     @NotEmpty @URL String url) {
+        String hash = urlService.createShortUrl(url);
         return uriBuilder.response(hash);
     }
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirect(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        return ResponseEntity
-                .status(301)
+        return ResponseEntity.status(301)
                 .header("Location", originalUrl)
                 .build();
     }

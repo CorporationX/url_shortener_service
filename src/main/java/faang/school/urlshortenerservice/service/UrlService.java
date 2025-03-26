@@ -2,49 +2,46 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.ResourceNotFoundException;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final HashRepository hashRepository;
+    private final RedisHashPoolService hashPool;
+
+    @Value("${ttl.hour.url}")
+    private int ttlHours;
 
     @Transactional
-    public String createShortUrl(String longUrl, long userId) {
-                    String hash = getAvailableHash();
-
-                    Url url = new Url(hash, longUrl, userId);
-                    urlRepository.save(url);
+    public String createShortUrl(String longUrl) {
+        return urlRepository.findByUrl(longUrl)
+                .map(Url::getHash)
+                .orElseGet(() -> {
+                    String hash = hashPool.acquire();
+                    LocalDateTime expiresAt = LocalDateTime.now().plusHours(ttlHours);
+                    urlRepository.save(new Url(hash, longUrl, expiresAt));
                     urlCacheRepository.save(hash, longUrl);
-
                     return hash;
+                });
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
         return urlCacheRepository.findByHash(hash)
-                .or(() -> urlRepository.findByHash(hash).map(url -> {
+                .or(() -> urlRepository.findByHash(hash)
+                        .map(url -> {
                     urlCacheRepository.save(url.getHash(), url.getUrl());
                     return url.getUrl();
                 }))
                 .orElseThrow(() -> new ResourceNotFoundException("URL not found for hash: " + hash));
-    }
-
-    private String getAvailableHash() {
-        return hashRepository.findAll()
-                .stream()
-                .findFirst()
-                .map(hashObj -> {
-                    hashRepository.delete(hashObj);
-                    return hashObj.getHash();
-                })
-                .orElseThrow(() -> new RuntimeException("No available hashes"));
     }
 }

@@ -1,5 +1,5 @@
 spring:
-  date:
+  data:
     redis:
       port: 6379
       host: localhost
@@ -32,10 +32,11 @@ logging:
 
 app:
   hash_generator:
-    db_hashes_limit: 5000
-    initial_delay: 10000
-    fixed_rate: 86400000
-    initial_hashes: 1000
+    hash_queue: url:hashes
+    max_size: 100000
+    replenish_threshold: 0.2
+    initial_counter: 916132832
+    min_replenish_size: 1000
   scheduler:
     url_cleaner:
       cron: "0 0 0 * * *"

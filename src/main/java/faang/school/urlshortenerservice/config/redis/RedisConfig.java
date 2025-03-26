@@ -9,12 +9,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 public class RedisConfig {
 
-    @Bean
+    @Bean(name = "defaultJedisConnectionFactory")
     public JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory(new RedisStandaloneConfiguration());
     }
 
-    @Bean
+    @Bean(name = "defaultRedisTemplate")
     public StringRedisTemplate redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
         return new StringRedisTemplate(jedisConnectionFactory);
     }
