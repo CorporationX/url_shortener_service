@@ -9,7 +9,7 @@ import java.util.List;
 public class Base62Encoder {
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    public static List<String> encode(List<Long> value) {
+    public List<String> encode(List<Long> value) {
         List<String> result = new ArrayList<>();
         for (Long l : value) {
             StringBuilder sb = new StringBuilder();
