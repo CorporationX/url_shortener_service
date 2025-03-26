@@ -17,6 +17,13 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash:
+  range: 10000
+  threadPool:
+    core-pool-size: 4
+    max-pool-size: 10
+    queue-capacity: 50
+
 server:
   port: 8080
 
