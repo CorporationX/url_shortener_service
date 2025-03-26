@@ -18,12 +18,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(int n);
 
     @Query(nativeQuery = true, value = """
-    INSERT INTO hash(hash) VALUES ?1
-    """)
-    @Modifying
-    void save(List<String> hashes);
-
-    @Query(nativeQuery = true, value = """
     DELETE FROM hash
     WHERE hash IN (
         SELECT hash FROM hash ORDER BY random() LIMIT ?1

@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.config.executor;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Setter
 @Getter
 @ConfigurationProperties(prefix = "thread-pool.receive-hash")
 public class ReceiveHashExecutorProperties {

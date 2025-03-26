@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,12 +22,20 @@ public class HashCache {
     private int percentage;
     @Value("${hash.batchSize}")
     private int hashBatchSize;
+    private BlockingQueue<String> cache;
+    private Semaphore semaphore;
 
-    private final BlockingQueue<String> cache = new ArrayBlockingQueue<>(capacity);
-    private final Semaphore semaphore = new Semaphore(1);
     private final ExecutorService executorService;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
+
+    @PostConstruct
+    public void init() {
+        cache = new ArrayBlockingQueue<>(capacity);
+        semaphore = new Semaphore(1);
+        hashGenerator.generateBatch();
+        cache.addAll(hashRepository.getHashBatch(hashBatchSize));
+    }
 
     public String getHash() {
         int limit =  capacity * (percentage / 100);

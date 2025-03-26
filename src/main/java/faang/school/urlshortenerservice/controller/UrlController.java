@@ -1,21 +1,19 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @Tag(name = "Url-Controller")
 @RestController
-@RequestMapping("/api/v1/url")
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -27,5 +25,11 @@ public class UrlController {
         String url = urlService.getOriginalUrl(hash);
         response.sendRedirect(url);
         return ResponseEntity.status(HttpStatus.FOUND).build();
+    }
+
+    @PostMapping("/api/v1/url")
+    public ResponseEntity<UrlDto> createShortLink(@Valid @RequestBody UrlDto urlDto) {
+        var shortUrl = urlService.generateShortUrl(urlDto);
+        return ResponseEntity.ok().body(shortUrl);
     }
 }
