@@ -17,8 +17,32 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+scheduler:
+  url-cron: 0 0 0 * * *
+
+hash:
+  batchSize: 50
+  generate-batch: 300
+
+thread-pool:
+  receive-hash:
+    corePoolSize: 5
+    maxPoolSize: 10
+    queueCapacity: 100
+    keepAliveSeconds: 60
+  generate-hash:
+    corePoolSize: 5
+    maxPoolSize: 10
+    queueCapacity: 100
+    keepAliveSeconds: 60
+
+cache:
+  max-size: 1000
+  expand-trigger-percentage: 20
+
 server:
   port: 8080
+  base-url: http://localhost:8080
 
 logging:
   level:
