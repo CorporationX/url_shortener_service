@@ -38,6 +38,7 @@ logging:
 hash:
   number_hash_to_delete: 1000
   cache_size: 1000
+  hash_range: 1000
 
 cron:
   expression:
@@ -45,4 +46,4 @@ cron:
 
 app:
   older_than_year: 1
-  numberRange: 1000
+

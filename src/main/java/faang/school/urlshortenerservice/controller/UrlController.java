@@ -38,14 +38,14 @@ public class UrlController {
     @PostMapping(URL_PATH)
     public ResponseEntity<UrlDto> shortenUrl(@RequestBody UrlDto url) {
         log.info("Received url {} to find short url", url.getUrl());
-        UrlDto urlDto = urlService.shortenUrl(url);
-        log.info("Found short url {} to url {}", urlDto.getUrl(), url.getUrl());
+        UrlDto shortUrl = urlService.shortenUrl(url);
+        log.info("Found short url {} to url {}", shortUrl.getUrl(), url.getUrl());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(urlDto.getUrl())
+                .buildAndExpand(shortUrl.getUrl())
                 .toUri();
-        return ResponseEntity.created(location).body(urlDto);
+        return ResponseEntity.created(location).body(shortUrl);
     }
 
 }
