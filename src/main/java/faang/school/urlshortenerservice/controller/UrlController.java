@@ -25,8 +25,7 @@ public class UrlController {
   private final UrlService urlService;
 
   @PostMapping("/url")
-  public ResponseEntity<String> makeShortUrl(
-      @Valid @RequestBody UrlDto urlDto) {
+  public ResponseEntity<String> makeShortUrl(@Valid @RequestBody UrlDto urlDto) {
     return ResponseEntity.ok(urlService.makeShortUrl(urlDto));
   }
 

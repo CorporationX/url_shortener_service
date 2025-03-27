@@ -5,10 +5,7 @@ import lombok.Getter;
 @Getter
 public class UrlNotFoundException extends RuntimeException {
 
-  private final String serviceName;
-
-  public UrlNotFoundException(String serviceName, String message) {
+  public UrlNotFoundException(String message) {
     super(message);
-    this.serviceName = serviceName;
   }
 }

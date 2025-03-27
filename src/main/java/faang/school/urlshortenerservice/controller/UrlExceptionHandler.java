@@ -80,12 +80,12 @@ public class UrlExceptionHandler {
   }
 
   @ExceptionHandler(FeignException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponse handleFeignException(FeignException e) {
     String message = e.contentUTF8();
     log.warn("Feign client error: {}", message);
 
-    return buildErrorResponse(HttpStatus.BAD_REQUEST, "FEIGN_CLIENT_ERROR",
+    return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "FEIGN_CLIENT_ERROR",
         message != null && !message.isEmpty() ? message : "Feign client error");
   }
 

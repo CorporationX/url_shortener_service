@@ -22,7 +22,7 @@ public class UrlCleanerImpl implements UrlCleaner {
     List<String> expiredHashes = urlRepository.deleteExpiredUrls();
 
     if (expiredHashes.isEmpty()) {
-      log.info("Nothing to clear");
+      log.info("Expired hashes are empty, nothing to clear");
       return;
     }
 

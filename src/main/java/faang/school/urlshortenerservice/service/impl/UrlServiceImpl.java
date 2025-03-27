@@ -39,7 +39,7 @@ public class UrlServiceImpl implements UrlService {
               urlCacheRepository.saveUrl(hash, url);
               return url;
             })
-            .orElseThrow(() -> new UrlNotFoundException("url-shortener",
+            .orElseThrow(() -> new UrlNotFoundException(
                 String.format("url with hash %s not found", hash))));
   }
 }
