@@ -27,13 +27,22 @@ thread-pool:
   pool-size: 5
   queue-size: 20
 
-hash-queue:
-  max-size: 5
+hash-cache:
+  max-size: 100
   refresh-percentage: 0.2
 
 batch:
-  generation-size: 30
+  generation-size: 400
 
+encoder:
+  base: 62
+  characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  hashSize: 6
+
+cleaner:
+  cron: 0 0 2 * * *
+
+base-link: localhost:8080/
 
 server:
   port: 8080

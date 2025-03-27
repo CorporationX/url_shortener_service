@@ -1,14 +1,21 @@
 package faang.school.urlshortenerservice.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class Base62Encoder {
+public class BaseEncoder {
 
-    private final int base = 62;
-    private final String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    @Value("${encoder.base}")
+    private int BASE;
+
+    @Value("${encoder.characters}")
+    private String CHARACTERS;
+
+    @Value("${encoder.hashSize}")
+    private int HASH_SIZE;
 
     public List<String> encodeBatch(List<Long> numbers) {
         return numbers.stream()
@@ -19,9 +26,9 @@ public class Base62Encoder {
     private String encode(long number) {
         StringBuilder encodedHash = new StringBuilder();
         do {
-            encodedHash.insert(0, characters.charAt((int) (number % base)));
-            number /= base;
-        } while (number > 0);
+            encodedHash.insert(0, CHARACTERS.charAt((int) (number % BASE)));
+            number /= BASE;
+        } while (number > 0 || encodedHash.length() < HASH_SIZE);
         return encodedHash.toString();
     }
 

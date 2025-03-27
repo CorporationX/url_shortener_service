@@ -1,11 +1,14 @@
 package faang.school.urlshortenerservice.config;
 
+import io.lettuce.core.resource.DefaultClientResources;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
@@ -17,15 +20,31 @@ public class RedisConfig {
     private Integer port;
 
     @Value("${spring.data.redis.database}")
-    private int database;
+    private int database; // letuche jedis template
 
     @Bean
-    public JedisPool jedisPool() {
+    public LettuceConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+        redisConfig.setHostName(host);
+        redisConfig.setPort(port);
+        redisConfig.setDatabase(database);
 
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setJmxEnabled(false);
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .clientResources(DefaultClientResources.create())
+                .build();
 
-        return new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, null, database);
+        return new LettuceConnectionFactory(redisConfig, clientConfig);
+    }
+
+    @Bean
+    public RedisTemplate<String, String> redisTemplate(LettuceConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+
+        return template;
     }
 
 }

@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +16,19 @@ import java.util.List;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
+    private final BaseEncoder baseEncoder;
 
     @Value("${batch.generation-size}")
     private int GENERATION_BATCH_SIZE;
 
-    @Async(value = "threadPoolExecutor")
     @Transactional
-    public List<Hash> generateBatch() {
+    public List<String> generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(GENERATION_BATCH_SIZE);
-        List<String> hashes = base62Encoder.encodeBatch(numbers);
-        List<Hash> mapped =  hashes.stream()
-                .map(Hash::new)
-                .toList();
-        log.info("Generated {} hashes", mapped);
-        List<Hash> saved = hashRepository.saveAll(mapped);
-        log.info("Generated and saved {} hashes.", saved.size());
-        return saved;
+        List<String> hashes = baseEncoder.encodeBatch(numbers);
+        List<Hash> toSave = hashes.stream().map(Hash::new).toList();
+        hashRepository.saveAll(toSave);
+        log.info("Generated and saved {} hashes.", hashes.size());
+        return hashes;
     }
 
 }

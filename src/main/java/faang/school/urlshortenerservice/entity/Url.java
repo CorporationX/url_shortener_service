@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+// add field related to data to clear urls
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -24,8 +26,22 @@ public class Url {
     @Column(name = "url", nullable = false)
     private String url;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "expired_at")
+    private LocalDateTime expiredAt;
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (expiredAt == null) {
+            expiredAt = createdAt.plusMonths(1);
+        }
+    }
 }

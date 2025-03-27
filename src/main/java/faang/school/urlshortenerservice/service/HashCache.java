@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,36 +17,39 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 public class HashCache {
 
-    private final Queue<Hash> hashes = new ConcurrentLinkedQueue<>();
+    private final Queue<String> cachedHashes = new ConcurrentLinkedQueue<>();
 
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
 
-    @Value("${hash-queue.max-size}")
+    @Value("${hash-cache.max-size}")
     private int QUEUE_SIZE;
 
-    @Value("${hash-queue.refresh-percentage}")
+    @Value("${hash-cache.refresh-percentage}")
     private String REFRESH_PERCENTAGE;
 
-    public Hash getHash() {
+    // lock on bd level
+    public String getHash() {
         int min = (int) (QUEUE_SIZE * Double.parseDouble(REFRESH_PERCENTAGE));
-        if (hashes.size() < min) {
+        if (cachedHashes.size() < min) {
             fillHashes();
         }
-        if (hashes.isEmpty()) {
-            throw new HashNotFoundException("Internal hash queue is empty. Please try again.");
-        }
-        Hash hash = hashes.poll();
+        String hash = cachedHashes.poll();
         log.info("Polled hash from the queue {}", hash);
         return hash;
     }
 
-    @Async("threadPoolExecutor")
+    @Async(value = "threadPoolExecutor")
     public void fillHashes() {
-        List<Hash> batch = hashRepository.getHashBatch(QUEUE_SIZE);
-        hashes.addAll(batch);
-        log.info("{} hashes added to the internal queue", hashes.size());
         hashGenerator.generateBatch();
+        List<String> batch = hashRepository.getHashBatch(QUEUE_SIZE);
+        cachedHashes.addAll(batch);
+        log.info("{} hashes added to the internal queue", cachedHashes.size());
     }
 
+    @PostConstruct
+    public void init() {
+        fillHashes();
+        log.info("Filled internal cache with hashes. Current size: {}", cachedHashes.size());
+    }
 }
