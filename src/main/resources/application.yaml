@@ -53,3 +53,7 @@ url-data:
 redis-time-to-live-seconds:
   new-url: 120
   requested-url: 60
+
+clean-expired-url:
+  cron: 0 0 2 * * *
+  expiration-days: 365
