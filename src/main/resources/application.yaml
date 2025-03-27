@@ -27,10 +27,8 @@ logging:
 hash:
   batch-size: 1000
   batch-get-amount: 1000
-  batch-get-unique-numbers-amount: 1000
-  min-hash-database-reserve: 1000
   min-hash-cache-size: 1000
-  cache-percentage-threshold: 0.2 # 20%
+  cache-percentage-threshold: 0.2
 
   generator:
     thread-pool:
