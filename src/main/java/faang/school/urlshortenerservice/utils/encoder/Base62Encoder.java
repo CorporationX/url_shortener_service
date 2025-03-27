@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.encoder;
+package faang.school.urlshortenerservice.utils.encoder;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
