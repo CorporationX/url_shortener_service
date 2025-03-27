@@ -10,7 +10,6 @@ public class Base62Encoder {
     private static final String BASE62_CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-
     public List<String> encode(List<Long> uniqueIds) {
         return uniqueIds.stream()
                 .map(this::encodeBase62)

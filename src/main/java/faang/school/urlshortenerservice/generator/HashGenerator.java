@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class HashGenerator {
     private int maxRange;
 
     @Value("${data.url.hash.hash-batch-size}")
-    private int hashButchSize;
+    private int hashBatchSize;
 
     @Transactional
     @Async("hashGeneratorExecutor")
@@ -38,10 +39,10 @@ public class HashGenerator {
 
     @Transactional
     public List<Hash> getHashes() {
-        List<Hash> hashes = hashRepository.getHashBatch(hashButchSize);
-        if (hashes.size() < hashButchSize) {
+        List<Hash> hashes = new ArrayList<>(hashRepository.getHashBatch(hashBatchSize));
+        if (hashes.size() < hashBatchSize) {
             generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(hashButchSize));
+            hashes.addAll(hashRepository.getHashBatch(hashBatchSize));
         }
         return hashes;
     }

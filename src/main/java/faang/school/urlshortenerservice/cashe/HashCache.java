@@ -26,7 +26,7 @@ public class HashCache {
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
 
 
-    @Value("${data.url.cache.size}")
+    @Value("${data.url.cache.pool-size}")
     private int cacheSize;
 
     @Value("${data.url.cache.threshold}")

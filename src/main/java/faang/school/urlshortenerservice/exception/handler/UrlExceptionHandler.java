@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.exception.handler;
 
 import faang.school.urlshortenerservice.exception.HashCacheException;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.exception.UrlShorteningException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
@@ -37,5 +38,9 @@ public class UrlExceptionHandler {
     public ResponseEntity<String> handleUrlShorteningException(UrlShorteningException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
-}
 
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<String>handleUrlNotFoundException(UrlNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+}

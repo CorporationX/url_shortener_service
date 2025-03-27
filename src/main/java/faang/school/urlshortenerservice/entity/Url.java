@@ -26,7 +26,6 @@ public class Url {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "createdAt")
+    @Column(name = "created_at")
     private Timestamp created_at;
-
 }

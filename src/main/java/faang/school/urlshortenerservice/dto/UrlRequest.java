@@ -13,10 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlRequest {
-
     @JsonProperty("url")
     @NotEmpty(message = "URL не может быть пустым")
     @Pattern(regexp = "^(http|https)://.+", message = "Неверный формат URL ")
     private String url;
-
 }
