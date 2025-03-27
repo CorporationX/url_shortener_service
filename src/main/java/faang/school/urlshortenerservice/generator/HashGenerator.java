@@ -23,17 +23,17 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${app.numberRange:1000}")
-    private int numberRange;
+    @Value("${hash.hash_range}")
+    private int hashRange;
 
     @Transactional
     public List<Hash> generateBatch() {
         List<Hash> hashes = new ArrayList<>();
-        List<Long> numbers = hashRepository.getUniqueNumbers(numberRange);
+        List<Long> numbers = hashRepository.getUniqueNumbers(hashRange);
         log.info("Received {} unique numbers from hash repository", numbers.size());
         base62Encoder.encode(numbers).forEach(str -> hashes.add(new Hash(str)));
         log.info("{} numbers encode to base 62", numbers.size());
-        List<Hash> list = StreamSupport.stream(hashRepository.saveAll(hashes).spliterator(), false).toList();
+        List<Hash> list = hashRepository.saveAll(hashes);
         log.info("Hashes {} saved to hash repository", list.size());
         return list;
     }
