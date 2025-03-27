@@ -17,10 +17,9 @@ public class UrlRepository {
         jdbcTemplate.update("INSERT INTO url (hash, url) VALUES (?, ?)", hash, longUrl);
     }
 
-    public List<String> deleteUrlsOlderThanOneYear() {
+    public List<String> deleteExpiredUrls(LocalDateTime expirationDate) {
         String sql = "DELETE FROM url WHERE created_at < ? RETURNING hash";
-        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), oneYearAgo);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), expirationDate);
     }
 
     public String findByHash(String hash) {

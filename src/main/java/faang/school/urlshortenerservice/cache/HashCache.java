@@ -18,47 +18,41 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService taskExecutor;
+    private final HashCacheConfig config;
 
-    @Value("${hash.cache.max-size}")
-    private int maxSize;
-
-    @Value("${hash.cache.threshold}")
-    private int thresholdPercentage;
+    @Value("${hash.batch.size:10}")
+    private int batchSize;
 
     private ArrayBlockingQueue<String> hashQueue;
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
     public HashCache(HashRepository hashRepository,
                      HashGenerator hashGenerator,
-                     @Qualifier("hashCacheTaskExecutor") ExecutorService taskExecutor) {
+                     @Qualifier("hashCacheTaskExecutor") ExecutorService taskExecutor,
+                     HashCacheConfig config) {
         this.hashRepository = hashRepository;
         this.hashGenerator = hashGenerator;
         this.taskExecutor = taskExecutor;
+        this.config = config;
     }
 
     @PostConstruct
     public void init() {
-        hashQueue = new ArrayBlockingQueue<>(maxSize);
+        hashQueue = new ArrayBlockingQueue<>(config.getMaxSize());
         refillCache();
     }
 
     public String getHash() {
+        checkAndRefillIfNeeded();
         String hash = hashQueue.poll();
-        if (hash == null) {
-            refillCache();
-            hash = hashQueue.poll();
-        } else {
-            checkAndRefill();
-        }
         if (hash == null) {
             throw new IllegalStateException("No hashes available in cache");
         }
         return hash;
     }
 
-    private void checkAndRefill() {
-        double currentPercentage = (double) hashQueue.size() / maxSize * 100;
-        if (currentPercentage < thresholdPercentage) {
+    private void checkAndRefillIfNeeded() {
+        if (hashQueue.isEmpty() || (double) hashQueue.size() / config.getMaxSize() * 100 < config.getThresholdPercentage()) {
             refillCache();
         }
     }
@@ -68,7 +62,7 @@ public class HashCache {
             taskExecutor.execute(() -> {
                 try {
                     hashGenerator.generateBatch();
-                    List<String> hashes = hashRepository.getHashBatch();
+                    List<String> hashes = hashRepository.getHashBatch(batchSize);
                     hashQueue.addAll(hashes);
                 } finally {
                     isRefilling.set(false);

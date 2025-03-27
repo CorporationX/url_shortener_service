@@ -41,3 +41,7 @@ hash:
     queue-capacity: 20
   generator:
     batch-size: 100
+
+url:
+  expiration:
+    years: 1
