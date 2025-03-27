@@ -19,6 +19,8 @@ spring:
 
 hash:
   batch-size: 100
+  core-Pool-Size: 5
+  queue-Capacity: 25
 
 server:
   port: 8080
