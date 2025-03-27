@@ -18,13 +18,13 @@ public class AsyncConfig {
     @Value("${hash.threadPool.queue-capacity}")
     private int queueCapacity;
 
-    @Bean(name = "customThreadPoolTaskExecutor")
+    @Bean(name = "hashThreadPoolTaskExecutor")
     public ThreadPoolTaskExecutor customThreadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("hash-generator-");
+        executor.setThreadNamePrefix("hash-");
         executor.initialize();
         return executor;
     }

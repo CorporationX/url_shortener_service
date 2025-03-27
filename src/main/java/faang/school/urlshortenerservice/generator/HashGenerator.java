@@ -23,7 +23,7 @@ public class HashGenerator {
     @Value("${hash.range:1000}")
     private int maxRange;
 
-    @Async("customThreadPoolTaskExecutor")
+    @Async("hashThreadPoolTaskExecutor")
     @Transactional
     public void generateBatch(){
         try {
