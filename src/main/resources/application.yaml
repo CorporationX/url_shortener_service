@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: url-shortener-service
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -18,7 +20,14 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8077
+
+services:
+  hash-service:
+    batch-size: 1000
+    cron-expression: 0 0 16 * * ?
+    created-before-months: 12
+    hash-cache: HashCache
 
 logging:
   level:
