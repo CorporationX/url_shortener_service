@@ -20,7 +20,7 @@ spring:
       hibernate:
         generate_statistics: false
         jdbc:
-          batch_size: 250
+          batch_size: 10000
           order_inserts: true
           order_updates: true
         format_sql: true
@@ -30,11 +30,11 @@ spring:
 
 hash-generator:
   length: 5
-  local-cache-size: 1000
-  generate-count: 10000
-  percent-free-hashes: 20
+  local-cache-size: 50000
+  generate-count: 150000
+  percent-free-hashes: 30
   alphabet: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-  cron-delete: 0 0 * * * *
+  cron-delete: 0 0 0 * * *
 
 url:
   short-header: http://localhost:8080/shortner

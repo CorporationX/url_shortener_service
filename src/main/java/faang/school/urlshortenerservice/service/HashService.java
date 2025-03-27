@@ -46,6 +46,7 @@ public class HashService {
     public List<String> getHashes(int count) {
         log.info("Getting {} hashes from DB", count);
         if (hashRepository.count() == 0) {
+            log.warn("Hash repository is empty");
             hashGenerator.generateBatch();
         }
 

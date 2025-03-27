@@ -18,12 +18,12 @@ import java.util.concurrent.ExecutorService;
 @Repository
 public class HashCache {
     private final HashService hashService;
-    private final ExecutorService hashGenerateExecutorService;
+    private final ExecutorService getHasExecutorService;
     @Value("${hash-generator.local-cache-size:1000}")
     private int cacheSize;
     private Queue<String> cache;
     @Value("${hash-generator.percent-free-hashes:20}")
-    private int percentFreeHashes = 20;
+    private int percentFreeHashes = 50;
 
     @PostConstruct
     public void init() {
@@ -34,10 +34,13 @@ public class HashCache {
     }
 
     public String getHash() {
-
+        if (cache.isEmpty()) {
+            log.warn("Hash cache is empty");
+            cache.addAll(hashService.getHashes(cacheSize));
+        }
         if ((100.0 * cache.size() / cacheSize) < percentFreeHashes) {
             int count = cacheSize - cache.size();
-            CompletableFuture.supplyAsync(() -> hashService.getHashes(count), hashGenerateExecutorService)
+            CompletableFuture.supplyAsync(() -> hashService.getHashes(count), getHasExecutorService)
                     .thenAccept(cache::addAll);
         }
         return cache.poll();
