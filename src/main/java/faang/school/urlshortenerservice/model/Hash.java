@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-@Table
+@Table(name = "hash")
 @Getter
 public class Hash {
     @Id

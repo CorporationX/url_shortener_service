@@ -16,7 +16,7 @@ public class CleanerService {
     private final HashRepository hashRepository;
 
     @Transactional
-    public void cleanOldUrls() {
+    public void cleanOldUrlsAndSaveHashes() {
         LocalDateTime yearAgo = LocalDateTime.now().minusYears(1);
 
         List<String> oldHashes = urlRepository.deleteOldUrls(yearAgo);
