@@ -19,7 +19,6 @@ public class HashBatchRepository {
 
     @Transactional
     public void saveHashByBatch(List<Hash> hashes) {
-
         jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes,
                 batchSize,
                 (ps, argument) -> ps.setString(1, argument.getHash()));

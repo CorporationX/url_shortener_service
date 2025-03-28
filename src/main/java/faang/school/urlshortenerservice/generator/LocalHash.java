@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.service.HashAsyncService;
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LocalHash {
 
     private final HashService hashService;
+    private final HashAsyncService hashAsyncService;
 
     @Value("${url-shortener.hash.capacity}")
     private int capacity;
@@ -33,12 +35,11 @@ public class LocalHash {
     }
 
     public Hash getHash() {
-        if (hashes.size() / (capacity / 100) < fillPercent) {
-            if (filling.compareAndSet(false, true)) {
-                hashService.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
-                        .thenRun(() -> filling.set(false));
-            }
+        if (hashes.size() / (capacity / 100) < fillPercent
+                && filling.compareAndSet(false, true)) {
+            hashAsyncService.getHashesAsync(capacity)
+                    .thenAccept(hashes::addAll)
+                    .thenRun(() -> filling.set(false));
         }
         return hashes.poll();
     }

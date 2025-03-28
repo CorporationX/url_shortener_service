@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.UrlServiceAsync;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +9,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CleanerScheduler {
 
-    private final UrlService urlService;
+    private final UrlServiceAsync urlServiceAsync;
 
-    @Async("schedulerThreadPool")
     @Scheduled(cron = "${url-shortener.scheduler.delete-old-url}")
     public void deleteOldUrl() {
-        urlService.deleteOldUrl();
+        urlServiceAsync.deleteOldUrlAsync();
     }
 }

@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.HashBatchRepository;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +33,6 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlMapper urlMapper;
     private final LocalHash localHash;
-    private final HashRepository hashRepository;
     private final HashBatchRepository hashBatchRepository;
     private final UrlCacheRepository urlCacheRepository;
 
@@ -63,7 +61,6 @@ public class UrlService {
 
     @Transactional
     public UrlDto createShortUrl(UrlDto dto, HttpServletRequest request) {
-
         Url url = findByUrl(dto.url()).orElseGet(() -> {
             Hash hash = localHash.getHash();
             Url newUrl = urlMapper.toEntity(dto);
@@ -87,11 +84,11 @@ public class UrlService {
         return redirect(redisUrl.get());
     }
 
-    private Optional<Url> findByUrl(String url){
+    private Optional<Url> findByUrl(String url) {
         return urlRepository.findUrlByUrl(url);
     }
 
-    private UrlDto buildShortUrl(Url url, HttpServletRequest request){
+    private UrlDto buildShortUrl(Url url, HttpServletRequest request) {
         String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
                 .replacePath("")
                 .build()
@@ -101,10 +98,9 @@ public class UrlService {
         return new UrlDto(shortUrl);
     }
 
-    private ResponseEntity<Void> redirect(String url){
+    private ResponseEntity<Void> redirect(String url) {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(url))
                 .build();
     }
-
 }

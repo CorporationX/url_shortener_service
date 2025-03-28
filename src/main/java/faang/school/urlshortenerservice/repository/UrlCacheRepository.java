@@ -21,7 +21,7 @@ public class UrlCacheRepository {
         return url;
     }
 
-    @Cacheable(value = "url", key = "#hash", unless = "#result == null")
+    @Cacheable(value = "url", key = "#hash", unless = "#result.isEmpty()")
     public Optional<String> findUrl(String hash){
         return Optional.empty();
     }
