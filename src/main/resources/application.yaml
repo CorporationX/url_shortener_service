@@ -23,3 +23,16 @@ server:
 logging:
   level:
     root: info
+
+url-shortener-service:
+  base-url: http://localhost:8080/api/v1
+  api-version: /api/v1
+  hash-batch-size: 10
+  unique-numbers-count: 1000
+  cleaner-cron: "0 0 1 * * ?"
+  cache-size: 1000
+  cache-low-threshold-percent: 20
+  thread-pool:
+    core-size: 3
+    max-size: 10
+    queue-capacity: 50
