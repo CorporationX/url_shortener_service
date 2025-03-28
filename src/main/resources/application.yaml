@@ -50,6 +50,18 @@ encoder:
     chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     batchSize: 1000
 
+cache:
+  hash:
+    size: 1000
+    threshold-percent: 20
+    batch-size: 500
+
+executor:
+  core-pool-size: 2
+  max-pool-size: 4
+  queue-capacity: 50
+  keep-alive-time: 60
+
 schedulers:
   config:
     assignedTreads: 10
