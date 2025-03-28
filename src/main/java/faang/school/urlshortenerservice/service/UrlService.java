@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+
 import faang.school.urlshortenerservice.cashe.HashCache;
 import faang.school.urlshortenerservice.cashe.ShortUrlCache;
 import faang.school.urlshortenerservice.entity.Hash;
@@ -35,30 +36,44 @@ public class UrlService {
     public String createShortUrl(String longUrl) {
         log.info("Получен запрос на создание короткого URL-адреса: {}", longUrl);
 
+        String existingShortUrl = getExistingShortUrl(longUrl);
+        if (existingShortUrl != null) {
+            return existingShortUrl;
+        }
+        String hash = generateUniqueHash();
+        saveUrl(hash, longUrl);
+        shortUrlCache.saveUrl(hash, longUrl);
+
+        return domain + "/" + hash;
+    }
+
+    private String getExistingShortUrl(String longUrl) {
         String existingHash = urlRepository.hashForUrlIfExists(longUrl);
         if (existingHash != null) {
             String existingShortUrl = domain + "/" + existingHash;
-            log.info("Коороткий URL для {} уже существует: {}", longUrl, existingShortUrl);
+            log.info("Короткий URL для {} уже существует: {}", longUrl, existingShortUrl);
             return existingShortUrl;
         }
+        return null;
+    }
 
-        String hash = hashCache.getHash();
+    private String generateUniqueHash() {
+        return hashCache.getHash();
+    }
+
+    private void saveUrl(String hash, String longUrl) {
         Url url = new Url(hash, longUrl, Timestamp.valueOf(LocalDateTime.now()));
-
         try {
             urlRepository.save(url);
         } catch (ConstraintViolationException e) {
             log.warn("Нарушение уникальности при сохранении URL {}: {}", longUrl, e.getMessage());
-            existingHash = urlRepository.hashForUrlIfExists(longUrl);
-            if (existingHash != null) {
-                String existingShortUrl = domain + "/" + existingHash;
-                log.info("Короткая ссылка для {} уже существует: {}", longUrl, existingShortUrl);
-                return existingShortUrl;
+            String existingShortUrl = getExistingShortUrl(longUrl);
+            if (existingShortUrl != null) {
+                log.info("Короткий URL для {} уже существует: {}", longUrl, existingShortUrl);
+                return;
             }
             throw new UrlShorteningException("Ошибка при сохранении URL: " + longUrl, e);
         }
-        shortUrlCache.saveUrl(hash, longUrl);
-        return domain + "/" + hash;
     }
 
     public String getOriginalUrl(String hash) {

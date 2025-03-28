@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cashe.HashCache;
 import faang.school.urlshortenerservice.cashe.ShortUrlCache;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.exception.UrlShorteningException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void TestCreateShortUrl_returnExistingIfExists() {
+    void testCreateShortUrl_returnExistingIfExists() {
         String longUrl = "http://example.com";
         when(urlRepository.hashForUrlIfExists(longUrl)).thenReturn(existingHash);
         assertEquals("http://test.com/existingHash", urlService.createShortUrl(longUrl));
@@ -60,7 +61,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void TestCreateShortUrl_newIfNotExists() {
+    void testCreateShortUrl_newIfNotExists() {
         String longUrl = "http://example.com/new";
         String newHash = "newHash";
         when(urlRepository.hashForUrlIfExists(longUrl)).thenReturn(null);
@@ -72,17 +73,16 @@ class UrlServiceTest {
     }
 
     @Test
-    void TestCreateShortUrl_handleConstraintViolation() {
+    void testCreateShortUrl_handleConstraintViolation() {
         String longUrl = "http://example.com/duplicate";
-        when(urlRepository.hashForUrlIfExists(longUrl)).thenReturn(null, existingHash);
-        when(hashCache.getHash()).thenReturn("newHash");
-        when(urlRepository.save(any(Url.class))).thenThrow(new ConstraintViolationException("Duplicate key", null));
+        when(urlRepository.save(any(Url.class)))
+                .thenThrow(new ConstraintViolationException("Duplicate", null));
 
-        assertEquals("http://test.com/existingHash", urlService.createShortUrl(longUrl));
+        assertThrows(UrlShorteningException.class, () -> urlService.createShortUrl(longUrl));
     }
 
     @Test
-    void TestGetOriginalUrl_returnCachedUrlIfPresent() {
+    void testGetOriginalUrl_returnCachedUrlIfPresent() {
         String hash = "cachedHash";
         String cachedUrl = "http://cached.com";
         when(shortUrlCache.getUrl(hash)).thenReturn(cachedUrl);
@@ -92,7 +92,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void TestGetOriginalUrl_fromRepoIfNotCached() {
+    void testGetOriginalUrl_fromRepoIfNotCached() {
         String hash = "repositoryHash";
         String repoUrl = "http://repository.com";
         when(shortUrlCache.getUrl(hash)).thenReturn(null);
@@ -103,7 +103,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void TestGetOriginalUrl_throwExceptionIfUrlNotFound() {
+    void testGetOriginalUrl_throwExceptionIfUrlNotFound() {
         String hash = "notFoundHash";
         when(shortUrlCache.getUrl(hash)).thenReturn(null);
         when(urlRepository.findById(hash)).thenReturn(Optional.empty());

@@ -25,7 +25,6 @@ public class HashCache {
     private final Queue<String> hashQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isFetching = new AtomicBoolean(false);
 
-
     @Value("${data.url.cache.pool-size}")
     private int cacheSize;
 

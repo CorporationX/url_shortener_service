@@ -26,7 +26,6 @@ public class HashGenerator {
     @Value("${data.url.hash.hash-batch-size}")
     private int hashBatchSize;
 
-    @Transactional
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(maxRange);
