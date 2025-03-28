@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
                         FieldError::getDefaultMessage, (r1, r2) -> r1));
         return new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
-                "Validation failed",
+                "Ошибка валидации",
                 errors
         );
     }
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handle(final MissingRequestCookieException e) {
         return new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
-                "Missing required cookie",
+                "Отсутсутсвуют необходимые cookie",
                 e.getMessage()
         );
     }
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handle(final BusinessException e) {
         return new ErrorResponse(
                 HttpStatus.NOT_FOUND,
-                "Business Rule Violation",
+                "Нарушение бизнес правила",
                 e.getMessage()
         );
     }
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handle(final EntityAlreadyExistException e) {
         return new ErrorResponse(
                 HttpStatus.CONFLICT,
-                "Entity already exist",
+                "Сущность уже существует",
                 e.getMessage()
         );
     }
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handle(final EntityNotFoundException e) {
         return new ErrorResponse(
                 HttpStatus.NOT_FOUND,
-                "Entity not found",
+                "Сущность не найдена",
                 e.getMessage()
         );
     }
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Internal server error",
+                "Внутреняя ошибка сервера",
                 e.getMessage()
         );
     }

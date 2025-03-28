@@ -17,7 +17,7 @@ public class RedirectController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> getOriginalUrl(@PathVariable String hash) {
-        String url =  urlService.getOriginalUrl(hash);
+        String url = urlService.getOriginalUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(url))
                 .build();

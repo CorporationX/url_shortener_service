@@ -35,7 +35,7 @@ public class HashCache {
     }
 
     public String getCachedHash() {
-        if (!hashesGenerationInProgress.get() && isHashSupplyLow()) {
+        if (isHashSupplyLow()) {
             fillCacheAsync();
         }
         return hashesCache.poll();
@@ -52,10 +52,15 @@ public class HashCache {
     }
 
     private void fillCache() {
-        hashesGenerationInProgress.set(true);
-        List<String> hashesStrings = getHashes(cacheCapacity);
-        hashesCache.addAll(hashesStrings);
-        hashesGenerationInProgress.set(false);
+        if (!hashesGenerationInProgress.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            List<String> hashesStrings = getHashes(cacheCapacity);
+            hashesCache.addAll(hashesStrings);
+        } finally {
+            hashesGenerationInProgress.set(false);
+        }
     }
 
     private void fillCacheAsync() {
