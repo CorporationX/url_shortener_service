@@ -24,3 +24,14 @@ server:
 logging:
   level:
     root: info
+
+AsyncConfig:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
+
+hashGenerator:
+  batchSize: 1000
+
+hashRepository:
+  batchSize: 50
