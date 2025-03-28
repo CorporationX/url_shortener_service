@@ -24,6 +24,10 @@ hash:
     max-pool-size: 10
     queue-capacity: 50
 
+cache:
+  size: 1000
+  threshold-percent: 20
+
 server:
   port: 8080
 
