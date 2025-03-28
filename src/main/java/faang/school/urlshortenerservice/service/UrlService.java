@@ -7,8 +7,10 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,7 @@ public class UrlService {
         Url saved = urlRepository.save(url);
         redisService.setValue(hash, originalUrl);
         log.info("Saved new url object: {}", saved);
+
         return hash;
     }
 

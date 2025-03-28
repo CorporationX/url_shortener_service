@@ -19,6 +19,7 @@ spring:
       host: localhost
       port: 6379
       database: 0
+      TTL-HOURS: 2
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -28,11 +29,11 @@ thread-pool:
   queue-size: 20
 
 hash-cache:
-  max-size: 100
+  max-size: 50
   refresh-percentage: 0.2
 
 batch:
-  generation-size: 400
+  generation-size: 100
 
 encoder:
   base: 62
@@ -41,8 +42,6 @@ encoder:
 
 cleaner:
   cron: 0 0 2 * * *
-
-base-link: localhost:8080/
 
 server:
   port: 8080

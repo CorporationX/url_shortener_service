@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.repository.CacheLockRepository;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class HashCache {
     private final Queue<String> cachedHashes = new ConcurrentLinkedQueue<>();
 
     private final HashRepository hashRepository;
+    private final CacheLockRepository cacheLockRepository;
     private final HashGenerator hashGenerator;
 
     @Value("${hash-cache.max-size}")
@@ -28,28 +30,43 @@ public class HashCache {
     @Value("${hash-cache.refresh-percentage}")
     private String REFRESH_PERCENTAGE;
 
-    // lock on bd level
+    @PostConstruct
+    public void init() {
+        fillHashes();
+        log.info("Filled internal cache with hashes. Current size: {}", cachedHashes.size());
+    }
+
     public String getHash() {
-        int min = (int) (QUEUE_SIZE * Double.parseDouble(REFRESH_PERCENTAGE));
-        if (cachedHashes.size() < min) {
-            fillHashes();
-        }
+        checkQueueFilling();
         String hash = cachedHashes.poll();
         log.info("Polled hash from the queue {}", hash);
         return hash;
     }
 
-    @Async(value = "threadPoolExecutor")
     public void fillHashes() {
-        hashGenerator.generateBatch();
         List<String> batch = hashRepository.getHashBatch(QUEUE_SIZE);
         cachedHashes.addAll(batch);
         log.info("{} hashes added to the internal queue", cachedHashes.size());
+        hashGenerator.generateBatch();
     }
 
-    @PostConstruct
-    public void init() {
-        fillHashes();
-        log.info("Filled internal cache with hashes. Current size: {}", cachedHashes.size());
+    @Async(value = "threadPoolExecutor")
+    public void fillHashesAsync() {
+        if (!cacheLockRepository.tryLock()) {
+            return;
+        }
+
+        try {
+            fillHashes();
+        } finally {
+            cacheLockRepository.unlock();
+        }
+    }
+
+    private void checkQueueFilling() {
+        int min = (int) (QUEUE_SIZE * Double.parseDouble(REFRESH_PERCENTAGE));
+        if (cachedHashes.size() < min) {
+            fillHashesAsync();
+        }
     }
 }

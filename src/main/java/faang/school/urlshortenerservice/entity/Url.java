@@ -9,8 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-// add field related to data to clear urls
-
 @Data
 @Builder
 @AllArgsConstructor
