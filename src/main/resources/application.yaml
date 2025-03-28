@@ -36,7 +36,6 @@ api:
   version: "0.1.0.1"
   description: "URL shortener service API for shortening long URLs"
 
-
 encoder:
   settings:
 #    base: 2
@@ -49,3 +48,19 @@ encoder:
 #    chars: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
     base: 62
     chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    batchSize: 1000
+
+schedulers:
+  config:
+    assignedTreads: 10
+    cronExpression: "0 * * * * *"
+    corePoolSize: 5
+    maximumPoolSize: 20
+    queueCapacity: 1000
+    hashesGenerator:
+     threadNamePrefix: "hashesGenerator-"
+#      cronExpression: "0 * * * * *"
+#    moderation:
+#      threadNamePrefix: "moderation-"
+#      cronExpression: "0 * * * * *"
+#  correct-posts: "0 0 12 * * ?"
