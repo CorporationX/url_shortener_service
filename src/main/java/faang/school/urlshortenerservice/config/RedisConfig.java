@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.config;
 
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.redis")
+@Setter
 public class RedisConfig {
     private String host;
     private int port;
@@ -26,6 +28,7 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory());
 
         template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
 
         template.afterPropertiesSet();

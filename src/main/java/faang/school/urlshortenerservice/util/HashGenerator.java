@@ -1,0 +1,44 @@
+package faang.school.urlshortenerservice.util;
+
+import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+@RequiredArgsConstructor
+@Slf4j
+@Service
+public class HashGenerator {
+    private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
+
+    @Value("${encoder.settings.batchSize}")
+    private int batchSize;
+
+    @Async("HashesGeneratorThreadPool")
+    public void generateBatch() {
+        List<Long> randomNumbersList = hashRepository.findTopN(batchSize);
+
+        if (randomNumbersList.isEmpty()) {
+            throw new RuntimeException("There are no free Numbers for generating new hashes!");
+        }
+
+        List<String> hashList = base62Encoder.encode(randomNumbersList);
+
+        List<Hash> hashesToSave = IntStream.range(0, hashList.size())
+                .mapToObj(i -> Hash.builder()
+                        .number(randomNumbersList.get(i))
+                        .hash(hashList.get(i))
+                        .lock(true)
+                        .build())
+                .toList();
+
+        hashRepository.saveAll(hashesToSave);
+    }
+}

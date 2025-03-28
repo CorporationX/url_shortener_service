@@ -59,7 +59,10 @@ public class UrlService {
         String result = urlCacheRepository.getUrl(hash);
 
         if (!StringUtils.hasText(result)) {
-            result = urlRepository.findByHash(hash);
+            result = urlRepository.findByHash(hash)
+                    .orElseThrow(() ->
+                        new RuntimeException("Url record does not exist for the hash supplied!"))
+                    .getUrl();
 
             if (!StringUtils.hasText(result)) {
                 throw new UrlNotFoundException(hash);
