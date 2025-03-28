@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "url")
-@AllArgsConstructor
 @NoArgsConstructor
 public class Url {
 

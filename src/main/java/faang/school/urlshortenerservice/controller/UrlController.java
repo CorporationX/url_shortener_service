@@ -21,7 +21,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UrlController {
     private final UrlService urlService;
 
-
     @PostMapping
     public String createShortLink(@RequestBody @URL @NotBlank UrlDto urlDto) {
         return urlService.createShortLink(urlDto);

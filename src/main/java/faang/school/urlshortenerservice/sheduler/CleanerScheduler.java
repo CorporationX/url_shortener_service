@@ -16,11 +16,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
-    private final HashRepository hashRepository;
-    private final UrlRepository urlRepository;
-
     @Value("${url.cleaner.interval: 1 year}")
     private String cleanupInterval;
+
+    private final HashRepository hashRepository;
+    private final UrlRepository urlRepository;
 
     @Transactional
     @Scheduled(cron = "${url.cleaner.scheduler.cron}")

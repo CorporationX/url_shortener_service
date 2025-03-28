@@ -12,6 +12,7 @@ public class ThreadPoolConfig {
 
     @Value("${hash.generator.thread.pool.size:5}")
     int poolSize;
+
     @Value("${hash.generator.thread.queue.capacity:100}")
     int queueCapacity;
 

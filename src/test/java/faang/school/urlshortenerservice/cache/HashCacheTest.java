@@ -34,8 +34,8 @@ class HashCacheTest {
     @BeforeEach
     void setUp() {
         when(hashGenerator.getHashes(anyInt())).thenReturn(mockHashes);
-        hashCache.capacity = capacity;
-        hashCache.fillPercent = 27;
+        hashCache.setCapacity(capacity);
+        hashCache.setFillPercent(27);
     }
 
     @Test

@@ -15,12 +15,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+
+    @Value("${hash.cache.capacity:100}")
+    private int capacity;
+
+    @Value("${hash.cache.fillPercent:20}")
+    private int fillPercent;
+
     private final HashGenerator hashGenerator;
     private final AtomicBoolean filling = new AtomicBoolean(false);
-    @Value("${hash.cache.capacity:100}")
-    int capacity;
-    @Value("${hash.cache.fillPercent:20}")
-    int fillPercent;
     private Queue<String> hashes;
 
     @PostConstruct
@@ -30,12 +33,10 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (isHashFilling()) {
-            if (filling.compareAndSet(false, true)) {
+        if (isHashFilling() && filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .thenRun(() -> filling.set(false));
-            }
         }
         return hashes.poll();
     }

@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +22,7 @@ public class UrlService {
     private final DomainConfig domainConfig;
     private final UrlCacheRepository urlCacheRepository;
 
+    @Transactional
     public String createShortLink(UrlDto urlDto) {
         String hash = hashCache.getHash();
         Url url = new Url(hash, urlDto.getUrl());
@@ -35,9 +37,5 @@ public class UrlService {
                         () -> new EntityNotFoundException(
                                 String.format("URL с хэшом %s не существует", hash)))
                 .getUrl();
-    }
-
-    public String getUrlByHash(String hash) {
-        return null;
     }
 }

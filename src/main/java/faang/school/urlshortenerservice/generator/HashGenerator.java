@@ -14,13 +14,14 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
+
     @Value("${hash.generator.range:1000}")
     private int maxRange;
 
+    private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
+
     @Async("hashGeneratorThreadPool")
-    @Transactional
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashes = base62Encoder.encode(numbers);
