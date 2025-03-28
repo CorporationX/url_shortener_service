@@ -57,11 +57,11 @@ public class HashCacheTest {
 
     @Test
     void init_shouldRefillCache() {
-        when(hashRepository.findTopN(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
 
         hashCache.init();
 
-        verify(hashRepository).findTopN(50);
+        verify(hashRepository).getUniqueNumbers(50);
         verify(hashGenerator).generateBatch();
 
         ConcurrentLinkedQueue<String> queue = (ConcurrentLinkedQueue<String>) ReflectionTestUtils.getField(hashCache, "hashQueue");
@@ -80,7 +80,7 @@ public class HashCacheTest {
 
         assertEquals("hash1", hash);
         verify(executorService, never()).submit(any(Runnable.class));
-        verify(hashRepository, never()).findTopN(anyInt());
+        verify(hashRepository, never()).getUniqueNumbers(anyInt());
     }
 
     @Test
@@ -89,13 +89,13 @@ public class HashCacheTest {
         queue.add("hash1");
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
 
-        when(hashRepository.findTopN(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
 
         String hash = hashCache.getHash();
 
         assertEquals("hash1", hash);
         verify(executorService).submit(any(Runnable.class));
-        verify(hashRepository).findTopN(50);
+        verify(hashRepository).getUniqueNumbers(50);
         verify(hashGenerator).generateBatch();
     }
 
@@ -116,7 +116,7 @@ public class HashCacheTest {
 
     @Test
     void refillCache_whenRepositoryReturnsEmptyList_shouldNotAddToQueue() {
-        when(hashRepository.findTopN(anyInt())).thenReturn(Collections.emptyList());
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
 
@@ -128,7 +128,7 @@ public class HashCacheTest {
 
     @Test
     void refillCache_shouldHandleExceptions() {
-        when(hashRepository.findTopN(anyInt())).thenThrow(new RuntimeException("Test exception"));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenThrow(new RuntimeException("Test exception"));
 
         hashCache.init();
 
@@ -142,7 +142,7 @@ public class HashCacheTest {
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
 
-        when(hashRepository.findTopN(anyInt())).thenReturn(Arrays.asList(1L, 2L));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(1L, 2L));
 
         ReflectionTestUtils.setField(hashCache, "isRefilling", new AtomicBoolean(true));
 

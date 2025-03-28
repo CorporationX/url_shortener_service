@@ -52,11 +52,11 @@ class UrlServiceTest {
 
     @Test
     void init_shouldRefillCache() {
-        when(hashRepository.findTopN(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
 
         hashCache.init();
 
-        verify(hashRepository).findTopN(50);
+        verify(hashRepository).getUniqueNumbers(50);
         verify(hashGenerator).generateBatch();
 
         @SuppressWarnings("unchecked")
@@ -85,7 +85,7 @@ class UrlServiceTest {
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
         ReflectionTestUtils.setField(hashCache, "isRefilling", new AtomicBoolean(false));
 
-        when(hashRepository.findTopN(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
 
         doAnswer(invocation -> {
             ((Runnable)invocation.getArgument(0)).run();
@@ -96,7 +96,7 @@ class UrlServiceTest {
 
         assertEquals("hash1", hash);
         verify(executorService).submit(any(Runnable.class));
-        verify(hashRepository).findTopN(50);
+        verify(hashRepository).getUniqueNumbers(50);
         verify(hashGenerator).generateBatch();
     }
 
@@ -117,7 +117,7 @@ class UrlServiceTest {
 
     @Test
     void refillCache_whenRepositoryReturnsEmptyList_shouldNotAddToQueue() {
-        when(hashRepository.findTopN(anyInt())).thenReturn(Collections.emptyList());
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
 
@@ -129,7 +129,7 @@ class UrlServiceTest {
 
     @Test
     void refillCache_shouldHandleExceptions() {
-        when(hashRepository.findTopN(anyInt())).thenThrow(new RuntimeException("Test exception"));
+        when(hashRepository.getUniqueNumbers(anyInt())).thenThrow(new RuntimeException("Test exception"));
 
         hashCache.init();
 

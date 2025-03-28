@@ -63,7 +63,7 @@ public class HashCache {
         try {
             log.info("Starting cache refill. Current size: {}", hashQueue.size());
 
-            List<Long> availableHashes = hashRepository.findTopN(batchSize);
+            List<Long> availableHashes = hashRepository.getUniqueNumbers(batchSize);
 
             if (!availableHashes.isEmpty()) {
                 availableHashes.forEach(number -> hashQueue.offer(number.toString()));

@@ -44,13 +44,13 @@ public class HashGeneratorTest {
         List<Long> numbers = List.of(1L, 2L, 3L);
         List<String> hashes = List.of("a", "b", "c");
 
-        when(hashRepository.findTopN(batchSize)).thenReturn(numbers);
+        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(numbers);
         when(base62Encoder.encode(numbers)).thenReturn(hashes);
 
         hashGenerator.generateBatch();
-        verify(hashRepository).findTopN(batchSize);
+        verify(hashRepository).getUniqueNumbers(batchSize);
         verify(base62Encoder).encode(numbers);
-        verify(hashRepository).saveAll(hashesCaptor.capture());
+        verify(hashRepository).save(hashes);
 
         List<Hash> savedHashes = hashesCaptor.getValue();
         assertEquals(3, savedHashes.size());
@@ -68,14 +68,14 @@ public class HashGeneratorTest {
         int batchSize = 5;
         ReflectionTestUtils.setField(hashGenerator, "batchSize", batchSize);
 
-        when(hashRepository.findTopN(batchSize)).thenReturn(List.of());
+        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(List.of());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             hashGenerator.generateBatch();
         });
 
         assertEquals("There are no free Numbers for generating new hashes!", exception.getMessage());
-        verify(hashRepository).findTopN(batchSize);
+        verify(hashRepository).getUniqueNumbers(batchSize);
     }
 
     @Test
@@ -86,11 +86,11 @@ public class HashGeneratorTest {
         List<Long> numbers = List.of(1L);
         List<String> hashes = List.of("a");
 
-        when(hashRepository.findTopN(batchSize)).thenReturn(numbers);
+        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(numbers);
         when(base62Encoder.encode(numbers)).thenReturn(hashes);
 
         hashGenerator.generateBatch();
 
-        verify(hashRepository).findTopN(batchSize);
+        verify(hashRepository).getUniqueNumbers(batchSize);
     }
 }
