@@ -7,13 +7,13 @@ import java.util.List;
 
 @UtilityClass
 public class UniqueValuesListValidator {
-    public void validateList(List<?> list, String errorMessage) {
+    public static <T> void validateList(List<T> list, String errorMessage) {
         if (list == null || list.isEmpty()) {
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
-    public void validateUniqueness(List<?> list) {
+    public static <T> void validateUniqueness(List<T> list) {
         if (list.size() != new HashSet<>(list).size()) {
             throw new IllegalArgumentException("Supplied list contains duplicate values!");
         }

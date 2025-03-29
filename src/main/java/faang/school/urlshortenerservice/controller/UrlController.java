@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.service.UrlService;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @RequestMapping("/url")
@@ -30,10 +30,12 @@ public class UrlController {
     @PostMapping
     public ResponseEntity<UrlDto> generateShortUrl(
             @Parameter(description = "Original URL to be shortened")
-            @RequestBody @Valid UrlDto urlDto) {
+            @RequestBody @Valid String url) {
 
-        Url urlEntity = urlMapper.toEntity(urlDto);
-        Url processedUrl = urlService.generateShortUrl(urlEntity);
+        Url processedUrl = urlService.generateShortUrl(Url.builder()
+                        .url(url)
+                        .createdAt(LocalDateTime.now())
+                .build());
         UrlDto result = urlMapper.toDto(processedUrl);
 
         return ResponseEntity.ok(result);
@@ -47,15 +49,11 @@ public class UrlController {
             return ResponseEntity.notFound().build();
         }
 
-        try {
-            String originalUrl = urlService.getUrl(hash);
+        String originalUrl = urlService.getUrl(hash);
 
-            return ResponseEntity
-                    .status(HttpStatus.FOUND)
-                    .location(URI.create(originalUrl))
-                    .build();
-        } catch (UrlNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(originalUrl))
+                .build();
     }
 }
