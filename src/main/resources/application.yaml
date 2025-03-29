@@ -4,7 +4,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
+  redis:
+    host: localhost
+    port: 6379
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,12 +15,52 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+app:
+  base-url: "http://norairShort/url/"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+redis:
+  ttl-hours: 24
+
+hash:
+  generator:
+    batch-size: 50
+  cache:
+    size: 1000
+    threshold: 0.2
+    thread-pool-size-hashing: 15
+    thread-pool-size-caching: 10
+
+cleaner:
+  scheduler:
+    cron: "0 0 0 * * ?"
+
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
