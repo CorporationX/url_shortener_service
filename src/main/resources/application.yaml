@@ -14,6 +14,10 @@ spring:
       hibernate:
         format_sql: true
 
+  redis:
+    host: localhost
+    port: 8080
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
@@ -23,3 +27,32 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    range: 1000
+    batch: 3000
+    thread:
+      pool:
+        size: 5
+      queue:
+        capacity: 100
+  cache:
+    capacity: 100
+    fillPercent: 20
+
+url:
+  cleaner:
+    interval: '1 year'
+    scheduler:
+      cron: "0 32 11 * * *"
+
+app:
+  domain:
+    port: 8080
+    protocol: http
+    host: localhost
+
+exception:
+  exception-class: "An unexpected error occurred. Please try again later."
+  throwable-class: "An unexpected error occurred."
