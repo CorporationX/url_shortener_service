@@ -1,80 +1,76 @@
 package faang.school.urlshortenerservice.utils;
 
-import faang.school.urlshortenerservice.config.ExecutorServiceConfig;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class HashCache {
 
-    @Value("${hash.cache.capacity}")
-    private int capacity;
-
-    @Value("${hash.cache.refill_threshold}")
-    private double refillThreshold;
-
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final ExecutorServiceConfig executorService;
-    private Queue<String> hasheQueue;
-    protected AtomicBoolean isRefilling = new AtomicBoolean(false);
+
+    @Value("${hash.cache.capacity}") private int capacity;
+    @Value("${hash.cache.refill_threshold}") private double refillThreshold;
+
+    private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
     public void init() {
-        hasheQueue = new ArrayBlockingQueue<>(capacity);
-        hashGenerator.getHashBatchSync().stream()
+        refillHashes();
+    }
+
+    public String getHash() {
+        return pollHash();
+    }
+
+    @Transactional
+    public void refillHashes() {
+        log.info("before getHashBath {}", TransactionSynchronizationManager.isActualTransactionActive());
+        List<String> dbHashes = hashRepository.getHashBatch(capacity)
+            .stream()
             .map(Hash::getHash)
-            .forEach(hasheQueue::add);
-    }
+            .toList();
 
-    public Hash getHash() {
-        if (hasheQueue.size() < capacity * refillThreshold) {
-            log.info("Refilling hash cache");
-            refillHashCash();
+        hashQueue.addAll(dbHashes);
+
+        if (needRefill()) {
+            hashGenerator.generateBatch();
+            List<String> newHashes = hashRepository.getHashBatch(capacity)
+                .stream()
+                .map(Hash::getHash)
+                .toList();
+            hashQueue.addAll(newHashes);
         }
-
-        return new Hash(hasheQueue.poll());
     }
 
-    private void refillHashCash() {
-        if (isRefilling.compareAndSet(false, true)) {
-            CompletableFuture<List<Hash>> futureHashes = hashGenerator.getHashBatch();
-            futureHashes.thenAccept(hashes -> {
-                try {
-                    hashes.stream()
-                        .map(Hash::getHash)
-                        .forEach(hasheQueue::add);
-                    executorService.executorService().submit(() -> {
-                        List<Hash> newHashes = hashRepository.getHashBatch(capacity);
-                        newHashes.stream()
-                            .map(Hash::getHash)
-                            .forEach(hasheQueue::add);
-                        hashGenerator.generateBatch();
-                    });
+    public int getCapacity(){
+        return hashQueue.size();
+    }
 
-                } catch (Exception e) {
-                    log.error("Exception during hash cache refill", e);
-                } finally {
-                    isRefilling.set(false);
-                }
-            }).exceptionally(throwable -> {
-                log.error("Failed to get hash batch", throwable);
-                isRefilling.set(false);
-                return null;
-            });
+    private boolean needRefill() {
+        return hashQueue.size() < capacity * refillThreshold;
+    }
+
+    private String pollHash() {
+        try {
+            return hashQueue.poll(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for hash");
         }
     }
 }

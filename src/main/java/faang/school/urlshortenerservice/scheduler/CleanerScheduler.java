@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.MaintenanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -10,10 +10,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 @Configuration
 public class CleanerScheduler {
-    private final UrlService urlService;
+    private final MaintenanceService maintenanceService;
 
     @Scheduled(cron = "${hash.cleaner.cron}")
     public void cleanUpOldUrls() {
-        urlService.cleanUpOldUrls();
+        maintenanceService.cleanUpOldUrls();
     }
 }

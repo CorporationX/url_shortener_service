@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,12 +12,18 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 @Repository
 public class UrlCacheRepository {
-
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final long TTL_DAYS = 1;
+
+    @Value("${hash.cache.ttl-seconds}") // 24 часа по умолчанию
+    private long ttlSeconds;
 
     public void save(String hash, String longUrl) {
-        redisTemplate.opsForValue().set(hash, longUrl, TTL_DAYS, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(
+            hash,
+            longUrl,
+            ttlSeconds,
+            TimeUnit.SECONDS
+        );
         log.debug("Hash saved: {}", hash);
     }
 
@@ -26,5 +33,9 @@ public class UrlCacheRepository {
 
     public void deleteBatch(List<String> oldHashes) {
         redisTemplate.delete(oldHashes);
+    }
+
+    public void deleteAll(List<String> hashes) {
+        redisTemplate.delete(hashes);
     }
 }

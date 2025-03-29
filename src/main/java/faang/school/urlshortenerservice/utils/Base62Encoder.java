@@ -2,29 +2,24 @@ package faang.school.urlshortenerservice.utils;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import java.util.List;
-import java.util.Objects;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
 public class Base62Encoder {
+    private static final String CHARACTERS =
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final int BASE = CHARACTERS.length();
 
-    @Value("${hash-generator.characters}")
-    private String characters;
-
-    public List<Hash> encodeBatch(List<Long> numbers) {
+    public static List<Hash> encodeBatch(List<Long> numbers) {
         return numbers.stream()
-            .filter(Objects::nonNull)
-            .map(this::encode)
+            .map(Base62Encoder::encode)
             .toList();
     }
 
-    private Hash encode(long number) {
+    private static Hash encode(long number) {
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
-            int index = (int) (number % characters.length());
-            sb.append(characters.charAt(index));
-            number /= characters.length();
+            int index = (int) (number % BASE);
+            sb.append(CHARACTERS.charAt(index));
+            number /= BASE;
         }
         return new Hash(sb.toString());
     }

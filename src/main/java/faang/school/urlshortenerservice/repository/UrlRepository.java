@@ -1,24 +1,24 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Url;
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
 
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM Url WHERE created_at < now() - interval '1 year' RETURNING hash", nativeQuery = true)
-    List<Url> deleteOldUrlsAndReturnHashes();
-
-    @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
-    String findUrlByHash(String hash);
-
     @Query("SELECT u.hash FROM Url u WHERE u.url = :url")
-    String returnHashForUrlIfExists(String url);
+    List<String> findHashesByUrl(@Param("url") String url);
+
+    @Query("SELECT u FROM Url u WHERE u.expiredAt < :currentTime")
+    List<Url> findAllExpiredUrls(@Param("currentTime") LocalDateTime currentTime);
+
+    default Optional<String> findUrlByHash(String hash) {
+        return findById(hash).map(Url::getUrl);
+    }
 }

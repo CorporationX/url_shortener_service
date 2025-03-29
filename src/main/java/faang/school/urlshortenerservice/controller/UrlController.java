@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/url")
+@RequestMapping("/url")
 @RestController
 public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
     public ResponseEntity<String> createShortUrl(@RequestBody @Validated UrlRequestDto urlRequestDto) {
-        String shortUrl = urlService.createShortUrl(urlRequestDto.getLongUrl());
+        String shortUrl = urlService.createShortUrl(urlRequestDto.getLongUrl(), urlRequestDto.getExpiredAt());
         return new ResponseEntity<>(shortUrl, HttpStatus.CREATED);
     }
 

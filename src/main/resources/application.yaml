@@ -32,7 +32,6 @@ logging:
 hash-generator:
   batch-size: 10
   max-range: 10000
-  characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   thread-pool:
     size: 4
     max-size: 4
@@ -46,7 +45,8 @@ hash:
     capacity: 100
     pool_size: 10
     refill_threshold: 0.2
+    ttl-seconds: 86400
   cleaner:
     cron: 0 0 1 * * ?
 url:
-  short-template: "http://example.url/api/v1/url/"
+  short-template: "http://localhost:8080/"

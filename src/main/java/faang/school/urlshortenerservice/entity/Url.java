@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Table(name = "url")
 public class Url {
-
     @Id
-    @Size(max = 6, min = 5)
     @Column(name = "hash", nullable = false, unique = true)
     private String hash;
 
@@ -32,8 +29,13 @@ public class Url {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Url(String hash, String url) {
+    @Column(name = "expired_at", nullable = false)
+    private LocalDateTime expiredAt;
+
+    public Url(String hash, String url, LocalDateTime expiredAt) {
         this.hash = hash;
         this.url = url;
+        this.expiredAt = expiredAt;
+
     }
 }

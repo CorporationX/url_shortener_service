@@ -1,12 +1,9 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.repository.redis.UrlCacheRepository;
-import faang.school.urlshortenerservice.utils.HashCache;
-import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,63 +21,35 @@ public class UrlService {
     private String shortUrlTemplate;
 
     private final UrlRepository urlRepository;
-    private final HashRepository hashRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final HashCache hashCache;
+    private final HashService hashService;
 
     @Transactional
-    public String createShortUrl(String longUrl) {
-        String shortUrl = shortUrlIfStored(longUrl);
-        if (shortUrl != null) {
-            return shortUrl;
+    public String createShortUrl(String longUrl, LocalDateTime expiredAt) {
+        List<String> existingHashes = urlRepository.findHashesByUrl(longUrl);
+        if (!existingHashes.isEmpty()) {
+            return shortUrlTemplate + existingHashes.get(0);
         }
 
-        Hash hash = hashCache.getHash();
-        Url url = new Url(hash.getHash(), longUrl);
+        String hash = hashService.getFreeHash();
+        Url url = new Url(hash, longUrl, expiredAt);
+        urlRepository.save(url);
+        urlCacheRepository.save(hash, longUrl);
 
-        try {
-            urlRepository.save(url);
-        } catch (ConstraintViolationException e) {
-            shortUrl = shortUrlIfStored(longUrl);
-            if (shortUrl != null) {
-                return shortUrl;
-            }
-        }
-        urlCacheRepository.save(hash.getHash(), longUrl);
-        log.info("Short URL hash created: {}, longUrl: {}", hash, longUrl);
+        log.info("Created short URL: {}", shortUrlTemplate + hash);
         return shortUrlTemplate + hash;
     }
 
+    @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
-        String originalUrl = urlCacheRepository.findUrlByHash(hash);
-        if (originalUrl != null) {
-            return originalUrl;
+        String cachedUrl = urlCacheRepository.findUrlByHash(hash);
+        if (cachedUrl != null) {
+            return cachedUrl;
         }
 
-        originalUrl = urlRepository.findUrlByHash(hash);
-        if (originalUrl != null) {
-            urlCacheRepository.save(hash, originalUrl);
-            return originalUrl;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found");
-    }
-
-    @Transactional
-    public void cleanUpOldUrls() {
-        List<Url> oldUrls = urlRepository.deleteOldUrlsAndReturnHashes();
-        List<Hash> oldHashes = oldUrls.stream()
-            .map(Url::getHash)
-            .map(Hash::new)
-            .toList();
-
-        hashRepository.saveBatch(oldHashes);
-        urlCacheRepository.deleteBatch(oldUrls.stream()
-            .map(Url::getHash)
-            .toList());
-    }
-
-    private String shortUrlIfStored(String longUrl) {
-        String storedHash = urlRepository.returnHashForUrlIfExists(longUrl);
-        return (storedHash != null) ? shortUrlTemplate + storedHash : null;
+        String originalUrl = urlRepository.findUrlByHash(hash)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        urlCacheRepository.save(hash, originalUrl);
+        return originalUrl;
     }
 }
