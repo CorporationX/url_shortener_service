@@ -51,7 +51,6 @@ public class UrlService {
             urlCacheRepository.cacheUrl(hash, originalUrl, ttlRequestedUrl);
         }
 
-
         log.info("Returning URL for hash {}: {}", hash, originalUrl);
         return originalUrl;
     }

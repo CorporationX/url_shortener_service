@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@RequestMapping("/url")
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -29,7 +30,7 @@ public class UrlController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    @PostMapping("/url")
+    @PostMapping
     public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlRequest request) {
         String shortUrl = urlService.convertToShortUrl(request.getUrl());
         return ResponseEntity.ok(shortUrl);
