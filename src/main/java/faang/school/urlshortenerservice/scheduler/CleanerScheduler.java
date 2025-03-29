@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,9 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
+
+    @Value("${url.cleaner.retention-years}")
+    private final int years;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
@@ -22,7 +26,7 @@ public class CleanerScheduler {
     @Transactional
     public void cleanExpiredUrls() {
         log.info("Starting clean expired urls");
-        List<String> freeHashes = urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(1));
+        List<String> freeHashes = urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(years));
 
         if (!CollectionUtils.isEmpty(freeHashes)) {
             hashRepository.saveAllBatch(freeHashes);

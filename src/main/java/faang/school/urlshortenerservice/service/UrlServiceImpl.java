@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.utils.HashCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class UrlServiceImpl implements UrlService{
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
 
+    @Value("${spring.url.base-short-url}")
+    private final String baseShortUrl;
+
     @Override
     public String getShortUrl(UrlDto urlDto) {
 
@@ -32,7 +36,7 @@ public class UrlServiceImpl implements UrlService{
 
         urlCacheRepository.save(hash, url);
         urlRepository.save(urlMapper.toEntity(newShortUrl));
-        return "https://localhost:8080/url/" + hash;
+        return baseShortUrl + hash;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class UrlServiceImpl implements UrlService{
         String url = urlCacheRepository.findByHashInRedis(hash);
 
         if (url != null) {
-            log.info("Redirecting From Cache: {}", url);
+            log.info("Redirecting from cache: {}", url);
             return url;
         }
 
@@ -49,5 +53,4 @@ public class UrlServiceImpl implements UrlService{
                 .map(Url::getUrl)
                 .orElseThrow(() -> new UrlNotFoundException("Url not found for hash " + hash));
     }
-
 }

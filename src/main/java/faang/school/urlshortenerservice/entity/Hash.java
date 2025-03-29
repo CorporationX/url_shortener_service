@@ -18,8 +18,8 @@ public class Hash {
     @Column(name = "hash")
     private String hash;
 
-//    @Override
-//    public String toString() {
-//        return hash;
-//    }
+    @Override
+    public String toString() {
+        return hash;
+    }
 }

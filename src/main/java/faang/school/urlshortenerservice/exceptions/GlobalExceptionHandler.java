@@ -1,67 +1,42 @@
 package faang.school.urlshortenerservice.exceptions;
 
+import faang.school.urlshortenerservice.dto.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler({NoCacheFoundException.class, UrlNotFoundException.class})
+    public ResponseEntity<ErrorDto> handleNotFoundException(RuntimeException ex, WebRequest request) {
+        log.error("Resource not found: {}", ex.getMessage());
+        return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
+    }
 
-//    @ExceptionHandler(DataValidationException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorDto handleDataValidationException(DataValidationException ex) {
-//        log.error(ex.getMessage(), ex);
-//        return new ErrorDto("Data validation exception", ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(EntityNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ErrorDto handleEntityNotFoundException(EntityNotFoundException ex) {
-//        log.error(ex.getMessage(), ex);
-//        return new ErrorDto("Entity not found exception", ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorDto handleIllegalArgumentException(IllegalArgumentException e) {
-//        log.error("IllegalArgumentException: {}", e.getMessage());
-//        return new ErrorDto("IllegalArgumentException", e.getMessage());
-//    }
-//
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiErrorDto handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-//
-//        List<FieldErrorDetail> validationErrors = ex.getBindingResult().getFieldErrors().stream()
-//                .map(fieldError -> new FieldErrorDetail(fieldError.getField(), fieldError.getDefaultMessage()))
-//                .collect(Collectors.toList());
-//
-//        return new ApiErrorDto("Validation failed", validationErrors);
-//    }
-//
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiErrorDto handleConstraintViolationException(ConstraintViolationException ex) {
-//
-//        log.warn("Constraint violation exception: {}", ex.getMessage(), ex);
-//
-//        List<FieldErrorDetail> errors = ex.getConstraintViolations().stream()
-//                .map(violation -> {
-//                    log.warn("Constraint violation: {} - {}", violation.getPropertyPath(), violation.getMessage());
-//                    return new FieldErrorDetail(
-//                            violation.getPropertyPath().toString(),
-//                            violation.getMessage()
-//                    );
-//                })
-//                .collect(Collectors.toList());
-//
-//        return new ApiErrorDto("Constraint violation", errors);
-//    }
-//
-//    @ExceptionHandler(Throwable.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorDto handleThrowable(Throwable t) {
-//        log.error(t.getMessage(), t);
-//        return new ErrorDto("Interaction failure", t.getMessage());
-//    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        log.error("Bad request: {}", ex.getMessage());
+        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleAllUncaughtException(Exception ex, WebRequest request) {
+        log.error("Internal server error occurred: {}", ex.getMessage(), ex);
+        return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    private ResponseEntity<ErrorDto> buildErrorResponse(Exception ex, HttpStatus status, WebRequest request) {
+        ErrorDto errorResponse = new ErrorDto(
+                status.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorResponse, status);
+    }
 }
