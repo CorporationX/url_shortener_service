@@ -26,6 +26,13 @@ spring:
 app:
   base-url: "http://norairShort/url/"
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
 management:
   endpoints:
     web:
@@ -53,7 +60,7 @@ cleaner:
     cron: "0 0 0 * * ?"
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
