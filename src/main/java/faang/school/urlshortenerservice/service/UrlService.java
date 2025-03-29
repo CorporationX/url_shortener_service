@@ -59,7 +59,8 @@ public class UrlService {
     @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
         return urlCacheRepository.findByHash(hash)
-                .or(() -> urlRepository.findByHash(hash).map(url -> {
+                .or(() -> urlRepository.findByHash(hash)
+                        .map(url -> {
                     urlCacheRepository.save(url.getHash(), url.getUrl());
                     return url.getUrl();
                 }))
