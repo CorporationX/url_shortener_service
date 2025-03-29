@@ -23,3 +23,35 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  batch-size: 1000
+  batch-get-amount: 1000
+  min-hash-cache-size: 1000
+  cache-percentage-threshold: 0.2
+
+  generator:
+    thread-pool:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
+      keep-alive-seconds: 60
+
+  cache:
+    thread-pool:
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
+      keep-alive-seconds: 60
+
+url-data:
+  protocol: http
+  domain: localhost
+
+redis-time-to-live-seconds:
+  new-url: 120
+  requested-url: 60
+
+clean-expired-url:
+  cron: 0 0 2 * * *
+  expiration-days: 365
