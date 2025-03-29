@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS url;
+DROP TABLE IF EXISTS hash;
+DROP SEQUENCE IF EXISTS unique_hash_number_seq;
