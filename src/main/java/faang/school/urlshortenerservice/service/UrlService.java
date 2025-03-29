@@ -38,6 +38,7 @@ public class UrlService {
         }
 
         String hash = hashes.get(0);
+        url.setHash(hash);
         Url savedUrl = urlRepository.save(url);
 
         urlCacheRepository.saveUrl(hash, url.getUrl());
@@ -50,8 +51,7 @@ public class UrlService {
 
         if (!StringUtils.hasText(result)) {
             result = urlRepository.findByHash(hash)
-                    .orElseThrow(() ->
-                        new RuntimeException("Url record does not exist for the hash supplied!"))
+                    .orElseThrow(() -> new UrlNotFoundException(hash))
                     .getUrl();
 
             if (!StringUtils.hasText(result)) {

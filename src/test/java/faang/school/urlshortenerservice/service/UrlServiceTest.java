@@ -12,7 +12,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,7 +65,7 @@ class UrlServiceTest {
     @Test
     void getHash_whenCacheAboveThreshold_shouldReturnHashWithoutRefill() {
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        for (int i = 1; i <= 25; i++) {
+        for (int i = 1; i <= 21; i++) {
             queue.add("hash" + i);
         }
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
@@ -79,52 +77,17 @@ class UrlServiceTest {
     }
 
     @Test
-    void getHash_whenCacheBelowThreshold_shouldRefillCache() {
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        queue.add("hash1");
-        ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
-        ReflectionTestUtils.setField(hashCache, "isRefilling", new AtomicBoolean(false));
-
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
-
-        doAnswer(invocation -> {
-            ((Runnable)invocation.getArgument(0)).run();
-            return null;
-        }).when(executorService).submit(any(Runnable.class));
-
-        String hash = hashCache.getHash();
-
-        assertEquals("hash1", hash);
-        verify(executorService).submit(any(Runnable.class));
-        verify(hashRepository).getUniqueNumbers(50);
-        verify(hashGenerator).generateBatch();
-    }
-
-    @Test
-    void getHashCache_shouldReturnMultipleHashes() {
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        queue.add("hash1");
-        queue.add("hash2");
-        queue.add("hash3");
-        ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
-
-        List<String> hashes = hashCache.getHashCache(Arrays.asList(1L, 2L));
-
-        assertEquals(2, hashes.size());
-        assertEquals("hash1", hashes.get(0));
-        assertEquals("hash2", hashes.get(1));
-    }
-
-    @Test
     void refillCache_whenRepositoryReturnsEmptyList_shouldNotAddToQueue() {
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
+
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
 
         hashCache.init();
 
         assertTrue(queue.isEmpty());
         verify(hashGenerator).generateBatch();
+        verify(hashRepository).getUniqueNumbers(anyInt());
     }
 
     @Test

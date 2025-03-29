@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.utils;
 
-import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.HashGenerator;

@@ -25,7 +25,7 @@ public class CleanerScheduler {
     @Value("${schedulers.config.numberOfDaysForOutdatedHashes:365}")
     private int numberOfDaysForOutdatedHashes;
 
-    @Scheduled(cron = "${schedulers.cleanupOutdatedHashes.cronExpression}")
+    @Scheduled(cron = "${schedulers.config.cleanupOutdatedHashes.cronExpression}")
     @Transactional
     public void cleanupOutdatedHashes () {
         List<String> retrievedHashes = urlRepository.deleteOldUrlsAndReturnHashes(numberOfDaysForOutdatedHashes);
