@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.LongStream;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,48 +31,49 @@ public class RedisHashPoolService {
     @Value("${app.hash_generator.min_replenish_size}")
     private int minReplenishSize;
 
-    @Value("${app.hash_generator.queue_key:url:hashes}")
-    private String hashQueueKey;
+    @Value("${app.hash_generator.queue_key}")
+    private String hashSetKey;
 
-    private long counter;
+    private AtomicLong counter;
 
     @PostConstruct
     public void init() {
-        this.counter = initialCounter;
-        log.info("Initialized hash counter with value: {}", counter);
+        this.counter = new AtomicLong(initialCounter);
+        log.info("Initialized hash counter at {}", counter.get());
     }
 
-    public synchronized String acquire() {
-        Long size = redisTemplate.opsForList().size(hashQueueKey);
-        if (size == null || size < maxSize * threshold) {
-            int toGenerate = Math.max(minReplenishSize, (int) (maxSize - (size != null ? size : 0)));
-            generateHashes(toGenerate);
+    public String acquire() {
+        String hash = redisTemplate.opsForSet().pop(hashSetKey);
+        if (hash != null) {
+            log.debug("Acquired hash from Redis: {}", hash);
+            return hash;
         }
 
-        String hash = redisTemplate.opsForList().rightPop(hashQueueKey);
-        if (hash == null) {
-            log.error("Redis hash pool exhausted: unable to provide hash.");
-            throw new RuntimeException("No available hashes. Try again later.");
-        }
-
-        log.debug("Acquired hash from Redis pool: {}", hash);
+        long value = counter.getAndIncrement();
+        hash = encoder.encodeSingle(value);
+        log.warn("Redis pool empty, fallback to local counter: {}", hash);
         return hash;
-    }
-
-    private void generateHashes(int count) {
-        List<Long> numbers = LongStream.range(counter, counter + count).boxed().toList();
-        counter += count;
-        List<String> hashes = encoder.encode(numbers);
-        redisTemplate.opsForList().leftPushAll(hashQueueKey, hashes);
-        log.info("Generated and pushed {} hashes to Redis. Counter now at: {}", hashes.size(), counter);
     }
 
     public void returnHashes(List<String> hashes) {
         if (!hashes.isEmpty()) {
-            redisTemplate.opsForList().leftPushAll(hashQueueKey, hashes);
+            redisTemplate.opsForSet().add(hashSetKey, hashes.toArray(new String[0]));
             log.info("Returned {} hashes back to Redis pool", hashes.size());
-        } else {
-            log.warn("Attempted to return an empty hash list to Redis pool");
         }
+    }
+
+    public void maybeReplenishPool() {
+        Long size = redisTemplate.opsForSet().size(hashSetKey);
+        if (size == null) size = 0L;
+        if (size >= maxSize * threshold) return;
+
+        int toGenerate = Math.max(minReplenishSize, (int) (maxSize - size));
+        for (int i = 0; i < toGenerate; i++) {
+            long value = counter.getAndIncrement();
+            String hash = encoder.encodeSingle(value);
+            redisTemplate.opsForSet().add(hashSetKey, hash);
+        }
+
+        log.info("Replenished Redis pool with {} hashes", toGenerate);
     }
 }

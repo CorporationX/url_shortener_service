@@ -16,6 +16,11 @@ dependencies {
     /**
      * Spring boot starters
      */
+
+    implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.retry:spring-retry")
+    implementation("org.springframework:spring-aspects")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")

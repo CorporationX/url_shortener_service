@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
     Optional<Url> findByHash(String hash);
-    Optional<Url> findByUrl(String url);
 
     @Modifying
     @Query(value = """
@@ -23,4 +22,12 @@ public interface UrlRepository extends JpaRepository<Url, String> {
                 RETURNING hash
             """, nativeQuery = true)
     List<String> deleteOldUrlsAndReturnHashes(@Param("expirationDate") LocalDateTime expirationDate);
+
+    @Query(value = """
+        SELECT * FROM url
+        WHERE expires_at > now()
+        ORDER BY created_at DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Url> findTopUrls(@Param("limit") int limit);
 }

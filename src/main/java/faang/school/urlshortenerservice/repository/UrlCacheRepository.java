@@ -39,8 +39,4 @@ public class UrlCacheRepository {
             return Optional.empty();
         }
     }
-
-    public void delete(String hash) {
-        redisTemplate.delete(PREFIX + hash);
-    }
 }

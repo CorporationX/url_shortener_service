@@ -31,20 +31,30 @@ logging:
     root: info
 
 app:
+  cache_warmer:
+    enabled: true
+    top_urls: 100
   hash_generator:
-    hash_queue: url:hashes
-    max_size: 100000
+    queue_key: url:hashes
+    max_size: 1000000
     replenish_threshold: 0.2
     initial_counter: 916132832
-    min_replenish_size: 1000
+    min_replenish_size: 20000
   scheduler:
     url_cleaner:
       cron: "0 0 0 * * *"
       url_lifetime_days: 30
+    hash_pool:
+      interval_ms: 1000
 
 ttl:
   hour:
     url: 24
+
+retry:
+  max_attempts: 5
+  initial_delay_ms: 100
+  backoff_multiplier: 2
 
 management:
   endpoints:

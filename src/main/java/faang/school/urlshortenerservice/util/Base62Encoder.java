@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 public class Base62Encoder {
     private static final Base62 base62 = Base62.createInstance();
 
-    public List<String> encode(List<Long> numbers) {
-        return numbers.stream()
-                .map(this::encodeToBase62)
-                .collect(Collectors.toList());
-    }
-
-    private String encodeToBase62(Long number) {
+    public String encodeSingle(Long number) {
         byte[] encoded = base62.encode(BigInteger.valueOf(number).toByteArray());
         return new String(encoded);
+    }
+
+    public List<String> encode(List<Long> numbers) {
+        return numbers.stream()
+                .map(this::encodeSingle)
+                .collect(Collectors.toList());
     }
 }

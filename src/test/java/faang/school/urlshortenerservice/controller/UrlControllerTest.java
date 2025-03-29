@@ -1,18 +1,19 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.config.context.UserContext;
 import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.util.UriBuilder;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,32 +24,53 @@ class UrlControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserContext userContext;
-
-    @MockBean
     private UrlService urlService;
 
     @MockBean
     private UriBuilder uriBuilder;
 
     @Test
-    void testCreateShortUrl() throws Exception {
-        when(urlService.createShortUrl("http://example.com", 1L)).thenReturn("abc123");
-        when(uriBuilder.response("abc123")).thenReturn("http://localhost:8080/abc123");
+    @DisplayName("POST /url - success")
+    void testCreateShortUrl_success() throws Exception {
+        String originalUrl = "https://google.com";
+        String hash = "abc123";
+        String responseUrl = "http://short/abc123";
 
-        mockMvc.perform(post("/url")
-                        .param("url", "http://example.com")
-                        .header("x-user-id", "1"))
+        when(urlService.createShortUrl(originalUrl)).thenReturn(hash);
+        when(uriBuilder.response(hash)).thenReturn(responseUrl);
+
+        mockMvc.perform(post("/url").param("url", originalUrl))
                 .andExpect(status().isOk())
-                .andExpect(result -> assertThat(result.getResponse().getContentAsString()).isEqualTo("http://localhost:8080/abc123"));
+                .andExpect(content().string(responseUrl));
     }
 
     @Test
-    void testRedirect() throws Exception {
-        when(urlService.getOriginalUrl("abc123")).thenReturn("http://example.com");
+    @DisplayName("POST /url - invalid URL")
+    void testCreateShortUrl_invalidUrl() throws Exception {
+        mockMvc.perform(post("/url").param("url", "not-a-valid-url"))
+                .andExpect(status().isBadRequest());
+    }
 
-        mockMvc.perform(get("/abc123"))
-                .andExpect(status().isMovedPermanently())
-                .andExpect(header().string("Location", "http://example.com"));
+    @Test
+    @DisplayName("GET /{hash} - success")
+    void testRedirect_success() throws Exception {
+        String hash = "abc123";
+        String targetUrl = "https://google.com";
+
+        when(urlService.getOriginalUrl(hash)).thenReturn(targetUrl);
+
+        mockMvc.perform(get("/" + hash))
+                .andExpect(status().isFound())
+                .andExpect(header().string(HttpHeaders.LOCATION, targetUrl));
+    }
+
+    @Test
+    @DisplayName("GET /{hash} - not found")
+    void testRedirect_notFound() throws Exception {
+        String hash = "xyz789";
+        when(urlService.getOriginalUrl(hash)).thenThrow(new RuntimeException("not found"));
+
+        mockMvc.perform(get("/" + hash))
+                .andExpect(status().isInternalServerError());
     }
 }
