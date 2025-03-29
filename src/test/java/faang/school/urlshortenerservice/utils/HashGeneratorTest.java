@@ -17,7 +17,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +33,7 @@ public class HashGeneratorTest {
     private HashGenerator hashGenerator;
 
     @Captor
-    private ArgumentCaptor<List<Hash>> hashesCaptor;
+    private ArgumentCaptor<List<String>> hashesCaptor;
 
     @Test
     void generateBatch_shouldCreateAndSaveHashes() {
@@ -50,16 +49,13 @@ public class HashGeneratorTest {
         hashGenerator.generateBatch();
         verify(hashRepository).getUniqueNumbers(batchSize);
         verify(base62Encoder).encode(numbers);
-        verify(hashRepository).save(hashes);
+        verify(hashRepository).save(hashesCaptor.capture());
 
-        List<Hash> savedHashes = hashesCaptor.getValue();
+        List<String> savedHashes = hashesCaptor.getValue();
         assertEquals(3, savedHashes.size());
 
         for (int i = 0; i < savedHashes.size(); i++) {
-            Hash hash = savedHashes.get(i);
-            assertEquals(numbers.get(i), hash.getNumber());
-            assertEquals(hashes.get(i), hash.getHash());
-            assertTrue(hash.isLock());
+            assertEquals(hashes.get(i), savedHashes.get(i));
         }
     }
 

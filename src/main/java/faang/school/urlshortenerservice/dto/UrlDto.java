@@ -22,9 +22,8 @@ public class UrlDto {
     @URL(message = "Invalid URL format")
     private String url;
 
-    @Schema(description = "Shortened URL", example = "http://short.url/a1b2c3")
-    @URL(message = "Invalid URL format")
-    private String shortUrl;
+    @Schema(description = "Shortened URL hash", example = "a1b2c3")
+    private String hash;
 
     @Schema(description = "Identifier of User requesting for short Url", example = "1")
     @NotNull(message = "User ID cannot be empty")
@@ -33,7 +32,4 @@ public class UrlDto {
 
     @Schema(description = "Local Date Time stamp for request")
     private LocalDateTime createdAt;
-
-    @Schema(description = "Time to live for short url in seconds")
-    private Long ttl;
 }

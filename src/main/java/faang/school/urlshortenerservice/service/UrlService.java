@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.context.UserContext;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -24,18 +23,12 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
     private final HashCache hashCache;
-    private final UserContext userContext;
-
-    @Value("${server.baseurl}")
-    private String baseUrl;
 
     @Value("${server.hash_count}")
     private int hashCount;
 
     public Url generateShortUrl(Url url) {
         log.info("Generating short URL for: {}", url.getUrl());
-
-        url.setUserId(userContext.getUserId());
 
         List<Long> randomNumbers = generateUniqueRandomNumbers(hashCount);
         List<String> hashes = hashCache.getHashCache(randomNumbers);
@@ -45,9 +38,6 @@ public class UrlService {
         }
 
         String hash = hashes.get(0);
-        String shortUrl = baseUrl + hash;
-
-        url.setShortUrl(shortUrl);
         Url savedUrl = urlRepository.save(url);
 
         urlCacheRepository.saveUrl(hash, url.getUrl());
