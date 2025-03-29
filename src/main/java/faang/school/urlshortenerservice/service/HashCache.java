@@ -12,7 +12,6 @@ public class HashCache {
     private final Base62Encoder base62Encoder;
 
     public List<String> getHashCache(List<Long> randomNumbersList) {
-
         return base62Encoder.encode(randomNumbersList);
     }
 }
