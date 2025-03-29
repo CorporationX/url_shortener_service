@@ -26,9 +26,9 @@ public class HashRepository {
     }
 
     @Transactional
-    public List<Long> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(int numbers) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
-        return jdbcTemplate.queryForList(sql, Long.class, n);
+        return jdbcTemplate.queryForList(sql, Long.class, numbers);
     }
 
     @Transactional
@@ -46,7 +46,7 @@ public class HashRepository {
     }
 
     @Transactional
-    public void save(List<String> hashes) {
+    public void saveAllBatch(List<String> hashes) {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
 
         jdbcTemplate.batchUpdate(sql, hashes, hashes.size(), (ps, argument) -> {

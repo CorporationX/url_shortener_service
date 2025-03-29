@@ -1,0 +1,95 @@
+package faang.school.urlshortenerservice.utils;
+
+import faang.school.urlshortenerservice.exceptions.NoCacheFoundException;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class HashCache {
+
+    private final HashGenerator hashGenerator;
+    private final HashRepository hashRepository;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+
+    @Value("${hashGenerator.batchSize}")
+    private int hashesForDb;
+
+    @Value("${hashCache.lowThreshold}")
+    private double lowThreshold;
+
+    @Value("${hashCache.maxSize}")
+    private int maxCacheSize;
+
+    private final Lock lock = new ReentrantLock();
+
+    private LinkedBlockingDeque<String> cache;
+
+    @Transactional
+    public void initHashCache() {
+        log.info("Initializing HashCache with batchSize: {}, lowThreshold: {}, maxSize: {}",
+                hashesForDb, lowThreshold, maxCacheSize);
+
+        int percentOfTotal = (int)(hashesForDb * lowThreshold);
+        cache = new LinkedBlockingDeque<>(maxCacheSize);
+
+        if (isRunning.compareAndSet(false, true)) {
+            try {
+                if (hashRepository.totalNumOfHashesInDb() == null
+                        || hashRepository.totalNumOfHashesInDb() < percentOfTotal) {
+
+                    log.info("Generating hashes because totalNumOfHashesInDb is less than threshold.");
+                    hashGenerator.generateHashes();
+                    loadHashesFromDb();
+                }
+            }catch (Exception e) {
+                log.error("Error during HashCache initialization", e);
+            }
+            finally {
+                isRunning.set(false);
+            }
+        }
+    }
+
+    public String getHashFromCache() {
+        String hash = cache.poll();
+
+        if (cache.size() < (int)(maxCacheSize * lowThreshold)) {
+            loadHashesFromDb();
+        }
+
+        if (hash != null) {
+            return hash;
+        } else {
+            loadHashesFromDb();
+            try {
+                return hashRepository.getFirstHashAndDeleteFromDb();
+            } catch (Exception ex) {
+                throw new NoCacheFoundException("Error getting hash from DB" + ex);
+            }
+        }
+    }
+
+    private void loadHashesFromDb() {
+        if (cache.size() < (int)(maxCacheSize * lowThreshold) && lock.tryLock()) {
+            try {
+                List<String> hashesFromDb = hashRepository.getHashBatchAndDeleteFromDb();
+                cache.addAll(hashesFromDb);
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
