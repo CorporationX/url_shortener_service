@@ -65,14 +65,13 @@ executor:
 schedulers:
   config:
     assignedTreads: 10
-    cronExpression: "0 * * * * *"
     corePoolSize: 5
     maximumPoolSize: 20
     queueCapacity: 1000
     hashesGenerator:
      threadNamePrefix: "hashesGenerator-"
-#      cronExpression: "0 * * * * *"
-#    moderation:
-#      threadNamePrefix: "moderation-"
-#      cronExpression: "0 * * * * *"
-#  correct-posts: "0 0 12 * * ?"
+     cronExpression: "0 * * * * *"
+    cleanupOutdatedHashes:
+      numberOfDaysForOutdatedHashes: 365
+      threadNamePrefix: "cleanupOutdatedHashes-"
+      cronExpression: "0 * * * * *" #once a day

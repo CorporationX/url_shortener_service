@@ -20,4 +20,8 @@ public class UrlCacheRepository {
     public boolean containsUrl(String hash) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(hash));
     }
+
+    public void deleteByHash(String hash) {
+        redisTemplate.delete(hash);
+    }
 }
