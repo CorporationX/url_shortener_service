@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.exeption.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -47,6 +49,7 @@ public class UrlService {
     public String getOriginalUrl(String hash) {
         String cachedUrl = urlCacheRepository.get(hash);
         if (cachedUrl != null) {
+
             return cachedUrl;
         }
 

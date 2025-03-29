@@ -1,14 +1,14 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
+@Slf4j
 @RequiredArgsConstructor
 public class UrlCacheRepository {
     private static final String URL_HASH = "urls:hash";
@@ -18,6 +18,7 @@ public class UrlCacheRepository {
     private final int maxSize;;
 
     public String get(String hash){
+        log.debug("Getting URL for hash: {}", hash);
         return stringRedisTemplate.<String, String>opsForHash().get(URL_HASH, hash);
     }
 

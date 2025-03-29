@@ -26,7 +26,7 @@ public class HashCache {
 
     private String pollHashFromQueue() {
         String hash = hashQueueManager.pollHash();
-        log.info("Polled hash from queue: {}", hash);
+        log.debug("Polled hash from queue: {}", hash);
         return hash;
     }
 
