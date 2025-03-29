@@ -85,25 +85,25 @@ class UrlServiceTest {
     @DisplayName("Получение оригинальной ссылки: возвращает из репозитория при отсутствии в кэше")
     void getOriginalUrlReturnsFromRepositoryWhenNotInCache() {
         when(urlCacheRepository.find(testHash)).thenReturn(null);
-        when(urlRepository.findById(testHash))
-                .thenReturn(Optional.of(Url.builder().hash(testHash).url(testLongUrl).build()));
+        when(urlRepository.findUrlByHash(testHash))
+                .thenReturn(Optional.of(testLongUrl));
 
         String result = urlService.getOriginalUrl(testHash);
 
         assertEquals(testLongUrl, result);
         verify(urlCacheRepository).find(testHash);
-        verify(urlRepository).findById(testHash);
+        verify(urlRepository).findUrlByHash(testHash);
     }
 
     @Test
     @DisplayName("Получение оригинальной ссылки: выбрасывает исключение при отсутствии ссылки")
     void getOriginalUrlThrowsExceptionWhenUrlNotFound() {
         when(urlCacheRepository.find(testHash)).thenReturn(null);
-        when(urlRepository.findById(testHash)).thenReturn(Optional.empty());
+        when(urlRepository.findUrlByHash(testHash)).thenReturn(Optional.empty());
 
         assertThrows(UrlNotFoundException.class, () -> urlService.getOriginalUrl(testHash));
         verify(urlCacheRepository).find(testHash);
-        verify(urlRepository).findById(testHash);
+        verify(urlRepository).findUrlByHash(testHash);
     }
 
     @Test

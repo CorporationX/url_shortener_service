@@ -25,6 +25,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
 
+    @Transactional
     public UrlResponseDto createShortUrl(String longUrl) {
         var hash = hashCache.getHash();
         var url = Url.builder().hash(hash).url(longUrl).build();
@@ -46,8 +47,7 @@ public class UrlService {
             return cachedUrl;
         }
 
-        return urlRepository.findById(hash)
-                .map(Url::getUrl)
+        return urlRepository.findUrlByHash(hash)
                 .orElseThrow(() -> new UrlNotFoundException("URL не найден для хэша: " + hash));
     }
 

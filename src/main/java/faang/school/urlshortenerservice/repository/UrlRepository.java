@@ -9,9 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
+
+    @Query("SELECT u.url FROM Url u WHERE u.hash = :hash")
+    Optional<String> findUrlByHash(@Param("hash") String hash);
 
     @Modifying
     @Query(nativeQuery = true,

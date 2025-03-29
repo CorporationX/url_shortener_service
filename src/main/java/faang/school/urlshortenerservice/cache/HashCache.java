@@ -57,12 +57,9 @@ public class HashCache {
     private void refillCache() {
         hashCacheThreadPool.execute(() -> {
             try {
-                log.info("Пополнение кэша...");
                 List<String> hashes = hashRepository.getHashBatch(cacheSize - hashQueue.size());
                 hashQueue.addAll(hashes);
                 log.info("Добавлено {} хэшей в кэш.", hashes.size());
-
-                log.info("Генерация новых хэшей в БД...");
                 hashGenerator.generateBatch();
 
             } catch (RuntimeException e) {

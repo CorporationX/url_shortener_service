@@ -22,6 +22,7 @@ public class HashGeneratorThreadPoolConfig {
 
     @Value("${hash.hash-generator.keep-alive}")
     private int keepAliveSeconds;
+
     @Value("${hash.hash-generator.queue-capacity}")
     private int queueCapacity;
 
