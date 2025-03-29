@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.handler;
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class UrlExceptionHandler {
+    @Value("${spring.application.name}")
     private String serviceName;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,9 +33,7 @@ public class UrlExceptionHandler {
 
         printError(ex, handlerMethod);
 
-        ErrorResponse errorResponse = new ErrorResponse(serviceName,
-                handlerMethod.getBeanType().getSimpleName(),
-                HttpStatus.BAD_REQUEST.value(), "Validation failed", errors);
+        ErrorResponse errorResponse = createErrorResponse(handlerMethod, HttpStatus.BAD_REQUEST, "Validation failed", errors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -43,9 +43,7 @@ public class UrlExceptionHandler {
 
         printError(ex, handlerMethod);
 
-        ErrorResponse errorResponse = new ErrorResponse(serviceName,
-                handlerMethod.getBeanType().getSimpleName(),
-                HttpStatus.NOT_FOUND.value(), ex.getMessage(), null);
+        ErrorResponse errorResponse = createErrorResponse(handlerMethod, HttpStatus.NOT_FOUND, ex.getMessage(), null);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -54,9 +52,7 @@ public class UrlExceptionHandler {
 
         printError(ex, handlerMethod);
 
-        ErrorResponse errorResponse = new ErrorResponse(serviceName,
-                handlerMethod.getBeanType().getSimpleName(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null);
+        ErrorResponse errorResponse = createErrorResponse(handlerMethod, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -65,5 +61,13 @@ public class UrlExceptionHandler {
                 handlerMethod.getBeanType().getSimpleName(),
                 handlerMethod.getMethod().getName(),
                 ex);
+    }
+
+    private ErrorResponse createErrorResponse(HandlerMethod handlerMethod,
+                                              HttpStatus status,
+                                              String message,
+                                              Map<String, Object> errors) {
+        return new ErrorResponse(serviceName,
+                status.value(), message, errors);
     }
 }

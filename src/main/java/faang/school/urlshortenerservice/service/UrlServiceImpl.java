@@ -1,7 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.RedisService;
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Queue;
 
 @RequiredArgsConstructor
 @Service
@@ -22,24 +22,25 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
 
     @Override
-    public UrlDto shortenUrl(UrlDto dto) {
+    public UrlResponseDto shortenUrl(UrlRequestDto dto) {
         List<Hash> res = base62Encoder.encode(List.of(1L, 100L, 1000L, 7777L, 99999L));
-        return dto;
+
+        //return new UrlResponseDto(res.get(0).getHash());
+        return new UrlResponseDto(res.get(0).getHash());
     }
 
     @Override
     public String getOriginalUrl(String key) {
-        String originalUrl = redisService.get(key, String.class)
-                .orElseGet(() -> {
-                    var urlEntity = urlRepository.findByHash(key);
-                    if (urlEntity != null) {
-                        String originalUrlEntity = urlEntity.getOriginalUrl();
-                        redisService.save(key, originalUrlEntity);
-                        return originalUrlEntity;
-                    }
-                    throw new EntityNotFoundException(String.format("Resource with key = %s not found", key));
-                });
-
-        return originalUrl;
+        return redisService.get(key, String.class)
+                .orElseGet(() -> urlRepository.findByHash(key)
+                        .map(urlEntity -> {
+                            String originalUrlEntity = urlEntity.getOriginalUrl();
+                            redisService.save(key, originalUrlEntity);
+                            return originalUrlEntity;
+                        })
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                String.format("The hash='%s' was not found in the cache or in the database", key))
+                        )
+                );
     }
 }

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.scheduler;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -28,15 +28,15 @@ public class CleanerScheduler {
     public void performCronTask() {
 
         LocalDate now = LocalDate.now();
-        System.out.println("Cron task executed at: " + now);
+        log.info("Cron task executed at: " + now);
         List<Long> shouldBeDeleted = hashRepository.insertToHashDeletedUrls(
                 now.minus(createdBeforeMonths, ChronoUnit.MONTHS), now);
         if (shouldBeDeleted == null || shouldBeDeleted.isEmpty()) {
-            System.out.println("No URLs found for deletion.");
+            log.info("No URLs found for deletion.");
             return;
         }
 
         urlRepository.deleteAllByIdInBatch(shouldBeDeleted);
-        System.out.println("Successfully deleted " + shouldBeDeleted.size() + " URLs.");
+        log.info("Successfully deleted {} URLs.", shouldBeDeleted.size());
     }
 }

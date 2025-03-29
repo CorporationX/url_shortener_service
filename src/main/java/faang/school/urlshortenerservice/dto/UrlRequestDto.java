@@ -1,16 +1,15 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class UrlDto {
-    @NotEmpty(message = "URL cannot be empty")
+public class UrlRequestDto {
+    @NotBlank(message = "URL cannot be null or blank")
     @Pattern(
             regexp = "^(?i)(http|https)://.*$",
             message = "URL must start with http:// or https://"
     )
     private String url;
-    private String shortUrl;
 }

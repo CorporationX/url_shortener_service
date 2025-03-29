@@ -2,7 +2,8 @@ package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.config.context.UserContext;
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,13 +37,11 @@ public class UrlControllerTest {
     @Test
     void shouldReturnShortenedUrl() throws Exception {
 
-        UrlDto mockResponse = new UrlDto();
-        mockResponse.setUrl(getUrl());
-        mockResponse.setShortUrl(getShortUrl());
+        UrlResponseDto mockResponse = new UrlResponseDto(getShortUrl());
 
-        when(urlShortenerService.shortenUrl(any(UrlDto.class))).thenReturn(mockResponse);
+        when(urlShortenerService.shortenUrl(any(UrlRequestDto.class))).thenReturn(mockResponse);
 
-        UrlDto requestDto = new UrlDto();
+        UrlRequestDto requestDto = new UrlRequestDto();
         requestDto.setUrl(getUrl());
 
         mockMvc.perform(post("/api/v1/urls/shorten")
@@ -50,14 +49,13 @@ public class UrlControllerTest {
                         .header("x-user-id", "2")
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value(getUrl()))
                 .andExpect(jsonPath("$.shortUrl").value(getShortUrl()));
     }
 
     @Test
     void shouldReturnBadRequestForInvalidUrl() throws Exception {
 
-        UrlDto requestDto = new UrlDto();
+        UrlRequestDto requestDto = new UrlRequestDto();
         requestDto.setUrl("");
 
         mockMvc.perform(post("/api/v1/urls/shorten")

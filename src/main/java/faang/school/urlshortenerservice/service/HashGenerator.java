@@ -18,7 +18,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final RedisServiceImpl redisService;
-    @Value("${services.hash-service.batch-size}")
+    @Value("${services.hash-service.batch-size-unique-numbers}")
     private int batchSize;
     @Value("${services.hash-service.hash-cache}")
     private String redisKey;
