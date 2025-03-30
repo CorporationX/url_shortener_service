@@ -16,23 +16,23 @@ public class LocalCache {
         redisService.save(key, value);
     }
 
-    public String getOriginalUrl(String key) {
-
-        String originalUrl = redisService.get(key, String.class)
-                .orElseGet(() -> {
-                    var urlEntity = urlRepository.findByHash(key);
-                    if (urlEntity != null) {
-                        return urlEntity.getOriginalUrl();
-                    }
-                    throw new EntityNotFoundException(String.format("Resource with key = %s not found", key));
-                });
-
-        // Save to local cache if the original URL exists
-        //saveToLocalCache(key, originalUrl);
-
-        return originalUrl;
-
-    }
+//    public String getOriginalUrl(String key) {
+//
+//        String originalUrl = redisService.get(key, String.class)
+//                .orElseGet(() -> {
+//                    var urlEntity = urlRepository.findByHash(key);
+//                    if (urlEntity != null) {
+//                        return urlEntity.getOriginalUrl();
+//                    }
+//                    throw new EntityNotFoundException(String.format("Resource with key = %s not found", key));
+//                });
+//
+//        // Save to local cache if the original URL exists
+//        //saveToLocalCache(key, originalUrl);
+//
+//        return originalUrl;
+//
+//    }
 
     public void delete(String key) {
         // delete from local cache
