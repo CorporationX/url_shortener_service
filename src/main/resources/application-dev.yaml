@@ -48,8 +48,8 @@ hashRepository:
   batchSize: 50
 
 hashCache:
-  maxSize: 10
-  lowThreshold: 0.02
+  maxSize: 100
+  lowThreshold: 0.2
 
 url:
   original:
@@ -64,4 +64,4 @@ url:
 
 scheduling:
   hash-cache:
-    cron: "0 1 * * * *"             # каждый день месяца, в 2 часа утра, ? - без определения дня недели
+    cron: "0 29 11 * * *"             # каждый день месяца, в 2 часа утра, ? - без определения дня недели

@@ -47,15 +47,14 @@ public class HashCache {
 
         if (isRunning.compareAndSet(false, true)) {
             try {
-                if (hashRepository.totalNumOfHashesInDb() == null
-                        || hashRepository.totalNumOfHashesInDb() < percentOfTotal) {
-
+                Long hashesInDb = hashRepository.totalNumOfHashesInDb();
+                if (hashesInDb == null || hashesInDb < percentOfTotal) {
                     log.info("Generating hashes because totalNumOfHashesInDb is less than threshold.");
                     hashGenerator.generateHashes();
                     loadHashesFromDb();
                 }
-            }catch (Exception e) {
-                log.error("Error during HashCache initialization", e);
+            }catch (Exception ex) {
+                log.error("Error during HashCache initialization", ex);
             }
             finally {
                 isRunning.set(false);

@@ -26,10 +26,18 @@ public class HashGenerator {
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
             log.info("Fetched {} unique numbers.", uniqueNumbers.size());
 
-            List<String> hashes = base62Encoder.encode(uniqueNumbers);
-            log.info("Generated {} hashes.", hashes.size());
+            if (!uniqueNumbers.isEmpty()) { // Добавляем проверку на пустоту
+                List<String> hashes = base62Encoder.encode(uniqueNumbers);
+                log.info("Generated {} hashes.", hashes.size());
+                hashRepository.saveAllBatch(hashes);
+            } else {
+                log.warn("No unique numbers received from repository");
+            }
 
-            hashRepository.saveAllBatch(hashes);
+//            List<String> hashes = base62Encoder.encode(uniqueNumbers);
+//            log.info("Generated {} hashes.", hashes.size());
+
+            //hashRepository.saveAllBatch(hashes);
         } catch (Exception ex) {
             log.error("Error generating hash batch", ex);
         }
