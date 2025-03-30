@@ -1,0 +1,67 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      time: 1
+      time-unit: DAYS
+
+  url:
+    base-short-url: "https://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
+
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+AsyncConfig:
+  corePoolSize: 1
+  maxPoolSize: 10
+  queueCapacity: 100
+
+hashGenerator:
+  batchSize: 10
+
+hashRepository:
+  batchSize: 50
+
+hashCache:
+  maxSize: 10
+  lowThreshold: 0.02
+
+url:
+  original:
+    patterns: '^(https?://)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$'
+
+  service:
+    baseShortUrl: "http://localhost:8080/api/v1/shortener/urls/"
+  cleaner:
+    retention-years: 1
+    scheduler:                      # Scheduler для регулярного запуска удаления устаревших URL из базы
+      cron: "0 */2 * * * *"           # один раз в сутки в полночь
+
+scheduling:
+  hash-cache:
+    cron: "0 1 * * * *"             # каждый день месяца, в 2 часа утра, ? - без определения дня недели

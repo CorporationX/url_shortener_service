@@ -14,10 +14,9 @@ import java.util.List;
 @Slf4j
 public class HashRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
     @Value("${hashRepository.batchSize}")
-    private int batchSize;
+    private final int batchSize;
+    private final JdbcTemplate jdbcTemplate;
 
     @Transactional
     public Long totalNumOfHashesInDb() {

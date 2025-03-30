@@ -7,6 +7,5 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UrlMapper {
-    UrlDto toDto(Url url);
     Url toEntity(UrlDto urlDto);
 }
