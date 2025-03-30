@@ -4,8 +4,8 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +19,7 @@ public class HashGenerator {
     @Value("${hash.max-limit}")
     private int hashLimit;
 
-    @Async("hashGeneratorExecutor")
+    @Transactional
     public CompletableFuture<Void> generateBatches() {
         try {
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashLimit);
