@@ -19,7 +19,7 @@ public interface FreeHashRepository extends JpaRepository<FreeHash, String> {
 
     @Query(nativeQuery = true, value = """
             SELECT * FROM free_hashes
-            ORDER BY created_at
+            ORDER BY RANDOM()
             LIMIT :limit
             FOR UPDATE SKIP LOCKED
             """)

@@ -12,6 +12,6 @@ public record UrlRequest(
         String longUrl,
 
         @Positive
-        int ttlMinutes
+        int ttlSeconds
 ) {
 }

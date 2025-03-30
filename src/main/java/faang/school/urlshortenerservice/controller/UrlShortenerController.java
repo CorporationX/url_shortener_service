@@ -2,11 +2,9 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequest;
 import faang.school.urlshortenerservice.entity.FreeHash;
-import faang.school.urlshortenerservice.service.UrlShortenerService;
+import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,17 +20,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/hash")
 @RestController
 public class UrlShortenerController {
-    private final UrlShortenerService service;
-
-    @Value("${shortener.max-url-expired-minutes}")
-    private int maxTtlMinutes;
+    private final UrlService service;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/get")
+    @PostMapping("/url")
     public String createShortUrl(@Valid @RequestBody UrlRequest request) {
-        int ttlMinutes = checkTtlThrow(request);
-
-        FreeHash generated = service.generateShortUrl(request.longUrl(), ttlMinutes);
+        FreeHash generated = service.generateShortUrl(request.longUrl(), request.ttlSeconds());
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
@@ -48,12 +41,5 @@ public class UrlShortenerController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", longUrl)
                 .build();
-    }
-
-    private int checkTtlThrow(UrlRequest request) {
-        if (request.ttlMinutes() > maxTtlMinutes) {
-            throw new IllegalArgumentException();
-        }
-        return request.ttlMinutes();
     }
 }
