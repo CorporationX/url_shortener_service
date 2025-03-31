@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Base62Encoder {
     private static final String CHARACTERS =
-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = CHARACTERS.length();
 
     public static List<Hash> encodeBatch(List<Long> numbers) {

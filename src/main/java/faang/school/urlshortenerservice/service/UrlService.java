@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,24 +21,31 @@ public class UrlService {
     @Value("${url.short-template}")
     private String shortUrlTemplate;
 
+    @Value("${url.expiration-days}")
+    private int expirationDays;
+
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final HashService hashService;
 
     @Transactional
-    public String createShortUrl(String longUrl, LocalDateTime expiredAt) {
-        List<String> existingHashes = urlRepository.findHashesByUrl(longUrl);
-        if (!existingHashes.isEmpty()) {
-            return shortUrlTemplate + existingHashes.get(0);
-        }
+    public String createShortUrl(String longUrl) {
+        LocalDateTime expiredAt = LocalDateTime.now().plusDays(expirationDays);
 
         String hash = hashService.getFreeHash();
         Url url = new Url(hash, longUrl, expiredAt);
+
         urlRepository.save(url);
         urlCacheRepository.save(hash, longUrl);
 
-        log.info("Created short URL: {}", shortUrlTemplate + hash);
-        return shortUrlTemplate + hash;
+        String shortUrl = UriComponentsBuilder.fromHttpUrl(shortUrlTemplate)
+            .path("/")
+            .path(hash)
+            .build()
+            .toUriString();
+
+        log.info("Created short URL: {}", shortUrl);
+        return shortUrl;
     }
 
     @Transactional(readOnly = true)

@@ -31,7 +31,7 @@ public class HashService {
         return hash;
     }
 
-    public void scheduleRefill() {
+    private void scheduleRefill() {
         if (isRefilling.compareAndSet(false, true)) {
 
             try {

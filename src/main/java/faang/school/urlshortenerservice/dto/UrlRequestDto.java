@@ -1,9 +1,7 @@
 package faang.school.urlshortenerservice.dto;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
@@ -15,7 +13,4 @@ public class UrlRequestDto {
     @URL(message = "Invalid URL format")
     @Size(max = 256)
     private String longUrl;
-
-    @Future
-    private LocalDateTime expiredAt;
 }

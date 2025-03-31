@@ -33,8 +33,4 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             RETURNING hash
         """, nativeQuery = true)
     List<Hash> getHashBatch(@Param("batchSize") long batchSize);
-
-    @Modifying
-    @Query(value = "INSERT INTO hash (hash) SELECT unnest(CAST(:hashes AS VARCHAR[]))", nativeQuery = true)
-    void saveBatch(@Param("hashes") String[] hashes);
 }

@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +19,6 @@ public class MaintenanceService {
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
-    @Scheduled(cron = "${hash.cleaner.cron}")
     public void cleanUpOldUrls() {
         List<Url> oldUrls = urlRepository.findAllExpiredUrls(LocalDateTime.now());
         List<String> hashes = oldUrls.stream()

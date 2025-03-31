@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public class UrlCacheRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${hash.cache.ttl-seconds}") // 24 часа по умолчанию
+    @Value("${hash.cache.ttl-seconds}")
     private long ttlSeconds;
 
     public void save(String hash, String longUrl) {
@@ -29,10 +29,6 @@ public class UrlCacheRepository {
 
     public String findUrlByHash(String hash) {
         return (String) redisTemplate.opsForValue().get(hash);
-    }
-
-    public void deleteBatch(List<String> oldHashes) {
-        redisTemplate.delete(oldHashes);
     }
 
     public void deleteAll(List<String> hashes) {

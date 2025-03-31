@@ -72,8 +72,7 @@ public class UrlControllerTest {
     void testCreateShortUrl_ShouldReturnCreated() throws Exception {
         String requestBody = """
             {
-                "longUrl": "https://example.com",
-                "expiredAt": "2025-12-31T00:00:00"
+                "longUrl": "https://example.com"
             }
             """;
 
@@ -95,15 +94,14 @@ public class UrlControllerTest {
 
         String requestBody = """
             {
-                "longUrl": "%s",
-                "expiredAt": "2025-12-31T00:00:00"
+                "longUrl": "%s"
             }
             """.formatted(existingUrl);
 
         mockMvc.perform(post("/url")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(content().string("http://localhost:8080/" + hash));
+            .andExpect(content().string("http://localhost:8080/mockedHash123"));
     }
 
     @Test

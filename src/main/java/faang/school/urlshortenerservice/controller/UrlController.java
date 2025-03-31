@@ -21,7 +21,7 @@ public class UrlController {
 
     @PostMapping
     public ResponseEntity<String> createShortUrl(@RequestBody @Validated UrlRequestDto urlRequestDto) {
-        String shortUrl = urlService.createShortUrl(urlRequestDto.getLongUrl(), urlRequestDto.getExpiredAt());
+        String shortUrl = urlService.createShortUrl(urlRequestDto.getLongUrl());
         return new ResponseEntity<>(shortUrl, HttpStatus.CREATED);
     }
 

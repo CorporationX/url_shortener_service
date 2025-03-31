@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,8 +22,11 @@ public class HashCache {
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
 
-    @Value("${hash.cache.capacity}") private int capacity;
-    @Value("${hash.cache.refill_threshold}") private double refillThreshold;
+    @Value("${hash.cache.capacity}")
+    private int capacity;
+
+    @Value("${hash.cache.refill_threshold}")
+    private double refillThreshold;
 
     private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
 
@@ -34,43 +36,38 @@ public class HashCache {
     }
 
     public String getHash() {
-        return pollHash();
-    }
-
-    @Transactional
-    public void refillHashes() {
-        log.info("before getHashBath {}", TransactionSynchronizationManager.isActualTransactionActive());
-        List<String> dbHashes = hashRepository.getHashBatch(capacity)
-            .stream()
-            .map(Hash::getHash)
-            .toList();
-
-        hashQueue.addAll(dbHashes);
-
-        if (needRefill()) {
-            hashGenerator.generateBatch();
-            List<String> newHashes = hashRepository.getHashBatch(capacity)
-                .stream()
-                .map(Hash::getHash)
-                .toList();
-            hashQueue.addAll(newHashes);
-        }
-    }
-
-    public int getCapacity(){
-        return hashQueue.size();
-    }
-
-    private boolean needRefill() {
-        return hashQueue.size() < capacity * refillThreshold;
-    }
-
-    private String pollHash() {
         try {
             return hashQueue.poll(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while waiting for hash");
         }
+    }
+
+    @Transactional
+    public void refillHashes() {
+        List<String> dbHashes = getHashesFromDb(capacity);
+        hashQueue.addAll(dbHashes);
+
+        if (needRefill()) {
+            hashGenerator.generateBatch();
+            List<String> newHashes = getHashesFromDb(capacity);
+            hashQueue.addAll(newHashes);
+        }
+    }
+
+    public int getCapacity() {
+        return hashQueue.size();
+    }
+
+    private List<String> getHashesFromDb(int batchSize) {
+        return hashRepository.getHashBatch(batchSize)
+            .stream()
+            .map(Hash::getHash)
+            .toList();
+    }
+
+    private boolean needRefill() {
+        return hashQueue.size() < capacity * refillThreshold;
     }
 }

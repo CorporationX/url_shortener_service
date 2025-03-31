@@ -49,4 +49,5 @@ hash:
   cleaner:
     cron: 0 0 1 * * ?
 url:
-  short-template: "http://localhost:8080/"
+  short-template: "http://localhost:8080"
+  expiration-days: 7
