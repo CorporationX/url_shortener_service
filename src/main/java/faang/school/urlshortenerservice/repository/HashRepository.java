@@ -19,9 +19,9 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
 
     @Modifying
     @Query(nativeQuery = true, value = """
-    DELETE FROM hash_table
-    WHERE id IN (SELECT id FROM hash_table ORDER BY created_at LIMIT :amount)
-    RETURNING *
+    DELETE FROM hash
+    WHERE hash IN (SELECT hash FROM hash LIMIT :amount)
+    RETURNING hash
     """)
     List<Hash> findAndDelete(@Param("amount") long amount);
 }
