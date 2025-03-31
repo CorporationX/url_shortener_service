@@ -30,20 +30,18 @@ logging:
 
 encoder:
   base: 62
-  alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 hash:
   generator:
     batch-size: 10000
     thread-pool-size: 5
     queue-capacity: 50
-    count-number: 70000000000
+    count-number: 920000000
+    lock-ttl: 2
 
   cache:
-    capacity: 10000
-    thread-pool-size: 5
-    queue-capacity: 50
-    fill-percent: 20
+    fill-percent: 0.2
 
 scheduler:
   url_cleaner:
@@ -52,4 +50,4 @@ scheduler:
 
 ttl:
   hour:
-    url: 24
+    url: 720

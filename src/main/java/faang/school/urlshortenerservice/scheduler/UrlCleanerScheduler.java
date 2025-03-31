@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class UrlCleanerScheduler {
     private final UrlService urlService;
 
-    @Async("urlCleanerExecutor")
     @Scheduled(cron = "${scheduler.url_cleaner.cron}")
     public void execute() {
         urlService.removeExpiredUrlsAndResaveHashes();

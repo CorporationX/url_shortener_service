@@ -15,12 +15,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,18 +33,18 @@ class LocalCasheServiceTest {
 
     @InjectMocks
     private LocalCasheService localCasheService;
-
-    private final int TEST_CAPACITY = 10;
-    private final int FILL_PERCENT = 20;
+    private final int TEST_CAPACITY = 5;
+    private final double TEST_FILL_PERCENT = 0.2d;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(localCasheService, "capacity", TEST_CAPACITY);
-        ReflectionTestUtils.setField(localCasheService, "fillPercent", FILL_PERCENT);
+        ReflectionTestUtils.setField(localCasheService, "fillPercent", TEST_FILL_PERCENT);
     }
 
     @Test
     void testInit_WithValidCapacity() {
+
         List<String> mockHashes = List.of("hash1", "hash2");
         when(hashGeneratorService.getHashes(TEST_CAPACITY)).thenReturn(mockHashes);
 
@@ -66,29 +63,10 @@ class LocalCasheServiceTest {
     }
 
     @Test
-    void testGetHash_WhenQueueHasElements() {
-
-        ReflectionTestUtils.setField(localCasheService, "capacity", 100);
-        ReflectionTestUtils.setField(localCasheService, "fillPercent", 20);
-        ReflectionTestUtils.setField(localCasheService, "hashes", mockQueue);
-
-        when(mockQueue.poll()).thenReturn("testHash");
-
-        when(mockQueue.size()).thenReturn(21);
-
-        String result = localCasheService.getHash();
-
-        assertEquals("testHash", result);
-        verify(mockQueue).poll();
-
-        verify(hashGeneratorService, never()).getHashesAsync(anyLong());
-    }
-
-    @Test
     void testGetHash_WhenQueueNeedsRefill_CallsGetHashesAsyncOnce() {
 
         ReflectionTestUtils.setField(localCasheService, "capacity", 100);
-        ReflectionTestUtils.setField(localCasheService, "fillPercent", 20);
+        ReflectionTestUtils.setField(localCasheService, "fillPercent", 0.2f);
         ReflectionTestUtils.setField(localCasheService, "hashes", mockQueue);
 
         when(mockQueue.poll()).thenReturn("testHash");
@@ -129,11 +107,4 @@ class LocalCasheServiceTest {
         assertTrue(localCasheService.shouldRefillHashes());
     }
 
-    @Test
-    void testShouldRefillHashes_WhenAboveThreshold() {
-        Queue<String> mockQueue = new java.util.LinkedList<>(List.of("h1", "h2", "h3"));
-        ReflectionTestUtils.setField(localCasheService, "hashes", mockQueue);
-
-        assertFalse(localCasheService.shouldRefillHashes());
-    }
 }

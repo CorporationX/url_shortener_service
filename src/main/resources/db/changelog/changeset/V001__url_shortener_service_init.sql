@@ -1,13 +1,13 @@
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq
-    START WITH 920000000
-    INCREMENT BY 1;
+    START     WITH 920000000
+    INCREMENT BY          1;
 
 CREATE TABLE IF NOT EXISTS url
 (
-    hash       VARCHAR(6)   PRIMARY KEY,
+    hash       VARCHAR(6)    PRIMARY KEY,
     url        VARCHAR(2048) NOT NULL,
-    created_at TIMESTAMP    NOT NULL,
-    deleted_at TIMESTAMP    NOT NULL
+    created_at TIMESTAMP     NOT NULL,
+    deleted_at TIMESTAMP     NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hash

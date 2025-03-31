@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,34 +22,40 @@ public class UrlService {
     private final UrlCashRepository urlCashRepository;
     private final LocalCasheService localCashe;
 
+    @Value("${scheduler.url_lifetime_days:30}")
+    private int url_lifetime_days;
+
     @Transactional
     public String createShortUrl(String longUrl) {
         String hash = localCashe.getHash();
 
         Url url = new Url(hash, longUrl);
-        url.setDeletedAt(LocalDateTime.now().plusDays(30));
+        url.setDeletedAt(LocalDateTime.now().plusDays(url_lifetime_days));
         urlRepository.save(url);
         urlCashRepository.save(hash, longUrl);
 
         return hash;
     }
 
+    @Transactional
     public String getOriginalUrl(String hash) {
         return urlCashRepository.findByHash(hash)
-                .or(() -> urlRepository.findByHash(hash).map(url -> {
-                    urlCashRepository.save(url.getHash(), url.getUrl());
-                    return url.getUrl();
-                }))
+                .or(() -> urlRepository.findByHash(hash)
+                        .map(url -> {
+                            urlCashRepository.save(url.getHash(), url.getUrl());
+                            return url.getUrl();
+                        }))
                 .orElseThrow(() -> new EntityNotFoundException("URL not found for hash : " + hash));
     }
 
     @Transactional
     public void removeExpiredUrlsAndResaveHashes() {
-        LocalDateTime expirationDate = LocalDateTime.now().minusDays(1);
+        LocalDateTime expirationDate = LocalDateTime.now();
 
         List<String> hashes = urlRepository.deleteOldUrlsAndReturnHashes(expirationDate);
 
-        List<Hash> hashEntities = hashes.stream()
+        List<Hash> hashEntities = hashes
+                .stream()
                 .map(Hash::new)
                 .toList();
 

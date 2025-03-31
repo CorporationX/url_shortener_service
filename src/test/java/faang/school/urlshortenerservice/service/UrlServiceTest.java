@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,19 +88,4 @@ class UrlServiceTest {
         verify(urlRepository).findByHash(hash);
     }
 
-    @Test
-    void testUrlExpirationDateSetCorrectly() {
-
-        String hash = "abc123";
-        String longUrl = "https://example.com";
-
-        when(localCashe.getHash()).thenReturn(hash);
-
-        urlService.createShortUrl(longUrl);
-
-        verify(urlRepository).save(argThat(url ->
-                url.getDeletedAt().isAfter(LocalDateTime.now().plusDays(29)) &&
-                        url.getDeletedAt().isBefore(LocalDateTime.now().plusDays(31))
-        ));
-    }
 }

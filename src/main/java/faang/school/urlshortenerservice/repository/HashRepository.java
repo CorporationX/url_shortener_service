@@ -26,12 +26,16 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                     WHERE hash IN (
                     SELECT hash FROM hash 
                     ORDER BY random()
-                    LIMIT :batchSize)
+                    LIMIT :batchSize
+                    FOR UPDATE SKIP LOCKED)
                     RETURNING hash
                     """)
     List<String> getAndDeletedHashBatch(@Param("batchSize") long batchSize);
 
     @Query(value = "SELECT COUNT(h.hash) FROM hash h", nativeQuery = true)
     Long getHashesSize();
+
+    @Query(value = "SELECT pg_try_advisory_xact_lock(:lockId)", nativeQuery = true)
+    boolean acquireAdvisoryXactLock(@Param("lockId") int lockId);
 }
 

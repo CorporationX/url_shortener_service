@@ -15,31 +15,38 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Service
 public class HashGeneratorService {
+
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int BASE = ALPHABET.length();
+    private static final int HASH_GENERATION_LOCK_ID = 12345;
     private final HashRepository hashRepository;
 
-    @Value("${encoder.alphabet}")
-    private String alphabet;
-
-    @Value("${encoder.base}")
-    private int base;
-    @Value("${hash.generator.batch-size:1000}")
+    @Value("${hash.generator.batch-size:5000}")
     private long batchSize;
 
     @Transactional
     public void generateHash(long batchSize) {
 
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
-
-        if (uniqueNumbers.isEmpty()) {
-            throw new EntityNotFoundException("NotFound uniqueNumbers for generate hashes");
+        if (!hashRepository.acquireAdvisoryXactLock(HASH_GENERATION_LOCK_ID)) {
+            return;
         }
+        try {
 
-        List<Hash> hashes = uniqueNumbers
-                .stream()
-                .map(this::applyBase62Encoding)
-                .map(Hash::new)
-                .toList();
-        hashRepository.saveAll(hashes);
+            List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
+
+            if (uniqueNumbers.isEmpty()) {
+                throw new EntityNotFoundException("NotFound uniqueNumbers for generate hashes");
+            }
+
+            List<Hash> hashes = uniqueNumbers
+                    .stream()
+                    .map(this::applyBase62Encoding)
+                    .map(Hash::new)
+                    .toList();
+            hashRepository.saveAll(hashes);
+        } finally {
+
+        }
     }
 
     @Transactional
@@ -57,11 +64,11 @@ public class HashGeneratorService {
         return CompletableFuture.completedFuture(getHashes(batchSize));
     }
 
-    String applyBase62Encoding(long number) {
+    private String applyBase62Encoding(long number) {
         StringBuilder stringBuilder = new StringBuilder();
         while (number > 0) {
-            stringBuilder.append(alphabet.charAt((int) (number % base)));
-            number /= base;
+            stringBuilder.append(ALPHABET.charAt((int) (number % BASE)));
+            number /= BASE;
         }
         return stringBuilder.toString();
     }

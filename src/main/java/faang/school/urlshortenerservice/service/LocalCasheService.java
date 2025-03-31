@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LocalCasheService {
     private final HashGeneratorService hashGeneratorService;
 
-    @Value("${hash.cache.fill-percent:20}")
-    private int fillPercent;
+    @Value("${hash.cache.fill-percent:0.2d}")
+    private double fillPercent;
 
     private AtomicBoolean filling = new AtomicBoolean(false);
     @Value("${hash.cache.capacity:10000}")
@@ -33,17 +33,18 @@ public class LocalCasheService {
     }
 
     public String getHash() {
-        if (shouldRefillHashes()){
+        if (shouldRefillHashes()) {
             if (filling.compareAndSet(false, true)) {
-                hashGeneratorService.getHashesAsync(capacity).thenAccept(hashes::addAll)
-                                .thenRun(() -> filling.set(false));
+                hashGeneratorService.getHashesAsync(capacity)
+                        .thenAccept(hashes::addAll)
+                        .thenRun(() -> filling.set(false));
             }
         }
         return hashes.poll();
     }
 
     boolean shouldRefillHashes() {
-        int currentFillPercent = (hashes.size() * 100) / capacity;
+        float currentFillPercent = hashes.size() / capacity;
         return currentFillPercent < fillPercent;
     }
 }
