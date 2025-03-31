@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,34 +23,33 @@ import java.util.Optional;
 @Slf4j
 public class UrlServiceImpl implements UrlService {
 
+    private final HashGenerator hashGenerator;
+
     private final Base62Encoder base62Encoder;
     private final RedisService redisService;
     private final UrlRepository urlRepository;
     @Value("${services.hash-service.hash-cache}")
     private String hashCacheRedisKey;
+    @Value("${services.hash-service.small-batch-size-unique-numbers}")
+    private int smallBatchSize;
 
     @Override
     public UrlResponseDto shortenUrl(UrlRequestDto dto) {
-        //1. from redis get first for all generated hashes
-
-
         Optional<List<Hash>> optionalHashes = redisService.get(hashCacheRedisKey, new TypeReference<>() {
         });
 
-//        List<Hash> res = optionalHashes.orElseGet(() -> {
-        // 2 ? if here realize logic for 20 percent
-//            log.info("Hashes not found in cache, fetching from database");
-//            return urlRepository.findAll();
-//        });
+        List<Hash> hashes = optionalHashes.orElseGet(() -> {
+            log.info("Hashes not found in cache, fetching from database");
+            hashGenerator.generateBatchHashes(smallBatchSize).join();
+            return redisService.get(hashCacheRedisKey, new TypeReference<List<Hash>>() {
+                    })
+                    .orElse(Collections.emptyList());
+        });
 
-        List<Hash> hashes = optionalHashes.orElseThrow(() -> new RuntimeException("No value present in Optional"));
-        System.out.println("size before=" + hashes.size());
         Hash hash = hashes.get(0);
-        System.out.println("size after getting=" + hashes.size());
-
         saveUrl(dto.getUrl(), hash);
         hashes.remove(0);
-        System.out.println("size after removing=" + hashes.size());
+
         return new UrlResponseDto(hash.getHash());
     }
 

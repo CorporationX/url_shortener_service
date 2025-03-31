@@ -29,6 +29,7 @@ services:
   hash-service:
     batch-size-queue-capacity: 50
     batch-size-unique-numbers: 1000
+    small-batch-size-unique-numbers: 100
     cron-expression: 0 0 16 * * ?
     created-before-months: 12
     hash-cache: HashCache
