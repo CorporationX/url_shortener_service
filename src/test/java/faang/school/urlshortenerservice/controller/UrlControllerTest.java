@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.config.context.UserContext;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlServiceImpl;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,7 +33,6 @@ public class UrlControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
 
     @Test
     void shouldReturnShortenedUrl() throws Exception {
@@ -66,7 +66,7 @@ public class UrlControllerTest {
     }
 
     private String getShortUrl() {
-        return "http://short.ly/example";
+        return "http://localhost:8077/api/v1/urls/hashcode";
     }
 
     private String getUrl() {

@@ -23,16 +23,19 @@ server:
   port: 8077
 
 base:
-  path: /api/v1
+  api-path: /api/v1
+  default-domain: http://localhost
+  default-port: 8077
+
 
 services:
   hash-service:
     batch-size-queue-capacity: 50
     batch-size-unique-numbers: 1000
     small-batch-size-unique-numbers: 100
-    cron-expression: 0 0 16 * * ?
+    cron-expression: 10 0 12 * * ?
     created-before-months: 12
-    hash-cache: HashCache
+    hash-cache: hashCache
 
 logging:
   level:
