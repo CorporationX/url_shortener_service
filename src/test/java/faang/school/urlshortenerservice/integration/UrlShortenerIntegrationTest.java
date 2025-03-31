@@ -36,6 +36,8 @@ public class UrlShortenerIntegrationTest {
         UrlDto requestDto = new UrlDto();
         requestDto.setUrl("http://example.com/long-url");
 
+        Thread.sleep(5000L);
+
         URL shortUrl = webTestClient.post()
                 .uri("/url")
                 .contentType(MediaType.APPLICATION_JSON)

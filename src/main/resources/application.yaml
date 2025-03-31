@@ -41,6 +41,8 @@ hash:
   batch:
     size: 32
   max-limit: 1024
+  database:
+    threshold: 512
   queue:
     size: 128
   threshold:

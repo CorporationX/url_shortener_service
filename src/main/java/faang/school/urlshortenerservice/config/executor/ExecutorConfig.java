@@ -23,17 +23,6 @@ public class ExecutorConfig {
     @Value("${executor.queue.capacity}")
     private int queueCapacity;
 
-    @Bean(name = "hashCacheExecutor", destroyMethod = "shutdown")
-    public ExecutorService executorService() {
-        return new ThreadPoolExecutor(
-                poolSize,
-                maxPoolSize,
-                60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(queueCapacity),
-                new ThreadPoolExecutor.CallerRunsPolicy()
-        );
-    }
-
     @Bean(name = "hashGeneratorExecutor", destroyMethod = "shutdown")
     public ExecutorService generatorExecutorService() {
         return new ThreadPoolExecutor(

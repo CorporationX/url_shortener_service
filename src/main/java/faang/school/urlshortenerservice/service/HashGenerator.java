@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Component
@@ -19,15 +18,16 @@ public class HashGenerator {
     @Value("${hash.max-limit}")
     private int hashLimit;
 
+    @Value("${hash.database.threshold}")
+    private int minHashAmountInDatabase;
+
     @Transactional
-    public CompletableFuture<Void> generateBatches() {
-        try {
+    public void generateBatches() {
+        if (hashRepository.count() >= minHashAmountInDatabase) {
+            return;
+        }
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashLimit);
             String[] hashes = encoder.generateHashes(uniqueNumbers);
             hashRepository.saveHashes(hashes);
-            return CompletableFuture.completedFuture(null);
-        } catch (Exception e) {
-            return CompletableFuture.failedFuture(e);
-        }
     }
 }

@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -52,11 +51,11 @@ public class UrlService {
             return originalUrl;
         }
 
-        return urlRepository.findByHash(hash)
-                .orElseThrow(() -> {
-                    hashRepository.save(new Hash(hash));
-                    return new NoSuchElementException(String.format("Hash #%s not found or deleted", hash));
-                });
+        originalUrl = urlRepository.findByHash(hash)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Hash #%s not found or deleted", hash)));
+
+        urlCacheRepository.save(hash, originalUrl);
+        return originalUrl;
     }
 
     @Transactional

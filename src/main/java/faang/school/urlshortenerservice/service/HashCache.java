@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.AsyncHashGeneratorPerformer;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,12 +18,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class HashCache {
     private final HashRepository hashRepository;
-    private final AsyncHashGeneratorPerformer hashGenerator;
+    private final HashGenerator hashGenerator;
     private final ExecutorService executorService;
 
     public HashCache(HashRepository hashRepository,
-                     AsyncHashGeneratorPerformer hashGenerator,
-                     @Qualifier("hashCacheExecutor") ExecutorService executorService) {
+                     HashGenerator hashGenerator,
+                     @Qualifier("hashGeneratorExecutor") ExecutorService executorService) {
         this.hashRepository = hashRepository;
         this.hashGenerator = hashGenerator;
         this.executorService = executorService;
@@ -48,53 +48,50 @@ public class HashCache {
         cacheQueue = new ArrayBlockingQueue<>(queueSize);
         threshold = (int) (queueSize * thresholdLimit);
 
-        if (hashRepository.count() == 0) {
-            hashGenerator.generateHashes()
-                    .thenRun(() -> fillQueueNewHashes(queueSize));
-        } else {
-            fillQueueNewHashes(queueSize);
-        }
+        generateNewHashes().thenRun(() -> fillQueueNewHashes(queueSize));
     }
 
-    public String getHash() {
-        if (cacheQueue.size() >= threshold) {
-            return cacheQueue.poll();
-        }
 
-        if (refillInProgress.compareAndSet(false, true)) {
-            executorService.submit(() -> {
-                try {
-                    fillQueueNewHashes(batchSize);
-                    generateNewHashes();
-                } catch (Exception e) {
-                    log.error("Error refilling hash cache: {}", e.getMessage());
-                } finally {
-                    refillInProgress.set(false);
-                }
-            });
-        }
-
+public String getHash() {
+    if (cacheQueue.size() >= threshold) {
         return cacheQueue.poll();
     }
 
-    private void generateNewHashes() {
+    if (refillInProgress.compareAndSet(false, true)) {
         executorService.submit(() -> {
             try {
-                hashGenerator.generateHashes().get();
-                log.info("Initialisation hashes queue completed successfully");
+                fillQueueNewHashes(batchSize);
+                generateNewHashes();
             } catch (Exception e) {
-                log.error("Error in HashGenerator execution: {}", e.getMessage());
+                log.error("Error refilling hash cache: {}", e.getMessage());
+            } finally {
+                refillInProgress.set(false);
             }
         });
     }
 
-    private void fillQueueNewHashes(int amount) {
-        List<String> newHashes = hashRepository.getHashBatch(amount);
-        if (newHashes != null && !newHashes.isEmpty()) {
-            cacheQueue.addAll(newHashes);
-            log.info("Refilled cache with {} new hashes.", newHashes.size());
-        } else {
-            log.warn("No new hashes returned from repository.");
+    return cacheQueue.poll();
+}
+
+private CompletableFuture<Void> generateNewHashes() {
+    return CompletableFuture.runAsync(() -> {
+        try {
+            hashGenerator.generateBatches();
+            log.info("Initialisation hashes queue completed successfully");
+        } catch (Exception e) {
+            log.error("Error in HashGenerator execution: {}", e.getMessage());
+            throw new RuntimeException(e);
         }
+    }, executorService);
+}
+
+private void fillQueueNewHashes(int amount) {
+    List<String> newHashes = hashRepository.getHashBatch(amount);
+    if (newHashes != null && !newHashes.isEmpty()) {
+        cacheQueue.addAll(newHashes);
+        log.info("Refilled cache with {} new hashes.", newHashes.size());
+    } else {
+        log.warn("No new hashes returned from repository.");
     }
+}
 }

@@ -35,9 +35,7 @@ public class UrlCacheRepository {
         }
     }
 
-
     public String getUrl(String hash) {
         return redisTemplate.opsForValue().get(hash);
     }
-
 }

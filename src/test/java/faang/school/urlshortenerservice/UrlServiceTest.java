@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -108,7 +107,6 @@ public class UrlServiceTest {
     void testGetOriginalUrl_throwsExceptionWhenNotFound() {
         when(urlCacheRepository.getUrl(hash)).thenReturn(null);
         when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
-        when(hashRepository.save(new Hash(hash))).thenReturn(any());
 
         assertThrows(NoSuchElementException.class, () -> urlService.getOriginalUrl(hash));
         verify(urlCacheRepository).getUrl(hash);

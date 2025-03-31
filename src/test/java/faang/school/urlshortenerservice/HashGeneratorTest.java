@@ -13,12 +13,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,38 +33,38 @@ class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
 
+    private int minHashAmount = 10;
+    private int hashLimit = 100;
+
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "hashLimit", 3);
+        ReflectionTestUtils.setField(hashGenerator, "minHashAmountInDatabase", minHashAmount);
+        ReflectionTestUtils.setField(hashGenerator, "hashLimit", hashLimit);
     }
 
     @Test
-    void testGenerateBatchesSuccess() {
-        List<Long> uniqueNumbers = Arrays.asList(1000L, 2000L, 3000L);
-        String[] expectedHashes = {"hash1", "hash2", "hash3"};
+    public void testGenerateBatches_SkipWhenEnoughHashes() {
+        when(hashRepository.count()).thenReturn(15L);
 
-        when(hashRepository.getUniqueNumbers(3)).thenReturn(uniqueNumbers);
-        when(encoder.generateHashes(uniqueNumbers)).thenReturn(expectedHashes);
+        hashGenerator.generateBatches();
 
-        CompletableFuture<Void> future = hashGenerator.generateBatches();
-        future.join();
-
-        verify(hashRepository).getUniqueNumbers(3);
-        verify(encoder).generateHashes(uniqueNumbers);
-        verify(hashRepository).saveHashes(expectedHashes);
+        verify(hashRepository, never()).getUniqueNumbers(anyInt());
+        verify(encoder, never()).generateHashes(any());
+        verify(hashRepository, never()).saveHashes(any());
     }
 
     @Test
-    void testGenerateBatchesFailure() {
-        RuntimeException exception = new RuntimeException("Test exception");
-        when(hashRepository.getUniqueNumbers(3)).thenThrow(exception);
+    public void testGenerateBatches_GenerateAndSaveHashes() {
+        when(hashRepository.count()).thenReturn(5L);
+        List<Long> uniqueNumbers = Arrays.asList(1L, 2L, 3L);
+        when(hashRepository.getUniqueNumbers(hashLimit)).thenReturn(uniqueNumbers);
+        String[] generatedHashes = new String[]{"hash1", "hash2", "hash3"};
+        when(encoder.generateHashes(uniqueNumbers)).thenReturn(generatedHashes);
 
-        CompletableFuture<Void> future = hashGenerator.generateBatches();
+        hashGenerator.generateBatches();
 
-        assertTrue(future.isCompletedExceptionally());
-
-        Exception thrown = assertThrows(Exception.class, future::join);
-        assertNotNull(thrown.getCause());
-        assertEquals("Test exception", thrown.getCause().getMessage());
+        verify(hashRepository, times(1)).getUniqueNumbers(hashLimit);
+        verify(encoder, times(1)).generateHashes(uniqueNumbers);
+        verify(hashRepository, times(1)).saveHashes(generatedHashes);
     }
 }
