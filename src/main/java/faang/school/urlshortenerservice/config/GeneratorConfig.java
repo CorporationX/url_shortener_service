@@ -11,9 +11,9 @@ import java.util.concurrent.Executors;
 
 @Configuration
 public class GeneratorConfig {
-    @Value("${hash.core-Pool-Size}")
+    @Value("${hash.core-pool-size}")
     private int threadPoolSize;
-    @Value("${hash.queue-Capacity}")
+    @Value("${hash.queue-capacity}")
     private int queueCapacity;
 
     @Bean(name = "hashGeneratorThreadPool")
