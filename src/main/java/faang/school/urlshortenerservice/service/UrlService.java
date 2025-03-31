@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Service
 public class UrlService {
     private final UrlRepository urlRepository;
-    private final HashService hashService;
+    private final HashFacade hashFacade;
     private final RedisShortenerRepository redisShortenerRepository;
 
     @Value("${shortener.max-url-expired-seconds}")
@@ -28,14 +28,14 @@ public class UrlService {
 
     @PostConstruct
     public void init(){
-        hashService.warmUpCache();
+        hashFacade.warmUpCache();
     }
 
     @Transactional
     public FreeHash generateShortUrl(String longUrl, int ttlSeconds) {
         checkTtlThrow(ttlSeconds);
 
-        FreeHash hash = hashService.getAvailableHash();
+        FreeHash hash = hashFacade.getAvailableHash();
         UrlMapping mapping = createActiveUrlMapping(longUrl, ttlSeconds, hash.getHash());
         urlRepository.save(mapping);
         redisShortenerRepository.saveShortUrl(hash.getHash(), longUrl, ttlSeconds);

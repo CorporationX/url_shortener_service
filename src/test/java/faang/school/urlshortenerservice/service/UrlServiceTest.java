@@ -30,7 +30,7 @@ class UrlServiceTest {
     private UrlRepository urlRepository;
 
     @Mock
-    private HashService hashService;
+    private HashFacade hashFacade;
 
     @Mock
     private RedisShortenerRepository redisShortenerRepository;
@@ -51,7 +51,7 @@ class UrlServiceTest {
         FreeHash freeHash = new FreeHash(hash);
         UrlMapping expectedMapping = new UrlMapping(hash, longUrl, LocalDateTime.now(), LocalDateTime.now().plusSeconds(ttl));
 
-        when(hashService.getAvailableHash()).thenReturn(freeHash);
+        when(hashFacade.getAvailableHash()).thenReturn(freeHash);
         when(urlRepository.save(any(UrlMapping.class))).thenReturn(expectedMapping);
 
         FreeHash result = urlService.generateShortUrl(longUrl, ttl);
