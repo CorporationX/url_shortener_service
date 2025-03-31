@@ -1,15 +1,13 @@
-CREATE TABLE IF NOT EXISTS url
+CREATE TABLE IF NOT EXISTS short_url
 (
-    hash       VARCHAR(6)  NOT NULL PRIMARY KEY,
-    url        VARCHAR     NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    hash       VARCHAR(6) PRIMARY KEY,
+    url        VARCHAR NOT NULL,
+    created_at timestamptz DEFAULT current_timestamp
 );
 
 CREATE TABLE IF NOT EXISTS hash
 (
-    hash VARCHAR(6) NOT NULL PRIMARY KEY
+    hash VARCHAR(6) PRIMARY KEY
 );
 
-CREATE SEQUENCE IF NOT EXISTS hash_sequence
-    START 1
-    INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq START 999999999;

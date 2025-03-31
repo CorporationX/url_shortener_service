@@ -1,32 +1,31 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
-    @Value("${redis.host}")
-    private String host;
-
-    @Value("${redis.port}")
-    private int port;
+    private final RedisProperties redisProperties;
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(host, port);
-    }
-
-    @Bean
-    public RedisTemplate<String, String> redisTemplate() {
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+        try {
+            template.setConnectionFactory(redisConnectionFactory);
+            template.setKeySerializer(new StringRedisSerializer());
+            template.setValueSerializer(new StringRedisSerializer());
+        } catch (RuntimeException e) {
+            log.error("Error getting Redis Template connection", e);
+            throw e;
+        }
         return template;
     }
 }
