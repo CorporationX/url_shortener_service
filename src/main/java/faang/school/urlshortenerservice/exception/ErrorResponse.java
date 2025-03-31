@@ -15,6 +15,6 @@ public class ErrorResponse {
         this.message = message;
         this.status = status;
         this.timestamp = LocalDateTime.now();
-        this.errorCode = "ERR_" + status; // Пример кода ошибки
+        this.errorCode = "ERR_" + status;
     }
 }
