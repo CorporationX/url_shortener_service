@@ -26,19 +26,22 @@ public class HashService {
     private final FreeHashGenerator freeHashGenerator;
     private final ApplicationContext applicationContext;
 
-    @Value("${shortener.hash-pool.max-capacity}")
-    private long maxCapacity;
+    @Value("${shortener.hash-pool.max-postgres-capacity}")
+    private long maxDbCapacity;
+
+    @Value("${shortener.hash-pool.max-cache-capacity}")
+    private long maxCacheCapacity;
 
     @Value("${shortener.hash-pool.refill-threshold-percent}")
     private int refillThresholdPercent;
 
     public FreeHash getAvailableHash() {
-        triggerAsyncRefillIfNeeded();
+        triggerAsyncCacheRefillIfNeeded();
         return FREE_HASHES_CACHE.poll();
     }
 
-    private void triggerAsyncRefillIfNeeded() {
-        long threshold = getThreshold();
+    private void triggerAsyncCacheRefillIfNeeded() {
+        long threshold = maxCacheCapacity * refillThresholdPercent / 100;
         if (FREE_HASHES_CACHE.size() < threshold) {
             applicationContext.getBean(HashService.class).asyncRefill();
         }
@@ -52,7 +55,7 @@ public class HashService {
 
         try {
             long availableHashes = FREE_HASHES_CACHE.size();
-            long toRefill = maxCapacity - availableHashes;
+            long toRefill = maxCacheCapacity - availableHashes;
             applicationContext.getBean(HashService.class).refill(toRefill);
         } finally {
             lock.set(false);
@@ -60,32 +63,29 @@ public class HashService {
     }
 
     @Transactional
-    public void warmUpCache() {
-        refill(maxCapacity);
+    public void refill(long toRefill) {
+        long freeHashesInDb = freeHashRepository.count();
+        if (freeHashesInDb < maxDbCapacity) {
+            long refillDatabaseCount = maxDbCapacity + toRefill - freeHashesInDb;
+            applicationContext.getBean(HashService.class).refillDbIfNeeded(refillDatabaseCount);
+        }
+        List<FreeHash> dbHashes = freeHashRepository.deleteAndReturnFreeHashes((int) toRefill);
+        FREE_HASHES_CACHE.addAll(dbHashes);
+        log.info("Added {} hashes from DB to cache", dbHashes.size());    }
+
+    @Async("hashServiceExecutor")
+    public void refillDbIfNeeded(long capacity) {
+        freeHashGenerator.refillDb(capacity);
     }
 
     @Transactional
-    public void refill(long toRefill) {
+    public void warmUpCache() {
         long freeHashesInDb = freeHashRepository.count();
-        if (freeHashesInDb >= toRefill) {
-            List<FreeHash> dbHashes = freeHashRepository.findAndLockFreeHashes((int) toRefill);
-            FREE_HASHES_CACHE.addAll(dbHashes);
-
-            freeHashRepository.deleteAllByIdInBatch(
-                    dbHashes.stream().map(FreeHash::getHash).toList()
-            );
-
-            log.info("Added {} hashes from DB to cache", dbHashes.size());
-        } else {
-            List<Long> range = freeHashRepository.generateBatch(toRefill);
-            List<FreeHash> generatedHashes = freeHashGenerator.generateHashes(range);
-            FREE_HASHES_CACHE.addAll(generatedHashes);
-
-            log.info("Added {} hashes from generator to cache", generatedHashes.size());
+        if (freeHashesInDb < maxDbCapacity) {
+            long refillDatabaseCount = maxDbCapacity - freeHashesInDb;
+            freeHashGenerator.refillDb(refillDatabaseCount);
         }
-    }
-
-    private long getThreshold() {
-        return maxCapacity * refillThresholdPercent / 100;
+        List<FreeHash> dbHashes = freeHashRepository.deleteAndReturnFreeHashes((int) maxCacheCapacity);
+        FREE_HASHES_CACHE.addAll(dbHashes);
     }
 }

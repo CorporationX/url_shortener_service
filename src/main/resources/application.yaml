@@ -7,11 +7,13 @@ spring:
     username: user
     password: password
     hikari:
-      maximum-pool-size: 30
-      minimum-idle: 5
+      maximum-pool-size: 100
+      minimum-idle: 50
       idle-timeout: 10000
       max-lifetime: 30000
       connection-timeout: 10000
+      auto-commit: false
+
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -43,7 +45,8 @@ shortener:
 
   hash-pool:
     refill-threshold-percent: 50
-    max-capacity: 500
+    max-cache-capacity: 500
+    max-postgres-capacity: 3000
 
   executor:
     core-pool-size: 4
@@ -57,10 +60,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus
+        include: "*"
 
   metrics:
     enable:
+      jdbc: true
       all: true
 
   prometheus:
@@ -75,4 +79,4 @@ management:
 
 logging:
   level:
-    root: info
+    root: INFO

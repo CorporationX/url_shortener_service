@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.FreeHash;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,11 +18,20 @@ public interface FreeHashRepository extends JpaRepository<FreeHash, String> {
             """)
     List<Long> generateBatch(long maxRange);
 
+    @Modifying
     @Query(nativeQuery = true, value = """
-            SELECT * FROM free_hashes
-            ORDER BY RANDOM()
-            LIMIT :limit
-            FOR UPDATE SKIP LOCKED
-            """)
-    List<FreeHash> findAndLockFreeHashes(@Param("limit") int limit);
+    DELETE FROM free_hashes
+    WHERE ctid IN (
+        SELECT ctid
+        FROM free_hashes
+        ORDER BY RANDOM()
+        LIMIT :limit
+        FOR UPDATE SKIP LOCKED
+    )
+    RETURNING *
+    """)
+    List<FreeHash> deleteAndReturnFreeHashes(@Param("limit") int limit);
+
+    @Query(value = "SELECT pg_try_advisory_xact_lock(:lockKey)", nativeQuery = true)
+    boolean tryAdvisoryLock(@Param("lockKey") long lockKey);
 }
