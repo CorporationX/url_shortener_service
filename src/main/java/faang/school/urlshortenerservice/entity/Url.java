@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Url {
+
     @Id
     @Column(name = "hash", length = 6, nullable = false)
     private String hash;

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface HashRepository extends JpaRepository<Hash, String>, HashRepositoryCustom {
+public interface BatchRepository extends JpaRepository<Hash, String>, CustomBatchRepository<Hash> {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_hash_number_seq') AS generated_value FROM generate_series(1, :maxRange)

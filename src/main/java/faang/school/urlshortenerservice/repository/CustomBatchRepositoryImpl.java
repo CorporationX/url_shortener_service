@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 
 @Repository
 @RequiredArgsConstructor
-public class HashRepositoryCustomImpl implements HashRepositoryCustom {
+public class CustomBatchRepositoryImpl implements CustomBatchRepository<Hash> {
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcProperties properties;

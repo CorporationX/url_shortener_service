@@ -6,7 +6,7 @@ import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.BatchRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import java.util.Objects;
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
-    private final HashRepository hashRepository;
+    private final BatchRepository hashRepository;
     private final LocalHashCache cache;
     private final UrlProperties urlProperties;
     private final CacheManager cacheManager;
@@ -67,9 +67,8 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     public void cleanExpiredUrls() {
         log.info("Cleaning of expired urls started...");
-        List<String> hashesStr = urlRepository.cleanExpiredUrls();
+        List<String> hashesStr = urlRepository.cleanExpiredUrls(urlProperties.getRetentionPeriod());
         List<Hash> hashes = hashesStr.stream()
-                .filter(it -> !it.isEmpty() && !it.isBlank())
                 .map(Hash::new)
                 .toList();
 

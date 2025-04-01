@@ -23,15 +23,4 @@ public class HashGenerator {
                 .toList();
         return CompletableFuture.completedFuture(hashesStr);
     }
-//
-//    @Transactional
-//    public List<Hash> getHashes(long amount) {
-//        List<Hash> hashes = hashRepository.findAndDelete(amount);
-//        if (hashes.size() < amount) {
-//            generateAndSaveNewHashes();
-//            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
-//        }
-//        return hashes;
-//    }
-
 }

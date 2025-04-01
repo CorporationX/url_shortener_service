@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.config.redis;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -13,10 +14,13 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
+    @Value("${spring.cache.redis.time-to-live}")
+    private long ttl;
+
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(24)) // Устанавливаем TTL 24 часа
+                .entryTtl(Duration.ofMillis(ttl))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 

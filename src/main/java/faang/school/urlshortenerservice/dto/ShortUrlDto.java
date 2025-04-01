@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.URL;
 public record ShortUrlDto(
 
         @URL
-        @Size(min = 8, max = 2048, message = "The URL length must be between 8 and 2048 characters")
+        @Size(min = 8, max = 1024, message = "The URL length must be between 8 and 1024 characters")
         String url
 ) {
 }
