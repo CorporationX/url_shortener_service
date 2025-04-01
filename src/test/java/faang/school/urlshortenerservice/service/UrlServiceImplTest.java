@@ -42,14 +42,14 @@ class UrlServiceImplTest {
     @MockBean
     private UrlMapper urlMapper;
 
-    private final String testUrl = "https://example.com";
+    private final String testUrl = "http://example.com";
     private final String testHash = "abc123";
-    private final String baseUrl = "https://localhost:8080/url/";
+    private final String baseUrl = "http://localhost:8080/url/";
 
     @Test
     void testGetShortUrlSuccess() {
 
-        UrlDto urlDto = new UrlDto(testUrl, null, null);
+        UrlDto urlDto = new UrlDto(testUrl);
         when(hashCache.getHashFromCache()).thenReturn(testHash);
         when(urlMapper.toEntity(any())).thenReturn(new Url(testHash, testUrl, LocalDateTime.now()));
 

@@ -26,7 +26,7 @@ spring:
       time-unit: DAYS
 
   url:
-    base-short-url: "https://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
+    base-short-url: "http://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
 
 
 server:
@@ -35,6 +35,7 @@ server:
 logging:
   level:
     root: info
+    org.springframework.boot.context.properties: TRACE
 
 AsyncConfig:
   corePoolSize: 1
@@ -47,21 +48,24 @@ hashGenerator:
 hashRepository:
   batchSize: 50
 
+
 hashCache:
   maxSize: 100
   lowThreshold: 0.2
 
+
+
 url:
   original:
-    patterns: '^(https?://)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$'
+    patterns: '^(https?://)?(localhost|\d{1,3}(\.\d{1,3}){3}|([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,})(:\d+)?(/\S*)?$'
 
   service:
     baseShortUrl: "http://localhost:8080/api/v1/shortener/urls/"
   cleaner:
     retention-years: 1
     scheduler:                      # Scheduler для регулярного запуска удаления устаревших URL из базы
-      cron: "0 */2 * * * *"           # один раз в сутки в полночь
+      cron: "0 */2 * * * *"           #
 
 scheduling:
   hash-cache:
-    cron: "0 29 11 * * *"             # каждый день месяца, в 2 часа утра, ? - без определения дня недели
+    cron: "0 29 11 * * *"             #

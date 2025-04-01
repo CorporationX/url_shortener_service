@@ -33,11 +33,6 @@ public class HashGenerator {
             } else {
                 log.warn("No unique numbers received from repository");
             }
-
-//            List<String> hashes = base62Encoder.encode(uniqueNumbers);
-//            log.info("Generated {} hashes.", hashes.size());
-
-            //hashRepository.saveAllBatch(hashes);
         } catch (Exception ex) {
             log.error("Error generating hash batch", ex);
         }

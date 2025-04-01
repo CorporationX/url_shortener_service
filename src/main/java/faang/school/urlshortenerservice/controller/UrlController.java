@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/url")
+@RequestMapping("/urls")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -30,7 +30,7 @@ public class UrlController {
 
     @PostMapping
     public String getShortUrl(@Valid @RequestBody UrlDto urlDto) {
-        log.info("Received a request to shorten URL: {}", urlDto.getUrl());
+        log.info("Received a request to shorten URL: {}", urlDto.url());
 
         return urlService.getShortUrl(urlDto);
     }

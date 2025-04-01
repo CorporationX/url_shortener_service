@@ -26,8 +26,12 @@ spring:
         ttl: 1
         ttl-unit: DAYS
 
+  mvc:
+    servlet:
+      path: /api/v1
+
   url:
-    base-short-url: "https://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
+    base-short-url: "http://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
 
 
 server:
@@ -36,6 +40,7 @@ server:
 logging:
   level:
     root: info
+
 
 AsyncConfig:
   corePoolSize: 5
