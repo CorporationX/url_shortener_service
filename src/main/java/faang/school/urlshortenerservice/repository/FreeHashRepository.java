@@ -21,8 +21,8 @@ public interface FreeHashRepository extends JpaRepository<FreeHash, String> {
     @Modifying
     @Query(nativeQuery = true, value = """
     DELETE FROM free_hashes
-    WHERE ctid IN (
-        SELECT ctid
+    WHERE hash IN (
+        SELECT hash
         FROM free_hashes
         ORDER BY RANDOM()
         LIMIT :limit
