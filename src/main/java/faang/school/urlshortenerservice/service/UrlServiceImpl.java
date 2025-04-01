@@ -60,7 +60,7 @@ public class UrlServiceImpl implements UrlService {
         urlRepository.save(createUrl(hash, url));
         redisCacheRepository.save(hash, url);
         log.info("Add cached. Hash - {}. Url - {}", hash, url);
-        hashCache.ensureCacheIsFilled();
+        hashCache.fillCache();
 
         return hash;
     }

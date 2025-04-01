@@ -36,7 +36,7 @@ public class HashCacheImpl implements HashCache {
     @PostConstruct
     public void initializing() {
         log.info("Initializing Cache");
-        hashCacheFillExecutor.execute(this::ensureCacheIsFilled);
+        hashCacheFillExecutor.execute(this::fillCache);
         log.info("Cache initialized successfully");
     }
 
@@ -52,9 +52,9 @@ public class HashCacheImpl implements HashCache {
 
     @Async("hashCacheFillExecutor")
     @Override
-    public void ensureCacheIsFilled() {
+    public void fillCache() {
         if (needsFilling()) {
-            fillCache();
+            fill();
         }
     }
 
@@ -69,7 +69,7 @@ public class HashCacheImpl implements HashCache {
             && isGeneratingHashes.compareAndSet(false, true);
     }
 
-    private void fillCache() {
+    private void fill() {
         try {
             log.info("Filling hash cache");
             hashes.addAll(hashGenerator.getHashes(getBatchSizeForCache()));
