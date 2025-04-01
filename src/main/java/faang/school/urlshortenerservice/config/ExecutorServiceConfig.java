@@ -16,22 +16,18 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class ExecutorServiceConfig {
     private static final int SCHEDULER_CORE_POOL_SIZE = 1;
-    private static final int GENERATE_CORE_POOL_SIZE = 2;
-    private static final int GENERATE_MAXIMUM_POOL_SIZE = 8;
-    private static final int GENERATE_QUEUE_CAPACITY = 20;
-    private static final long GENERATE_KEEP_ALIVE_TIME = 0L;
+    private static final int GENERATE_HASH_CORE_POOL_SIZE = 1;
+    private static final int GENERATE_HASH_MAXIMUM_POOL_SIZE = 1;
+    private static final int GENERATE_HASH_QUEUE_CAPACITY = 1;
+    private static final long GENERATE_HASH_KEEP_ALIVE_TIME = 0L;
     private static final int GET_HASH_CORE_POOL_SIZE = 1;
     private static final int GET_HASH_MAXIMUM_POOL_SIZE = 1;
     private static final int GET_HASH_QUEUE_CAPACITY = 1;
     private static final long GET_HASH_KEEP_ALIVE_TIME = 0L;
-
-    @Bean(name = "hashGenerateExecutorService")
-    public ExecutorService hashGenerateExecutorService() {
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(GENERATE_QUEUE_CAPACITY);
-
-        return new ThreadPoolExecutor(GENERATE_CORE_POOL_SIZE, GENERATE_MAXIMUM_POOL_SIZE, GENERATE_KEEP_ALIVE_TIME,
-                TimeUnit.SECONDS, workQueue, new ThreadPoolExecutor.DiscardPolicy());
-    }
+    private static final int SAVE_HASH_CORE_POOL_SIZE = 16;
+    private static final int SAVE_HASH_MAXIMUM_POOL_SIZE = 32;
+    private static final int SAVE_HASH_QUEUE_CAPACITY = 1000;
+    private static final long SAVE_HASH_KEEP_ALIVE_TIME = 0L;
 
     @Bean(name = "schedulerExecutorService")
     public ScheduledExecutorService schedulerExecutorService() {
@@ -44,5 +40,21 @@ public class ExecutorServiceConfig {
 
         return new ThreadPoolExecutor(GET_HASH_CORE_POOL_SIZE, GET_HASH_MAXIMUM_POOL_SIZE, GET_HASH_KEEP_ALIVE_TIME,
                 TimeUnit.SECONDS, workQueue, new ThreadPoolExecutor.DiscardPolicy());
+    }
+
+    @Bean(name = "generateExecutorService")
+    public ExecutorService generateExecutorService() {
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(GENERATE_HASH_QUEUE_CAPACITY);
+
+        return new ThreadPoolExecutor(GENERATE_HASH_CORE_POOL_SIZE, GENERATE_HASH_MAXIMUM_POOL_SIZE,
+                GENERATE_HASH_KEEP_ALIVE_TIME, TimeUnit.SECONDS, workQueue, new ThreadPoolExecutor.DiscardPolicy());
+    }
+
+    @Bean(name = "hashSaveExecutorService")
+    public ExecutorService hashSaveExecutorService() {
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(SAVE_HASH_QUEUE_CAPACITY);
+
+        return new ThreadPoolExecutor(SAVE_HASH_CORE_POOL_SIZE, SAVE_HASH_MAXIMUM_POOL_SIZE,
+                SAVE_HASH_KEEP_ALIVE_TIME, TimeUnit.SECONDS, workQueue, new ThreadPoolExecutor.DiscardPolicy());
     }
 }

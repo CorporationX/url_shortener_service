@@ -9,7 +9,7 @@ spring:
     redis:
       port: 6379
       host: localhost
-      url-ttl-in-minutes: 10
+      url-ttl-in-seconds: 600
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -20,7 +20,7 @@ spring:
       hibernate:
         generate_statistics: false
         jdbc:
-          batch_size: 10000
+          batch_size: 100
           order_inserts: true
           order_updates: true
         format_sql: true
@@ -29,19 +29,18 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 hash-generator:
-  length: 5
-  local-cache-size: 50000
-  generate-count: 150000
-  percent-free-hashes: 30
-  alphabet: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+  local-cache-size: 10000
+  generate-count: 100000
+  ratio-free-hashes: 0.4
   cron-delete: 0 0 0 * * *
+  advisory-lock-id: 12345
 
 url:
   short-header: http://localhost:8080/shortner
-  ttl-in-mounts: 6
+  ttl-in-seconds: 15000000
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:

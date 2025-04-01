@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.BaseIntegrationTest;
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.service.HashGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ class UrlControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private RedisTemplate<String, String> hashRedisTemplate;
+    @Autowired
+    private HashGenerator hashGenerator;
 
     @Sql(scripts = "/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(scripts = "/insert-urls.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -52,6 +55,7 @@ class UrlControllerTest extends BaseIntegrationTest {
     @Sql(scripts = "/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createShortUrl() {
+        hashGenerator.init();
         UrlDto urlDto = UrlDto.builder()
                 .url("http://www.google.com")
                 .build();

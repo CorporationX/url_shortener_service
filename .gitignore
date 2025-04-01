@@ -53,3 +53,5 @@ out/
 
 ### VS Code ###
 .vscode/
+/get_result.csv
+/post_result.csv

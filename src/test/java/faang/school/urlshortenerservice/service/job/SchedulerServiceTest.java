@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -21,7 +22,9 @@ class SchedulerServiceTest extends BaseIntegrationTest {
     @Autowired
     private UrlRepository urlRepository;
     @Autowired
-    private HashRepository hashRepository;
+    private HashRepository hashBulkRepository;
+
+    @Qualifier("generateExecutorService")
     @Autowired
     private ExecutorService hashGenerateExecutorService;
 
@@ -31,17 +34,17 @@ class SchedulerServiceTest extends BaseIntegrationTest {
     void deleteOldUrl() {
         hashGenerateExecutorService.shutdown();
         Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> hashGenerateExecutorService.isTerminated());
-        hashRepository.deleteAll();
+        hashBulkRepository.deleteAll();
         assertEquals(11, urlRepository.count());
-        assertEquals(0, hashRepository.count());
+        assertEquals(0, hashBulkRepository.count());
 
         schedulerService.deleteOldUrl();
 
         Awaitility.await()
                 .atMost(5, TimeUnit.SECONDS)
-                .until(() -> hashRepository.count() == 11);
+                .until(() -> hashBulkRepository.count() == 11);
 
         assertEquals(0, urlRepository.count());
-        assertEquals(11, hashRepository.count());
+        assertEquals(11, hashBulkRepository.count());
     }
 }

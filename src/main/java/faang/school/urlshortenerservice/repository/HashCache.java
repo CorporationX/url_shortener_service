@@ -6,24 +6,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @RequiredArgsConstructor
 @Repository
 public class HashCache {
     private final HashService hashService;
-    private final ExecutorService getHasExecutorService;
     @Value("${hash-generator.local-cache-size:1000}")
     private int cacheSize;
     private Queue<String> cache;
-    @Value("${hash-generator.percent-free-hashes:20}")
-    private int percentFreeHashes = 50;
+    @Value("${hash-generator.ratio-free-hashes:0.2}")
+    private double ratioFreeHashes;
+    private volatile boolean isReceivedHash;
 
     @PostConstruct
     public void init() {
@@ -33,15 +32,16 @@ public class HashCache {
         log.info("Hash cache initialized");
     }
 
+    @Transactional
     public String getHash() {
-        if (cache.isEmpty()) {
-            log.warn("Hash cache is empty");
-            cache.addAll(hashService.getHashes(cacheSize));
-        }
-        if ((100.0 * cache.size() / cacheSize) < percentFreeHashes) {
-            int count = cacheSize - cache.size();
-            CompletableFuture.supplyAsync(() -> hashService.getHashes(count), getHasExecutorService)
-                    .thenAccept(cache::addAll);
+        if (((double) cache.size() / cacheSize) < ratioFreeHashes && !isReceivedHash) {
+            isReceivedHash = true;
+            synchronized (cache) {
+                int count = cacheSize - cache.size();
+                List<String> hashes = hashService.getHashes(count);
+                cache.addAll(hashes);
+            }
+            isReceivedHash = false;
         }
         return cache.poll();
     }

@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 @Repository
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> hashRedisTemplate;
-    @Value("${spring.data.redis.url-ttl-in-minutes:10}")
-    private long timeToLive = 10L;
+    @Value("${spring.data.redis.url-ttl-in-seconds:600}")
+    private long timeToLive;
 
     @Nullable
     public String getUrl(String hash) {

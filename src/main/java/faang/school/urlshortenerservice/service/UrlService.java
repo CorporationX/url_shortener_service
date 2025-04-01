@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,13 +23,12 @@ import java.util.List;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final HashService hashService;
     private final URLToStringMapper urlToStringMapper;
     private final HashCache hashCache;
 
-    @Value("${url.short-header:http:\\\\localhost:8080}")
+    @Value("${url.short-header:http://localhost:8080}")
     private String shortUrlHeader;
-    @Value("${url.ttl-in-mounts:3}")
+    @Value("${url.ttl-in-seconds:15000000}")
     private Long defaultTtl;
 
     @Transactional
@@ -47,34 +46,21 @@ public class UrlService {
     }
 
     @Transactional
-    public String createShortUrl(String urlOriginal, LocalDateTime deleteAt) throws UnValidUrlException {
+    public String createShortUrl(String urlOriginal) throws UnValidUrlException {
         URL urlFromOriginal = urlToStringMapper.convertToEntityAttribute(urlOriginal);
+        LocalDateTime deleteAt = LocalDateTime.now().plusSeconds(defaultTtl);
 
-        if (deleteAt == null) {
-            deleteAt = LocalDateTime.now().plusMonths(defaultTtl);
-        }
-
-        String hash = urlRepository.findHashByUrl(urlOriginal);
-        if (hash != null) {
-            return "%s/%s".formatted(shortUrlHeader, hash);
-        }
-
-        hash = hashCache.getHash();
+        String hash = hashCache.getHash();
         Url url = Url.builder()
                 .url(urlFromOriginal)
                 .hash(hash)
                 .deletedAt(deleteAt)
                 .build();
-        urlRepository.save(url);
+        urlRepository.insert(url);
         urlCacheRepository.setUrl(hash, urlOriginal);
 
-        return "%s/%s".formatted(shortUrlHeader, hash);
-    }
-
-    @Transactional
-    public Long deleteOldUrl() {
-        List<String> deletedUrls = urlRepository.deleteOldUrls();
-        deletedUrls.forEach(urlCacheRepository::removeUrl);
-        return hashService.addHashList(deletedUrls);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(shortUrlHeader);
+        uriComponentsBuilder.path("/%s".formatted(hash));
+        return uriComponentsBuilder.build().toUriString();
     }
 }

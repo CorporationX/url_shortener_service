@@ -1,47 +1,70 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, Long> {
-    @Query(nativeQuery = true, value = """
-            SELECT nextval('unique_hash_number_seq') AS unique_number FROM generate_series(1, :numbers)
-            """)
-    List<Long> getUniqueNumbers(@Param("numbers") int numbers);
+@RequiredArgsConstructor
+public class HashRepository {
+    private final JdbcTemplate jdbcTemplate;
+    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size:1000}")
+    private int batchSize;
 
-    @Modifying
-    @Query(nativeQuery = true, value = """
-                        DELETE FROM hash
-                                WHERE hash IN (
-                                    SELECT hash
-                                    FROM hash
-                                    ORDER BY RANDOM()
-                                    LIMIT :numbers
-                                    FOR UPDATE SKIP LOCKED
-                                )
-                                RETURNING hash;
-            """)
-    List<String> getHashBatch(@Param("numbers") int numbers);
+    @Transactional
+    public List<String> saveAll(List<String> hashes) {
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO hash (hash) VALUES (?) ON CONFLICT DO NOTHING",
+                hashes,
+                batchSize,
+                (ps, hash) -> ps.setString(1, hash)
+        );
 
-    @Query(nativeQuery = true, value = """
-                    SELECT minimum_value
-                    FROM information_schema.sequences
-                    WHERE sequence_name = 'unique_hash_number_seq';
-            """)
-    long getSequenceMin();
+        String inClause = String.join(",",
+                Collections.nCopies(hashes.size(), "?"));
 
-    @Query(nativeQuery = true, value = """
-                    SELECT maximum_value
-                    FROM information_schema.sequences
-                    WHERE sequence_name = 'unique_hash_number_seq';
-            """)
-    long getSequenceMax();
+        return jdbcTemplate.queryForList(
+                "SELECT hash FROM hash WHERE hash IN (" + inClause + ")",
+                String.class,
+                hashes.toArray()
+        );
+    }
 
+    @Transactional
+    public List<String> getHashBatch(int numbers) {
+        String sql = """
+                DELETE FROM hash
+                WHERE hash
+                IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT ? FOR UPDATE SKIP LOCKED)
+                RETURNING hash;
+                """;
+        return jdbcTemplate.query(sql, ps -> ps.setInt(1, numbers),
+                (rs, rowNum) -> rs.getString("hash"));
+    }
+
+    @Transactional
+    public List<Long> getUniqueNumbers(int numbers) {
+        String sql = """
+                SELECT nextval('unique_hash_number_seq') AS unique_number FROM generate_series(1, ?)
+                """;
+        return jdbcTemplate.query(sql, ps -> ps.setInt(1, numbers),
+                (rs, rowNum) -> rs.getLong("unique_number"));
+    }
+
+    @Transactional
+    public long count() {
+        return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT count(*) FROM hash", Long.class))
+                .orElse(0L);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        jdbcTemplate.update("DELETE FROM hash");
+    }
 }

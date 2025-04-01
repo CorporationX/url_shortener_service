@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.BaseIntegrationTest;
-import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
@@ -17,15 +16,13 @@ import java.util.stream.IntStream;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HashRepositoryTest extends BaseIntegrationTest {
     @Autowired
-    private HashRepository hashRepository;
+    private HashRepository hashBulkRepository;
     @Autowired
     private EntityManager entityManager;
-    @Autowired
-    private ChangeHashSequenceRepository changeHashSequenceRepository;
 
     @Test
     void getUniqueNumbers() {
-        List<Long> numbers = hashRepository.getUniqueNumbers(1000);
+        List<Long> numbers = hashBulkRepository.getUniqueNumbers(1000);
         Assertions.assertEquals(1000, numbers.size());
     }
 
@@ -36,14 +33,12 @@ class HashRepositoryTest extends BaseIntegrationTest {
         statistics.setStatisticsEnabled(true);
         statistics.clear();
 
-        List<Hash> hashes = IntStream.range(0, 1000)
+        List<String> hashes = IntStream.range(0, 1000)
                 .boxed()
-                .map(i -> Hash.builder()
-                        .hash("hash_%s".formatted(i))
-                        .build())
+                .map("hash_%s"::formatted)
                 .toList();
-        hashRepository.saveAll(hashes);
-        Assertions.assertEquals(1000, hashRepository.count());
+        hashBulkRepository.saveAll(hashes);
+        Assertions.assertEquals(1000, hashBulkRepository.count());
     }
 
 
@@ -51,23 +46,7 @@ class HashRepositoryTest extends BaseIntegrationTest {
     @Sql(scripts = "/insert-hashes.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void getHashBatch() {
-        List<String> hashList = hashRepository.getHashBatch(3);
+        List<String> hashList = hashBulkRepository.getHashBatch(3);
         Assertions.assertEquals(3, hashList.size());
-    }
-
-    @Test
-    void getMinSequence() {
-        long min = 14776336;
-        changeHashSequenceRepository.setSequenceMinValue(min);
-        long actual = hashRepository.getSequenceMin();
-        Assertions.assertEquals(14776336, actual);
-    }
-
-    @Test
-    void getMaxSequence() {
-        long max = 916132832;
-        changeHashSequenceRepository.setSequenceMaxValue(max);
-        long actual = hashRepository.getSequenceMax();
-        Assertions.assertEquals(916132832, actual);
     }
 }

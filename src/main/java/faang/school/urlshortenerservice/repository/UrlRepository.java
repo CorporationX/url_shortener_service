@@ -22,8 +22,9 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             """)
     List<String> deleteOldUrls();
 
+    @Modifying
     @Query(nativeQuery = true, value = """
-            SELECT hash FROM url WHERE url.url = :url
+                INSERT INTO url VALUES (:#{#url.hash}, :#{#url.url}, :#{#url.createdAt}, :#{#url.deletedAt})
             """)
-    String findHashByUrl(@Param("url") String url);
+    void insert(@Param("url") Url url);
 }
