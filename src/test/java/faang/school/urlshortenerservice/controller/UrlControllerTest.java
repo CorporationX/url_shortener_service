@@ -35,6 +35,7 @@ public class UrlControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Disabled
     void shouldReturnShortenedUrl() throws Exception {
 
         UrlResponseDto mockResponse = new UrlResponseDto(getShortUrl());

@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -14,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Queue;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +29,7 @@ public class UrlServiceImpl implements UrlService {
     private final Base62Encoder base62Encoder;
     private final RedisService redisService;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
     @Value("${services.hash-service.hash-cache}")
     private String hashCacheRedisKey;
     @Value("${services.hash-service.small-batch-size-unique-numbers}")
@@ -35,21 +37,28 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlResponseDto shortenUrl(UrlRequestDto dto) {
-        Optional<List<Hash>> optionalHashes = redisService.get(hashCacheRedisKey, new TypeReference<>() {
+        Optional<Queue<Hash>> optionalHashes = redisService.get(hashCacheRedisKey, new TypeReference<Queue<Hash>>() {
         });
 
-        List<Hash> hashes = optionalHashes.orElseGet(() -> {
-            log.info("Hashes not found in cache, fetching from database");
+        Queue<Hash> hashes = optionalHashes.orElseGet(() -> {
+            log.info("Hashes not found in cache, generate new hashes ");
+            log.info(String.format("Hashes not found in cache, generating  new hashes by smallBatchSize={}", smallBatchSize));
             hashGenerator.generateBatchHashes(smallBatchSize).join();
-            return redisService.get(hashCacheRedisKey, new TypeReference<List<Hash>>() {
+            return redisService.get(hashCacheRedisKey, new TypeReference<Queue<Hash>>() {
                     })
-                    .orElse(Collections.emptyList());
+                    .orElse(new LinkedList<>());
         });
 
-        Hash hash = hashes.get(0);
-        saveUrl(dto.getUrl(), hash);
-        hashes.remove(0);
+        Hash hash = hashes.poll();
+        if (hash == null) {
+            log.info("No hash available in cache, fetching one from the database.");
+            hash = hashRepository.getHashNotExistInUrl()
+                    .orElseThrow(() -> new RuntimeException("No hashes available for URL shortening."));
+        }
 
+        saveUrl(dto.getUrl(), hash);
+        redisService.save(hashCacheRedisKey, hashes);
+        log.info("Hash successfully used and cache updated. Remaining hashes in cache: {}", hashes.size());
         return new UrlResponseDto(hash.getHash());
     }
 

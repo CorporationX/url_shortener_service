@@ -29,4 +29,16 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
             RETURNING id;
             """, nativeQuery = true)
     List<Long> insertToHashDeletedUrls(@Param("createdAt") LocalDate createdAt, @Param("now") LocalDate now);
+
+    @Query(value = """
+            SELECT h.*
+            FROM hash h
+            WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM url u
+                    WHERE h.hash = u.hash
+            )
+            LIMIT 1;
+            """, nativeQuery = true)
+    Optional<Hash> getHashNotExistInUrl();
 }
