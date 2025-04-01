@@ -1,25 +1,82 @@
 spring:
+  profiles:
+    active: local
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 50
+      idle-timeout: 10000
+      max-lifetime: 30000
+      connection-timeout: 10000
+      auto-commit: false
+
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
 server:
   port: 8080
 
+shortener:
+  max-url-expired-seconds: 604800 # 7 days
+  max-url-redis-ttl-seconds: 3600
+  redis-short-url-prefix: "short-url:"
+
+  cron:
+    cleanup-and-free-hashes: "0 30 3 * * *" # 03:30 every day
+
+  hash-pool:
+    refill-threshold-percent: 50
+    max-cache-capacity: 500
+    max-postgres-capacity: 3000
+
+  executor:
+    core-pool-size: 4
+    max-pool-size: 10
+    queue-capacity: 100
+
+  security:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  metrics:
+    enable:
+      jdbc: true
+      all: true
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 5s
+
+  endpoint:
+    prometheus:
+      enabled: true
+
 logging:
   level:
-    root: info
+    root: INFO

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://pgbouncer:6432/postgres
+
+  data:
+    redis:
+      host: master_redis
