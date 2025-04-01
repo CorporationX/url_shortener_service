@@ -9,7 +9,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class ErrorResponse {
     private String serviceName;
-    private String className;
     private int status;
     private String message;
     private Map<String, Object> additionalAttributes;

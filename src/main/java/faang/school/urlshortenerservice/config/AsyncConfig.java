@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 
 @Configuration
 public class AsyncConfig {
-    @Value("${services.hash-service.batch-size}")
+    @Value("${services.hash-service.batch-size-queue-capacity}")
     private int batchSize;
 
     @Bean(name = "customTaskExecutor")

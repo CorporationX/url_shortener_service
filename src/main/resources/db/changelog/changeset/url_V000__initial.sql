@@ -11,6 +11,4 @@ create table if not exists hash(
     hash varchar(7) UNIQUE NOT NULL
 );
 
-CREATE SEQUENCE if not exists unique_number_seq
-    START WITH 100
-    INCREMENT BY 1;
+CREATE SEQUENCE if not exists unique_number_seq START WITH 100 INCREMENT BY 1;
