@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.HashService;
@@ -49,6 +51,9 @@ public class UrlControllerTest {
     @Autowired
     private UrlRepository urlRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -70,37 +75,32 @@ public class UrlControllerTest {
 
     @Test
     void testCreateShortUrl_ShouldReturnCreated() throws Exception {
-        String requestBody = """
-            {
-                "longUrl": "https://example.com"
-            }
-            """;
+        UrlRequestDto urlRequestDto = new UrlRequestDto();
+        urlRequestDto.setLongUrl("https://example.com");
+        String url = objectMapper.writeValueAsString(urlRequestDto.getLongUrl());
 
         mockMvc.perform(post("/url")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                .content(url))
             .andExpect(content().string("http://localhost:8080/mockedHash123"));
     }
 
     @Test
     void testCreateShortUrl_ShouldReturnExistingShortUrl_IfUrlAlreadyExists() throws Exception {
-        String existingUrl = "https://example.com";
+        UrlRequestDto urlRequestDto = new UrlRequestDto();
+        urlRequestDto.setLongUrl("https://example.com");
+        String url = objectMapper.writeValueAsString(urlRequestDto.getLongUrl());
+
         String hash = "abc123";
         urlRepository.save(Url.builder()
             .hash(hash)
-            .url(existingUrl)
+            .url(url)
             .expiredAt(LocalDateTime.now().plusDays(1))
             .build());
 
-        String requestBody = """
-            {
-                "longUrl": "%s"
-            }
-            """.formatted(existingUrl);
-
         mockMvc.perform(post("/url")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                .content(url))
             .andExpect(content().string("http://localhost:8080/mockedHash123"));
     }
 

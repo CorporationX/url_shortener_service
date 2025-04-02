@@ -32,6 +32,7 @@ logging:
 hash-generator:
   batch-size: 10
   max-range: 10000
+  min-capacity: 1000
   thread-pool:
     size: 4
     max-size: 4

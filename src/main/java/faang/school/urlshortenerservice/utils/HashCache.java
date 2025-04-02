@@ -46,9 +46,6 @@ public class HashCache {
 
     @Transactional
     public void refillHashes() {
-        List<String> dbHashes = getHashesFromDb(capacity);
-        hashQueue.addAll(dbHashes);
-
         if (needRefill()) {
             hashGenerator.generateBatch();
             List<String> newHashes = getHashesFromDb(capacity);

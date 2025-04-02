@@ -19,8 +19,14 @@ public class TransactionalHash {
     @Value("${hash-generator.batch-size}")
     private int batchSize;
 
+    @Value("${hash-generator.min-capacity}")
+    private int minValue;
+
     @Transactional
     public void generateAndSaveHashes() {
+        if (hashRepository.count() > minValue) {
+            return;
+        }
         log.info("Generating hashes in transaction");
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(batchSize);
         List<Hash> hashes = Base62Encoder.encodeBatch(uniqueNumbers);
