@@ -15,11 +15,12 @@ import java.util.stream.StreamSupport;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomBatchRepositoryImpl implements CustomBatchRepository<Hash> {
+public class HashBatchRepository implements CustomBatchRepository<Hash> {
+
+    private static final String INSERT_QUERY = "INSERT INTO hash (hash) VALUES (?)";
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcProperties properties;
-    private final String insertQuery = "INSERT INTO hash (hash) VALUES (?)";
 
     @Override
     @Transactional
@@ -31,7 +32,7 @@ public class CustomBatchRepositoryImpl implements CustomBatchRepository<Hash> {
 
         List<List<String>> batches = ListUtils.partition(hashes, properties.getBatchSize());
         batches.forEach(batch -> {
-            jdbcTemplate.batchUpdate(insertQuery, batch, batch.size(),
+            jdbcTemplate.batchUpdate(INSERT_QUERY, batch, batch.size(),
                     (PreparedStatement ps, String hash) -> ps.setString(1, hash));
         });
         return (List<S>) entities;
