@@ -1,0 +1,17 @@
+CREATE SEQUENCE unique_number_seq
+    START 1
+    INCREMENT 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE hash (
+    hash VARCHAR(255) PRIMARY KEY
+);
+
+CREATE TABLE url (
+    hash VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_url_hash FOREIGN KEY (hash) REFERENCES hash(hash)
+);
