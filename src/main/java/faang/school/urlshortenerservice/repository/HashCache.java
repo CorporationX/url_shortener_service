@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,18 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @RequiredArgsConstructor
 @Repository
 public class HashCache {
     private final HashService hashService;
+    @Resource(name = "getHashExecutorService")
+    private final ExecutorService getHashExecutorService;
     @Value("${hash-generator.local-cache-size:1000}")
     private int cacheSize;
     private Queue<String> cache;
     @Value("${hash-generator.ratio-free-hashes:0.2}")
     private double ratioFreeHashes;
-    private volatile boolean isReceivedHash;
 
     @PostConstruct
     public void init() {
@@ -34,14 +37,13 @@ public class HashCache {
 
     @Transactional
     public String getHash() {
-        if (((double) cache.size() / cacheSize) < ratioFreeHashes && !isReceivedHash) {
-            isReceivedHash = true;
-            synchronized (cache) {
-                int count = cacheSize - cache.size();
-                List<String> hashes = hashService.getHashes(count);
-                cache.addAll(hashes);
-            }
-            isReceivedHash = false;
+        if (((double) cache.size() / cacheSize) < ratioFreeHashes) {
+            getHashExecutorService.execute(() -> {
+                        int count = cacheSize - cache.size();
+                        List<String> hashes = hashService.getHashes(count);
+                        cache.addAll(hashes);
+                    }
+            );
         }
         return cache.poll();
     }

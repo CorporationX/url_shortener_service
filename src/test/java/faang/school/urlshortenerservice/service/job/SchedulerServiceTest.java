@@ -34,7 +34,6 @@ class SchedulerServiceTest extends BaseIntegrationTest {
     void deleteOldUrl() {
         hashGenerateExecutorService.shutdown();
         Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> hashGenerateExecutorService.isTerminated());
-        hashBulkRepository.deleteAll();
         assertEquals(11, urlRepository.count());
         assertEquals(0, hashBulkRepository.count());
 

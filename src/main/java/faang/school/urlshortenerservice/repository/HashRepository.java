@@ -1,11 +1,13 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -13,58 +15,59 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class HashRepository {
-    private final JdbcTemplate jdbcTemplate;
-    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size:1000}")
-    private int batchSize;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Transactional
-    public List<String> saveAll(List<String> hashes) {
-        jdbcTemplate.batchUpdate(
-                "INSERT INTO hash (hash) VALUES (?) ON CONFLICT DO NOTHING",
-                hashes,
-                batchSize,
-                (ps, hash) -> ps.setString(1, hash)
-        );
+    public int saveAll(List<String> hashes) {
+        if (hashes.isEmpty()) {
+            return 0;
+        }
 
-        String inClause = String.join(",",
-                Collections.nCopies(hashes.size(), "?"));
+        String sqlInsert = "INSERT INTO hash (hash) VALUES (:hashes) ON CONFLICT DO NOTHING";
+        SqlParameterSource[] batchParams = hashes.stream()
+                .map(hash -> new MapSqlParameterSource("hashes", hash))
+                .toArray(SqlParameterSource[]::new);
 
-        return jdbcTemplate.queryForList(
-                "SELECT hash FROM hash WHERE hash IN (" + inClause + ")",
-                String.class,
-                hashes.toArray()
-        );
+        return Arrays.stream(namedParameterJdbcTemplate.batchUpdate(sqlInsert, batchParams)).sum();
     }
 
     @Transactional
     public List<String> getHashBatch(int numbers) {
+        if (numbers <= 0) {
+            return List.of();
+        }
+
         String sql = """
                 DELETE FROM hash
                 WHERE hash
-                IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT ? FOR UPDATE SKIP LOCKED)
+                IN (SELECT hash FROM hash ORDER BY RANDOM() LIMIT :numbers FOR UPDATE SKIP LOCKED)
                 RETURNING hash;
                 """;
-        return jdbcTemplate.query(sql, ps -> ps.setInt(1, numbers),
-                (rs, rowNum) -> rs.getString("hash"));
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("numbers", numbers);
+
+        return namedParameterJdbcTemplate.query(sql, params,
+                (rs, rowNum) -> rs.getString("hash")
+        );
     }
 
     @Transactional
     public List<Long> getUniqueNumbers(int numbers) {
         String sql = """
-                SELECT nextval('unique_hash_number_seq') AS unique_number FROM generate_series(1, ?)
+                SELECT nextval('unique_hash_number_seq') AS unique_number FROM generate_series(1, :numbers)
                 """;
-        return jdbcTemplate.query(sql, ps -> ps.setInt(1, numbers),
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("numbers", numbers);
+
+        return namedParameterJdbcTemplate.query(sql, params,
                 (rs, rowNum) -> rs.getLong("unique_number"));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public long count() {
-        return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT count(*) FROM hash", Long.class))
+        String sql = "SELECT count(*) FROM hash";
+        return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, Collections.emptyMap(), Long.class))
                 .orElse(0L);
-    }
-
-    @Transactional
-    public void deleteAll() {
-        jdbcTemplate.update("DELETE FROM hash");
     }
 }

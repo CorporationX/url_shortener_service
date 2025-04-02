@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.aop.CheckAndGenerateHash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +13,12 @@ import java.util.List;
 @Service
 public class HashService {
     private final HashRepository hashRepository;
+    private final HashGenerator hashGenerator;
 
-    @CheckAndGenerateHash
     public List<String> getHashes(int count) {
         log.info("Getting {} hashes from DB", count);
         List<String> hashes = hashRepository.getHashBatch(count);
+        hashGenerator.checkHashCountsAsync();
         log.info("Get {} hashes from DB", count);
         return hashes;
     }
@@ -26,6 +26,6 @@ public class HashService {
     @Transactional
     public long saveFreeHashes(List<String> hashList) {
         log.info("Adding hashes count: {}", hashList.size());
-        return hashRepository.saveAll(hashList).size();
+        return hashRepository.saveAll(hashList);
     }
 }

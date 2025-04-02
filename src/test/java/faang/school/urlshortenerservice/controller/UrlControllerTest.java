@@ -55,7 +55,7 @@ class UrlControllerTest extends BaseIntegrationTest {
     @Sql(scripts = "/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createShortUrl() {
-        hashGenerator.init();
+        hashGenerator.checkHashCountsAsync();
         UrlDto urlDto = UrlDto.builder()
                 .url("http://www.google.com")
                 .build();

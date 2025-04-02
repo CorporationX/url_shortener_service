@@ -59,8 +59,8 @@ public class UrlService {
         urlRepository.insert(url);
         urlCacheRepository.setUrl(hash, urlOriginal);
 
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(shortUrlHeader);
-        uriComponentsBuilder.path("/%s".formatted(hash));
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(shortUrlHeader)
+                .path("/%s".formatted(hash));
         return uriComponentsBuilder.build().toUriString();
     }
 }

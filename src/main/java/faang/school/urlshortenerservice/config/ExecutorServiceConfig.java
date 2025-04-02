@@ -34,7 +34,7 @@ public class ExecutorServiceConfig {
         return new ScheduledThreadPoolExecutor(SCHEDULER_CORE_POOL_SIZE, new ThreadPoolExecutor.AbortPolicy());
     }
 
-    @Bean(name = "getHasExecutorService")
+    @Bean(name = "getHashExecutorService")
     public ExecutorService getHashExecutorService() {
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(GET_HASH_QUEUE_CAPACITY);
 

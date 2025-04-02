@@ -32,7 +32,7 @@ class HashGeneratorTest extends BaseIntegrationTest {
     @Sql(scripts = "/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void generateHashTest() {
-        hashGenerator.asyncCheckHashCounts();
+        hashGenerator.checkHashCountsAsync();
         Long count = hashBulkRepository.count();
         Assertions.assertEquals(1000, count);
     }
