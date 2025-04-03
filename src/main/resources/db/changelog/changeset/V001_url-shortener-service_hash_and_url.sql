@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS hash
+(
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS url
+(
+    hash       VARCHAR(6)   PRIMARY KEY,
+    url        VARCHAR      NOT NULL,
+    created_at TIMESTAMP    NOT NULL,
+    expired_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_url_created_at ON url(created_at);
+
+CREATE SEQUENCE unique_number_seq
+    START WITH 14776336
+    INCREMENT BY 1
+    MINVALUE 14776336
+    MAXVALUE 56800235583;
