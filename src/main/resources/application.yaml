@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    url: jdbc:postgresql://${HOST}:${POSTGRES_INTERNAL_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,8 +17,40 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: ${HOST:localhost}
+      port: ${REDIS_INTERNAL_PORT:6379}
+
+cron:
+  url-cleaner: ${CRON_URL_CLEANER:"0 * * * * *"}
+
+async:
+  hash-generator:
+    thread-name: ${HASH_GENERATOR_THREAD_NAME:"AsyncHashGenerator"}
+    pool-size: ${HASH_GENERATOR_POOL_SIZE:4}
+    max-pool-size: ${HASH_GENERATOR_MAX_POOL_SIZE:8}
+    queue_capacity: ${HASH_GENERATOR_QUEUE_CAPACITY:100}
+    batch-size: ${HASH_GENERATOR_BATCH_SIZE:1000}
+    min-limit: ${HASH_GENERATOR_MIN_LIMIT:100}
+  hash-cache-fill:
+    thread-name: ${CACHE_THREAD_NAME:"AsyncFillHashCache"}
+    pool-size: ${CACHE_POOL_SIZE:4}
+    max-pool-size: ${CACHE_MAX_POOL_SIZE:8}
+    queue_capacity: ${CACHE_QUEUE_CAPACITY:100}
+
+hash:
+  cache:
+    size: ${HASH_CACHE_SIZE:2000}
+    low-percent: ${HASH_CACHE_LOW_PERCENT:20}
+
+url:
+  lifecycle:
+    value: ${URL_LIFECYCLE_VALUE:3}
+    unit: ${URL_LIFECYCLE_UNIT:month}
+
 server:
-  port: 8080
+  port: ${APP_SERVICE_INTERNAL_PORT:8080}
 
 logging:
   level:
