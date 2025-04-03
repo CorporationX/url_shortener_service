@@ -14,8 +14,34 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      TTL-HOURS: 2
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+thread-pool:
+  pool-size: 5
+  queue-size: 20
+
+hash-cache:
+  max-size: 50
+  refresh-percentage: 0.2
+
+batch:
+  generation-size: 100
+
+encoder:
+  base: 62
+  characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  hashSize: 6
+
+cleaner:
+  cron: 0 0 2 * * *
 
 server:
   port: 8080
