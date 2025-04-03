@@ -4,21 +4,26 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashGeneratorTest {
-
-    private static final int TEST_BATCH_SIZE = 1000;
 
     @Mock
     private HashRepository hashRepository;
@@ -26,53 +31,85 @@ class HashGeneratorTest {
     @Mock
     private Base62Encoder base62Encoder;
 
+    @InjectMocks
     private HashGenerator hashGenerator;
 
     @BeforeEach
     void setUp() {
-        hashGenerator = new HashGenerator(TEST_BATCH_SIZE, hashRepository, base62Encoder);
+        lenient().when(base62Encoder.encode(anyLong())).thenAnswer(invocation ->
+                "hash_" + invocation.getArgument(0));
     }
 
     @Test
-    void testGenerateHashesShouldProcessBatchSuccessfully() {
+    void testGenerateHashShouldCallSaveAllBatch() {
+        int size = 5;
+        List<String> generatedHashes = List.of("hash_1", "hash_2", "hash_3", "hash_4", "hash_5");
 
-        List<Long> testNumbers = List.of(1L, 2L, 3L);
-        List<String> testHashes = List.of("a", "b", "c");
+        when(hashRepository.getUniqueNumbers(size)).thenReturn(List.of(1L, 2L, 3L, 4L, 5L));
 
-        when(hashRepository.getUniqueNumbers(TEST_BATCH_SIZE)).thenReturn(testNumbers);
-        when(base62Encoder.encode(testNumbers)).thenReturn(testHashes);
+        hashGenerator.generateHash(size);
 
-        hashGenerator.generateHashes();
-
-        verify(hashRepository).getUniqueNumbers(TEST_BATCH_SIZE);
-        verify(base62Encoder).encode(testNumbers);
-        verify(hashRepository).saveAllBatch(testHashes);
+        verify(hashRepository, times(1)).saveAllBatch(eq(generatedHashes));
     }
 
     @Test
-    void testGenerateHashesWhenEmptyNumbersShouldNotCallEncoderOrSave() {
+    void testGetHashesShouldReturnHashesFromRepository() {
+        int batchSize = 3;
+        List<String> storedHashes = new ArrayList<>(List.of("hash_AB", "hash_BC"));
 
-        when(hashRepository.getUniqueNumbers(TEST_BATCH_SIZE)).thenReturn(List.of());
+        when(hashRepository.getHashAndDeleteFromDb(batchSize)).thenReturn(storedHashes);
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(List.of(1L));
 
-        hashGenerator.generateHashes();
+        List<String> result = hashGenerator.getHashes(batchSize);
 
-        verify(hashRepository).getUniqueNumbers(TEST_BATCH_SIZE);
-        verifyNoInteractions(base62Encoder);
-        verify(hashRepository, never()).saveAllBatch(any());
+        assertEquals(batchSize, result.size());
+        assertTrue(result.containsAll(storedHashes));
+        assertTrue(result.contains("hash_1"));
+
+         verify(hashRepository, times(1)).getHashAndDeleteFromDb(batchSize);
+         verify(hashRepository, times(1)).getUniqueNumbers(1);
     }
 
     @Test
-    void testGenerateHashesWhenEncoderThrowsExceptionShouldNotSave() {
+    void testGetHashesShouldGenerateHashesIfNoneInDb() {
+        int batchSize = 3;
 
-        List<Long> testNumbers = List.of(1L, 2L, 3L);
+        when(hashRepository.getHashAndDeleteFromDb(batchSize)).thenReturn(new ArrayList<>());
+        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(List.of(1L, 2L, 3L));
 
-        when(hashRepository.getUniqueNumbers(TEST_BATCH_SIZE)).thenReturn(testNumbers);
-        when(base62Encoder.encode(testNumbers)).thenThrow(new RuntimeException("Encoding failed"));
+        List<String> result = hashGenerator.getHashes(batchSize);
 
-        hashGenerator.generateHashes();
+        assertEquals(batchSize, result.size());
+        assertTrue(result.containsAll(List.of("hash_1", "hash_2", "hash_3")));
 
-        verify(hashRepository).getUniqueNumbers(TEST_BATCH_SIZE);
-        verify(base62Encoder).encode(testNumbers);
-        verify(hashRepository, never()).saveAllBatch(any());
+        verify(hashRepository, times(1)).getHashAndDeleteFromDb(batchSize);
+        verify(hashRepository, times(1)).getUniqueNumbers(batchSize);
+    }
+
+    @Test
+    void testGenerateAndGetHashesShouldReturnEncodedNumbers() {
+        int size = 3;
+        List<Long> uniqueNumbers = List.of(100L, 200L, 300L);
+
+        when(hashRepository.getUniqueNumbers(size)).thenReturn(uniqueNumbers);
+
+        List<String> result = hashGenerator.getHashes(size);
+
+        assertEquals(3, result.size());
+        assertTrue(result.containsAll(List.of("hash_100", "hash_200", "hash_300")));
+
+        verify(hashRepository, times(1)).getUniqueNumbers(size);
+    }
+
+    @Test
+    void testGenerateAndGetHashesShouldThrowExceptionIfNoNumbers() {
+        int size = 3;
+        when(hashRepository.getUniqueNumbers(size)).thenReturn(new ArrayList<>());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            hashGenerator.getHashes(size);
+        });
+
+        assertEquals("uniqueNumbers is not read", exception.getMessage());
     }
 }

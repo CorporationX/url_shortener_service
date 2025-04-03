@@ -18,7 +18,7 @@ import java.util.List;
 public class CleanerScheduler {
 
     @Value("${url.cleaner.retention-years}")
-    private final int years;
+    private final int clearOldUrlsTime;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
@@ -26,7 +26,8 @@ public class CleanerScheduler {
     @Transactional
     public void cleanExpiredUrls() {
         log.info("Starting clean expired urls");
-        List<String> freeHashes = urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(years));
+        List<String> freeHashes =
+                urlRepository.deleteOldUrlsAndGetReleasedHashes(LocalDateTime.now().minusYears(clearOldUrlsTime));
 
         if (!CollectionUtils.isEmpty(freeHashes)) {
             hashRepository.saveAllBatch(freeHashes);

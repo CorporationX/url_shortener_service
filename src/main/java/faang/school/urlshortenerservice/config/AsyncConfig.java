@@ -17,13 +17,13 @@ public class AsyncConfig {
     @Value("${AsyncConfig.queueCapacity}")
     private int queueCapacity;
 
-    @Bean(name = "hashGeneratorExecutor")
-    public ThreadPoolTaskExecutor hashGeneratorExecutor() {
+    @Bean(name = "hashTaskExecutor")
+    public ThreadPoolTaskExecutor hashTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("HashGenerator-");
+        executor.setThreadNamePrefix("HashExecutor-");
         executor.initialize();
         return executor;
     }

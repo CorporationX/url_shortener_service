@@ -1,19 +1,17 @@
 package faang.school.urlshortenerservice.utils;
 
 
-import faang.school.urlshortenerservice.exceptions.NoCacheFoundException;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @RequiredArgsConstructor
@@ -21,73 +19,66 @@ import java.util.concurrent.locks.ReentrantLock;
 public class HashCache {
 
     private final HashGenerator hashGenerator;
-    private final HashRepository hashRepository;
+    private final ThreadPoolTaskExecutor taskExecutor;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     @Value("${hashGenerator.batchSize}")
-    private int hashesForDb;
+    private int hashesNumber;
 
     @Value("${hashCache.lowThreshold}")
     private double lowThreshold;
 
-    @Value("${hashCache.maxSize}")
-    private int maxCacheSize;
-
-    private final Lock lock = new ReentrantLock();
-
     private LinkedBlockingDeque<String> cache;
 
-    @Transactional
+    @PostConstruct
     public void initHashCache() {
-        log.info("Initializing HashCache with batchSize: {}, lowThreshold: {}, maxSize: {}",
-                hashesForDb, lowThreshold, maxCacheSize);
-
-        int percentOfTotal = (int)(hashesForDb * lowThreshold);
-        cache = new LinkedBlockingDeque<>(maxCacheSize);
-
-        if (isRunning.compareAndSet(false, true)) {
-            try {
-                Long hashesInDb = hashRepository.totalNumOfHashesInDb();
-                if (hashesInDb == null || hashesInDb < percentOfTotal) {
-                    log.info("Generating hashes because totalNumOfHashesInDb is less than threshold.");
-                    hashGenerator.generateHashes();
-                    loadHashesFromDb();
-                }
-            }catch (Exception ex) {
-                log.error("Error during HashCache initialization", ex);
-            }
-            finally {
-                isRunning.set(false);
-            }
-        }
+        log.info("Initializing HashCache at startup");
+        cache = new LinkedBlockingDeque<>(hashesNumber);
+        fillCache();
     }
 
     public String getHashFromCache() {
+
+        if (cache.isEmpty()) {
+            isRunning.compareAndSet(false, true);
+            return hashGenerator.getHashes(1).get(0);
+        }
+
+        int percentOfTotal = (int)(hashesNumber - hashesNumber * lowThreshold);
+
+        if (cache.remainingCapacity() > percentOfTotal
+                && isRunning.compareAndSet(false, true)) {
+                log.info("Start refresh cache");
+            refreshCache();
+        }
+
         String hash = cache.poll();
-
-        if (cache.size() < (int)(maxCacheSize * lowThreshold)) {
-            loadHashesFromDb();
+        if (hash == null) {
+            throw new RuntimeException("No hashes available in the cache");
         }
-
-        if (hash != null) {
-            return hash;
-        } else {
-            loadHashesFromDb();
-            try {
-                return hashRepository.getFirstHashAndDeleteFromDb();
-            } catch (Exception ex) {
-                throw new NoCacheFoundException("Error getting hash from DB" + ex);
-            }
-        }
+        return hash;
     }
 
-    private void loadHashesFromDb() {
-        if (cache.size() < (int)(maxCacheSize * lowThreshold) && lock.tryLock()) {
-            try {
-                List<String> hashesFromDb = hashRepository.getHashBatchAndDeleteFromDb();
-                cache.addAll(hashesFromDb);
-            } finally {
-                lock.unlock();
+    private void refreshCache() {
+        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(hashesNumber), taskExecutor)
+                .thenAccept(this::addHashes)
+                .exceptionally(ex -> {
+                    isRunning.set(false);
+                    throw new RuntimeException(ex);
+                })
+                .thenRun(() -> isRunning.set(false));
+    }
+
+    private void fillCache() {
+        List<String> hashes = hashGenerator.getHashes(hashesNumber);
+        addHashes(hashes);
+    }
+
+    private void addHashes(List<String> newHashes) {
+        log.info("Push {}", newHashes.size());
+        for (String hash : newHashes) {
+            if (!cache.offer(hash)) {
+                break;
             }
         }
     }

@@ -12,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({NoCacheFoundException.class, UrlNotFoundException.class})
+    @ExceptionHandler({UrlNotFoundException.class})
     public ResponseEntity<ErrorDto> handleNotFoundException(RuntimeException ex, WebRequest request) {
         log.error("Resource not found: {}", ex.getMessage());
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);

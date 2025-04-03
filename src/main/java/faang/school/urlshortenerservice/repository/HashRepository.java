@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.repository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,34 +13,12 @@ import java.util.List;
 @Slf4j
 public class HashRepository {
 
-    @Value("${hashRepository.batchSize}")
-    private final int batchSize;
     private final JdbcTemplate jdbcTemplate;
-
-    @Transactional
-    public Long totalNumOfHashesInDb() {
-        String sql = "SELECT COUNT(*) FROM Hash h";
-        return jdbcTemplate.queryForObject(sql, Long.class);
-    }
 
     @Transactional
     public List<Long> getUniqueNumbers(int numbers) {
         String sql = "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, numbers);
-    }
-
-    @Transactional
-    public String getFirstHashAndDeleteFromDb() {
-        String sql = "WITH deleted AS (" +
-                "  DELETE FROM hash " +
-                "  WHERE hash = (" +
-                "    SELECT hash FROM hash LIMIT 1" +
-                "  ) " +
-                "  RETURNING hash" +
-                ") " +
-                "SELECT hash FROM deleted";
-
-        return jdbcTemplate.queryForObject(sql, String.class);
     }
 
     @Transactional
@@ -55,15 +32,16 @@ public class HashRepository {
     }
 
     @Transactional
-    public List<String> getHashBatchAndDeleteFromDb() {
-        String sql = "WITH deleted AS ( " +
-                "  DELETE FROM hash " +
-                "  WHERE hash IN (" +
-                "    SELECT hash FROM hash ORDER BY random() LIMIT ? " +
-                "  ) " +
-                "  RETURNING hash) " +
-                "SELECT hash FROM deleted";
+    public List<String> getHashAndDeleteFromDb(int batchSize) {
 
+        String sql = """
+                WITH deleted AS (
+                  DELETE FROM hash 
+                        WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT ?) 
+                  RETURNING hash
+                ) 
+                SELECT hash FROM deleted
+                """;
         return jdbcTemplate.queryForList(sql, String.class, batchSize);
     }
 }
