@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,12 +23,10 @@ public class HashGenerator {
     private final HashRepository hashRepository;
 
     @Async("customThreadPool")
-    @Transactional
     public void generateBatch() {
         List<Long> numbers = hashRepository.getUniqueNumbers(batсhSize);
         List<Hash> hashes = numbers.stream()
-                .map(base62Encoder::encode)
-                .map(Hash::new)
+                .map(number -> new Hash(base62Encoder.encode(number)))
                 .toList();
 
         hashRepository.saveAll(hashes);

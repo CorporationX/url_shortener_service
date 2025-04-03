@@ -32,6 +32,11 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     /**
+     * Hibernate
+     */
+    implementation ("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+
+    /**
      * Utils & Logging
      */
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")

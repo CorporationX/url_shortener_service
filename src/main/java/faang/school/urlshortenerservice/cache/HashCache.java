@@ -45,9 +45,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashQueue.size() < hashCacheSize * minCachePercentage && isGenerating.compareAndSet(false, true)) {
-            addHashes().thenRun(() -> isGenerating.set(false));
-        }
+        refillCacheIfNeeded();
         String hash = hashQueue.poll();
         if (hash != null) {
             log.info("Использован хэш. Текущее количество хэшей в кеше: {}", hashQueue.size());
@@ -57,12 +55,21 @@ public class HashCache {
         }
     }
 
-    private CompletableFuture<Void> addHashes() {
+    protected CompletableFuture<Void> addHashes() {
         return CompletableFuture.runAsync(() -> {
             hashGenerator.generateBatch();
             List<String> newHashes = hashRepository.getAndRemoveHashes(hashCacheSize - hashQueue.size());
             hashQueue.addAll(newHashes);
         }, executorService);
+    }
+
+    protected void refillCacheIfNeeded() {
+        boolean cacheNeedsRefill = hashQueue.size() < hashCacheSize * minCachePercentage;
+        boolean canStartRefill = isGenerating.compareAndSet(false, true);
+
+        if (cacheNeedsRefill && canStartRefill) {
+            addHashes().thenRun(() -> isGenerating.set(false));
+        }
     }
 }
 

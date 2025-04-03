@@ -22,7 +22,7 @@ public class CleanerScheduler {
     }
 
     @Transactional
-    private void cleanAndSaveExpiredHashes() {
+    protected void cleanAndSaveExpiredHashes() {
         List<Hash> freeHashes = urlRepository.removeExpiredUrlsAndGetHashes().stream()
                 .map(Hash::new)
                 .toList();
