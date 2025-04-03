@@ -19,30 +19,30 @@ public class HashQueueManager {
     private final HashRepository hashRepository;
     private final HashCacheProperties properties;
 
-    public String pollHash(){
+    public String pollHash() {
         return hashQueue.poll();
     }
 
-    public boolean shouldRefill(){
+    public boolean shouldRefill() {
         return hashQueue.size() < calculateThreshold();
     }
 
-    public int getCurrentHash(){
+    public int getCurrentHash() {
         return hashQueue.size();
     }
 
-    private int calculateThreshold(){
+    private int calculateThreshold() {
         return (properties.getMaxSize() * properties.getRefillThresholdPercent()) / PERCENT_DIVISOR;
     }
 
-    public void scheduleRefill(Runnable refillTask){
-        if(isRefilling.compareAndSet(false, true)){
+    public void scheduleRefill(Runnable refillTask) {
+        if (isRefilling.compareAndSet(false, true)) {
             refillTask.run();
         }
     }
 
-    public void refillFromDatabase(){
-        try{
+    public void refillFromDatabase() {
+        try {
             List<String> hashes = hashRepository.getHashBatch(
                     properties.getMaxSize() - hashQueue.size()
             );

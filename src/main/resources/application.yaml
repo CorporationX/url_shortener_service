@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -22,17 +22,22 @@ spring:
       host: localhost
       port: 6379
       password: secret
-      top-urls-size: 500
+      TTL-HOURS: 2
 
   base_url: http://localhost:8080
 
   hash-cache:
-    max-size: 10000
-    refill-threshold-percent: 20
     executor:
-      core-pool-size: 2
-      max-pool-size: 4
-      queue-capacity: 100
+      core-pool-size: 100
+      max-pool-size: 500
+      queue-capacity: 10000
+    max-size: 100_000
+    refill-threshold-percent: 20
+    min-db-multiplier: 10
+    max-db-multiplier: 20
+    batch-size: 5000
+    max-generation-batch: 50_000
+    generation-lock-name: "hash_generation"
 
   url:
     expiration-period: 365d
@@ -43,7 +48,7 @@ spring:
       lock-name: "url_cleanup_lock"
 
 server:
-  port: 8081
+  port: 8080
 
 logging:
   level:

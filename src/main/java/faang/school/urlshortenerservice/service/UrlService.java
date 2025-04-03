@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,8 +27,6 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final UrlProperties urlProperties;
 
-
-
     @Transactional
     public String createShortUrl(String url) {
         String hash = hashCache.getHash();
@@ -39,6 +38,7 @@ public class UrlService {
                 .build();
 
         urlRepository.save(urlEntity);
+        log.info("Created new shortUrl: " + url);
 
         urlCacheRepository.set(hash, url);
 
@@ -47,16 +47,19 @@ public class UrlService {
 
     @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
-        String cachedUrl = urlCacheRepository.get(hash);
-        if (cachedUrl != null) {
-
-            return cachedUrl;
+        Optional<String> originalUrl = urlCacheRepository.get(hash);
+        if (originalUrl.isPresent()) {
+            return originalUrl.get();
         }
 
-        Url url = urlRepository.findById(hash)
-                .orElseThrow(()-> new UrlNotFoundException("URL not found for hash: " + hash));
+        String url = urlRepository
+                .findById(hash)
+                .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash))
+                .getUrl();
 
-        return url.getUrl();
+        urlCacheRepository.set(hash, url);
+
+        return url;
     }
 
     private String buildShortUrl(String hash) {

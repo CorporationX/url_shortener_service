@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class HashGenerationService {
-    private static final String GENERATION_LOCK = "hash_generation";
-
     private final HashGenerator hashGenerator;
     private final LockRepository lockRepository;
     private final HashCacheProperties properties;
@@ -27,7 +25,7 @@ public class HashGenerationService {
     }
 
     private boolean isGenerationAvailable() {
-        boolean lockAcquired = lockRepository.tryAcquireLock(GENERATION_LOCK);
+        boolean lockAcquired = lockRepository.tryAcquireLock(properties.getGenerationLockName());
 
         if (!lockAcquired) {
             log.debug("Generation lock is held by another instance");
@@ -58,11 +56,11 @@ public class HashGenerationService {
         );
     }
 
-    private int getMaxAllowedHashes(){
+    private int getMaxAllowedHashes() {
         return properties.getMaxDbMultiplier() * properties.getMaxSize();
     }
 
-    private int getMinAllowedHashes(){
+    private int getMinAllowedHashes() {
         return properties.getMinDbMultiplier() * properties.getMaxSize();
     }
 }

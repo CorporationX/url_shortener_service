@@ -8,6 +8,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.IntStream;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -39,10 +41,9 @@ public class HashCacheInitializer {
     }
 
     private void generateHashesInBatches(int batches) {
-        for (int i = 0; i < batches; i++) {
-            hashGenerationService.generateHash(0);
-            log.info("Generated batch {}/{}", i + 1, batches);
-        }
+        IntStream.range(0, batches)
+                .peek(i -> hashGenerationService.generateHash(0))
+                .forEach(i -> log.info("Generated batch {}/{}", i + 1, batches));
     }
 
     private void fillQueueSingleAttempt() {

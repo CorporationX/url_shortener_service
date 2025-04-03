@@ -13,23 +13,23 @@ public class HashRepository {
 
     public List<String> getHashBatch(int count) {
         String sql = """
-            WITH selected_hashes AS (
-                SELECT hash 
-                FROM hash 
-                ORDER BY RANDOM() 
-                LIMIT ?
-                FOR UPDATE SKIP LOCKED
-            )
-            DELETE FROM hash 
-            USING selected_hashes 
-            WHERE hash.hash = selected_hashes.hash 
-            RETURNING hash.hash
-            """;
+                WITH selected_hashes AS (
+                    SELECT hash 
+                    FROM hash 
+                    ORDER BY RANDOM() 
+                    LIMIT ?
+                    FOR UPDATE SKIP LOCKED
+                )
+                DELETE FROM hash 
+                USING selected_hashes 
+                WHERE hash.hash = selected_hashes.hash 
+                RETURNING hash.hash
+                """;
 
         return jdbcTemplate.queryForList(sql, String.class, count);
     }
 
-    public int getHashesCount(){
+    public int getHashesCount() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);
     }
 }

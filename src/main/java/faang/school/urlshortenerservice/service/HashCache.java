@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,8 +16,8 @@ public class HashCache {
     private final HashGenerationService hashGenerationService;
     private final ExecutorService executorService;
 
-    public String getHash(){
-        if(hashQueueManager.shouldRefill()){
+    public String getHash() {
+        if (hashQueueManager.shouldRefill()) {
             executorService.submit(this::safeReillCache);
         }
         return pollHashFromQueue();
@@ -30,8 +29,8 @@ public class HashCache {
         return hash;
     }
 
-    private void safeReillCache(){
-        hashQueueManager.scheduleRefill(() ->{
+    private void safeReillCache() {
+        hashQueueManager.scheduleRefill(() -> {
             int currentCount = hashRepository.getHashesCount();
             hashQueueManager.refillFromDatabase();
             hashGenerationService.generateHash(currentCount);

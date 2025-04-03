@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.config.redis;
 
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,13 +33,5 @@ public class RedisConfig {
         StringRedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(lettuceConnectionFactory);
         return template;
-    }
-
-    @Bean
-    public UrlCacheRepository urlCacheRepository(
-            StringRedisTemplate redisTemplate,
-            @Value("${spring.data.redis.top-urls-size}") int topUrlsSize
-    ) {
-        return new UrlCacheRepository(redisTemplate, topUrlsSize);
     }
 }
