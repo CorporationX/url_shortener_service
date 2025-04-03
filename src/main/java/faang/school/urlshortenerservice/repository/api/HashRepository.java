@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.api;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,7 +27,7 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             )
         RETURNING *
     """)
-    List<Hash> pop(@Param("amount") long amount);
+    List<Hash> popBatch(@Param("amount") long amount);
 
     @Modifying
     @Query(value = """

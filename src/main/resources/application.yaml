@@ -23,7 +23,7 @@ spring:
       port: ${REDIS_INTERNAL_PORT:6379}
 
 cron:
-  url-cleaner: ${CRON_URL_CLEANER:"0 30 * * * *"}
+  url-cleaner: ${CRON_URL_CLEANER:"0 * * * * *"}
 
 async:
   hash-generator:
