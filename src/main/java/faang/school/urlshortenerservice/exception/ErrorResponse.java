@@ -13,8 +13,19 @@ public class ErrorResponse {
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private final Map<String, String> errors;
+    private Map<String, String> errors;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp = LocalDateTime.now();
+
+    public ErrorResponse(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public ErrorResponse(int status, String message, Map<String, String> errors) {
+        this.status = status;
+        this.message = message;
+        this.errors = errors;
+    }
 }

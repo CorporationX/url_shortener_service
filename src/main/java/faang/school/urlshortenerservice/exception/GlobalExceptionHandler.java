@@ -28,19 +28,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleUrlNotFoundException(UrlNotFoundException ex) {
         String message = ex.getMessage();
         log.error("Url not found: {}", message, ex);
-        return buildErrorResponseEntity(HttpStatus.NOT_FOUND, message, null);
+        return buildErrorResponseEntity(HttpStatus.NOT_FOUND, message);
     }
 
     @ExceptionHandler(UniqueNumberOutOfBoundsException.class)
     public ResponseEntity<Object> handleUniqueNumberOutOfBoundsException(UniqueNumberOutOfBoundsException ex) {
         log.error("Internal server error: {}", ex.getMessage(), ex);
-        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
+        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         log.error("Internal server error: {}", ex.getMessage(), ex);
-        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
+        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    }
+
+    private ResponseEntity<Object> buildErrorResponseEntity(HttpStatus status, String message) {
+        ErrorResponse apiError = new ErrorResponse(status.value(), message);
+        return ResponseEntity.status(status).body(apiError);
     }
 
     private ResponseEntity<Object> buildErrorResponseEntity(
