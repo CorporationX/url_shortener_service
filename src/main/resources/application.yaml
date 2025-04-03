@@ -13,6 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        jdbc:
+          batch_size: 1000
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    cache-names: urls
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +34,21 @@ server:
 logging:
   level:
     root: info
+  org:
+    springframework:
+      data:
+        redis: DEBUG
+
+domain: "shor.ti"
+
+clean-scheduler:
+  cron: "0 1 * * * *"  #"0 0 23 * * *"
+  date:
+    interval: "1 hour"
+
+hash-cache:
+  max:
+    range: 30
+  capacity: 10
+  fill:
+    percent: 20
