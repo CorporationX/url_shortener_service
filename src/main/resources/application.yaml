@@ -13,13 +13,50 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 500
+          batch_versioned_data: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:liquibase/changelog-master.yaml
+
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    timeout: 5000
+  cache:
+    type: redis
+    redis:
+      time-to-live: 86400000 # 24 часа в миллисекундах
 
 server:
   port: 8080
+  servlet:
+    context-path: /shortener/api/v1
 
 logging:
   level:
     root: info
+
+hash:
+  maxRange: 10000
+
+hash-generator:
+  thread-pool:
+    core-size: 8
+    max-size: 16
+    queue-capacity: 500
+
+cache:
+  capacity: 10000
+  fillPercent: 20
+
+url:
+  cleaner:
+    scheduler:
+      cron: "0 0 0 * * *" # запуск каждый день в 00:00:00 (полночь)
+  baseShortUrl: "http://localhost:8080/shortener/api/v1/url/"
+  retention-period: 1
