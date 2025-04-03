@@ -12,8 +12,8 @@ public class RedisConfig {
     @Bean
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());   // Читаемые ключи
-        template.setValueSerializer(new StringRedisSerializer()); // Читаемые значения
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
         return template;
     }
 }

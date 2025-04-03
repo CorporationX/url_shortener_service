@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.generator;
 import faang.school.urlshortenerservice.utils.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.event.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +23,6 @@ public class HashGenerator {
     private int maxRange;
 
     @Async("hashThreadPoolTaskExecutor")
-    @Transactional
     public void generateBatch(){
         try {
             List<Long> numbers = hashRepository.getNextRange(maxRange);

@@ -20,6 +20,4 @@ public class UrlCacheRepository {
     public void saveUrl(String hash, String url) {
         redisTemplate.opsForValue().set(hash, url, CACHE_TTL, TimeUnit.HOURS);
     }
-
-
 }
