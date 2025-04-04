@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -17,6 +18,9 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
+    @Value("${hashGenerator.batchSize}")
+    private final int batchSize;
+
     @Transactional()
     public void generateHash(int size) {
         hashRepository.saveAllBatch(generateAndGetHashes(size));
@@ -24,10 +28,12 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<String> getHashes(int batchSize) {
+    public List<String> getHashes(int hashCacheSize) {
         List<String> hashes = hashRepository.getHashAndDeleteFromDb(batchSize);
-        if (hashes.size() < batchSize) {
-            hashes.addAll(generateAndGetHashes(batchSize - hashes.size()));
+        if (hashes.size() < hashCacheSize) {
+            List<String> newHashes = generateAndGetHashes(batchSize);
+            hashRepository.saveAllBatch(newHashes);
+            hashes = hashRepository.getHashAndDeleteFromDb(hashCacheSize);
         }
         return hashes;
     }

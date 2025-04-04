@@ -22,18 +22,18 @@ public class HashCache {
     private final ThreadPoolTaskExecutor taskExecutor;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
-    @Value("${hashGenerator.batchSize}")
-    private int hashesNumber;
-
     @Value("${hashCache.lowThreshold}")
-    private double lowThreshold;
+    private final double lowThreshold;
+
+    @Value("${hashCache.maxSize}")
+    private final int hashCacheSize;
 
     private LinkedBlockingDeque<String> cache;
 
     @PostConstruct
     public void initHashCache() {
         log.info("Initializing HashCache at startup");
-        cache = new LinkedBlockingDeque<>(hashesNumber);
+        cache = new LinkedBlockingDeque<>(hashCacheSize);
         fillCache();
     }
 
@@ -44,7 +44,7 @@ public class HashCache {
             return hashGenerator.getHashes(1).get(0);
         }
 
-        int percentOfTotal = (int)(hashesNumber - hashesNumber * lowThreshold);
+        int percentOfTotal = (int)(hashCacheSize - hashCacheSize * lowThreshold);
 
         if (cache.remainingCapacity() > percentOfTotal
                 && isRunning.compareAndSet(false, true)) {
@@ -59,19 +59,19 @@ public class HashCache {
         return hash;
     }
 
+    public void fillCache() {
+        List<String> hashes = hashGenerator.getHashes(hashCacheSize);
+        addHashes(hashes);
+    }
+
     private void refreshCache() {
-        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(hashesNumber), taskExecutor)
+        CompletableFuture.supplyAsync(() -> hashGenerator.getHashes(hashCacheSize), taskExecutor)
                 .thenAccept(this::addHashes)
                 .exceptionally(ex -> {
                     isRunning.set(false);
                     throw new RuntimeException(ex);
                 })
                 .thenRun(() -> isRunning.set(false));
-    }
-
-    private void fillCache() {
-        List<String> hashes = hashGenerator.getHashes(hashesNumber);
-        addHashes(hashes);
     }
 
     private void addHashes(List<String> newHashes) {
