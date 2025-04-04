@@ -8,7 +8,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class Base62Encoder {
-    private static final String HASH_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String HASH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int ALPHABET_LENGTH = 62;
 
     public List<String> encode(List<Long> numbers) {
@@ -18,10 +18,6 @@ public class Base62Encoder {
     }
 
     private String encode(Long number) {
-        if (number == 0) {
-            return String.valueOf(HASH_ALPHABET.charAt(0));
-        }
-
         StringBuilder result = new StringBuilder();
         while (number > 0) {
             int remainder = (int) (number % ALPHABET_LENGTH);

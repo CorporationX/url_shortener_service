@@ -33,12 +33,12 @@ class HashRepositoryTest extends BaseIntegrationTest {
         statistics.setStatisticsEnabled(true);
         statistics.clear();
 
-        List<String> hashes = IntStream.range(0, 1000)
+        List<String> hashes = IntStream.range(100, 1000)
                 .boxed()
-                .map("hash_%s"::formatted)
+                .map("ha%s"::formatted)
                 .toList();
         hashBulkRepository.saveAll(hashes);
-        Assertions.assertEquals(1000, hashBulkRepository.count());
+        Assertions.assertEquals(900, hashBulkRepository.count());
     }
 
 

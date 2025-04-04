@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Queue;
@@ -35,16 +34,22 @@ public class HashCache {
         log.info("Hash cache initialized");
     }
 
-    @Transactional
     public String getHash() {
-        if (((double) cache.size() / cacheSize) < ratioFreeHashes) {
-            getHashExecutorService.execute(() -> {
-                        int count = cacheSize - cache.size();
-                        List<String> hashes = hashService.getHashes(count);
-                        cache.addAll(hashes);
-                    }
-            );
+        if (isCacheUnderLimit()) {
+            getHashExecutorService.execute(fillCache());
         }
         return cache.poll();
+    }
+
+    private Runnable fillCache() {
+        return () -> {
+            int count = cacheSize - cache.size();
+            List<String> hashes = hashService.getHashes(count);
+            cache.addAll(hashes);
+        };
+    }
+
+    private boolean isCacheUnderLimit() {
+        return ((double) cache.size() / cacheSize) < ratioFreeHashes;
     }
 }

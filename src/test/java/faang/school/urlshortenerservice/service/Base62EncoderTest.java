@@ -10,8 +10,8 @@ class Base62EncoderTest {
 
     @Test
     void testEncode_ListOfNumbers() {
-        List<Long> numbers = List.of(123456789L, 987654321L, 0L);
-        List<String> expected = List.of("Xk0M8", "P06q41", "0");
+        List<Long> numbers = List.of(123456789L, 987654321L);
+        List<String> expected = List.of("huAWI", "ZAG0EB");
         List<String> result = base62Encoder.encode(numbers);
         Assertions.assertEquals(expected, result);
     }

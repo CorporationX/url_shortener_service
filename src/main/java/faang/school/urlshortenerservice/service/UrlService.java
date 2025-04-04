@@ -51,16 +51,20 @@ public class UrlService {
         LocalDateTime deleteAt = LocalDateTime.now().plusSeconds(defaultTtl);
 
         String hash = hashCache.getHash();
-        Url url = Url.builder()
-                .url(urlFromOriginal)
-                .hash(hash)
-                .deletedAt(deleteAt)
-                .build();
+        Url url = getUrl(urlFromOriginal, hash, deleteAt);
         urlRepository.insert(url);
         urlCacheRepository.setUrl(hash, urlOriginal);
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(shortUrlHeader)
                 .path("/%s".formatted(hash));
         return uriComponentsBuilder.build().toUriString();
+    }
+
+    private Url getUrl(URL urlFromOriginal, String hash, LocalDateTime deleteAt) {
+        return Url.builder()
+                .url(urlFromOriginal)
+                .hash(hash)
+                .deletedAt(deleteAt)
+                .build();
     }
 }

@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.repository.AdvisoryLockRepository;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,8 +20,6 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final AdvisoryLockRepository lockRepository;
-    @Resource(name = "generateExecutorService")
-    private final ExecutorService generateExecutorService;
     @Value("${hash-generator.generate-count:1000}")
     private int generateCounts;
     @Value("${hash-generator.ratio-free-hashes:0.3}")
@@ -34,22 +30,21 @@ public class HashGenerator {
     @PostConstruct
     public void init() {
         log.info("Init check hash counts");
-        int hashCount = (int) hashRepository.count();
-        log.info("Init hash count: {}", hashCount);
-
-        if ((double) hashCount / generateCounts < ratioFreeCaches && lockRepository.acquireLock(lockId)) {
-            generateBatch(generateCounts - hashCount);
-        }
+        checkHashCounts();
     }
 
     @Transactional
     public void checkHashCountsAsync() {
         log.info("Check hash counts");
+        checkHashCounts();
+    }
+
+    private void checkHashCounts() {
         int hashCount = (int) hashRepository.count();
         log.info("Hash count: {}", hashCount);
 
-        if ((double) hashCount / generateCounts < ratioFreeCaches && lockRepository.acquireLock(lockId)) {
-            generateExecutorService.submit(() -> generateBatch(generateCounts - hashCount));
+        if (needsGenerate(hashCount)) {
+            generateBatch(generateCounts - hashCount);
         }
     }
 
@@ -61,5 +56,10 @@ public class HashGenerator {
         int savedCount = hashRepository.saveAll(hashStrings);
 
         log.info("Saved hashes count: {}", savedCount);
+    }
+
+    private boolean needsGenerate(double hashCount) {
+        boolean isCacheUnderLimit = hashCount / generateCounts < ratioFreeCaches;
+        return isCacheUnderLimit && lockRepository.acquireLock(lockId);
     }
 }

@@ -24,30 +24,30 @@ class UrlControllerTest extends BaseIntegrationTest {
     @Test
     void redirectToUrl() {
         webTestClient.get()
-                .uri("/shortner/550e840")
+                .uri("/shortner/550e8")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/test/url/550e840");
+                .expectHeader().location("/test/url/550e8");
     }
 
     @Sql(scripts = "/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void redirectToUrlCacheTest() {
-        hashRedisTemplate.opsForValue().set("550e841", "/test/url/550e841");
+        hashRedisTemplate.opsForValue().set("550e8", "/test/url/550e8");
 
         webTestClient.get()
-                .uri("/shortner/550e841")
+                .uri("/shortner/550e8")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/test/url/550e841");
+                .expectHeader().location("/test/url/550e8");
 
-        hashRedisTemplate.delete("550e841");
+        hashRedisTemplate.delete("550e8");
     }
 
     @Test
     void redirectToUrlNotFound() {
         webTestClient.get()
-                .uri("/shortner/550e840")
+                .uri("/shortner/550e8")
                 .exchange()
                 .expectStatus().isNotFound();
     }
