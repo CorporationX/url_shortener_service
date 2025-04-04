@@ -4,31 +4,31 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class HashGenerator {
-    private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${encoder.settings.batchSize}")
-    private int batchSize;
+    @Value("${hash.length:6}")
+    private int hashLength;
 
-    @Async("HashesGeneratorThreadPool")
-    public void generateBatch() {
-        List<Long> randomNumbersList = hashRepository.getUniqueNumbers(batchSize);
+    public List<String> generateBatch(List<Long> numbers) {
+        log.debug("Generating batch of {} hashes", numbers.size());
+        return base62Encoder.encode(numbers).stream()
+                .map(hash -> padToLength(hash, hashLength))
+                .collect(Collectors.toList());
+    }
 
-        if (randomNumbersList.isEmpty()) {
-            throw new RuntimeException("There are no free Numbers for generating new hashes!");
+    private String padToLength(String hash, int length) {
+        if (hash.length() >= length) {
+            return hash;
         }
-
-        List<String> hashList = base62Encoder.encode(randomNumbersList);
-
-        hashRepository.saveAll(hashList);
+        return "0".repeat(length - hash.length()) + hash;
     }
 }

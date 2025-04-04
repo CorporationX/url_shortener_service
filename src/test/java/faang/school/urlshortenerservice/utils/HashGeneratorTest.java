@@ -1,12 +1,10 @@
 package faang.school.urlshortenerservice.utils;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.HashGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,15 +13,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class HashGeneratorTest {
-
-    @Mock
-    private HashRepository hashRepository;
 
     @Mock
     private Base62Encoder base62Encoder;
@@ -31,61 +24,73 @@ public class HashGeneratorTest {
     @InjectMocks
     private HashGenerator hashGenerator;
 
-    @Captor
-    private ArgumentCaptor<List<String>> hashesCaptor;
-
-    @Test
-    void generateBatch_shouldCreateAndSaveHashes() {
-        int batchSize = 3;
-        ReflectionTestUtils.setField(hashGenerator, "batchSize", batchSize);
-
-        List<Long> numbers = List.of(1L, 2L, 3L);
-        List<String> hashes = List.of("a", "b", "c");
-
-        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(numbers);
-        when(base62Encoder.encode(numbers)).thenReturn(hashes);
-
-        hashGenerator.generateBatch();
-        verify(hashRepository).getUniqueNumbers(batchSize);
-        verify(base62Encoder).encode(numbers);
-        verify(hashRepository).saveAll(hashesCaptor.capture());
-
-        List<String> savedHashes = hashesCaptor.getValue();
-        assertEquals(3, savedHashes.size());
-
-        for (int i = 0; i < savedHashes.size(); i++) {
-            assertEquals(hashes.get(i), savedHashes.get(i));
-        }
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(hashGenerator, "hashLength", 6);
     }
 
     @Test
-    void generateBatch_whenNoNumbersFound_shouldNotSaveHashes() {
-        int batchSize = 5;
-        ReflectionTestUtils.setField(hashGenerator, "batchSize", batchSize);
+    void generateBatch_shouldEncodeAndPadHashes() {
+        // Arrange
+        List<Long> numbers = List.of(1L, 2L, 1000L);
+        List<String> encodedValues = List.of("1", "2", "g8");
 
-        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(List.of());
+        when(base62Encoder.encode(numbers)).thenReturn(encodedValues);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            hashGenerator.generateBatch();
-        });
+        // Act
+        List<String> result = hashGenerator.generateBatch(numbers);
 
-        assertEquals("There are no free Numbers for generating new hashes!", exception.getMessage());
-        verify(hashRepository).getUniqueNumbers(batchSize);
+        // Assert
+        assertEquals(3, result.size());
+        assertEquals("000001", result.get(0));
+        assertEquals("000002", result.get(1));
+        assertEquals("0000g8", result.get(2));
     }
 
     @Test
-    void generateBatch_shouldUseCorrectBatchSize() {
-        int batchSize = 10;
-        ReflectionTestUtils.setField(hashGenerator, "batchSize", batchSize);
+    void generateBatch_shouldReturnProperLengthHashes() {
+        // Arrange
+        List<Long> numbers = List.of(123456789L);
+        List<String> encodedValues = List.of("8m0Kx");
 
-        List<Long> numbers = List.of(1L);
-        List<String> hashes = List.of("a");
+        when(base62Encoder.encode(numbers)).thenReturn(encodedValues);
 
-        when(hashRepository.getUniqueNumbers(batchSize)).thenReturn(numbers);
-        when(base62Encoder.encode(numbers)).thenReturn(hashes);
+        // Act
+        List<String> result = hashGenerator.generateBatch(numbers);
 
-        hashGenerator.generateBatch();
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("08m0Kx", result.get(0));
+    }
 
-        verify(hashRepository).getUniqueNumbers(batchSize);
+    @Test
+    void generateBatch_shouldNotPadWhenLengthExceedsRequired() {
+        // Arrange
+        List<Long> numbers = List.of(9999999999L);
+        List<String> encodedValues = List.of("1EhF7HA");
+
+        when(base62Encoder.encode(numbers)).thenReturn(encodedValues);
+
+        // Act
+        List<String> result = hashGenerator.generateBatch(numbers);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("1EhF7HA", result.get(0));
+    }
+
+    @Test
+    void generateBatch_shouldHandleEmptyList() {
+        // Arrange
+        List<Long> numbers = List.of();
+        List<String> encodedValues = List.of();
+
+        when(base62Encoder.encode(numbers)).thenReturn(encodedValues);
+
+        // Act
+        List<String> result = hashGenerator.generateBatch(numbers);
+
+        // Assert
+        assertEquals(0, result.size());
     }
 }

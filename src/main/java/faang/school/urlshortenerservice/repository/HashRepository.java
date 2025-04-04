@@ -32,4 +32,10 @@ public interface  HashRepository extends JpaRepository<Hash, String> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "SELECT h FROM Hash h WHERE h.hash IN (SELECT h.hash FROM Hash h ORDER BY RANDOM() LIMIT :batchSize)")
     List<Hash> getHashBatchWithLock(@Param("batchSize") int batchSize);
+
+    @Query(value = "SELECT hash FROM hash LIMIT :batchSize", nativeQuery = true)
+    List<String> getAvailableHashes(@Param("batchSize") int batchSize);
+
+    @Query(value = "SELECT COUNT(*) FROM hash", nativeQuery = true)
+    int countAvailableHashes();
 }

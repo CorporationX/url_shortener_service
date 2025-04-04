@@ -29,4 +29,5 @@ public class HashCleanerService {
         log.info("{} of outdated short links found and removed.", retrievedHashes.size());
         hashRepository.saveAll(retrievedHashes);
         retrievedHashes.forEach(urlCacheRepository::deleteByHash);
-    }}
+    }
+}

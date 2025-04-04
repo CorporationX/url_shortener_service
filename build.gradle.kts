@@ -25,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.integration:spring-integration-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
@@ -36,6 +37,7 @@ dependencies {
     // Database and Redis
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:5.2.0")
+
     runtimeOnly("org.postgresql:postgresql")
 
     // Utilities & logging

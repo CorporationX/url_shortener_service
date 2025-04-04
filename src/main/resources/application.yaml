@@ -38,6 +38,7 @@ api:
 
 encoder:
   settings:
+    hash-length: 6
     batchSize: 1000
 
 cache:
@@ -45,6 +46,8 @@ cache:
     size: 1000
     threshold-percent: 20
     batch-size: 500
+    db:
+      min-available: 1000
 
 executor:
   core-pool-size: 2
