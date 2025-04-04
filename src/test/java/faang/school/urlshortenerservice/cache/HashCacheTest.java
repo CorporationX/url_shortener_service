@@ -1,0 +1,85 @@
+package faang.school.urlshortenerservice.cache;
+
+import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+public class HashCacheTest {
+
+    @Mock
+    private HashRepository hashRepository;
+
+    @Mock
+    private Queue<String> hashQueue;
+
+    @Mock
+    private HashGenerator hashGenerator;
+
+    @InjectMocks
+    private HashCache hashCache;
+
+    @BeforeEach
+    public void beforeEach() {
+        ReflectionTestUtils.setField(hashCache, "hashCacheSize", 5);
+        ReflectionTestUtils.setField(hashCache, "minCachePercentage", 0.8);
+
+        hashQueue = new ArrayBlockingQueue<>(10);
+        hashQueue.addAll(List.of("1", "2", "3", "4", "5"));
+
+        ReflectionTestUtils.setField(hashCache, "hashQueue", hashQueue);
+    }
+
+    @Test
+    public void getHashTestSuccessCase() {
+        assertEquals("1", hashCache.getHash());
+        assertEquals("2", hashCache.getHash());
+
+    }
+
+    @Test
+    public void getHashTestLessThanRequired() throws Exception {
+        Mockito.doNothing().when(hashGenerator).generateBatch();
+        Mockito.when(hashRepository.getAndRemoveHashes(anyInt())).thenReturn(List.of("6", "7", "8"));
+
+        hashQueue.clear();
+        hashQueue.addAll(List.of("1", "2", "3"));
+        ReflectionTestUtils.setField(hashCache, "hashQueue", hashQueue);
+
+        assertEquals("1", hashCache.getHash());
+        assertEquals("2", hashCache.getHash());
+        assertEquals("3", hashCache.getHash());
+
+        verify(hashGenerator, timeout(1000)).generateBatch();
+        verify(hashRepository, timeout(1000)).getAndRemoveHashes(anyInt());
+        assertEquals(3, hashQueue.size());
+    }
+
+    @Test
+    public void getHashTestNoElements() {
+        assertEquals("1", hashCache.getHash());
+        assertEquals("2", hashCache.getHash());
+        assertEquals("3", hashCache.getHash());
+        assertEquals("4", hashCache.getHash());
+        assertEquals("5", hashCache.getHash());
+        assertThrows(NoSuchElementException.class, () -> hashCache.getHash());
+    }
+}
