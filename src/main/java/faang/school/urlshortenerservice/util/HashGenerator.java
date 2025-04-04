@@ -29,14 +29,6 @@ public class HashGenerator {
 
         List<String> hashList = base62Encoder.encode(randomNumbersList);
 
-//        List<Hash> hashesToSave = IntStream.range(0, hashList.size())
-//                .mapToObj(i -> Hash.builder()
-//                        .number(randomNumbersList.get(i))
-//                        .hash(hashList.get(i))
-//                        .lock(true)
-//                        .build())
-//                .toList();
-
-        hashRepository.save(hashList);
+        hashRepository.saveAll(hashList);
     }
 }

@@ -34,17 +34,14 @@ class CleanerSchedulerTest {
     private CleanerScheduler cleanerScheduler;
 
     @Test
-    void cleanupOutdatedHashes_shouldDeleteOldUrlsAndMoveHashesToHashTable() {
-        int days = 365;
-        cleanerScheduler.setNumberOfDaysForOutdatedHashes(days);
-
+    void cleanupOutdatedHashes_shouldDeleteExpiredUrlsAndMoveHashesToHashTable() {
         List<String> retrievedHashes = List.of("abc123", "def456", "ghi789");
-        when(urlRepository.deleteOldUrlsAndReturnHashes(days)).thenReturn(retrievedHashes);
+        when(urlRepository.deleteExpiredUrlsAndReturnHashes()).thenReturn(retrievedHashes);
 
         cleanerScheduler.cleanupOutdatedHashes();
 
-        verify(urlRepository).deleteOldUrlsAndReturnHashes(days);
-        verify(hashRepository).save(retrievedHashes);
+        verify(urlRepository).deleteExpiredUrlsAndReturnHashes();
+        verify(hashRepository).saveAll(retrievedHashes);
 
         verify(urlCacheRepository).deleteByHash("abc123");
         verify(urlCacheRepository).deleteByHash("def456");
@@ -53,15 +50,12 @@ class CleanerSchedulerTest {
 
     @Test
     void cleanupOutdatedHashes_shouldNotSaveHashesWhenNoUrlsFound() {
-        int days = 365;
-        cleanerScheduler.setNumberOfDaysForOutdatedHashes(days);
-
         List<String> emptyList = List.of();
-        when(urlRepository.deleteOldUrlsAndReturnHashes(days)).thenReturn(emptyList);
+        when(urlRepository.deleteExpiredUrlsAndReturnHashes()).thenReturn(emptyList);
 
         cleanerScheduler.cleanupOutdatedHashes();
 
-        verify(urlRepository).deleteOldUrlsAndReturnHashes(days);
+        verify(urlRepository).deleteExpiredUrlsAndReturnHashes();
         verify(hashRepository, never()).save(any());
         verifyNoInteractions(urlCacheRepository);
     }

@@ -60,11 +60,6 @@ public class HashCacheTest {
 
         when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(10L, 20L, 30L));
 
-        doAnswer(invocation -> {
-            ((Runnable)invocation.getArgument(0)).run();
-            return null;
-        }).when(executorService).submit(any(Runnable.class));
-
         String hash = hashCache.getHash();
 
         assertEquals("hash1", hash);

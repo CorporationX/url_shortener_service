@@ -38,16 +38,6 @@ api:
 
 encoder:
   settings:
-#    base: 2
-#    chars: 01
-#    base: 16
-#    chars: 0123456789ABCDEF
-#    base: 36
-#    chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-#    base: 58
-#    chars: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
-    base: 62
-    chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     batchSize: 1000
 
 cache:

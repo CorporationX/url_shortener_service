@@ -48,7 +48,7 @@ public class HashGeneratorTest {
         hashGenerator.generateBatch();
         verify(hashRepository).getUniqueNumbers(batchSize);
         verify(base62Encoder).encode(numbers);
-        verify(hashRepository).save(hashesCaptor.capture());
+        verify(hashRepository).saveAll(hashesCaptor.capture());
 
         List<String> savedHashes = hashesCaptor.getValue();
         assertEquals(3, savedHashes.size());

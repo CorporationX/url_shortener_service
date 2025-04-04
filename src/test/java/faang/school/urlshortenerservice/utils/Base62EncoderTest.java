@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.utils;
 
 import faang.school.urlshortenerservice.util.Base62Encoder;
-import faang.school.urlshortenerservice.util.BaseEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,29 +23,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class Base62EncoderTest {
 
-    @Mock
-    private BaseEncoder baseEncoder;
-
     private Base62Encoder base62Encoder;
 
     @BeforeEach
     void setUp() {
-        base62Encoder = new Base62Encoder(baseEncoder);
+        base62Encoder = new Base62Encoder();
     }
 
     @Test
     void shouldEncodeValidInput() {
         List<Long> numbers = Arrays.asList(1L, 2L, 3L);
-        when(baseEncoder.encode(1L)).thenReturn("a");
-        when(baseEncoder.encode(2L)).thenReturn("b");
-        when(baseEncoder.encode(3L)).thenReturn("c");
 
         List<String> result = base62Encoder.encode(numbers);
 
-        assertEquals(Arrays.asList("a", "b", "c"), result);
-        verify(baseEncoder, times(1)).encode(1L);
-        verify(baseEncoder, times(1)).encode(2L);
-        verify(baseEncoder, times(1)).encode(3L);
+        assertEquals(Arrays.asList("B", "C", "D"), result);
     }
 
     @Test
@@ -57,7 +47,6 @@ class Base62EncoderTest {
                 base62Encoder.encode(emptyList)
         );
         assertTrue(exception.getMessage().contains("Supplied list of numbers is empty!"));
-        verify(baseEncoder, never()).encode(anyLong());
     }
 
     @Test
@@ -67,6 +56,5 @@ class Base62EncoderTest {
         assertThrows(IllegalArgumentException.class, () ->
                 base62Encoder.encode(duplicateList)
         );
-        verify(baseEncoder, never()).encode(anyLong());
     }
 }

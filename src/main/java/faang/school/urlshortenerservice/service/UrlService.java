@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,8 +29,13 @@ public class UrlService {
     @Value("${server.hash_count}")
     private int hashCount;
 
-    public Url generateShortUrl(Url url) {
-        log.info("Generating short URL for: {}", url.getUrl());
+
+    @Value("${schedulers.config.numberOfDaysForOutdatedHashes:365}")
+    private int numberOfDaysForOutdatedHashes;
+
+    @Transactional
+    public String generateShortUrl(String url) {
+        log.info("Generating short URL for: {}", url);
 
         List<Long> randomNumbers = generateUniqueRandomNumbers(hashCount);
         List<String> hashes = hashCache.getHashCache(randomNumbers);
@@ -38,14 +45,20 @@ public class UrlService {
         }
 
         String hash = hashes.get(0);
-        url.setHash(hash);
-        Url savedUrl = urlRepository.save(url);
+        Url urlObject = Url.builder()
+                .url(url)
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusDays(numberOfDaysForOutdatedHashes))
+                .hash(hash)
+                .build();
+        Url savedUrl = urlRepository.save(urlObject);
 
-        urlCacheRepository.saveUrl(hash, url.getUrl());
+        urlCacheRepository.saveUrl(hash, url);
 
-        return savedUrl;
+        return savedUrl.getUrl();
     }
 
+    @Transactional(readOnly = true)
     public String getUrl(String hash) {
         String result = urlCacheRepository.getUrl(hash);
 
@@ -57,6 +70,7 @@ public class UrlService {
             if (!StringUtils.hasText(result)) {
                 throw new UrlNotFoundException(hash);
             }
+            urlCacheRepository.saveUrl(hash, result);
         }
 
         return result;
