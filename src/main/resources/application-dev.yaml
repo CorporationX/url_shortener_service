@@ -22,13 +22,8 @@ spring:
     redis:
       port: 6379
       host: localhost
-      cache:
-        ttl: 1
-        ttl-unit: DAYS
-
-  mvc:
-    servlet:
-      path: /api/v1
+      time: 1
+      time-unit: DAYS
 
   url:
     base-short-url: "http://localhost:8080/url/"  # Базовый URL для сокращённых ссылок
@@ -40,22 +35,25 @@ server:
 logging:
   level:
     root: info
-
+    org.springframework.boot.context.properties: TRACE
 
 AsyncConfig:
-  corePoolSize: 5
+  corePoolSize: 1
   maxPoolSize: 10
   queueCapacity: 100
 
 hashGenerator:
-  batchSize: 1000
+  batchSize: 10
 
 hashRepository:
   batchSize: 50
 
+
 hashCache:
   maxSize: 500
   lowThreshold: 0.2
+
+
 
 url:
   original:
@@ -66,8 +64,8 @@ url:
   cleaner:
     retention-years: 1
     scheduler:                      # Scheduler для регулярного запуска удаления устаревших URL из базы
-      cron: "0 0 0 * * *"           # один раз в сутки в полночь
+      cron: "0 */2 * * * *"           #
 
 scheduling:
   hash-cache:
-    cron: "0 0 2 * * ?"             # каждый день месяца, в 2 часа утра, ? - без определения дня недели
+    cron: "0 53 11 * * *"             #
