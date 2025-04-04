@@ -45,6 +45,7 @@ cache:
     size: 1000
     threshold-percent: 20
     batch-size: 500
+    db-threshold: 100
 
 executor:
   core-pool-size: 2

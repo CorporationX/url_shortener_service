@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS url (
-    hash varchar(6) NOT NULL PRIMARY KEY,
+    hash varchar(6) NOT NULL PRIMARY KEY CHECK (char_length(hash)=6),
     url varchar(2048) NOT NULL,
     created_at timestamptz DEFAULT current_timestamp
 );
 
 CREATE TABLE IF NOT EXISTS hash (
-    hash varchar(6) NOT NULL PRIMARY KEY
+    hash varchar(6) NOT NULL PRIMARY KEY CHECK (char_length(hash)=6)
 );
 
 CREATE SEQUENCE IF NOT EXISTS unique_number_seq

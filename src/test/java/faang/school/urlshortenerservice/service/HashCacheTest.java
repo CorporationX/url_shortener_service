@@ -1,13 +1,13 @@
-package faang.school.urlshortenerservice.utils;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.HashCache;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -34,11 +34,14 @@ public class HashCacheTest {
     @Mock
     private HashGenerator hashGenerator;
 
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
     private HashCache hashCache;
 
     @BeforeEach
     void setUp() {
-        hashCache = new HashCache(hashRepository, executorService, hashGenerator);
+        hashCache = new HashCache(hashRepository, executorService, hashGenerator, jdbcTemplate);
 
         ReflectionTestUtils.setField(hashCache, "maxCacheSize", 100);
         ReflectionTestUtils.setField(hashCache, "thresholdPercent", 20);
@@ -65,7 +68,6 @@ public class HashCacheTest {
         assertEquals("hash1", hash);
         verify(executorService).submit(any(Runnable.class));
         verify(hashRepository).getUniqueNumbers(50);
-        verify(hashGenerator).generateBatch();
     }
 
     @Test
@@ -76,10 +78,12 @@ public class HashCacheTest {
         queue.add("hash3");
         ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
 
-        List<String> hashes = hashCache.getHashCache(Arrays.asList(1L, 2L));
+        String first = hashCache.getNextHash();
+        String second = hashCache.getNextHash();
+        String third = hashCache.getNextHash();
 
-        assertEquals(2, hashes.size());
-        assertEquals("hash1", hashes.get(0));
-        assertEquals("hash2", hashes.get(1));
+        assertEquals("hash1", first);
+        assertEquals("hash2", second);
+        assertEquals("hash3", third);
     }
 }

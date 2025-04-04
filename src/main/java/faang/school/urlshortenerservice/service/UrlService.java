@@ -12,11 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Slf4j
@@ -29,7 +24,6 @@ public class UrlService {
     @Value("${server.hash_count}")
     private int hashCount;
 
-
     @Value("${schedulers.config.numberOfDaysForOutdatedHashes:365}")
     private int numberOfDaysForOutdatedHashes;
 
@@ -37,14 +31,11 @@ public class UrlService {
     public String generateShortUrl(String url) {
         log.info("Generating short URL for: {}", url);
 
-        List<Long> randomNumbers = generateUniqueRandomNumbers(hashCount);
-        List<String> hashes = hashCache.getHashCache(randomNumbers);
-
-        if (hashes.isEmpty()) {
+        String hash = hashCache.getNextHash();
+        if (!StringUtils.hasText(hash)) {
             throw new RuntimeException("Failed to generate hash for URL");
         }
 
-        String hash = hashes.get(0);
         Url urlObject = Url.builder()
                 .url(url)
                 .createdAt(LocalDateTime.now())
@@ -74,15 +65,5 @@ public class UrlService {
         }
 
         return result;
-    }
-
-    private List<Long> generateUniqueRandomNumbers(int count) {
-        Set<Long> uniqueNumbers = new HashSet<>(count);
-
-        while (uniqueNumbers.size() < count) {
-            uniqueNumbers.add(ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE));
-        }
-
-        return new ArrayList<>(uniqueNumbers);
     }
 }

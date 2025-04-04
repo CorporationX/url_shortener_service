@@ -1,26 +1,24 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.HashCache;
-import faang.school.urlshortenerservice.util.HashGenerator;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,86 +27,95 @@ import static org.mockito.Mockito.when;
 class UrlServiceTest {
 
     @Mock
-    private HashRepository hashRepository;
+    private UrlCacheRepository urlCacheRepository;
 
     @Mock
-    private ExecutorService executorService;
+    private UrlRepository urlRepository;
 
     @Mock
-    private HashGenerator hashGenerator;
-
     private HashCache hashCache;
+
+    private UrlService urlService;
 
     @BeforeEach
     void setUp() {
-        hashCache = new HashCache(hashRepository, executorService, hashGenerator);
-
-        ReflectionTestUtils.setField(hashCache, "maxCacheSize", 100);
-        ReflectionTestUtils.setField(hashCache, "thresholdPercent", 20);
-        ReflectionTestUtils.setField(hashCache, "batchSize", 50);
+        urlService = new UrlService(urlCacheRepository, urlRepository, hashCache);
+        ReflectionTestUtils.setField(urlService, "numberOfDaysForOutdatedHashes", 365);
     }
 
     @Test
-    void init_shouldRefillCache() {
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Arrays.asList(1L, 2L, 3L));
+    void generateShortUrl_shouldReturnSavedUrl_whenHashPresent() {
+        String inputUrl = "http://example.com";
+        String generatedHash = "abc123";
 
-        hashCache.init();
+        when(hashCache.getNextHash()).thenReturn(generatedHash);
 
-        verify(hashRepository).getUniqueNumbers(50);
-        verify(hashGenerator).generateBatch();
+        Url savedUrl = Url.builder()
+                .url(inputUrl)
+                .hash(generatedHash)
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusDays(365))
+                .build();
+        when(urlRepository.save(any(Url.class))).thenReturn(savedUrl);
 
-        @SuppressWarnings("unchecked")
-        ConcurrentLinkedQueue<String> queue = (ConcurrentLinkedQueue<String>) ReflectionTestUtils.getField(hashCache, "hashQueue");
-        assertEquals(3, queue.size());
+        String result = urlService.generateShortUrl(inputUrl);
+
+        assertTrue(StringUtils.hasText(result));
+        verify(urlRepository).save(any(Url.class));
+        verify(urlCacheRepository).saveUrl(generatedHash, inputUrl);
     }
 
     @Test
-    void getHash_whenCacheAboveThreshold_shouldReturnHashWithoutRefill() {
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        for (int i = 1; i <= 21; i++) {
-            queue.add("hash" + i);
-        }
-        ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
+    void generateShortUrl_shouldThrowException_whenHashNotPresent() {
+        String inputUrl = "http://example.com";
 
-        String hash = hashCache.getHash();
+        when(hashCache.getNextHash()).thenReturn(null);
 
-        assertEquals("hash1", hash);
-        verify(executorService, never()).submit(any(Runnable.class));
+        Exception exception = assertThrows(RuntimeException.class, () -> urlService.generateShortUrl(inputUrl));
+        assertEquals("Failed to generate hash for URL", exception.getMessage());
     }
 
     @Test
-    void refillCache_whenRepositoryReturnsEmptyList_shouldNotAddToQueue() {
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
+    void getUrl_shouldReturnFromCache_whenResultPresent() {
+        String hash = "hash1";
+        String cachedUrl = "http://cached.com";
 
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
+        when(urlCacheRepository.getUrl(hash)).thenReturn(cachedUrl);
 
-        hashCache.init();
+        String result = urlService.getUrl(hash);
 
-        assertTrue(queue.isEmpty());
-        verify(hashGenerator).generateBatch();
-        verify(hashRepository).getUniqueNumbers(anyInt());
+        assertEquals(cachedUrl, result);
+        verify(urlCacheRepository, never()).saveUrl(any(), any());
     }
 
     @Test
-    void refillCache_shouldHandleExceptions() {
-        when(hashRepository.getUniqueNumbers(anyInt())).thenThrow(new RuntimeException("Test exception"));
+    void getUrl_shouldQueryRepository_whenNotInCache() {
+        String hash = "hash1";
+        String repoUrl = "http://repository.com";
 
-        hashCache.init();
+        when(urlCacheRepository.getUrl(hash)).thenReturn("");
 
-        AtomicBoolean isRefilling = (AtomicBoolean) ReflectionTestUtils.getField(hashCache, "isRefilling");
-        assertFalse(isRefilling.get());
+        Url url = Url.builder()
+                .hash(hash)
+                .url(repoUrl)
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusDays(365))
+                .build();
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.of(url));
+
+        String result = urlService.getUrl(hash);
+
+        assertEquals(repoUrl, result);
+        verify(urlCacheRepository).saveUrl(hash, repoUrl);
     }
 
     @Test
-    void refillCache_shouldBeCalledOnlyOnce() {
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        ReflectionTestUtils.setField(hashCache, "hashQueue", queue);
+    void getUrl_shouldThrowUrlNotFoundException_whenNotFoundInCacheAndRepo() {
+        String hash = "hash1";
 
-        ReflectionTestUtils.setField(hashCache, "isRefilling", new AtomicBoolean(true));
+        when(urlCacheRepository.getUrl(hash)).thenReturn("");
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
-        hashCache.getHash();
-
-        verify(executorService, never()).submit(any(Runnable.class));
+        assertThrows(UrlNotFoundException.class, () -> urlService.getUrl(hash));
     }
 }
