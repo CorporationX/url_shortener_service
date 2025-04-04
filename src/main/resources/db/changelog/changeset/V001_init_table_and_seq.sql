@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS url
     created_at timestamp DEFAULT current_timestamp NOT NULL
 );
 
+CREATE INDEX IF NOT EXISTS url_hash_idx ON url (hash);
+
 CREATE TABLE IF NOT EXISTS hash
 (
     id   BIGINT PRIMARY KEY DEFAULT nextval('unique_number_seq'),

@@ -21,6 +21,12 @@ public class UrlCacheRepository {
     }
 
     public Optional<String> findByHash (String hash){
-        return Optional.ofNullable(redisTemplate.opsForValue().get(hash));
+        String value = redisTemplate.opsForValue().get(hash);
+
+        if(value != null){
+            redisTemplate.expire(hash, ttlInSeconds, TimeUnit.SECONDS);
+        }
+
+        return Optional.ofNullable(value);
     }
 }
