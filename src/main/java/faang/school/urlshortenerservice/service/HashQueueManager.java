@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.config.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -27,28 +28,22 @@ public class HashQueueManager {
         return hashQueue.size() < calculateThreshold();
     }
 
-    public int getCurrentHash() {
-        return hashQueue.size();
+    @Transactional
+    public void refillQueueFromData() {
+        if (isRefilling.compareAndSet(false, true)) {
+            try {
+                int needed = Math.max(0, properties.getMaxSize() - hashQueue.size());
+                if (needed > 0) {
+                    List<String> hashes = hashRepository.getHashBatch(needed);
+                    hashQueue.addAll(hashes);
+                }
+            } finally {
+                isRefilling.set(false);
+            }
+        }
     }
 
     private int calculateThreshold() {
         return (properties.getMaxSize() * properties.getRefillThresholdPercent()) / PERCENT_DIVISOR;
-    }
-
-    public void scheduleRefill(Runnable refillTask) {
-        if (isRefilling.compareAndSet(false, true)) {
-            refillTask.run();
-        }
-    }
-
-    public void refillFromDatabase() {
-        try {
-            List<String> hashes = hashRepository.getHashBatch(
-                    properties.getMaxSize() - hashQueue.size()
-            );
-            hashQueue.addAll(hashes);
-        } finally {
-            isRefilling.set(false);
-        }
     }
 }

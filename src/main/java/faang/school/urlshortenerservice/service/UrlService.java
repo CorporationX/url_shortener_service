@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.UrlProperties;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exeption.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -22,10 +22,12 @@ public class UrlService {
     @Value("${spring.base_url}")
     private String baseUrl;
 
+    @Value("${spring.url.expiration-period}")
+    private Duration expirationPeriod;
+
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final UrlProperties urlProperties;
 
     @Transactional
     public String createShortUrl(String url) {
@@ -34,7 +36,7 @@ public class UrlService {
         Url urlEntity = Url.builder()
                 .hash(hash)
                 .url(url)
-                .deletedAt(LocalDateTime.now().plus(urlProperties.getExpirationPeriod()))
+                .deletedAt(LocalDateTime.now().plus(expirationPeriod))
                 .build();
 
         urlRepository.save(urlEntity);

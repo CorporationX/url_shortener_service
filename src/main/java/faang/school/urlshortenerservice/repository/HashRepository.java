@@ -32,5 +32,22 @@ public class HashRepository {
     public int getHashesCount() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM hash", Integer.class);
     }
+
+    public List<Long> getNextSequenceValues(int count) {
+        return jdbcTemplate.queryForList(
+                "SELECT nextval('url_hash_seq') FROM generate_series(1, ?)",
+                Long.class,
+                count
+        );
+    }
+
+    public void saveHashes(List<String> hashes) {
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO hash (hash) VALUES (?)",
+                hashes,
+                hashes.size(),
+                (ps, hash) -> ps.setString(1, hash)
+        );
+    }
 }
 

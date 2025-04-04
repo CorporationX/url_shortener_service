@@ -19,7 +19,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ResponseEntity<String> createShortUrl(@RequestBody UrlRequestDto urlRequestDto ) {
+    public ResponseEntity<String> createShortUrl(@RequestBody UrlRequestDto urlRequestDto) {
         String shortUrl = urlRequestDto.getUrl();
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 public class UrlCacheRepository {
 
-
     private final StringRedisTemplate stringRedisTemplate;
     @Value("${spring.data.redis.TTL-HOURS}")
     private long TTL_HOURS;

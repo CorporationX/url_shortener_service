@@ -18,22 +18,16 @@ public class HashCache {
 
     public String getHash() {
         if (hashQueueManager.shouldRefill()) {
-            executorService.submit(this::safeReillCache);
+            executorService.submit(hashQueueManager::refillQueueFromData);
+            checkAndTriggerHashGeneration();
         }
-        return pollHashFromQueue();
+        return hashQueueManager.pollHash();
     }
 
-    private String pollHashFromQueue() {
-        String hash = hashQueueManager.pollHash();
-        log.debug("Polled hash from queue: {}", hash);
-        return hash;
-    }
-
-    private void safeReillCache() {
-        hashQueueManager.scheduleRefill(() -> {
-            int currentCount = hashRepository.getHashesCount();
-            hashQueueManager.refillFromDatabase();
-            hashGenerationService.generateHash(currentCount);
-        });
+    public void checkAndTriggerHashGeneration(){
+        int currentCount = hashRepository.getHashesCount();
+        if(hashGenerationService.needsHashGeneration(currentCount)){
+            executorService.submit(()-> hashGenerationService.generateHash(currentCount));
+        }
     }
 }

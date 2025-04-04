@@ -27,6 +27,7 @@ spring:
   base_url: http://localhost:8080
 
   hash-cache:
+    lock-name: "hash_generation_lock"
     executor:
       core-pool-size: 100
       max-pool-size: 500
@@ -35,9 +36,6 @@ spring:
     refill-threshold-percent: 20
     min-db-multiplier: 10
     max-db-multiplier: 20
-    batch-size: 5000
-    max-generation-batch: 50_000
-    generation-lock-name: "hash_generation"
 
   url:
     expiration-period: 365d

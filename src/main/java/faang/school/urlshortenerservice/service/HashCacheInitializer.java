@@ -27,34 +27,12 @@ public class HashCacheInitializer {
 
             if (currentCount < targetCount) {
                 int needed = targetCount - currentCount;
-                int batches = (int) Math.ceil((double) needed / properties.getMaxGenerationBatch());
-
-                log.info("Starting hash generation. Needed: {}, Batches: {}", needed, batches);
-                generateHashesInBatches(batches);
+                hashGenerationService.generateHash(needed);
             }
-
-            fillQueueSingleAttempt();
+            hashQueueManager.refillQueueFromData();
         } catch (Exception ex) {
             log.error("Initialization failed", ex);
             throw new RuntimeException("Cache initialization error", ex);
-        }
-    }
-
-    private void generateHashesInBatches(int batches) {
-        IntStream.range(0, batches)
-                .peek(i -> hashGenerationService.generateHash(0))
-                .forEach(i -> log.info("Generated batch {}/{}", i + 1, batches));
-    }
-
-    private void fillQueueSingleAttempt() {
-        int target = properties.getMaxSize();
-        hashQueueManager.refillFromDatabase();
-
-        int actual = hashQueueManager.getCurrentHash();
-        if (actual < target) {
-            log.warn("Queue not fully filled: {}/{}", actual, target);
-        } else {
-            log.info("Queue filled successfully: {}", actual);
         }
     }
 }

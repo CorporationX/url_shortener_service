@@ -6,7 +6,7 @@ import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()

@@ -6,11 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.hash-cache")
 @Data
 public class HashCacheProperties {
-    private int maxSize = 10000;
-    private int refillThresholdPercent = 20;
-    private int minDbMultiplier = 10;
-    private int maxDbMultiplier = 20;
-    private int batchSize = 1000;
-    private int maxGenerationBatch = 100000;
-    private String generationLockName = "hash_generation";
+    private int maxSize;
+    private int refillThresholdPercent;
+    private int minDbMultiplier;
+    private int maxDbMultiplier;
 }
