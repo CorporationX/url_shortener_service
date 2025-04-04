@@ -35,7 +35,6 @@ class UrlServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Поскольку @Value не подставляется в тестовом контексте, задаём значение вручную
         ReflectionTestUtils.setField(urlService, "shortenerUrl", "http://short.ly/");
     }
 
