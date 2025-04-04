@@ -44,7 +44,7 @@ public class UrlService {
             log.info("URL {} is obtained from the database", url);
             return urlRepository.get(hash);
         } catch (EmptyResultDataAccessException e) {
-            throw new UrlNotFoundException(String.format("Url for short link %s not found", formShortUrl(hash)));
+            throw new UrlNotFoundException(formShortUrl(hash));
         }
     }
 

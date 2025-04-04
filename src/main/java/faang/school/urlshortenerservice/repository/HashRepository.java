@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,11 +37,5 @@ public class HashRepository {
                 ps -> ps.setInt(1, uniqueNumbersBatch),
                 (rs, rowNum) -> rs.getString("hash")
         );
-    }
-
-    @Transactional
-    public void truncateTable() {
-        String sql = "TRUNCATE TABLE hash";
-        jdbcTemplate.execute(sql);
     }
 }

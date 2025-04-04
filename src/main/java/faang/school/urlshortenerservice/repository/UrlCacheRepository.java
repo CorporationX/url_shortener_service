@@ -27,7 +27,9 @@ public class UrlCacheRepository {
     }
 
     public void deleteBatch(List<String> hashes) {
-        List<String> keys = hashes.stream().map(this::formKey).toList();
+        List<String> keys = hashes.stream()
+                .map(this::formKey)
+                .toList();
         redisTemplate.delete(keys);
     }
 

@@ -2,7 +2,10 @@ package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 
-public class TestConstants {
+public class TestUtils {
+
+    private TestUtils() {
+    }
 
     public static final long USER_ID = 1L;
 
