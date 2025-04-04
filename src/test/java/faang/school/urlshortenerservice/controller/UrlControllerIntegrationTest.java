@@ -10,27 +10,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static faang.school.urlshortenerservice.TestConstants.CORRECT_URL_DTO;
-import static faang.school.urlshortenerservice.TestConstants.EMPTY_URL_DTO;
-import static faang.school.urlshortenerservice.TestConstants.INVALID_URL_DTO;
-import static faang.school.urlshortenerservice.TestConstants.NON_EXISTENT_HASH;
-import static faang.school.urlshortenerservice.TestConstants.USER_ID;
-import static faang.school.urlshortenerservice.TestConstants.getHashFromShortLink;
+import static faang.school.urlshortenerservice.TestUtils.CORRECT_URL_DTO;
+import static faang.school.urlshortenerservice.TestUtils.EMPTY_URL_DTO;
+import static faang.school.urlshortenerservice.TestUtils.INVALID_URL_DTO;
+import static faang.school.urlshortenerservice.TestUtils.NON_EXISTENT_HASH;
+import static faang.school.urlshortenerservice.TestUtils.USER_ID;
+import static faang.school.urlshortenerservice.TestUtils.getHashFromShortLink;
 
 class UrlControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private AppProperties appProperties;
-
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     private UniqueNumberRepository uniqueNumberRepository;
@@ -46,8 +41,10 @@ class UrlControllerIntegrationTest extends AbstractIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        resetDatabase();
-        flushRedisDatabase();
+        testDatabaseCleaner.restartUniqueNumberSequence();
+        testDatabaseCleaner.truncateHashTable();
+        testDatabaseCleaner.truncateUrlTable();
+        testDatabaseCleaner.flushRedisDatabase();
     }
 
     @Test
@@ -121,18 +118,5 @@ class UrlControllerIntegrationTest extends AbstractIntegrationTest {
                                 appProperties.baseUrl(),
                                 NON_EXISTENT_HASH)
                         ));
-    }
-
-    private void resetDatabase() {
-        uniqueNumberRepository.resetSequence();
-        hashRepository.truncateTable();
-        urlRepository.truncateTable();
-    }
-
-    private void flushRedisDatabase() {
-        redisTemplate.execute((RedisCallback<Void>) connection -> {
-            connection.serverCommands().flushDb();
-            return null;
-        });
     }
 }

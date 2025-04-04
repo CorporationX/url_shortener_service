@@ -43,10 +43,4 @@ public class UrlRepository {
                 urlLifetime
         );
     }
-
-    @Transactional
-    public void truncateTable() {
-        String sql = "TRUNCATE TABLE url";
-        jdbcTemplate.execute(sql);
-    }
 }

@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static faang.school.urlshortenerservice.TestConstants.CORRECT_URL_DTO;
-import static faang.school.urlshortenerservice.TestConstants.USER_ID;
-import static faang.school.urlshortenerservice.TestConstants.getHashFromShortLink;
+import static faang.school.urlshortenerservice.TestUtils.CORRECT_URL_DTO;
+import static faang.school.urlshortenerservice.TestUtils.USER_ID;
+import static faang.school.urlshortenerservice.TestUtils.getHashFromShortLink;
 
 class CleanerSchedulerIntegrationTest extends AbstractIntegrationTest {
 

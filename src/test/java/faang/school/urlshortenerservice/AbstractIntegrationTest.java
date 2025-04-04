@@ -28,6 +28,9 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected TestDatabaseCleaner testDatabaseCleaner;
+
     @Container
     private static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
             new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"));

@@ -21,9 +21,4 @@ public class UniqueNumberRepository {
                 Long.class
         );
     }
-
-    public void resetSequence() {
-        String sql = "ALTER SEQUENCE unique_number_seq RESTART WITH 1";
-        jdbcTemplate.execute(sql);
-    }
 }
