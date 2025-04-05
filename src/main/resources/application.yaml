@@ -5,6 +5,10 @@ spring:
     username: user
     password: password
 
+  redis:
+    host: localhost
+    port: 6379
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -16,10 +20,49 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
 
 server:
-  port: 8080
+  port: 18080
+  baseurl: http://localhost:18080
+  hash_count: 5
 
 logging:
   level:
     root: info
+
+api:
+  title: "URL shortener service API"
+  version: "0.1.0.1"
+  description: "URL shortener service API for shortening long URLs"
+
+encoder:
+  settings:
+    batchSize: 1000
+
+cache:
+  hash:
+    size: 1000
+    threshold-percent: 20
+    batch-size: 500
+    db-threshold: 100
+
+executor:
+  core-pool-size: 2
+  max-pool-size: 4
+  queue-capacity: 50
+  keep-alive-time: 60
+
+schedulers:
+  config:
+    assignedTreads: 10
+    corePoolSize: 5
+    maximumPoolSize: 20
+    queueCapacity: 1000
+    hashesGenerator:
+     threadNamePrefix: "hashesGenerator-"
+     cronExpression: "0 * * * * *"
+    cleanupOutdatedHashes:
+      numberOfDaysForOutdatedHashes: 365
+      threadNamePrefix: "cleanupOutdatedHashes-"
+      cronExpression: "0 * * * * *" #once a day
