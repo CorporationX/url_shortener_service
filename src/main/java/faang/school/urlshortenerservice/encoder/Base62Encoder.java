@@ -10,7 +10,7 @@ import java.util.List;
 public class Base62Encoder {
 
     private static final String BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final int BASE62 = BASE62_ALPHABET.length();
+    private static final int BASE62_LENGTH = BASE62_ALPHABET.length();
 
     public List<String> encode(List<Long> number) {
         return number.stream()
@@ -25,9 +25,9 @@ public class Base62Encoder {
         StringBuilder hash = new StringBuilder();
         long num = Math.abs(number);
         while (num > 0) {
-            int remainder = (int) (num % BASE62);
+            int remainder = (int) (num % BASE62_LENGTH);
             hash.append(BASE62_ALPHABET.charAt(remainder));
-            num /= BASE62;
+            num /= BASE62_LENGTH;
         }
         return hash.reverse().toString();
     }

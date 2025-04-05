@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,13 +23,13 @@ public class UrlRepository {
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), expirationDate);
     }
 
-    public String findByHash(String hash) {
+    public Optional<String> findByHash(String hash) {
         String sql = "SELECT url FROM url WHERE hash = ?";
         return jdbcTemplate.query(sql, rs -> {
             if (rs.next()) {
-                return rs.getString("url");
+                return Optional.of(rs.getString("url"));
             }
-            return null;
+            return Optional.empty();
         }, hash);
     }
 }

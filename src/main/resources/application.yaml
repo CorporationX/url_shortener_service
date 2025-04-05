@@ -43,5 +43,4 @@ hash:
     batch-size: 100
 
 url:
-  expiration:
-    years: 1
+  expiration: PT1Y

@@ -22,6 +22,6 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${scheduler.cleaner.cron}")
     public void cleanOldUrls(){
-        cleanerService.cleanExpieredUrls();
+        cleanerService.cleanExpiredUrls();
     }
 }
