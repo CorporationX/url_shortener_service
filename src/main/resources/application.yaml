@@ -23,3 +23,24 @@ server:
 logging:
   level:
     root: info
+
+base:
+  url: /api/v1
+
+scheduler:
+  cleaner:
+    cron: "0 0 0 * * *"
+
+hash:
+  cache:
+    max-size: 1000
+    threshold: 20
+  executor:
+    core-size: 2
+    max-size: 4
+    queue-capacity: 20
+  generator:
+    batch-size: 100
+
+url:
+  expiration: PT1Y

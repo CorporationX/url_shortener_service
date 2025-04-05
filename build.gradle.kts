@@ -30,6 +30,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:4.3.2")
     runtimeOnly("org.postgresql:postgresql")
+    implementation ("javax.annotation:javax.annotation-api:1.3.2")
 
     /**
      * Utils & Logging
