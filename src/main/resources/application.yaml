@@ -5,20 +5,42 @@ spring:
     username: user
     password: password
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      url-ttl-in-seconds: 600
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
+        generate_statistics: false
+        jdbc:
+          batch_size: 100
+          order_inserts: true
+          order_updates: true
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash-generator:
+  local-cache-size: 10000
+  generate-count: 100000
+  ratio-free-hashes: 0.4
+  cron-delete: 0 0 0 * * *
+  advisory-lock-id: 12345
+
+url:
+  short-header: http://localhost:8080/shortner
+  ttl-in-seconds: 15000000
+
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
