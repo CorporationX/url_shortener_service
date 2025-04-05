@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
@@ -39,13 +41,13 @@ public class HashCache {
     public Hash getHash() {
         if (isHashFilled() && isFilling.compareAndSet(false, true)) {
             hashGenerator.getHashesAsync(maxRange)
-                    .thenAccept(cache::addAll)//тут точно так?
+                    .thenAccept(cache::addAll)
                     .thenRun(() -> isFilling.set(false));
         }
         return cache.poll();
     }
 
     private boolean isHashFilled() {
-        return ((cache.size() / 100.0) * capacity) * 100  < percentToFill;
+        return ((cache.size() / 100.0) * capacity) * 100 < percentToFill;
     }
 }

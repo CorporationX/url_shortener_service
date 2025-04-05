@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 public class UrlController {
 
-    @Value("${domain}")
+    @Value("${app.domain}")
     private String domain;
 
     private final UrlCacheRepository urlCacheRepository;
@@ -28,7 +28,7 @@ public class UrlController {
         return String.format("%s/%s", domain, urlService.getHash(urlDto.getUrl()));
     }
 
-    @GetMapping("${domain}/{hash}")
+    @GetMapping("${app.domain}/{hash}")
     public RedirectView get(@PathVariable String hash) {
         return new RedirectView(urlService.getUrl(hash));
     }

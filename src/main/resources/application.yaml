@@ -39,16 +39,21 @@ logging:
       data:
         redis: DEBUG
 
-domain: "shor.ti"
+app:
+  domain: "shor.ti"
+  thread-pool:
+    size: 5
+    queue:
+      capacity: 100
 
 clean-scheduler:
-  cron: "0 1 * * * *"  #"0 0 23 * * *"
+  cron: "0 0 23 * * *"
   date:
-    interval: "1 hour"
+    interval: "1 day"
 
 hash-cache:
   max:
-    range: 30
-  capacity: 10
+    range: 10000
+  capacity: 1000
   fill:
     percent: 20

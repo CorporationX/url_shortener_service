@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,6 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @ToString
+@EqualsAndHashCode
 public class Hash {
 
     @Id
