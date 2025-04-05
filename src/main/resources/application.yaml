@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,9 +17,40 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: secret
+      TTL-HOURS: 2
+
+  base_url: http://localhost:8080
+
+  hash-cache:
+    lock-name: "hash_generation_lock"
+    executor:
+      core-pool-size: 100
+      max-pool-size: 500
+      queue-capacity: 10000
+    max-size: 100_000
+    refill-threshold-percent: 20
+    min-db-multiplier: 10
+    max-db-multiplier: 20
+
+  url:
+    expiration-period: 365d
+
+  scheduler:
+    cleanup:
+      cron: "0 0 0 * * *"
+      lock-name: "url_cleanup_lock"
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+    faang.school.urlshortenerservice.repository: debug
+    faang.school.urlshortenerservice.service: debug
+    org.springframework.data.redis: warn

@@ -7,11 +7,11 @@ public class UserContext {
 
     private final ThreadLocal<Long> userIdHolder = new ThreadLocal<>();
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         userIdHolder.set(userId);
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userIdHolder.get();
     }
 
