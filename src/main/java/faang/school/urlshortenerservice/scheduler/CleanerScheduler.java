@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CleanerScheduler {
     @Value("${data.clean-scheduler.date.interval}")
-    private String interval;
+    private int interval;
 
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;

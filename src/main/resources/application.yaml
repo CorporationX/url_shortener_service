@@ -41,6 +41,7 @@ data:
   cache:
     pool-size: 10
     fill-percent: 20
+    timeout: 1
 
   app:
     domain: "shor.ti"

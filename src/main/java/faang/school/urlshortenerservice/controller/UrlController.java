@@ -25,7 +25,7 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @PostMapping("/url")
+    @PostMapping
     public String createShortUrl(@Valid @RequestBody UrlDto urlDto) {
         return String.format("%s/%s", domain, urlService.getHash(urlDto.getUrl()));
     }
