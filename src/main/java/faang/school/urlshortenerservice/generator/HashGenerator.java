@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final JdbcTemplate jdbcTemplate;
-    //private final HashServiceImpl hashService;
 
     @Value("${hash.range:10000}")
     private int maxRange;
@@ -35,20 +33,8 @@ public class HashGenerator {
                                 .toList();
 
         return hashes;
-
-       // hashRepository.saveAll(hashes);
     }
 
-  /*  @Transactional
-    public List<String> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if(hashes.size() < amount) {
-            generateBatch();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
-        }
-        return hashes.stream().map(Hash::getHash).toList();
-    }
-*/
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<String>> getHashesAsync(long amount) {
         HashServiceImpl hashService = new HashServiceImpl(hashRepository,this);
