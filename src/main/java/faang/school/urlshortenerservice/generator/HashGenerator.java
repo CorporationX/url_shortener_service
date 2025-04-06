@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.service.HashServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,23 +21,25 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final JdbcTemplate jdbcTemplate;
+    //private final HashServiceImpl hashService;
 
     @Value("${hash.range:10000}")
     private int maxRange;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")//"${hash:cron}")
-    public void generateBatch() {
+    public List<Hash> generateBatch() {
         List<Long> range = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashes = range.stream()
-                .map(this::applyBase62Encoding)
+                .map(this::applyEncoding)
                         .map(Hash::new)
                                 .toList();
 
-        hashRepository.saveAll(hashes);
+        return hashes;
+
+       // hashRepository.saveAll(hashes);
     }
 
-    @Transactional
+  /*  @Transactional
     public List<String> getHashes(long amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if(hashes.size() < amount) {
@@ -45,14 +48,15 @@ public class HashGenerator {
         }
         return hashes.stream().map(Hash::getHash).toList();
     }
-
+*/
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<String>> getHashesAsync(long amount) {
+        HashServiceImpl hashService = new HashServiceImpl(hashRepository,this);
 
-        return CompletableFuture.completedFuture(getHashes(amount));
+        return CompletableFuture.completedFuture(hashService.getHashes(amount));
     }
 
-    private String applyBase62Encoding(long number) {
+    private String applyEncoding(long number) {
         StringBuilder builder = new StringBuilder();
         while (number > 0) {
             builder.append(BASE_62_CHARACTERS.charAt((int) (number % BASE_62_CHARACTERS.length())));

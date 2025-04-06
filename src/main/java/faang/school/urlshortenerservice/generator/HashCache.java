@@ -1,7 +1,9 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.service.HashServiceImpl;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,26 +15,29 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-@Data
+@Getter
 @Slf4j
 public class HashCache {
 
     private final HashGenerator hashGenerator;
+    private final HashServiceImpl hashService;
 
-    //@Value("${hash.cache.capacity:10000}")
-    private int capacity = 10000;
+    @Value("${hash.cache.capacity:10000}")
+    private int capacity;
 
     @Value("${hash.fill.percent:20}")
     private int fillPercent;
 
-    private AtomicBoolean filling = new AtomicBoolean(false);
+    private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+
+    private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
+        this.hashes = new ArrayBlockingQueue<>(capacity);
         log.info("Hashes start size = " + hashes.size());
-        hashes.addAll(hashGenerator.getHashes(capacity));
+        hashes.addAll(hashService.getHashes(capacity));
         log.info("Hashes end size = " + hashes.size());
     }
 
@@ -41,11 +46,17 @@ public class HashCache {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
-                        .thenRun(() ->  filling.set(false));
+                        .whenComplete((result, ex) -> {
+                            if (ex != null) {
+                                log.error("Failed to generate hashes", ex);
+                            }
+                            filling.set(false);
+                        });
+
+
             }
         }
         String hash = hashes.poll();
-        log.info("Got hash = " + hash);
         return hash;
     }
 }

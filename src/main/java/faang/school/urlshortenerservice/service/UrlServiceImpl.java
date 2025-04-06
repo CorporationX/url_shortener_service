@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.generator.RedisCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
@@ -21,7 +20,7 @@ public class UrlServiceImpl implements UrlService {
     private final RedisCache redisCache;
 
     @Override
-    public String getUrlByHash(String hash) throws UrlNotFoundException {
+    public String getUrlByHash(String hash) {
         return redisCache.getUrlFromCache(hash);
 
     }

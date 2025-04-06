@@ -35,13 +35,8 @@ public class UrlController {
     }
 
     @PostMapping("/url")
-    public ResponseEntity<String> redirectToHash(@RequestBody UrlRequestDto urlRequestDto) {
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(urlService.getHashByUrl(urlRequestDto.getUrl())))
-                .build();
-        log.info("responseEntity.STATUS = " + responseEntity.getStatusCode());
-        log.info("responseEntity.Body = " + responseEntity.getBody());
-        log.info("responseEntity.Headers = " + responseEntity.getHeaders());
-        return responseEntity;
-    }
+    public String getHashForUrl(@RequestBody UrlRequestDto urlRequestDto) {
+        log.info("Get url: {}", urlRequestDto.getUrl() );
+        return urlService.getHashByUrl(urlRequestDto.getUrl());
+        }
 }
