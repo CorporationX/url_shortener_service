@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.Hash.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.Url.UrlRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

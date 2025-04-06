@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.Url;
 
 import faang.school.urlshortenerservice.model.Url;
 import org.springframework.data.jpa.repository.JpaRepository;

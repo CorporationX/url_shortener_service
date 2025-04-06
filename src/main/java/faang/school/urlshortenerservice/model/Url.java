@@ -2,8 +2,7 @@ package faang.school.urlshortenerservice.model;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,6 +11,8 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Url {
     @Id
     @Column(length = 6, nullable = false)

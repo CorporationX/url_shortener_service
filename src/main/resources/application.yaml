@@ -4,7 +4,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,6 +12,12 @@ spring:
     properties:
       hibernate:
         format_sql: false
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -29,10 +34,10 @@ hash:
     cleanOldUrls:
       fixed-rate: 0 0 0 * * ?
   cache:
-    thread-count: 3
-    size: 100
+    thread-count: 4
+    size: 100000
   generate:
-    queue: 100
+    queue: 100000
     thread-count: 4
     minimal-percent: 0.2
   save:
