@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.service.generator.HashAsyncService;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class HashCache {
     private int maxRange;
 
     private final HashGenerator hashGenerator;
+    private final HashAsyncService hashAsyncService;
 
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
@@ -40,7 +42,7 @@ public class HashCache {
 
     public Hash getHash() {
         if (isHashFilled() && isFilling.compareAndSet(false, true)) {
-            hashGenerator.getHashesAsync(maxRange)
+            hashAsyncService.getHashesAsync(maxRange)
                     .thenAccept(cache::addAll)
                     .thenRun(() -> isFilling.set(false));
         }

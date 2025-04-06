@@ -45,11 +45,4 @@ public class HashGenerator {
         }
         return hashes;
     }
-
-    @Async(value = "threadPool")
-    @Transactional
-    public CompletableFuture<List<Hash>> getHashesAsync(int count) {
-        List<Hash> hashes = getHashes(count);
-        return CompletableFuture.completedFuture(hashes);
-    }
 }
