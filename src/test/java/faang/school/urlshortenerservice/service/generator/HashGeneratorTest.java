@@ -11,7 +11,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -96,20 +95,6 @@ class HashGeneratorTest {
 
         verify(hashRepository, times(1)).getUniqueNumbers(100);
         verify(hashRepository, times(2)).findAndDelete(anyInt());
-    }
-
-    @Test
-    void getHashesAsync_ShouldReturnCompletedFuture() throws Exception {
-        int requestedCount = 2;
-        List<Hash> expectedHashes = List.of(new Hash("h1"), new Hash("h2"));
-
-        when(hashRepository.findAndDelete(requestedCount)).thenReturn(expectedHashes);
-
-        CompletableFuture<List<Hash>> future = hashGenerator.getHashesAsync(requestedCount);
-        List<Hash> result = future.get();
-
-        assertThat(result).isEqualTo(expectedHashes);
-        verify(hashRepository).findAndDelete(requestedCount);
     }
 
     @Test

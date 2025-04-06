@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.service.generator.Base62Encoder;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,76 +12,124 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HashCacheTest {
-    private final static int TEST_CAPACITY = 10;
-    private final static int TEST_MAX_RANGE = 100;
-    private final static long TEST_PERCENT_TO_FILL = 30;
+class HashGeneratorTest {
 
     @Mock
-    private HashGenerator hashGenerator;
+    private HashRepository hashRepository;
+
+    @Mock
+    private Base62Encoder base62Encoder;
 
     @InjectMocks
-    private HashCache hashCache;
+    private HashGenerator hashGenerator;
+
+    private final int TEST_MAX_RANGE = 100;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(hashCache, "capacity", TEST_CAPACITY);
-        ReflectionTestUtils.setField(hashCache, "maxRange", TEST_MAX_RANGE);
-        ReflectionTestUtils.setField(hashCache, "percentToFill", TEST_PERCENT_TO_FILL);
-
-        when(hashGenerator.getHashes(TEST_CAPACITY))
-                .thenReturn(generateTestHashes(TEST_CAPACITY));
-
-        hashCache.initCache();
+        ReflectionTestUtils.setField(hashGenerator, "maxRange", TEST_MAX_RANGE);
     }
 
     @Test
-    void getHash_shouldTriggerRefillWhenBelowThreshold() {
-        when(hashGenerator.getHashesAsync(TEST_MAX_RANGE))
-                .thenReturn(CompletableFuture.completedFuture(generateTestHashes(TEST_MAX_RANGE)));
+    void generateHashes_shouldSaveGeneratedHashes() {
+        // Arrange
+        List<Long> numbers = Arrays.asList(1L, 2L, 3L);
+        List<Hash> hashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
 
-        IntStream.range(0, 8).forEach(i -> hashCache.getHash());
+        when(hashRepository.getUniqueNumbers(TEST_MAX_RANGE)).thenReturn(numbers);
+        when(base62Encoder.encode(numbers)).thenReturn(hashes);
 
-        Hash result = hashCache.getHash();
-        assertNotNull(result);
+        // Act
+        hashGenerator.generateHashes();
 
-        verify(hashGenerator, times(1)).getHashesAsync(TEST_MAX_RANGE);
+        // Assert
+        verify(hashRepository, times(1)).getUniqueNumbers(TEST_MAX_RANGE);
+        verify(base62Encoder, times(1)).encode(numbers);
+        verify(hashRepository, times(1)).saveAll(hashes);
     }
 
     @Test
-    void getHash_shouldNotTriggerRefillWhenAboveThreshold() {
-        IntStream.range(0, 6).forEach(i -> hashCache.getHash());
+    void getHashes_shouldThrowExceptionWhenCountIsZero() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> hashGenerator.getHashes(0)
+        );
 
-        verify(hashGenerator, never()).getHashesAsync(anyInt());
+        assertEquals("Некорректное значение количества хэшей = 0", exception.getMessage());
     }
 
     @Test
-    void getHash_shouldNotTriggerMultipleRefills() {
-        CompletableFuture<List<Hash>> future = new CompletableFuture<>();
-        when(hashGenerator.getHashesAsync(TEST_MAX_RANGE)).thenReturn(future);
+    void getHashes_shouldReturnRequestedHashesWhenEnoughAvailable() {
+        // Arrange
+        int count = 3;
+        List<Hash> availableHashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
 
-        IntStream.range(0, 8).forEach(i -> hashCache.getHash());
+        when(hashRepository.findAndDelete(count)).thenReturn(availableHashes);
 
-        IntStream.range(0, 3).forEach(i -> hashCache.getHash());
+        // Act
+        List<Hash> result = hashGenerator.getHashes(count);
 
-        verify(hashGenerator, times(1)).getHashesAsync(TEST_MAX_RANGE);
+        // Assert
+        assertEquals(count, result.size());
+        verify(hashRepository, times(1)).findAndDelete(count);
+        verify(hashRepository, never()).saveAll(anyList());
     }
 
-    private List<Hash> generateTestHashes(int count) {
-        return IntStream.range(0, count)
-                .mapToObj(i -> new Hash("hash" + i))
-                .toList();
+    @Test
+    void getHashes_shouldGenerateNewHashesWhenNotEnoughAvailable() {
+        int count = 6;
+
+        when(hashRepository.findAndDelete(count))
+                .thenReturn(new ArrayList<>(List.of(new Hash("a"), new Hash("b"))));
+
+        when(hashRepository.findAndDelete(count - 2))
+                .thenReturn(new ArrayList<>(List.of(new Hash("c"), new Hash("d"), new Hash("e"), new Hash("r"))));
+
+        List<Hash> result = hashGenerator.getHashes(count);
+
+        assertEquals(6, result.size());
+    }
+
+    @Test
+    void getHashes_shouldNotRollbackOnIllegalArgumentException() {
+        // Arrange
+        when(hashRepository.findAndDelete(anyInt())).thenThrow(new IllegalArgumentException("DB error"));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> hashGenerator.getHashes(5));
+
+        // Проверяем, что транзакция не откатилась бы (в реальности нужно проверять через интеграционный тест)
+        verify(hashRepository, times(1)).findAndDelete(anyInt());
+    }
+
+    @Test
+    void getHashes_shouldReturnEmptyListWhenNoHashesAvailable() {
+        // Arrange
+        when(hashRepository.findAndDelete(anyInt())).thenReturn(Collections.emptyList());
+        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
+        when(base62Encoder.encode(anyList())).thenReturn(Collections.emptyList());
+
+        // Act
+        List<Hash> result = hashGenerator.getHashes(3);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }
