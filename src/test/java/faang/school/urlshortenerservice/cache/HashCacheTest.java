@@ -48,17 +48,14 @@ class HashGeneratorTest {
 
     @Test
     void generateHashes_shouldSaveGeneratedHashes() {
-        // Arrange
         List<Long> numbers = Arrays.asList(1L, 2L, 3L);
         List<Hash> hashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
 
         when(hashRepository.getUniqueNumbers(TEST_MAX_RANGE)).thenReturn(numbers);
         when(base62Encoder.encode(numbers)).thenReturn(hashes);
 
-        // Act
         hashGenerator.generateHashes();
 
-        // Assert
         verify(hashRepository, times(1)).getUniqueNumbers(TEST_MAX_RANGE);
         verify(base62Encoder, times(1)).encode(numbers);
         verify(hashRepository, times(1)).saveAll(hashes);
@@ -66,7 +63,6 @@ class HashGeneratorTest {
 
     @Test
     void getHashes_shouldThrowExceptionWhenCountIsZero() {
-        // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> hashGenerator.getHashes(0)
@@ -77,16 +73,13 @@ class HashGeneratorTest {
 
     @Test
     void getHashes_shouldReturnRequestedHashesWhenEnoughAvailable() {
-        // Arrange
         int count = 3;
         List<Hash> availableHashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
 
         when(hashRepository.findAndDelete(count)).thenReturn(availableHashes);
 
-        // Act
         List<Hash> result = hashGenerator.getHashes(count);
 
-        // Assert
         assertEquals(count, result.size());
         verify(hashRepository, times(1)).findAndDelete(count);
         verify(hashRepository, never()).saveAll(anyList());
@@ -109,27 +102,21 @@ class HashGeneratorTest {
 
     @Test
     void getHashes_shouldNotRollbackOnIllegalArgumentException() {
-        // Arrange
         when(hashRepository.findAndDelete(anyInt())).thenThrow(new IllegalArgumentException("DB error"));
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> hashGenerator.getHashes(5));
 
-        // Проверяем, что транзакция не откатилась бы (в реальности нужно проверять через интеграционный тест)
         verify(hashRepository, times(1)).findAndDelete(anyInt());
     }
 
     @Test
     void getHashes_shouldReturnEmptyListWhenNoHashesAvailable() {
-        // Arrange
         when(hashRepository.findAndDelete(anyInt())).thenReturn(Collections.emptyList());
         when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
         when(base62Encoder.encode(anyList())).thenReturn(Collections.emptyList());
 
-        // Act
         List<Hash> result = hashGenerator.getHashes(3);
 
-        // Assert
         assertTrue(result.isEmpty());
     }
 }
