@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.model.Hash;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.service.generator.Base62Encoder;
+import faang.school.urlshortenerservice.service.generator.HashAsyncService;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,111 +11,107 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HashGeneratorTest {
+class HashCacheTest {
+    private final static int TEST_CAPACITY = 10;
+    private final static int TEST_MAX_RANGE = 100;
+    private final static long TEST_PERCENT_TO_FILL = 30;
 
     @Mock
-    private HashRepository hashRepository;
-
-    @Mock
-    private Base62Encoder base62Encoder;
-
-    @InjectMocks
     private HashGenerator hashGenerator;
 
-    private final int TEST_MAX_RANGE = 100;
+    @Mock
+    private HashAsyncService hashAsyncService;
+
+    @InjectMocks
+    private HashCache hashCache;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "maxRange", TEST_MAX_RANGE);
+        ReflectionTestUtils.setField(hashCache, "capacity", TEST_CAPACITY);
+        ReflectionTestUtils.setField(hashCache, "maxRange", TEST_MAX_RANGE);
+        ReflectionTestUtils.setField(hashCache, "percentToFill", TEST_PERCENT_TO_FILL);
+
+        Queue<Hash> testCache = new ArrayBlockingQueue<>(TEST_CAPACITY);
+        for (int i = 0; i < TEST_CAPACITY; i++) {
+            testCache.add(new Hash("hash" + i));
+        }
+        ReflectionTestUtils.setField(hashCache, "cache", testCache);
     }
 
     @Test
-    void generateHashes_shouldSaveGeneratedHashes() {
-        List<Long> numbers = Arrays.asList(1L, 2L, 3L);
-        List<Hash> hashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
+    void initCache_shouldInitializeCacheWithHashes() {
+        List<Hash> mockHashes = List.of(new Hash("h1"), new Hash("h2"));
+        when(hashGenerator.getHashes(TEST_CAPACITY)).thenReturn(mockHashes);
 
-        when(hashRepository.getUniqueNumbers(TEST_MAX_RANGE)).thenReturn(numbers);
-        when(base62Encoder.encode(numbers)).thenReturn(hashes);
+        hashCache.initCache();
 
-        hashGenerator.generateHashes();
-
-        verify(hashRepository, times(1)).getUniqueNumbers(TEST_MAX_RANGE);
-        verify(base62Encoder, times(1)).encode(numbers);
-        verify(hashRepository, times(1)).saveAll(hashes);
+        Queue<Hash> cache = (Queue<Hash>) ReflectionTestUtils.getField(hashCache, "cache");
+        assertEquals(2, cache.size());
+        verify(hashGenerator, times(1)).getHashes(TEST_CAPACITY);
     }
 
     @Test
-    void getHashes_shouldThrowExceptionWhenCountIsZero() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> hashGenerator.getHashes(0)
-        );
+    void getHash_shouldReturnHashWhenCacheNotEmpty() {
+        Hash result = hashCache.getHash();
+        assertNotNull(result);
+        assertEquals("hash0", result.getHash());
+    }
 
-        assertEquals("Некорректное значение количества хэшей = 0", exception.getMessage());
+
+    @Test
+    void getHash_shouldTriggerAsyncRefillWhenBelowThreshold() {
+        List<Hash> newHashes = List.of(new Hash("new1"), new Hash("new2"));
+        when(hashAsyncService.getHashesAsync(TEST_MAX_RANGE))
+                .thenReturn(CompletableFuture.completedFuture(newHashes));
+
+        for (int i = 0; i < 9; i++) {
+            hashCache.getHash();
+        }
+
+        verify(hashAsyncService, times(1)).getHashesAsync(TEST_MAX_RANGE);
+
+        AtomicBoolean isFilling = (AtomicBoolean) ReflectionTestUtils.getField(hashCache, "isFilling");
+        assertFalse(isFilling.get());
     }
 
     @Test
-    void getHashes_shouldReturnRequestedHashesWhenEnoughAvailable() {
-        int count = 3;
-        List<Hash> availableHashes = Arrays.asList(new Hash("a"), new Hash("b"), new Hash("c"));
+    void getHash_shouldNotTriggerRefillWhenAboveThreshold() {
+        for (int i = 0; i < 6; i++) {
+            hashCache.getHash();
+        }
 
-        when(hashRepository.findAndDelete(count)).thenReturn(availableHashes);
-
-        List<Hash> result = hashGenerator.getHashes(count);
-
-        assertEquals(count, result.size());
-        verify(hashRepository, times(1)).findAndDelete(count);
-        verify(hashRepository, never()).saveAll(anyList());
+        verify(hashAsyncService, never()).getHashesAsync(anyInt());
     }
 
     @Test
-    void getHashes_shouldGenerateNewHashesWhenNotEnoughAvailable() {
-        int count = 6;
+    void getHash_shouldNotTriggerMultipleRefills() {
+        CompletableFuture<List<Hash>> future = new CompletableFuture<>();
+        when(hashAsyncService.getHashesAsync(TEST_MAX_RANGE)).thenReturn(future);
 
-        when(hashRepository.findAndDelete(count))
-                .thenReturn(new ArrayList<>(List.of(new Hash("a"), new Hash("b"))));
+        for (int i = 0; i < 8; i++) {
+            hashCache.getHash();
+        }
 
-        when(hashRepository.findAndDelete(count - 2))
-                .thenReturn(new ArrayList<>(List.of(new Hash("c"), new Hash("d"), new Hash("e"), new Hash("r"))));
+        for (int i = 0; i < 3; i++) {
+            hashCache.getHash();
+        }
 
-        List<Hash> result = hashGenerator.getHashes(count);
-
-        assertEquals(6, result.size());
-    }
-
-    @Test
-    void getHashes_shouldNotRollbackOnIllegalArgumentException() {
-        when(hashRepository.findAndDelete(anyInt())).thenThrow(new IllegalArgumentException("DB error"));
-
-        assertThrows(IllegalArgumentException.class, () -> hashGenerator.getHashes(5));
-
-        verify(hashRepository, times(1)).findAndDelete(anyInt());
-    }
-
-    @Test
-    void getHashes_shouldReturnEmptyListWhenNoHashesAvailable() {
-        when(hashRepository.findAndDelete(anyInt())).thenReturn(Collections.emptyList());
-        when(hashRepository.getUniqueNumbers(anyInt())).thenReturn(Collections.emptyList());
-        when(base62Encoder.encode(anyList())).thenReturn(Collections.emptyList());
-
-        List<Hash> result = hashGenerator.getHashes(3);
-
-        assertTrue(result.isEmpty());
+        verify(hashAsyncService, times(1)).getHashesAsync(TEST_MAX_RANGE);
     }
 }
