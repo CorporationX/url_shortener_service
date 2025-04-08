@@ -60,8 +60,8 @@ public class UrlServiceImplTest {
 
     @Test
     public void testGetHashByUrlFailedNotFound() {
-        Mockito.when(hashCache.getHashes()).thenThrow(UrlNotFoundException.class);
+        Mockito.when(hashCache.getHash()).thenThrow(UrlNotFoundException.class);
 
-        Assert.assertThrows(UrlNotFoundException.class, () -> {hashCache.getHashes();});
+        Assert.assertThrows(UrlNotFoundException.class, () -> {hashCache.getHash();});
     }
 }

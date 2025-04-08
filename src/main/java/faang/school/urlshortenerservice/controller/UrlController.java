@@ -27,7 +27,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToLongUrl(@PathVariable String hash) throws MethodArgumentNotValidException {
+    public ResponseEntity<Void> redirectToLongUrl(@PathVariable String hash) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(urlService.getUrlByHash(hash)))

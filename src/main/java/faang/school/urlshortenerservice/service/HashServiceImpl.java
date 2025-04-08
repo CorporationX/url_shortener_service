@@ -17,7 +17,7 @@ public class HashServiceImpl implements HashService{
     private final HashGenerator hashGenerator;
 
     @Transactional
-    public void saveHashes (List<Hash> hashes) {
+    public void saveHashes () {
         hashRepository.saveAll(hashGenerator.generateBatch());
     }
 
@@ -25,7 +25,7 @@ public class HashServiceImpl implements HashService{
     public List<String> getHashes(long amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if(hashes.size() < amount) {
-            hashGenerator.generateBatch();
+            saveHashes();
             hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
         return hashes.stream().map(Hash::getHash).toList();

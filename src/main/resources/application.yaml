@@ -40,7 +40,7 @@ logging:
 hash:
   range: 10000
   cache:
-    capacity: 10000
+    capacity: 1000
   fill:
     percent: 20
-  cron: "0 0 0 * * *"
+  generate-cron: "0 0 0 * * *"

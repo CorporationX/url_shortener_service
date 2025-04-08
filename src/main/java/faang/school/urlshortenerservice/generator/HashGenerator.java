@@ -7,11 +7,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -31,15 +29,7 @@ public class HashGenerator {
                 .map(this::applyEncoding)
                         .map(Hash::new)
                                 .toList();
-
         return hashes;
-    }
-
-    @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(long amount) {
-        HashServiceImpl hashService = new HashServiceImpl(hashRepository,this);
-
-        return CompletableFuture.completedFuture(hashService.getHashes(amount));
     }
 
     private String applyEncoding(long number) {

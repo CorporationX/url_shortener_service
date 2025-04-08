@@ -1,28 +1,28 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.service.HashServiceImpl;
+import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-@Getter
 @Slf4j
 public class HashCache {
 
     private final HashGenerator hashGenerator;
-    private final HashServiceImpl hashService;
+    private final HashService hashService;
 
-    @Value("${hash.cache.capacity:10000}")
+    @Value("${hash.cache.capacity:1000}")
     private int capacity;
 
     @Value("${hash.fill.percent:20}")
@@ -44,7 +44,7 @@ public class HashCache {
     public String getHash() {
         if (hashes.size() * 100 / capacity < fillPercent) {
             if (filling.compareAndSet(false, true)) {
-                hashGenerator.getHashesAsync(capacity)
+                getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
                         .whenComplete((result, ex) -> {
                             if (ex != null) {
@@ -52,11 +52,15 @@ public class HashCache {
                             }
                             filling.set(false);
                         });
-
-
-            }
+           }
         }
+        
         String hash = hashes.poll();
         return hash;
+    }
+
+    @Async("hashGeneratorExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(long amount) {
+        return CompletableFuture.completedFuture(hashService.getHashes(amount));
     }
 }
