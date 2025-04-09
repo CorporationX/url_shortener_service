@@ -1,0 +1,15 @@
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq
+    START 1
+    INCREMENT 1
+    NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS hash (
+    hash VARCHAR(6) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS url (
+    hash VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_url_hash FOREIGN KEY (hash) REFERENCES hash(hash)
+);
