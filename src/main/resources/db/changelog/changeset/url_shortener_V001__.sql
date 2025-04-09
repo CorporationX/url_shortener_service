@@ -1,6 +1,16 @@
-CREATE TABLE url (
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq
+    START     WITH 920000000
+    INCREMENT BY          1;
+
+CREATE TABLE IF NOT EXISTS url
+(
     hash       VARCHAR(6)    PRIMARY KEY,
-    url        VARCHAR(2000) NOT NULL,
-    created_at TIMESTAMP     NOT NULL DEFAULT current_timestamp,
-    expires_at TIMESTAMP     NOT NULL
-    );
+    url        VARCHAR(2048) NOT NULL,
+    created_at TIMESTAMP     NOT NULL,
+    deleted_at TIMESTAMP     NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hash
+(
+    hash VARCHAR(6) PRIMARY KEY
+);

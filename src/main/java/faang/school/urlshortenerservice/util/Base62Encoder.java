@@ -1,24 +1,30 @@
 package faang.school.urlshortenerservice.util;
 
-import io.seruco.encoding.base62.Base62;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.math.BigInteger;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class Base62Encoder {
-    private static final Base62 base62 = Base62.createInstance();
 
-    public String encodeSingle(Long number) {
-        byte[] encoded = base62.encode(BigInteger.valueOf(number).toByteArray());
-        return new String(encoded);
+    private final String alphabet;
+    private final int base;
+
+    public Base62Encoder(@Value("${hash.generator.alphabet}") String alphabet) {
+        if (alphabet == null || alphabet.isBlank()) {
+            throw new IllegalArgumentException("Alphabet must not be null or empty");
+        }
+        this.alphabet = alphabet;
+        this.base = alphabet.length();
     }
 
-    public List<String> encode(List<Long> numbers) {
-        return numbers.stream()
-                .map(this::encodeSingle)
-                .collect(Collectors.toList());
+    public String encode(long number) {
+        if (number == 0) return String.valueOf(alphabet.charAt(0));
+
+        StringBuilder sb = new StringBuilder();
+        while (number > 0) {
+            sb.append(alphabet.charAt((int) (number % base)));
+            number /= base;
+        }
+        return sb.reverse().toString();
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class UriBuilder {
     public String response(String hash) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/{hash}")
+                .path(hash)
                 .buildAndExpand(hash)
                 .toUriString();
     }

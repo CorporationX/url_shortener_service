@@ -13,21 +13,24 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
+
     Optional<Url> findByHash(String hash);
+
+    Optional<Url> findByUrl(String url);
 
     @Modifying
     @Query(value = """
-                DELETE FROM url
-                WHERE expires_at < :expirationDate
-                RETURNING hash
+            WITH selected_hashes AS (
+                SELECT hash
+                FROM hash
+                ORDER BY RANDOM()
+                LIMIT ?
+                FOR UPDATE SKIP LOCKED
+            )
+            DELETE FROM hash
+            USING selected_hashes
+            WHERE hash.hash = selected_hashes.hash
+            RETURNING hash.hash
             """, nativeQuery = true)
-    List<String> deleteOldUrlsAndReturnHashes(@Param("expirationDate") LocalDateTime expirationDate);
-
-    @Query(value = """
-        SELECT * FROM url
-        WHERE expires_at > now()
-        ORDER BY created_at DESC
-        LIMIT :limit
-        """, nativeQuery = true)
-    List<Url> findTopUrls(@Param("limit") int limit);
+    List<String> deleteOldUrlsAndReturnHashes(@Param("date") LocalDateTime date);
 }

@@ -12,18 +12,17 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class UrlCacheRepository {
+public class UrlCashRepository {
     private final StringRedisTemplate redisTemplate;
 
     @Value("${ttl.hour.url}")
     private int ttlHours;
-
     private static final String PREFIX = "url:";
 
     public void save(String hash, String url) {
         try {
             Duration ttl = ttlHours > 0 ? Duration.ofHours(ttlHours) : Duration.ZERO;
-            log.info("Saving URL in cache with TTL: {}", ttl);
+            log.info("Saving Url in cash with TTL: {}", ttl);
 
             redisTemplate.opsForValue().set(PREFIX + hash, url, ttl);
         } catch (Exception e) {
@@ -35,8 +34,12 @@ public class UrlCacheRepository {
         try {
             return Optional.ofNullable(redisTemplate.opsForValue().get(PREFIX + hash));
         } catch (Exception e) {
-            log.error("Error loading URL from cache: {}", e.getMessage());
+            log.error("Error loading URL from cash: {}", e.getMessage());
             return Optional.empty();
         }
+    }
+
+    public void delete(String hash) {
+        redisTemplate.delete(PREFIX + hash);
     }
 }

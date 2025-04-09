@@ -1,15 +1,9 @@
 spring:
-  data:
-    redis:
-      port: 6379
-      host: localhost
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -18,10 +12,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    open-in-view: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  date:
+    redis:
+      port: 6379
+      host: localhost
 
 server:
   port: 8080
@@ -30,34 +27,26 @@ logging:
   level:
     root: info
 
-app:
-  cache_warmer:
-    enabled: true
-    top_urls: 100
-  hash_generator:
-    queue_key: url:hashes
-    max_size: 1000000
-    replenish_threshold: 0.2
-    initial_counter: 916132832
-    min_replenish_size: 20000
-  scheduler:
-    url_cleaner:
-      cron: "0 0 0 * * *"
-      url_lifetime_days: 30
-    hash_pool:
-      interval_ms: 1000
+encoder:
+  base: 62
+  alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+hash:
+  generator:
+    batch-size: 10000
+    thread-pool-size: 5
+    queue-capacity: 50
+    count-number: 920000000
+    lock-ttl: 2
+
+  cache:
+    fill-percent: 0.2
+
+scheduler:
+  url_cleaner:
+    cron: "0 0 0 * * *"
+    url_lifetime_days: 30
 
 ttl:
   hour:
-    url: 24
-
-retry:
-  max_attempts: 5
-  initial_delay_ms: 100
-  backoff_multiplier: 2
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, prometheus
+    url: 720
