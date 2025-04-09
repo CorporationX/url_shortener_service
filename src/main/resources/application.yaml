@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    range: 1000
+    batch-size: 3000
