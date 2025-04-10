@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.config.UrlShortenerProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.exeption.LocalCacheException;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class HashCacheServiceTest {
+public class HashCacheTest {
     @Mock
     private HashService hashService;
 
@@ -44,7 +45,7 @@ public class HashCacheServiceTest {
 
     private CompletableFuture<List<Hash>> completableFuture;
 
-    private HashCacheService hashCacheService;
+    private HashCache hashCache;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +54,7 @@ public class HashCacheServiceTest {
                 .hashAmountToLocalCache(10)
                 .localCacheThresholdRatio(0.5)
                 .build();
-        hashCacheService = new HashCacheService(localCache, hashService, localCacheExecutor, urlShortenerProperties);
+        hashCache = new HashCache(localCache, hashService, localCacheExecutor, urlShortenerProperties);
     }
 
     @Test
@@ -62,7 +63,7 @@ public class HashCacheServiceTest {
 
         when(localCache.size()).thenReturn(3);
 
-        hashCacheService.addHashToLocalCacheIfNecessary();
+        hashCache.addHashToLocalCacheIfNecessary();
 
         verify(localCacheExecutor, times(1)).execute(any());
     }
@@ -70,11 +71,11 @@ public class HashCacheServiceTest {
     @Test
     @DisplayName("Test adding hash to local hash - capacity below threshold - upload in progress")
     void test_addHashToLocalCacheIfNecessary_WhenCapacityBelowThresholdAndUploadInProgress_NothingHappens() {
-        ReflectionTestUtils.setField(hashCacheService, "uploadInProgressFlag", new AtomicBoolean(true));
+        ReflectionTestUtils.setField(hashCache, "uploadInProgressFlag", new AtomicBoolean(true));
 
         when(localCache.size()).thenReturn(4);
 
-        hashCacheService.addHashToLocalCacheIfNecessary();
+        hashCache.addHashToLocalCacheIfNecessary();
 
         verify(localCacheExecutor, never()).execute(any());
     }
@@ -85,7 +86,7 @@ public class HashCacheServiceTest {
 
         when(localCache.size()).thenReturn(6);
 
-        hashCacheService.addHashToLocalCacheIfNecessary();
+        hashCache.addHashToLocalCacheIfNecessary();
 
         verify(localCacheExecutor, never()).execute(any());
     }
@@ -98,7 +99,7 @@ public class HashCacheServiceTest {
 
         when(hashService.getHashesFromDatabase()).thenReturn(completableFuture);
 
-        hashCacheService.uploadHashFromDatabaseToLocalCache();
+        hashCache.uploadHashFromDatabaseToLocalCache();
 
         verify(hashService, times(1)).getHashesFromDatabase();
         verify(localCache, times(1)).addAll(hashes);
@@ -115,7 +116,7 @@ public class HashCacheServiceTest {
         when(completableFuture.get()).thenThrow(new InterruptedException("Some error"));
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                hashCacheService.uploadHashFromDatabaseToLocalCache());
+                hashCache.uploadHashFromDatabaseToLocalCache());
 
         verify(hashService, times(1)).getHashesFromDatabase();
         verify(localCache, never()).addAll(any());
@@ -131,7 +132,7 @@ public class HashCacheServiceTest {
         when(localCache.poll()).thenReturn(hash);
         when(localCache.size()).thenReturn(10);
 
-        String result = hashCacheService.getHashFromCache();
+        String result = hashCache.getHashFromCache();
 
         verify(localCacheExecutor, never()).execute(any());
 
@@ -144,7 +145,7 @@ public class HashCacheServiceTest {
     void test_getHashFromCache_WhenCacheIsEmpty_ThenThrowsException() {
         localCache = new ArrayBlockingQueue<>(urlShortenerProperties.localCacheCapacity());
 
-        LocalCacheException ex = assertThrows(LocalCacheException.class, () -> hashCacheService.getHashFromCache());
+        LocalCacheException ex = assertThrows(LocalCacheException.class, () -> hashCache.getHashFromCache());
         assertEquals("Unable to provide hash for short URL", ex.getMessage());
 
         verify(localCacheExecutor, never()).execute(any());

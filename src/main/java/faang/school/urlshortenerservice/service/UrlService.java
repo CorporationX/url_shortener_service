@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exeption.InvalidURLException;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
-    private final UrlCacheService urlCacheService;
-    private final HashCacheService hashCacheService;
+    private final UrlCacheRepository urlCacheRepository;
+    private final HashCache hashCache;
 
     @Setter
     @Value("${url-shortener.host-name}")
@@ -32,14 +34,14 @@ public class UrlService {
         String url = longUrl.url();
         validateLongUrl(url);
 
-        String hash = hashCacheService.getHashFromCache();
+        String hash = hashCache.getHashFromCache();
         ShortUrl shortLongUrlPair = ShortUrl.builder()
                 .url(url)
                 .hash(hash)
                 .build();
 
         urlRepository.save(shortLongUrlPair);
-        urlCacheService.saveToCache(hash, url);
+        urlCacheRepository.saveToCache(hash, url);
 
         String shortUrl = hostName.concat(hash);
 
@@ -49,7 +51,7 @@ public class UrlService {
 
     public String getUrl(String hash) {
 
-        Optional<String> urlFromCache = urlCacheService.getFromCache(hash);
+        Optional<String> urlFromCache = urlCacheRepository.getFromCache(hash);
         if (urlFromCache.isPresent()) {
             log.info("Long URL {} returned from cache", urlFromCache.get());
             return urlFromCache.get();
@@ -57,7 +59,7 @@ public class UrlService {
 
         String urlFromDB = getUrlFromDataBase(hash);
 
-        urlCacheService.saveToCache(hash, urlFromDB);
+        urlCacheRepository.saveToCache(hash, urlFromDB);
 
         log.info("Long URL {} returned from DataBase", urlFromDB);
         return urlFromDB;

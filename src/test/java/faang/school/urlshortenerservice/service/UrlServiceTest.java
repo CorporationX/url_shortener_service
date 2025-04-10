@@ -1,8 +1,10 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.LongUrlDto;
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.exeption.InvalidURLException;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,10 +34,10 @@ public class UrlServiceTest {
     UrlRepository urlRepository;
 
     @Mock
-    UrlCacheService urlCacheService;
+    UrlCacheRepository urlCacheRepository;
 
     @Mock
-    HashCacheService hashCacheService;
+    HashCache hashCache;
 
     @InjectMocks
     private UrlService urlService;
@@ -55,7 +57,7 @@ public class UrlServiceTest {
     @DisplayName("Test URL validation")
     void test_createShortUrl_urlValidation() {
 
-        when(hashCacheService.getHashFromCache()).thenReturn(hash);
+        when(hashCache.getHashFromCache()).thenReturn(hash);
 
         urlService.createShortUrl(longUrlDto);
 
@@ -71,12 +73,12 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Test short URL created success")
     void test_createShortUrl_success() {
-        when(hashCacheService.getHashFromCache()).thenReturn(hash);
+        when(hashCache.getHashFromCache()).thenReturn(hash);
 
         String result = urlService.createShortUrl(longUrlDto);
 
         verify(urlRepository, times(1)).save(any(ShortUrl.class));
-        verify(urlCacheService, times(1)).saveToCache(hash, longUrlDto.url());
+        verify(urlCacheRepository, times(1)).saveToCache(hash, longUrlDto.url());
 
         assertNotNull(result);
         assertEquals("https://localhost:8099/123abc", result);
@@ -88,13 +90,13 @@ public class UrlServiceTest {
         String hash = "abc";
         String longUrl = "https://google.com";
 
-        when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.of(longUrl));
+        when(urlCacheRepository.getFromCache(anyString())).thenReturn(Optional.of(longUrl));
 
         String result = urlService.getUrl(hash);
 
-        verify(urlCacheService, times(1)).getFromCache(anyString());
+        verify(urlCacheRepository, times(1)).getFromCache(anyString());
         verify(urlRepository, never()).findById(anyString());
-        verify(urlCacheService, never()).saveToCache(anyString(), anyString());
+        verify(urlCacheRepository, never()).saveToCache(anyString(), anyString());
 
         assertNotNull(result);
         assertEquals(longUrl, result);
@@ -109,14 +111,14 @@ public class UrlServiceTest {
                 .url(longUrl)
                 .build();
 
-        when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.empty());
+        when(urlCacheRepository.getFromCache(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findById(anyString())).thenReturn(Optional.of(urlEntity));
 
         String result = urlService.getUrl(hash);
 
-        verify(urlCacheService, times(1)).getFromCache(anyString());
+        verify(urlCacheRepository, times(1)).getFromCache(anyString());
         verify(urlRepository, times(1)).findById(anyString());
-        verify(urlCacheService, times(1)).saveToCache(anyString(), anyString());
+        verify(urlCacheRepository, times(1)).saveToCache(anyString(), anyString());
 
         assertNotNull(result);
         assertEquals(longUrl, result);
@@ -127,14 +129,14 @@ public class UrlServiceTest {
     void test_getUrl_WhenInvalidInput_ReturnsException() {
         String hash = "abc";
 
-        when(urlCacheService.getFromCache(anyString())).thenReturn(Optional.empty());
+        when(urlCacheRepository.getFromCache(anyString())).thenReturn(Optional.empty());
         when(urlRepository.findById(anyString())).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> urlService.getUrl(hash));
         assertEquals("URL matching provided hash 'abc' not found", ex.getMessage());
 
-        verify(urlCacheService, times(1)).getFromCache(anyString());
+        verify(urlCacheRepository, times(1)).getFromCache(anyString());
         verify(urlRepository, times(1)).findById(anyString());
-        verify(urlCacheService, never()).saveToCache(anyString(), anyString());
+        verify(urlCacheRepository, never()).saveToCache(anyString(), anyString());
     }
 }

@@ -1,12 +1,14 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.UrlShortenerProperties;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.exeption.LocalCacheException;
+import faang.school.urlshortenerservice.service.HashService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import faang.school.urlshortenerservice.exeption.LocalCacheException;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,26 +24,48 @@ public class HashCache {
     private final HashService hashService;
     private final ThreadPoolTaskExecutor localCacheExecutor;
     private final UrlShortenerProperties urlShortenerProperties;
-    private final AtomicBoolean uploadInProgressFlag = new AtomicBoolean();
+    private final AtomicBoolean uploadInProgressFlag = new AtomicBoolean(false);
+    private long lowerBoundCapacity;
+
+    @PostConstruct
+    public void init() {
+        this.lowerBoundCapacity = calculateLowerBoundCapacity();
+        log.info("Initialized local cache lower bound: {}", lowerBoundCapacity);
+    }
 
     public String getHashFromCache() {
-        Hash hash = Optional.ofNullable(localCache.poll()).orElseThrow(this::createLocalCacheException);
-
         addHashToLocalCacheIfNecessary();
+
+        Hash hash = Optional.ofNullable(localCache.poll())
+                .orElseThrow(this::createLocalCacheException);
         return hash.getHash();
     }
 
     public void addHashToLocalCacheIfNecessary() {
-        if (!isEnoughLocalCacheCapacity() && uploadInProgressFlag.compareAndSet(false, true)) {
-            log.info("{} hashes left in local cache (threshold is {}). Update started", localCache.size(), (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio()));
-            localCacheExecutor.execute(() -> {
-                try {
-                    uploadHashFromDatabaseToLocalCache();
-                } finally {
-                    uploadInProgressFlag.set(false);
-                }
-            });
+        boolean needRefill = localCache.size() < lowerBoundCapacity
+                || localCache.isEmpty();
+
+        if (needRefill && uploadInProgressFlag.compareAndSet(false, true)) {
+            log.info("Cache refill triggered. Current size: {}", localCache.size());
+            startCacheRefill();
         }
+    }
+
+    private void startCacheRefill() {
+        localCacheExecutor.execute(() -> {
+            try {
+                List<Hash> hashes = getHashesFromDatabaseAndWaitUntilDone();
+                localCache.addAll(hashes);
+                log.info("Refilled {} hashes. New cache size: {}",
+                        hashes.size(),
+                        localCache.size());
+                hashService.uploadHashInDatabaseIfNecessary();
+            } catch (Exception e) {
+                log.error("Cache refill failed", e);
+            } finally {
+                uploadInProgressFlag.set(false);
+            }
+        });
     }
 
     public void uploadHashFromDatabaseToLocalCache() {
@@ -62,9 +86,9 @@ public class HashCache {
         }
     }
 
-    private boolean isEnoughLocalCacheCapacity() {
-        long lowerBoundCapacity = (long) (urlShortenerProperties.hashAmountToLocalCache() * urlShortenerProperties.localCacheThresholdRatio());
-        return localCache.size() >= lowerBoundCapacity;
+    private long calculateLowerBoundCapacity() {
+        return (long) (urlShortenerProperties.hashAmountToLocalCache()
+                * urlShortenerProperties.localCacheThresholdRatio());
     }
 
     private LocalCacheException createLocalCacheException() {
@@ -73,4 +97,19 @@ public class HashCache {
         return new LocalCacheException(errorMessage);
     }
 
+    public void warmupCache() {
+        if (uploadInProgressFlag.compareAndSet(false, true)) {
+            try {
+                List<Hash> hashes = hashService.generateBatch(
+                        urlShortenerProperties.hashAmountToLocalCache()
+                );
+                localCache.addAll(hashes);
+                hashService.uploadHashInDatabaseIfNecessary();
+                log.info("Warmup completed. Initial cache size: {}", localCache.size());
+            } finally {
+                uploadInProgressFlag.set(false);
+            }
+        }
+    }
 }
+

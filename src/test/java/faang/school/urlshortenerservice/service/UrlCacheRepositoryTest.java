@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.redis.RedisProperties;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UrlCacheServiceTest {
+public class UrlCacheRepositoryTest {
     @Mock
     private RedisTemplate<String, String> redisTemplate;
 
@@ -33,7 +34,7 @@ public class UrlCacheServiceTest {
     private RedisProperties redisProperties;
 
     @InjectMocks
-    private UrlCacheService urlCacheService;
+    private UrlCacheRepository urlCacheRepository;
 
     String hash;
     String url;
@@ -43,7 +44,7 @@ public class UrlCacheServiceTest {
         hash = "123abc";
         url = "http:/google.com";
         redisProperties = new RedisProperties(10, "host", 20);
-        urlCacheService = new UrlCacheService(redisProperties, redisTemplate);
+        urlCacheRepository = new UrlCacheRepository(redisProperties, redisTemplate);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 
@@ -51,7 +52,7 @@ public class UrlCacheServiceTest {
     @DisplayName("Test save to cache success")
     void test_saveToCache_success() {
 
-        urlCacheService.saveToCache(hash, url);
+        urlCacheRepository.saveToCache(hash, url);
 
         int timeout = redisProperties.ttlSeconds();
 
@@ -66,7 +67,7 @@ public class UrlCacheServiceTest {
 
         when(valueOperations.get(anyString())).thenReturn(url);
 
-        Optional<String> result = urlCacheService.getFromCache(hash);
+        Optional<String> result = urlCacheRepository.getFromCache(hash);
 
         verify(redisTemplate, times(1)).opsForValue();
         verify(valueOperations, times(1)).get(anyString());
@@ -81,7 +82,7 @@ public class UrlCacheServiceTest {
 
         when(valueOperations.get(hash)).thenReturn(null);
 
-        Optional<String> result = urlCacheService.getFromCache(hash);
+        Optional<String> result = urlCacheRepository.getFromCache(hash);
 
         verify(redisTemplate, times(1)).opsForValue();
         verify(valueOperations, times(1)).get(anyString());

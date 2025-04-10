@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.config.redis.RedisProperties;
 import lombok.RequiredArgsConstructor;

@@ -28,5 +28,5 @@ public class ShortUrl {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 }
