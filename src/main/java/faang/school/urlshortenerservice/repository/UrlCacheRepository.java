@@ -12,7 +12,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UrlCacheService {
+public class UrlCacheRepository {
     private final RedisProperties redisProperties;
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HashCacheService {
+public class HashCache {
     private final ArrayBlockingQueue<Hash> localCache;
     private final HashService hashService;
     private final ThreadPoolTaskExecutor localCacheExecutor;
