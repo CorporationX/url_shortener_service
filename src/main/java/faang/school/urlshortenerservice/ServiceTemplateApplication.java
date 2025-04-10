@@ -18,5 +18,6 @@ public class ServiceTemplateApplication {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
+        //test
     }
 }
