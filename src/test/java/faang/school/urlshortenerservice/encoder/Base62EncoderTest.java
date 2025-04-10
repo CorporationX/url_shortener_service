@@ -12,7 +12,7 @@ import java.util.List;
 public class Base62EncoderTest {
     Base62Encoder base62Encoder = new Base62Encoder();
     List<Long> numbers;
-    List<String> expectedHashes = new ArrayList<>(Arrays.asList("0","z", "01"));
+    List<String> expectedHashes = new ArrayList<>(Arrays.asList("0", "z", "01"));
 
     @BeforeEach
     void setUp() {

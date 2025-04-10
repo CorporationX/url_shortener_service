@@ -10,7 +10,7 @@ public class Base62Encoder {
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
 
-        for(Long number : numbers) {
+        for (Long number : numbers) {
             if (number < base) {
                 hashes.add(Character.toString(ALPHABET.charAt(number.intValue())));
                 continue;
