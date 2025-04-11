@@ -1,0 +1,27 @@
+services:
+  master-redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--protected-mode", "no"]
+
+  master-postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - '5432:5432'
+
+  url-shortener:
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://master-postgres:5432/postgres
+      - SPRING_DATA_REDIS_HOST=master-redis
+    depends_on:
+      - master-redis
+      - master-postgres
