@@ -20,7 +20,7 @@ spring:
         enabled: false
 
 server:
-    port: 8088
+    port: 8080
 
 hash:
   generator:
@@ -31,6 +31,16 @@ hash:
     generate-cron: "0/30 * * * * *"
     generate-max-cron: "0 0 * * * *"
 
-logging:
-  level:
-    root: info
+url:
+  service:
+    hash-size: 2500
+    cache-size: 250
+    min-available-percentage: 50
+  scheduler:
+    ttl-days: 30
+    clean-cron: "0 0 * * * *"
+
+thread-pool:
+  core-size: 6
+  max-size: 12
+  queue-capacity: 20
