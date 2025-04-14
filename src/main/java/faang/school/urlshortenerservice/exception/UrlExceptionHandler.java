@@ -38,6 +38,13 @@ public class UrlExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, errorMessages);
     }
 
+    @ExceptionHandler(HashGenerationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleHashGenerationException(HashGenerationException ex) {
+        log.error("Ошибка при генерации хэшей: {}", ex.getMessage(), ex);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleGeneralServerError(Exception ex) {
