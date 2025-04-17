@@ -5,7 +5,7 @@ COPY --chown=gradle:gradle . .
 RUN gradle build --no-daemon
 
 # Финальный образ
-FROM openjdk:17-jdk-slim-buster
+FROM --platform=linux/amd64 eclipse-temurin:17-jdk
 WORKDIR /app
 EXPOSE 8080
 COPY --from=build /app/build/libs/*.jar app.jar
