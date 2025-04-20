@@ -1,8 +1,11 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.url.UrlServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +24,7 @@ public class UrlController {
     private final UrlServiceImpl urlService;
 
     @PostMapping
-    public Mono<ResponseEntity<String>> shortUrl(@RequestParam("url") @URL String url) {
+    public Mono<ResponseEntity<UrlDto>> shortUrl(@RequestParam("url") @URL String url) {
         return urlService.shortenUrl(url).map(ResponseEntity::ok);
     }
 
@@ -29,8 +32,8 @@ public class UrlController {
     public Mono<ResponseEntity<Void>> redirect(@PathVariable String hash) {
         return urlService.getOriginalUrl(hash)
                 .map(url -> ResponseEntity
-                        .status(302)
-                        .header("Location", url)
+                        .status(HttpStatus.FOUND)
+                        .header(HttpHeaders.LOCATION, url)
                         .build()
                 );
     }

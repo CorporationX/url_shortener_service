@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
@@ -43,6 +46,9 @@ public class UrlServiceTest {
     @Mock
     private Executor taskExecutor;
 
+    @Spy
+    private UrlMapperImpl urlMapper;
+
     @InjectMocks
     private UrlServiceImpl urlService;
 
@@ -64,8 +70,8 @@ public class UrlServiceTest {
         when(urlRepository.save(any())).thenReturn(null);
         when(urlCacheRepository.save(any())).thenReturn(null);
 
-        Mono<String> result = urlService.shortenUrl(originalUrl);
-        String actualHash = result.block();
+        Mono<UrlDto> result = urlService.shortenUrl(originalUrl);
+        String actualHash = result.block().getUrl();
 
         assertEquals(expectedHash, actualHash);
 

@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service.url;
 
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
@@ -25,10 +27,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final UrlMapper urlMapper;
     private final HashService hashService;
     private final Executor taskExecutor;
 
-    private AtomicBoolean isLoading = new AtomicBoolean(false);
+    private final AtomicBoolean isLoading = new AtomicBoolean(false);
 
     @Value("${url.service.hash-size:250}")
     private int hashSize;
@@ -51,7 +54,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Transactional
     @Override
-    public Mono<String> shortenUrl(String originalUrl) {
+    public Mono<UrlDto> shortenUrl(String originalUrl) {
         Url url = Url.builder()
                 .url(originalUrl)
                 .hash(getAvailableHash())
@@ -60,7 +63,7 @@ public class UrlServiceImpl implements UrlService {
         return Mono.fromCallable(() -> {
             urlRepository.save(url);
             urlCacheRepository.save(url);
-            return url.getHash();
+            return urlMapper.toDto(url);
         });
     }
 
@@ -86,6 +89,10 @@ public class UrlServiceImpl implements UrlService {
     private void loadHashes(int size) {
         hashService.getHashes(size)
                 .doFinally((s) -> isLoading.set(false))
+                .doOnError(e -> {
+                    log.error("Error occurred: {}", e.getMessage(), e);
+                    throw new RuntimeException(e);
+                })
                 .subscribe(hashes -> hashCache.addAll(hashes));
     }
 }
