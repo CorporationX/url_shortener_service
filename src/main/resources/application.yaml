@@ -20,6 +20,21 @@ spring:
 server:
   port: 8080
 
+
+url-shortener:
+  api-version: "/api/v1"
+
+url-shortener-properties:
+    lower-bound-percentage-fill: 20
+    batch-size-max: 700
+    hashed-urls-lifetime: "P1Y"
+    hash-active-cron: "0 0 0 20 3 *"
+    executor-service:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 8
+      keep-alive-time: 20
+
 logging:
   level:
     root: info
