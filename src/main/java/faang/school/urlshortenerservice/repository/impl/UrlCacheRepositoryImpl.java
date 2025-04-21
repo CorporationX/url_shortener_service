@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository.impl;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -9,7 +10,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,25 +18,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
 
+    private static final String URL_CACHE_GROUP = "URL_CACHE_GROUP";
+    private static final String URL_NOT_FOUND_MESSAGE = "Url not found";
+
     private final UrlRepository urlRepository;
 
-    @CachePut(URL_CACHE_GROUP)
+    @CachePut(value = URL_CACHE_GROUP, key = "#url.hash")
     @Override
     public Url saveUrl(Url url) {
         return urlRepository.save(url);
     }
 
-    @Cacheable(URL_CACHE_GROUP)
+    @CachePut(value = URL_CACHE_GROUP, key = "#hash")
     @Override
-    public Url findByHash(String hash) {
-        return urlRepository.findByHash(hash).orElseThrow(UrlNotFoundException::new);
+    public Url findUrlByHash(String hash) {
+        return urlRepository.findByHash(hash).orElseThrow(() -> new UrlNotFoundException(URL_NOT_FOUND_MESSAGE));
     }
 
-    @CacheEvict(URL_CACHE_GROUP)
+    @CachePut(value = URL_CACHE_GROUP, key = "#url")
+    @Override
+    public Url findUrl(String url) {
+        return urlRepository.findHashByUrl(url).orElse(null);
+    }
+
+    @CachePut(value = URL_CACHE_GROUP, key = "#expireDate")
     @Override
     public List<Url> pollExpires(LocalDateTime expireDate) {
         return urlRepository.pollOldUrls(expireDate);
     }
 
-    private static final String URL_CACHE_GROUP = "URL_CACHE_GROUP";
 }

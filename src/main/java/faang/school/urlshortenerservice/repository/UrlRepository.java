@@ -27,4 +27,11 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     """)
     Optional<Url> findByHash(String hash);
 
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM url
+        WHERE url = ?1
+        LIMIT 1
+    """)
+    Optional<Url> findHashByUrl(String url);
+
 }
