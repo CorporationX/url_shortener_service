@@ -1,4 +1,30 @@
 spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    capacity: 1000
+    fill-percentage: 20
+    timeout: 1
+
+  thread-pool:
+    core-pool-size: 10
+    max-pool-size: 50
+    queue-capacity: 100
+
+  hash:
+    max-range: 1000
+    batch-size: 100
+
+  clean-scheduler:
+    cron: "0 0 0 * * *"
+    expiration-months: 1
+
+  application:
+    path: /api/v1/shortener
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
