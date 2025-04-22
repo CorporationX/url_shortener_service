@@ -36,6 +36,7 @@ hash:
   batch-size: 100
   thread-pool-size: 5
   thread-queue-size: 50
+  fill-percent: 20
 
 exception:
   exception-class: "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже. "

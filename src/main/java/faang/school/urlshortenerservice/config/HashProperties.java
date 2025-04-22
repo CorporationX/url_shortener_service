@@ -11,4 +11,5 @@ public class HashProperties {
     private int batchSize;
     private int threadPoolSize;
     private int threadQueueSize;
+    private int fillPercent;
 }
