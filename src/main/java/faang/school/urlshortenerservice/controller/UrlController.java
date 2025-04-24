@@ -32,6 +32,7 @@ public class UrlController {
         return urlService.getShortUrl(urlDto);
     }
 
+
     @GetMapping("/{hash}")
     @ResponseStatus(HttpStatus.FOUND)
     @Operation(summary = "Get and redirect to a long URL")

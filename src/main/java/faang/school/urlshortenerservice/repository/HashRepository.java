@@ -23,4 +23,6 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
                         ) RETURNING *
             """)
     List<Hash> findAndDelete(long amount);
+
+
 }
