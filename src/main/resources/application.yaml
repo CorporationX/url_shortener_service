@@ -40,3 +40,8 @@ hash:
 
 exception:
   exception-class: "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже. "
+
+scheduler:
+  cleaner:
+    cron: "0 0 2 * * *"       # каждый день в 2:00 ночи
+    lifetime-years: 1
