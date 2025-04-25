@@ -32,6 +32,11 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     /**
+     * Sqids
+     */
+    implementation("org.sqids:sqids:0.1.0")
+
+    /**
      * Utils & Logging
      */
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")

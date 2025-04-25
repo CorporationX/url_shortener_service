@@ -20,11 +20,12 @@ public class UrlShortenerController {
 
     @PostMapping
     public ResponseEntity<String> createShortenedUrl(@RequestParam String originalUrl) {
-        return ResponseEntity.ok(urlShortenerService.createShortenedUrl(originalUrl));
+        return ResponseEntity.ok(urlShortenerService.createShortUrl(originalUrl));
     }
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<Void> getOriginalUrl(@RequestParam String shortUrl) {
+        shortUrl = "http://CorporationX/" + shortUrl;
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(urlShortenerService.getOriginalUrl(shortUrl)))
                 .build();

@@ -1,6 +1,7 @@
 app:
   counter-bach-size: 1000
   short-url-prefix: "http://CorporationX/"
+  url-cache-ttl-days: 10
 
 spring:
   datasource:

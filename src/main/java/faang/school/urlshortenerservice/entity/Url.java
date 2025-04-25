@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "short_url")
-public class ShortUrl {
+@Table(name = "url_table")
+public class Url {
 
     @Id
     @Column(name = "hash")
@@ -28,6 +28,9 @@ public class ShortUrl {
 
     @Column(name = "original_url", nullable = false)
     private String originalUrl;
+
+    @Column(name = "short_url", nullable = false)
+    private String shortUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
