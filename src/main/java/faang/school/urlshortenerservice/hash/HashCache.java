@@ -44,7 +44,12 @@ public class HashCache {
                         hashes.forEach(cache::offer);
                         log.info("Cache refill complete. Added {} hashes.", hashes.size());
                     })
-                    .thenRun(() -> cacheIsFilled.set(false));
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to refill cache", ex);
+                        }
+                        cacheIsFilled.set(false);
+                    });
         }
 
         String hash = cache.poll();
