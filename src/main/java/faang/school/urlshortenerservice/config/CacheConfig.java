@@ -32,8 +32,8 @@ public class CacheConfig {
                                                RedisCacheConfiguration redisCacheConfiguration) {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
-                .withCacheConfiguration(originalUrlKey,redisCacheConfiguration)
-                .withCacheConfiguration(hashUrlKey,redisCacheConfiguration)
+                .withCacheConfiguration(originalUrlKey, redisCacheConfiguration)
+                .withCacheConfiguration(hashUrlKey, redisCacheConfiguration)
                 .build();
     }
 }

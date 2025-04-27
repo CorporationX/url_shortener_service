@@ -50,16 +50,17 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     public String createShortUrl(String originalUrl) {
         validateUrl(originalUrl);
         lock.lock();
-        String hash;
+        long value;
         try {
             if (counter.get() % counterBatchSize == 0) {
                 counter.set(counterService.incrementAndGet());
             }
-            hash = toBase62(counter.incrementAndGet());
+            value = counter.incrementAndGet();
         } finally {
             lock.unlock();
         }
 
+        String hash = toBase62(value);
         String shortUrl = shortUrlPrefix + hash;
         Url url = Url.builder()
                 .hash(hash)
@@ -79,7 +80,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Cacheable(value = "${app.hash-url-key}", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
         validateUrl(shortUrl);
-        log.info("Received: '{}'", shortUrl);
         String originalUrl = urlRepository.findOriginalUrlByShortUrl(shortUrl);
         if (originalUrl == null) {
             log.error(ORIGINAL_URL_NOT_FOUND + shortUrl);
