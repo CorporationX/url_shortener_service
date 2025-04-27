@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.excecption.InvalidUrlException;
 import faang.school.urlshortenerservice.excecption.OriginalUrlNotFoundException;
 import faang.school.urlshortenerservice.repository.ShortUrlRepository;
 import faang.school.urlshortenerservice.service.CounterService;
-import faang.school.urlshortenerservice.service.UrlShortenerRedisService;
 import faang.school.urlshortenerservice.service.UrlShortenerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import static faang.school.urlshortenerservice.messages.ErrorMessages.URL_CAN_T_
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,9 +38,6 @@ public class UrlShortenerServiceTest {
 
     @Mock
     private ShortUrlRepository shortUrlRepository;
-
-    @Mock
-    private UrlShortenerRedisService urlShortenerRedisService;
 
     private final String shortUrlPrefix = "http://CorporationX/";
     private final String hash = "hash";
@@ -75,26 +70,12 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    public void testCreateShortUrl_takeFromCache() {
-        when(urlShortenerRedisService.getUrlHash(originalUrl)).thenReturn(hash);
-
-        String result = urlShortenerService.createShortUrl(originalUrl);
-
-        assertEquals(shortUrlPrefix + hash, result);
-        verify(urlShortenerRedisService, timeout(1)).getUrlHash(originalUrl);
-    }
-
-    @Test
     public void testCreateShortUrl_takeFromDataBase_withoutIncrementingCounter() {
-        when(urlShortenerRedisService.getUrlHash(originalUrl)).thenReturn(null);
 
         String result = urlShortenerService.createShortUrl(originalUrl);
         ArgumentCaptor<Url> argumentCaptor = ArgumentCaptor.forClass(Url.class);
 
         verify(shortUrlRepository, times(1)).save(argumentCaptor.capture());
-        verify(urlShortenerRedisService, times(1)).getUrlHash(originalUrl);
-        verify(urlShortenerRedisService, times(1))
-                .addUrlHash(originalUrl, argumentCaptor.getValue().getHash());
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
@@ -106,7 +87,6 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testCreateShortUrl_takeFromDataBase_withIncrementingCounter() {
-        when(urlShortenerRedisService.getUrlHash(originalUrl)).thenReturn(null);
         when(counterService.incrementAndGet()).thenReturn((long) counterBatchSize * 2);
         ReflectionTestUtils.setField(urlShortenerService, "counter", new AtomicLong(counterBatchSize));
 
@@ -115,9 +95,6 @@ public class UrlShortenerServiceTest {
 
         verify(counterService, times(1)).incrementAndGet();
         verify(shortUrlRepository, times(1)).save(argumentCaptor.capture());
-        verify(urlShortenerRedisService, times(1)).getUrlHash(originalUrl);
-        verify(urlShortenerRedisService, times(1))
-                .addUrlHash(originalUrl, argumentCaptor.getValue().getHash());
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
@@ -144,18 +121,7 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    public void testGetOriginalUrl_takeFromCache() {
-        when(urlShortenerRedisService.getOriginalUrl(shortUrl)).thenReturn(originalUrl);
-
-        String result = urlShortenerService.getOriginalUrl(shortUrl);
-
-        assertEquals(originalUrl, result);
-        verify(urlShortenerRedisService, times(1)).getOriginalUrl(shortUrl);
-    }
-
-    @Test
     public void testGetOriginalUrl_urlNotFound() {
-        when(urlShortenerRedisService.getOriginalUrl(shortUrl)).thenReturn(null);
         when(shortUrlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(null);
 
         OriginalUrlNotFoundException exception = assertThrows(OriginalUrlNotFoundException.class,
@@ -167,13 +133,11 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testGetOriginalUrl_takeFromDataBase() {
-        when(urlShortenerRedisService.getOriginalUrl(shortUrl)).thenReturn(null);
         when(shortUrlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(originalUrl);
 
         String result = urlShortenerService.getOriginalUrl(shortUrl);
 
         assertEquals(originalUrl, result);
         verify(shortUrlRepository, times(1)).findOriginalUrlByShortUrl(shortUrl);
-        verify(urlShortenerRedisService, times(1)).addOriginalUrl(originalUrl, shortUrl);
     }
 }

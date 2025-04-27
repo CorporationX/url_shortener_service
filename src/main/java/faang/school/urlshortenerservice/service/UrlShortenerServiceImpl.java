@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.sqids.Sqids;
 
@@ -30,7 +31,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     private final CounterService counterService;
     private final ShortUrlRepository shortUrlRepository;
-    private final UrlShortenerRedisService urlShortenerRedisService;
     private final ReentrantLock lock = new ReentrantLock();
     private volatile AtomicLong counter = new AtomicLong(0);
 
@@ -46,14 +46,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     }
 
     @Override
+    @Cacheable(value = "${app.original-url-key}", key = "#originalUrl")
     public String createShortUrl(String originalUrl) {
         validateUrl(originalUrl);
-        log.info("Received request to create shortened URL from original URL {}", originalUrl);
-        String cachedHash = urlShortenerRedisService.getUrlHash(originalUrl);
-        if (cachedHash != null) {
-            log.info("Found cached shortened URL for {}: {}", originalUrl, shortUrlPrefix + cachedHash);
-            return shortUrlPrefix + cachedHash;
-        }
         lock.lock();
         String hash;
         try {
@@ -73,7 +68,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
                 .build();
         try {
             shortUrlRepository.save(url);
-            urlShortenerRedisService.addUrlHash(originalUrl, hash);
         } catch (Exception e) {
             log.warn("Error saving shortened URL for original URL {}. Such URL already exists", originalUrl);
         }
@@ -82,21 +76,14 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     }
 
     @Override
+    @Cacheable(value = "${app.hash-url-key}", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
         validateUrl(shortUrl);
-        log.info("Received request to get original URL from short URL {}", shortUrl);
-        String cachedOriginalUrl = urlShortenerRedisService.getOriginalUrl(shortUrl);
-        if (cachedOriginalUrl != null) {
-            log.info("Found cached original URL for {}: {}", shortUrl, cachedOriginalUrl);
-            return cachedOriginalUrl;
-        }
-
         String originalUrl = shortUrlRepository.findOriginalUrlByShortUrl(shortUrl);
         if (originalUrl == null) {
             log.error(ORIGINAL_URL_NOT_FOUND + shortUrl);
             throw new OriginalUrlNotFoundException(ORIGINAL_URL_NOT_FOUND + shortUrl);
         }
-        urlShortenerRedisService.addOriginalUrl(originalUrl, shortUrl);
         log.info("Original URL for {} found in repository: {}", shortUrl, originalUrl);
         return originalUrl;
     }
