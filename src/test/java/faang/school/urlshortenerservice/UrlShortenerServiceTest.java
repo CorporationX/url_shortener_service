@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.excecption.InvalidUrlException;
 import faang.school.urlshortenerservice.excecption.OriginalUrlNotFoundException;
-import faang.school.urlshortenerservice.repository.ShortUrlRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.CounterService;
 import faang.school.urlshortenerservice.service.UrlShortenerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ public class UrlShortenerServiceTest {
     private CounterService counterService;
 
     @Mock
-    private ShortUrlRepository shortUrlRepository;
+    private UrlRepository urlRepository;
 
     private final String shortUrlPrefix = "http://CorporationX/";
     private final String hash = "hash";
@@ -75,7 +75,7 @@ public class UrlShortenerServiceTest {
         String result = urlShortenerService.createShortUrl(originalUrl);
         ArgumentCaptor<Url> argumentCaptor = ArgumentCaptor.forClass(Url.class);
 
-        verify(shortUrlRepository, times(1)).save(argumentCaptor.capture());
+        verify(urlRepository, times(1)).save(argumentCaptor.capture());
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
@@ -94,7 +94,7 @@ public class UrlShortenerServiceTest {
         ArgumentCaptor<Url> argumentCaptor = ArgumentCaptor.forClass(Url.class);
 
         verify(counterService, times(1)).incrementAndGet();
-        verify(shortUrlRepository, times(1)).save(argumentCaptor.capture());
+        verify(urlRepository, times(1)).save(argumentCaptor.capture());
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
@@ -122,7 +122,7 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testGetOriginalUrl_urlNotFound() {
-        when(shortUrlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(null);
+        when(urlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(null);
 
         OriginalUrlNotFoundException exception = assertThrows(OriginalUrlNotFoundException.class,
                 () -> urlShortenerService.getOriginalUrl(shortUrl)
@@ -133,11 +133,11 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testGetOriginalUrl_takeFromDataBase() {
-        when(shortUrlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(originalUrl);
+        when(urlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(originalUrl);
 
         String result = urlShortenerService.getOriginalUrl(shortUrl);
 
         assertEquals(originalUrl, result);
-        verify(shortUrlRepository, times(1)).findOriginalUrlByShortUrl(shortUrl);
+        verify(urlRepository, times(1)).findOriginalUrlByShortUrl(shortUrl);
     }
 }

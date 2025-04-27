@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.excecption.InvalidUrlException;
 import faang.school.urlshortenerservice.excecption.OriginalUrlNotFoundException;
-import faang.school.urlshortenerservice.repository.ShortUrlRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     private static final Sqids BASE62_SQIDS = Sqids.builder().alphabet(BASE62).build();
 
     private final CounterService counterService;
-    private final ShortUrlRepository shortUrlRepository;
+    private final UrlRepository urlRepository;
     private final ReentrantLock lock = new ReentrantLock();
     private volatile AtomicLong counter = new AtomicLong(0);
 
@@ -67,7 +67,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
                 .shortUrl(shortUrl)
                 .build();
         try {
-            shortUrlRepository.save(url);
+            urlRepository.save(url);
         } catch (Exception e) {
             log.warn("Error saving shortened URL for original URL {}. Such URL already exists", originalUrl);
         }
@@ -79,7 +79,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Cacheable(value = "${app.hash-url-key}", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
         validateUrl(shortUrl);
-        String originalUrl = shortUrlRepository.findOriginalUrlByShortUrl(shortUrl);
+        log.info("Received: '{}'", shortUrl);
+        String originalUrl = urlRepository.findOriginalUrlByShortUrl(shortUrl);
         if (originalUrl == null) {
             log.error(ORIGINAL_URL_NOT_FOUND + shortUrl);
             throw new OriginalUrlNotFoundException(ORIGINAL_URL_NOT_FOUND + shortUrl);
