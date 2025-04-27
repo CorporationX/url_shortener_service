@@ -18,9 +18,8 @@ public class CounterService {
     @Transactional
     public long incrementAndGet() {
         Counter counter = counterRepository.getValueForUpdate();
-        long current = counter.getValue();
-        counter.setValue(current + counterBatchSize);
+        counter.setValue(counter.getValue() + counterBatchSize);
         counterRepository.save(counter);
-        return current;
+        return counter.getValue();
     }
 }
