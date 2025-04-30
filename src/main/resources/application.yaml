@@ -4,22 +4,43 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-server:
-  port: 8080
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      repositories:
+        enabled: false
 
-logging:
-  level:
-    root: info
+server:
+    port: 8080
+
+hash:
+  generator:
+    max-size: 2500
+    batch-size: 1000
+  scheduler:
+    min-available-percentage: 30
+    generate-cron: "0/30 * * * * *"
+    generate-max-cron: "0 0 * * * *"
+
+url:
+  service:
+    hash-size: 2500
+    cache-size: 250
+    min-available-percentage: 50
+  scheduler:
+    ttl-days: 30
+    clean-cron: "0 0 * * * *"
+
+thread-pool:
+  core-size: 6
+  max-size: 12
+  queue-capacity: 20

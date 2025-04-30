@@ -19,7 +19,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.4")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -28,7 +28,6 @@ dependencies {
      * Database
      */
     implementation("org.liquibase:liquibase-core")
-    implementation("redis.clients:jedis:4.3.2")
     runtimeOnly("org.postgresql:postgresql")
 
     /**
@@ -48,7 +47,6 @@ dependencies {
     implementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:1.4.6")
 
     /**
      * Tests
@@ -66,4 +64,8 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = false
 }
