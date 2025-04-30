@@ -29,11 +29,12 @@ public class HashGenerator {
 
     public void generateBatchHashes() {
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(maxRangeNumbers);
-        List<String> hashList = base62Encoder.encode(uniqueNumbers);
+        List<Hash> hashList = base62Encoder.encode(uniqueNumbers)
+                .stream()
+                .map(s -> Hash.builder().hash(s).build())
+                .toList();
 
-        for (String hash : hashList) {
-            entityManager.persist(new Hash(hash));
-        }
+        hashRepository.saveAllBatch(hashList, entityManager, batchSize);
     }
 
     @Transactional
