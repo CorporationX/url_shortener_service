@@ -30,7 +30,7 @@ public class HashRepository {
     @Transactional
     public void save(List<String> hashes) {
         jdbcTemplate.batchUpdate(
-                "INSERT INTO hash (value) VALUES (?)",
+                "INSERT INTO hash (hash) VALUES (?)",
                 hashes,
                 batchSize,
                 (ps, hash) -> ps.setString(1, hash)

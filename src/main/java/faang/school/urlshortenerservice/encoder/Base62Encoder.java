@@ -1,11 +1,16 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class Base62Encoder {
-    private static String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private int base = 62;
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final int base = 62;
 
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
