@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.entity.RedisCashUrl;
 import faang.school.urlshortenerservice.entity.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class UrlController {
     private final UrlService urlService;
 
@@ -24,13 +25,22 @@ public class UrlController {
         return redirectView;
     }
 
-    @PostMapping("url")
+    @PostMapping("/url")
     public String createShortUrl(@Validated @RequestBody UrlDto urlDto) {
         return "";
     }
 
-    @PostMapping("hash")
+    @PostMapping("/hash")
     public void generateHash(){
         urlService.generateHashes();
+    }
+
+    @PostMapping("/cashurl/{url}")
+    public RedisCashUrl saveUrlToCash(@PathVariable String url){
+        RedisCashUrl redisCashUrl = new RedisCashUrl();
+        UrlDto urlDto = new UrlDto();
+        urlDto.setUrl(url);
+        redisCashUrl.setUrlDto(urlDto);
+        return urlService.saveCashUrl(redisCashUrl);
     }
 }
