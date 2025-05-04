@@ -1,5 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.config.UrlProperties;
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -14,6 +17,19 @@ public class UrlService {
 
     private final UrlCacheRepository cacheRepository;
     private final UrlRepository urlRepository;
+    private final HashCache hashCache;
+    private final UrlProperties properties;
+
+    public String createShortUrl(String originalUrl) {
+        String hash = hashCache.getHash();
+
+        Url url = new Url(hash, originalUrl);
+        urlRepository.save(url);
+        cacheRepository.save(hash, originalUrl);
+
+        log.info("Создана короткая ссылка: {} → {}", hash, originalUrl);
+        return hash;
+    }
 
     public String getOriginalUrl(String hash) {
         return cacheRepository.findByHash(hash)
@@ -31,5 +47,9 @@ public class UrlService {
                                 return new UrlNotFoundException(hash);
                             });
                 });
+    }
+
+    public String getDomain() {
+        return properties.getDomain();
     }
 }
