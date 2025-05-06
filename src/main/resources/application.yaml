@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+base62:
+  alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  length: 62
