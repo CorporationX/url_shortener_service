@@ -28,7 +28,7 @@ public class HashGenerator {
             List<String> hashes = base62Encoder.encode(numbers);
             hashRepository.save(hashes);
 
-            log.info("Generated and saved {} hashes", hashes.size());
+            log.info("Generated and saved {} hashes; generationBatchSize={}", hashes.size(), generationBatchSize);
             return CompletableFuture.completedFuture(null);
         } catch (Exception e) {
             log.error("Error generating hash batch", e);

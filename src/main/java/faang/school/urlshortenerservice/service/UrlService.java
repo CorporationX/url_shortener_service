@@ -1,19 +1,28 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.RedisCashUrl;
+import faang.school.urlshortenerservice.entity.RedisUrl;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.RedisUrlRepository;
+import faang.school.urlshortenerservice.repository.RedisUrlRepositoryV2;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UrlService {
     private final HashGenerator hashGenerator;
     private final RedisUrlRepository redisRepository;
+    private final RedisUrlRepositoryV2 redisRepositoryV2;
 
     public RedirectView getRedirectUrl  (String hash) {
         //search for url in Redis
@@ -36,9 +45,12 @@ public class UrlService {
         });
     }
 
-    public String getUrlFromCash(String hash) {
-        RedisCashUrl redisCashUrl = redisRepository.findByHash(hash);
-        return  redisCashUrl.getUrlDto().getUrl();
+    public RedisCashUrl getUrlFromCash(String hash) {
+        log.info("Searching for hash in Redis: {}" ,hash);
+        RedisCashUrl result = redisRepository.findByHash(hash);
+        log.info("Redis returned: {}" ,result);
+        return redisRepository.findByHash(hash);
+
     }
 
     public RedisCashUrl saveCashUrl(RedisCashUrl redisCashUrl) {
@@ -46,7 +58,18 @@ public class UrlService {
         return redisRepository.save(redisCashUrl);
     }
 
-    public RedisCashUrl getCashUrl(String hash) {
-        return redisRepository.findByHash(hash);
+    public RedisUrl saveCashUrlV2(RedisUrl redisUrl) {
+        System.out.println("saveCashUrl working");
+        return redisRepositoryV2.save(redisUrl);
+    }
+
+    public RedisUrl getCashUrlV2(String hash) {
+        return redisRepositoryV2.findByHash(hash);
+    }
+
+    public ArrayList<RedisUrl> getCashUrlAllV2() {
+        Iterable<RedisUrl> iterable = redisRepositoryV2.findAll();
+        return StreamSupport.stream(iterable.spliterator(), false)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

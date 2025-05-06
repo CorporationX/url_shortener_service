@@ -22,6 +22,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  hash:
+    generation-batch-size: 20
+    fetch-size: 10
 
 
 server:
@@ -32,6 +35,3 @@ logging:
     root: info
 
 
-hash:
-  batch-size: 100
-  fetch-size: 10
