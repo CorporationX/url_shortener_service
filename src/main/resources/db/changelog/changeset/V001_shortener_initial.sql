@@ -11,5 +11,4 @@ CREATE TABLE hash
 );
 
 CREATE SEQUENCE unique_number_seq
-    START 1
-    INCREMENT BY 1;
+    START 1;
