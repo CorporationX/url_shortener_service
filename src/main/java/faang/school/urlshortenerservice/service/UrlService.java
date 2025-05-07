@@ -12,6 +12,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -64,7 +65,10 @@ public class UrlService {
     }
 
     public RedisUrl getCashUrlV2(String hash) {
-        return redisRepositoryV2.findByHash(hash);
+//        return redisRepositoryV2.findByHash(hash);
+        Optional<RedisUrl> optional = redisRepositoryV2.findById(hash);
+        return optional.orElseGet(RedisUrl::new);
+//        return redisRepositoryV2.findByHash(hash);
     }
 
     public ArrayList<RedisUrl> getCashUrlAllV2() {

@@ -26,7 +26,6 @@ public class UrlControllerV2 {
     public RedisUrl saveUrlToCash(@PathVariable String url){
         RedisUrl redisUrl = new RedisUrl();
         redisUrl.setUrl(url);
-        redisUrl.setHash(UUID.randomUUID().toString());
         return urlService.saveCashUrlV2(redisUrl);
     }
 
