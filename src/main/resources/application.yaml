@@ -42,3 +42,6 @@ hash:
 base62:
   alphabet: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
   length: 62
+
+url:
+  original-path: http://localhost:8080/api/v1/url/

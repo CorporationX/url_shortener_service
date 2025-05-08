@@ -12,6 +12,10 @@ public class UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
     private static final Duration TTL_DURATION = Duration.ofDays(7);
 
+    public void save(String shortHash, String originalUrl) {
+        redisTemplate.opsForValue().set(shortHash, originalUrl, TTL_DURATION);
+    }
+
     public String get(String shortHash) {
         String originalUrl = redisTemplate.opsForValue().get(shortHash);
         if (originalUrl != null) {
