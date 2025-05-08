@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.model.util;
 
+import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
