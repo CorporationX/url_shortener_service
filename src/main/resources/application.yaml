@@ -44,4 +44,6 @@ base62:
   length: 62
 
 url:
+  cleaner:
+    cron: "0 0 0 * * *"
   original-path: http://localhost:8080/api/v1/url/
