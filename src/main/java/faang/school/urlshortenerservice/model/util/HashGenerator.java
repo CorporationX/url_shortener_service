@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.model.util;
 
+import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGenerator {
     private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
+    private final Base62Encoder encoder;
     @Value("${hash.sequence-amount}")
     private int sequenceAmount;
 
