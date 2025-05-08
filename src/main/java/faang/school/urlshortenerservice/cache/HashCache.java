@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.exception.ExtractionCacheException;
 import faang.school.urlshortenerservice.model.util.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -54,7 +55,7 @@ public class HashCache {
         try {
             return freeCaches.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ExtractionCacheException("Extraction cache has interrupted", e);
         }
     }
 }
