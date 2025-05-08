@@ -1,0 +1,15 @@
+version: '3'
+services:
+  url_shortener_db:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgresql
+    ports:
+      - '5435:5432'
+    volumes:
+      - url-shortener-service-data:/var/lib/postgresql/data
+
+volumes:
+  url-shortener-service-data:
