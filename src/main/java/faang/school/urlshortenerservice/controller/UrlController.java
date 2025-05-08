@@ -24,7 +24,6 @@ public class UrlController {
     @ResponseStatus(HttpStatus.CREATED)
     public String createShortUrl(@Valid @RequestBody UrlDto urlDto) {
         return urlService.getShortUrl(urlDto);
-        
     }
 
     @GetMapping("/{hash}")
