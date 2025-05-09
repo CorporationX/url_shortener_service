@@ -42,8 +42,8 @@ public class HashRepository {
         return jdbcTemplate.queryForList(
                 "WITH deleted AS (" +
                         "   DELETE FROM hash " +
-                        "   WHERE id IN (SELECT id FROM hash ORDER BY random() LIMIT ?) " +
-                        "   RETURNING value" +
+                        "   WHERE hash IN (SELECT hash FROM hash ORDER BY random() LIMIT ?) " +
+                        "   RETURNING hash" +
                         ") SELECT * FROM deleted",
                 String.class,
                 fetchSize

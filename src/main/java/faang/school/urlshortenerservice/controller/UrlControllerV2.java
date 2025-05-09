@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,9 @@ public class UrlControllerV2 {
     @PostMapping("/cashurl/{url}")
     @ResponseBody
     public RedisUrl saveUrlToCash(@PathVariable String url){
-        RedisUrl redisUrl = new RedisUrl();
-        redisUrl.setUrl(url);
-        return urlService.saveCashUrlV2(redisUrl);
-    }
 
+        return urlService.saveCashUrlV2(url);
+    }
 
     @GetMapping("/cashurl/{hash}")
     @ResponseBody
@@ -48,5 +47,17 @@ public class UrlControllerV2 {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(redisUrls);
+    }
+
+    @PostMapping("/shorturl/cash")
+    @ResponseBody
+    public List<String> importShortUrlHashesToCash() {
+        return urlService.importShortUrlHashesToCash();
+    }
+
+    @GetMapping("/url/{hash}")
+    @ResponseBody
+    public RedirectView getRedirectUrl(@PathVariable String hash) {
+        return urlService.getRedirectUrl(hash);
     }
 }

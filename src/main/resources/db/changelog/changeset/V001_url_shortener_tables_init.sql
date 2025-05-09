@@ -13,3 +13,4 @@ CREATE TABLE IF NOT EXISTS url (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT fk_url_hash FOREIGN KEY (hash) REFERENCES hash(hash)
 );
+
