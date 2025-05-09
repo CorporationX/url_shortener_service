@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -29,10 +29,7 @@ public class Url {
     @Column(name = "original_url", nullable = false)
     private String originalUrl;
 
-    @Column(name = "short_url", nullable = false)
-    private String shortUrl;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

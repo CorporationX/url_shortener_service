@@ -27,7 +27,7 @@ public class UrlShortenerController {
     }
 
     @GetMapping()
-    public ResponseEntity<Void> getOriginalUrl(@RequestParam String shortUrl) {
+    public ResponseEntity<String> getOriginalUrl(@RequestParam String shortUrl) {
         log.info("Received request to get original URL from short hash {}", shortUrl);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(urlShortenerService.getOriginalUrl(shortUrl)))

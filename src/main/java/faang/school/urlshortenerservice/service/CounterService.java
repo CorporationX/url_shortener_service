@@ -19,7 +19,6 @@ public class CounterService {
     public long incrementAndGet() {
         Counter counter = counterRepository.getValueForUpdate();
         counter.setValue(counter.getValue() + counterBatchSize);
-        counterRepository.save(counter);
         return counter.getValue();
     }
 }

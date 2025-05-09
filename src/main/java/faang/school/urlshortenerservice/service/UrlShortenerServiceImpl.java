@@ -32,7 +32,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     private final CounterService counterService;
     private final UrlRepository urlRepository;
     private final ReentrantLock lock = new ReentrantLock();
-    private volatile AtomicLong counter = new AtomicLong(0);
+    private final AtomicLong counter = new AtomicLong(0);
 
     @Value("${app.short-url-prefix}")
     private String shortUrlPrefix;
@@ -59,20 +59,19 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         } finally {
             lock.unlock();
         }
-
         String hash = toBase62(value);
-        String shortUrl = shortUrlPrefix + hash;
         Url url = Url.builder()
                 .hash(hash)
                 .originalUrl(originalUrl)
-                .shortUrl(shortUrl)
                 .build();
+
+        String shortUrl = shortUrlPrefix + hash;
         try {
             urlRepository.save(url);
+            log.info("Created shortened URL for {}: {}", originalUrl, shortUrl);
         } catch (Exception e) {
-            log.warn("Error saving shortened URL for original URL {}. Such URL already exists", originalUrl);
+            log.warn("Shortened URL for {} already exists in the database", originalUrl);
         }
-        log.info("Created shortened URL for {}: {}", originalUrl, shortUrl);
         return shortUrl;
     }
 
@@ -80,7 +79,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Cacheable(value = "${app.hash-url-key}", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
         validateUrl(shortUrl);
-        String originalUrl = urlRepository.findOriginalUrlByShortUrl(shortUrl);
+        String hash = shortUrl.substring(shortUrl.lastIndexOf('/') + 1);
+        String originalUrl = urlRepository.findOriginalUrlByHash(hash);
         if (originalUrl == null) {
             log.error(ORIGINAL_URL_NOT_FOUND + shortUrl);
             throw new OriginalUrlNotFoundException(ORIGINAL_URL_NOT_FOUND + shortUrl);

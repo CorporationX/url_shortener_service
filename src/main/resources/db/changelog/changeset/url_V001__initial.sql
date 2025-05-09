@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS url_table
 (
     hash         VARCHAR(8) PRIMARY KEY,
     original_url VARCHAR(1024) NOT NULL,
-    short_url    VARCHAR(32)   NOT NULL,
     created_at   TIMESTAMP     NOT NULL
 );
 

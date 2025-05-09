@@ -79,8 +79,6 @@ public class UrlShortenerServiceTest {
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
-        assertEquals(shortUrlPrefix + argumentCaptor.getValue().getHash(),
-                argumentCaptor.getValue().getShortUrl());
 
         assertNotNull(result);
     }
@@ -98,8 +96,6 @@ public class UrlShortenerServiceTest {
 
         assertNotNull(argumentCaptor.getValue().getHash());
         assertEquals(originalUrl, argumentCaptor.getValue().getOriginalUrl());
-        assertEquals(shortUrlPrefix + argumentCaptor.getValue().getHash(),
-                argumentCaptor.getValue().getShortUrl());
 
         assertNotNull(result);
     }
@@ -122,7 +118,7 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testGetOriginalUrl_urlNotFound() {
-        when(urlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(null);
+        when(urlRepository.findOriginalUrlByHash(shortUrl)).thenReturn(null);
 
         OriginalUrlNotFoundException exception = assertThrows(OriginalUrlNotFoundException.class,
                 () -> urlShortenerService.getOriginalUrl(shortUrl)
@@ -133,11 +129,11 @@ public class UrlShortenerServiceTest {
 
     @Test
     public void testGetOriginalUrl_takeFromDataBase() {
-        when(urlRepository.findOriginalUrlByShortUrl(shortUrl)).thenReturn(originalUrl);
+        when(urlRepository.findOriginalUrlByHash(hash)).thenReturn(originalUrl);
 
         String result = urlShortenerService.getOriginalUrl(shortUrl);
 
         assertEquals(originalUrl, result);
-        verify(urlRepository, times(1)).findOriginalUrlByShortUrl(shortUrl);
+        verify(urlRepository, times(1)).findOriginalUrlByHash(hash);
     }
 }

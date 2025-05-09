@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface CounterRepository extends JpaRepository<Counter, Long> {
 
-    @Query(value = "SELECT * FROM global_counter c FOR UPDATE", nativeQuery = true)
+    @Query(value = "SELECT * FROM global_counter FOR UPDATE", nativeQuery = true)
     Counter getValueForUpdate();
 }
