@@ -1,3 +1,10 @@
+app:
+  counter-bach-size: 1000
+  short-url-prefix: "http://corporationx/"
+  url-cache-ttl-days: 10
+  original-url-key: "originalUrl"
+  hash-url-key: "hashUrl"
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -9,7 +16,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
