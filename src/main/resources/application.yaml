@@ -27,3 +27,5 @@ logging:
 app:
   hash:
     batch-size: 10
+    thread-pool-size: 5
+    thread-pool-queue-size: 100

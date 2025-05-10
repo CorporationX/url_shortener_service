@@ -11,4 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class HashConfig {
     private int batchSize;
+    private int threadPoolSize;
+    private int threadPoolQueueSize;
 }
