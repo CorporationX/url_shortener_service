@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS url (
     id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    hash varchar(7) UNIQUE,
+    hash varchar(7) NOT NULL UNIQUE,
     url text NOT NULL,
     created_at timestamptz DEFAULT current_timestamp
 );
