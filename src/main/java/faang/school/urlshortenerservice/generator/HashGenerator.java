@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.enity.FreeHash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.scheduler.Scheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ public class HashGenerator {
     private static final String BASE64_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     private final HashRepository hashRepository;
+    private final Scheduler scheduler;
 
     @Value("${hash.range:10000}")
     private int maxGeneratedHash;
@@ -38,8 +40,7 @@ public class HashGenerator {
         List<String> hashes = hashRepository.findAndDelete(maxGetHashes);
 
         if (hashes.size() < minGetHashes) {
-            generateHash();
-            hashes.addAll(hashRepository.findAndDelete(maxGetHashes - hashes.size()));
+            scheduler.sendMessage();
         }
 
         return hashes;
