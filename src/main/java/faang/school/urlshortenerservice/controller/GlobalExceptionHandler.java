@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.ApiError;
+import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -36,6 +37,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handle(MethodArgumentNotValidException ex, HttpServletRequest req) {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, req);
+    }
+
+    @ExceptionHandler(HashNotFoundException.class)
+    public ResponseEntity<ApiError> handle(HashNotFoundException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, req);
     }
 
     @ExceptionHandler(Exception.class)

@@ -36,7 +36,7 @@ public class HashGenerator {
     }
 
     @Transactional
-    public List<String> getListFreeHash() {
+    public List<String> getHashes() {
         List<String> hashes = hashRepository.findAndDelete(maxGetHashes);
 
         if (hashes.size() < minGetHashes) {
