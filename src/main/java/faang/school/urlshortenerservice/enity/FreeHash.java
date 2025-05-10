@@ -22,4 +22,8 @@ public class FreeHash {
 
     @Column(name = "hash")
     private String hash;
+
+    public FreeHash(String hash) {
+        this.hash = hash;
+    }
 }

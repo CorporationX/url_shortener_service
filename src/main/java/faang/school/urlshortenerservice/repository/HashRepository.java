@@ -8,24 +8,24 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface FreeHashRepository extends JpaRepository<FreeHash, Long> {
+public interface HashRepository extends JpaRepository<FreeHash, Long> {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_hash_number_seq') FROM generate_series(1, :count)
             """)
-    List<Long> getListSequence(@Param(value = "count") int count);
+    List<Long> getSequences(@Param(value = "count") int count);
 
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM free_hash
             WHERE id IN (
                 SELECT id FROM free_hash
-                LIMIT :count
+                LIMIT :range
                 FOR UPDATE SKIP LOCKED
             )
             RETURNING hash;
             """)
-    List<String> getAndDeleteHashes(@Param("count") int count);
+    List<String> findAndDelete(@Param("range") int range);
 
     @Query(nativeQuery = true, value = """
             SELECT COUNT(*) FROM free_hash
