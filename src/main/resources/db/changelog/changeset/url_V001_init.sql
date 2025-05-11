@@ -1,8 +1,9 @@
 CREATE TABLE url
 (
-    hash      varchar(6)    NOT NULL PRIMARY KEY,
-    url       varchar(4096) NOT NULL,
-    created_at timestamptz DEFAULT current_timestamp
+    hash       varchar(6)    NOT NULL PRIMARY KEY,
+    url        varchar(4096) NOT NULL,
+    created_at timestamptz   NOT NULL,
+    deleted_at timestamptz   NOT NULL
 );
 
 CREATE TABLE hash
@@ -11,6 +12,7 @@ CREATE TABLE hash
 );
 
 CREATE SEQUENCE unique_number_seq
-START WITH 1
-INCREMENT 1
-MAXVALUE 999999;
+    START WITH 1
+    INCREMENT 1
+    MAXVALUE 999999
+    CYCLE;
