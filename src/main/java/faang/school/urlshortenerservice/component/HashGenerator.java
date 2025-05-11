@@ -22,7 +22,7 @@ public class HashGenerator {
     private int batchSize;
 
     @Async("hashGenerationExecutor")
-    public CompletableFuture<Void> generateBatch() {
+    public CompletableFuture<Void> generateHash() {
         log.info("Generating batch of {} hashes", batchSize);
 
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);

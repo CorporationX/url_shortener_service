@@ -21,9 +21,9 @@ public class Base62Encoder {
 
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
-            int remainder = (int) (number % 62);
+            int remainder = (int) (number % BASE62_CHARS.length());
             sb.append(BASE62_CHARS.charAt(remainder));
-            number /= 62;
+            number /= BASE62_CHARS.length();
         }
         return sb.reverse().toString();
     }
