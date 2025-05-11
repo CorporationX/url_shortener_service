@@ -25,5 +25,14 @@ logging:
     root: info
 
 hash:
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 100
+
+  generate:
+    batch:
+      size: 200
+
   batch:
    size: 200
