@@ -36,3 +36,7 @@ hash:
 
   batch:
    size: 200
+
+cleaner:
+  scheduler:
+    cron: "0 0 0 * * *"
