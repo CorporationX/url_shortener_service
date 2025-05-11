@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -30,7 +31,7 @@ public class HashRepository {
         if (hashes.isEmpty()) {
             return;
         }
-        String sql = "INSERT INTO hash (hash_value) VALUES (?)";
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
         jdbcTemplate.batchUpdate(sql, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 
