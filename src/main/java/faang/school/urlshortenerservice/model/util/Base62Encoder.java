@@ -1,5 +1,9 @@
 package faang.school.urlshortenerservice.model.util;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,10 +12,15 @@ import java.util.List;
 @Component
 public class Base62Encoder {
     @Value("${base62.alphabet}")
+    @NotNull(message = "BASE62 must be specified")
+    @NotBlank(message = "BASE62 must be not blank")
     private String BASE62;
 
     @Value("${base62.length}")
-    private int base62Length;
+    @NotNull(message = "BASE62 length must be not null")
+    @Min(value = 62, message = "BASE62 length must be equal 62")
+    @Max(value = 62, message = "BASE62 length must be equal 62")
+    private Integer base62Length;
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()

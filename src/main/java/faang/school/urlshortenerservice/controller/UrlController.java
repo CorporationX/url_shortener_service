@@ -30,8 +30,6 @@ public class UrlController {
     @ResponseStatus(HttpStatus.FOUND)
     public RedirectView getOriginalUrl(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(originalUrl);
-        return redirectView;
+        return new RedirectView(originalUrl);
     }
 }

@@ -6,7 +6,9 @@ import faang.school.urlshortenerservice.model.dto.UrlDto;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.interfaces.UrlService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -19,14 +21,17 @@ public class UrlServiceImpl implements UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
     @Value("${url.original-path}")
+    @NotNull(message = "URL can not be null")
+    @URL(message = "URL must start with http or https")
     private String urlPath;
 
     @Override
     @Transactional
     public String getShortUrl(UrlDto urlDto) {
         String hash = hashCache.getHash();
-        urlRepository.saveUrlWithNewHash(hash, urlDto.url());
-        urlCacheRepository.save(hash, urlDto.url());
+        String originalUrl = urlDto.url();
+        urlRepository.saveUrlWithNewHash(hash, originalUrl);
+        urlCacheRepository.save(hash, originalUrl);
         return urlPath.concat(hash);
     }
 

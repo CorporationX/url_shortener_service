@@ -39,7 +39,9 @@ class UrlControllerTest {
 
     @Test
     void testCreateShortUrl_ValidUrlDto_ReturnsShortUrl() throws Exception {
-        UrlDto urlDto = new UrlDto("https://example.com");
+        UrlDto urlDto = UrlDto.builder()
+                .url("https://example.com")
+                .build();
         String shortUrl = "http://short.url/abc123";
 
         when(urlService.getShortUrl(any(UrlDto.class))).thenReturn(shortUrl);

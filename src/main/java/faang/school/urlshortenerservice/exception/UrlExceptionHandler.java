@@ -29,6 +29,13 @@ public class UrlExceptionHandler {
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
     }
 
+    @ExceptionHandler(RemoveLinksAndReturnHashException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRemoveLinksAndReturnHashException(RemoveLinksAndReturnHashException e) {
+        log.error("Error while remove old links and return cache: ", e);
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
