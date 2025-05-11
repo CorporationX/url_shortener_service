@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    pool:
+      size: 4
+    queue:
+      size: 100
+    batch:
+      size: 500
