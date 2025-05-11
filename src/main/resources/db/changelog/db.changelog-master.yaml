@@ -1,3 +1,7 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/V001__url-shortener-service_init.sql
+  - include:
+      file: db/changelog/changeset/V002__url-shortener-service_modify-constraints.sql
+  - include:
+      file: db/changelog/changeset/V003__url-shortener-service_modify-created-at.sql

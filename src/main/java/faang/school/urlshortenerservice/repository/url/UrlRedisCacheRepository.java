@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository;
+package faang.school.urlshortenerservice.repository.url;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
-public class UrlRedisCacheRepository implements UrlCacheRepository{
+public class UrlRedisCacheRepository implements UrlCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${app.cache.redis.time-to-live}")

@@ -19,9 +19,6 @@ public class CacheConfig {
     @Value("${app.cache.redis.url.name}")
     private String urlCacheName;
 
-    @Value("${app.cache.redis.hash.name}")
-    private String hashCacheName;
-
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
@@ -36,7 +33,6 @@ public class CacheConfig {
         return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(factory))
                 .cacheDefaults(configuration)
                 .withCacheConfiguration(urlCacheName, configuration)
-                .withCacheConfiguration(hashCacheName, configuration)
                 .build();
     }
 }

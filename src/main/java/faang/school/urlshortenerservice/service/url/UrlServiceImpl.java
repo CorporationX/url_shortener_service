@@ -1,15 +1,15 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.NoAvailableHashInCacheException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
-import faang.school.urlshortenerservice.repository.HashCache;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.hash.HashCache;
+import faang.school.urlshortenerservice.repository.hash.HashRepository;
+import faang.school.urlshortenerservice.repository.url.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,26 +23,24 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
     private final UrlCacheRepository urlCacheRepository;
-    private final UrlMapper urlMapper;
 
-    @Transactional
     @Override
+    @Transactional
     public UrlResponseDto createShortUrl(UrlRequestDto urlRequestDto) {
         String originalUrl = urlRequestDto.getUrl();
         String hash = hashCache.getHash();
         if (hash == null) {
-            throw new RuntimeException("No available hashes in cache");
+            throw new NoAvailableHashInCacheException("No available hash in cache now");
         }
         hashRepository.save(Hash.builder().hash(hash).build());
         Url url = Url.builder().hash(hash).url(originalUrl).build();
         urlRepository.save(url);
-        log.info("saved to db");
         urlCacheRepository.save(hash, originalUrl);
-        log.info("saved to redis");
-        return UrlResponseDto.builder().hash(hash).url(originalUrl).build();
+        return UrlResponseDto.builder().url(url.getUrl()).hash(hash).build();
     }
 
     @Override
+    @Transactional
     public UrlResponseDto getOriginalUrl(String hash) {
         String url = urlCacheRepository.get(hash);
         if (url == null) {
