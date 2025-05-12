@@ -18,4 +18,10 @@ public class UrlRepository {
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"));
     }
 
+    @Transactional
+    public void insertUrl(String hash,String url) {
+        String sql = "INSERT INTO url (hash, url) VALUES (?, ?)";
+        jdbcTemplate.update(sql, hash, url);
+    }
+
 }

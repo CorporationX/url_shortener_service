@@ -36,8 +36,8 @@ public class HashRepository {
     }
 
     @Transactional
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(Long amount) {
         String sql = "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash LIMIT ?) RETURNING hash_value";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash_value"), batchSize);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash_value"), amount);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,5 +37,21 @@ public class HashGenerator {
 
         return CompletableFuture.completedFuture(null);
     }
+
+    public List<String> getHashes(Long amount) {
+        List<String> hashes = hashRepository.getHashBatch(amount);
+        log.info("Retrieved {} unique hashes", hashes.size());
+
+        if (hashes.size() < amount) {
+            log.info("Not enough hashes retrieved, generating more...");
+            CompletableFuture<Void> future = generateHash();
+            future.join();
+
+            hashes.addAll(getHashes(amount - hashes.size()));
+        }
+
+        return hashes;
+    }
+
 }
 
