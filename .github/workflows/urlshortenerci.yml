@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - Yom-master-stream9
+      - feature/BJS2-78557-url-shortener-service
 
 jobs:
   build:

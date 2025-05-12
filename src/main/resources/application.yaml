@@ -31,3 +31,14 @@ server:
 logging:
   level:
     root: debug
+
+hash-generator-settings:
+  count-returning-unique-numbers: 100000
+  batch-size-processing-hashes: 10000
+
+thread-pool-setting:
+  hashes-creator:
+    size: 5
+    shutdown-timeout-setting: 30
+    is-wait-shutdown: true
+    thread-prefix: "HashesCreatorPool-"

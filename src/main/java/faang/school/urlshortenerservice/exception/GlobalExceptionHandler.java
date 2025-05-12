@@ -13,12 +13,12 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler()
+    @ExceptionHandler(PlugValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception e) {
         return ResponseEntity.status(BAD_REQUEST).body(getErrorResponse(e));
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler(PlugInternalServerException.class)
     public ResponseEntity<ErrorResponse> handleInternalServerExceptions(Exception e) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(getErrorResponse(e));
     }
