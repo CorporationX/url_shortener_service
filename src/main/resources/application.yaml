@@ -25,6 +25,15 @@ logging:
     root: info
 
 hash:
+  cache:
+    max-size: 1000
+    refill-threshold-percent: 20
+    batch-size: 100
+    executor:
+      pool:
+        size: 2
+      queue:
+        size: 50
   generator:
     pool:
       size: 4
