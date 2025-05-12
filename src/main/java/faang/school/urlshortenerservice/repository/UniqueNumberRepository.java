@@ -13,8 +13,8 @@ public class UniqueNumberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${cache.capacity:10000}")
-    private int cacheCapacity;
+    @Value("${cache.capacity}")
+    private Integer cacheCapacity;
 
     public List<Long> getUniqueNumbers() {
         return jdbcTemplate.queryForList(

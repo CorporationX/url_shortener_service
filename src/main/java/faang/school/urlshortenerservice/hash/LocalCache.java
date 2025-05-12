@@ -17,11 +17,11 @@ public class LocalCache {
 
     private final AtomicBoolean isCacheFillingUp = new AtomicBoolean(false);
 
-    @Value("${cache.capacity:10000}")
-    private int cacheCapacity;
+    @Value("${cache.capacity}")
+    private Integer cacheCapacity;
 
-    @Value("${cache.min-percentage-filling:20}")
-    private int cacheMinPercentageFilling;
+    @Value("${cache.min-percentage-filling}")
+    private Integer cacheMinPercentageFilling;
 
     private Queue<String> cache;
 

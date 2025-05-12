@@ -10,8 +10,8 @@ public class Base62Encoder {
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int CHARACTERS_LENGTH = CHARACTERS.length();
 
-    @Value("${hash.max-length:6}")
-    private int maxHashLength;
+    @Value("${hash.max-length}")
+    private Integer maxHashLength;
 
     private double maxHashNumber;
 

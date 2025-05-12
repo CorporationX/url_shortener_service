@@ -13,7 +13,7 @@ import java.util.List;
 public class UrlRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${url.lifetime:1 year}")
+    @Value("${url.lifetime}")
     private String urlLifetime;
 
     public String get(String hash) {
