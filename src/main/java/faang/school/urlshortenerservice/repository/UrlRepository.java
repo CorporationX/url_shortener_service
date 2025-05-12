@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,6 +23,12 @@ public class UrlRepository {
     public void insertUrl(String hash,String url) {
         String sql = "INSERT INTO url (hash, url) VALUES (?, ?)";
         jdbcTemplate.update(sql, hash, url);
+    }
+
+    @Transactional
+    public Optional<String> findUrlByHash(String hash) {
+        String sql = "SELECT * FROM url WHERE hash = ?";
+        return Optional.of(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getString("url"), hash));
     }
 
 }
