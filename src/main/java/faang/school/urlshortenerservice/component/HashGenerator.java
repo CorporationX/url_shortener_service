@@ -35,6 +35,7 @@ public class HashGenerator {
         log.info("Starting {} hashes generation", count);
         List<Long> numbers = sequenceRepository.getUniqueNumbers(count);
         List<String> uniqueStrings = encoder.encode(numbers);
+        log.debug("Encoding {} hashes successfully", numbers.size());
 
         List<CompletableFuture<List<Hash>>> futures = getCompletableFuturesHash(uniqueStrings);
 
