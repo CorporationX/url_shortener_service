@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository.implementations;
 
-import faang.school.urlshortenerservice.config.app.HashConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class HashRepositoryImplTest {
     private JdbcTemplate jdbcTemplate;
 
     @Mock
-    private HashConfig hashConfig;
+    private HashGeneratorConfig hashGeneratorConfig;
 
     @InjectMocks
     private HashRepositoryImpl hashRepository;
@@ -33,7 +33,7 @@ class HashRepositoryImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(hashConfig.getBatchSize()).thenReturn(3);
+        when(hashGeneratorConfig.getBatchSize()).thenReturn(3);
     }
 
     @Test

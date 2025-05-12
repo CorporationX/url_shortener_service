@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.component;
 
-import faang.school.urlshortenerservice.config.app.HashConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -13,11 +13,11 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final HashConfig hashConfig;
+    private final HashGeneratorConfig hashGeneratorConfig;
 
-    @Async("hashGeneratorTaskExecutor")
+    @Async("hashGeneratorExecutor")
     public void generateBatch() {
-        int batchSize = hashConfig.getBatchSize();
+        int batchSize = hashGeneratorConfig.getBatchSize();
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = base62Encoder.encode(numbers);
         hashRepository.save(hashes);

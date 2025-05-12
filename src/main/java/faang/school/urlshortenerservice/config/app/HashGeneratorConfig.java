@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "app.hash")
+@ConfigurationProperties(prefix = "app.hash-generator")
 @Getter
 @Setter
-public class HashConfig {
+public class HashGeneratorConfig {
     private int batchSize;
     private int threadPoolSize;
     private int threadPoolQueueSize;

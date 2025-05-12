@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.component;
 
-import faang.school.urlshortenerservice.config.app.HashConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class HashGeneratorTest {
     private Base62Encoder base62Encoder;
 
     @Mock
-    private HashConfig hashConfig;
+    private HashGeneratorConfig hashGeneratorConfig;
 
     @InjectMocks
     private HashGenerator hashGenerator;
@@ -30,11 +30,11 @@ class HashGeneratorTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(hashConfig.getBatchSize()).thenReturn(3);
+        when(hashGeneratorConfig.getBatchSize()).thenReturn(3);
     }
 
     @Test
-    public void testGenerateBatch() throws Exception {
+    public void testGenerateBatch() {
         List<Long> mockNumbers = Arrays.asList(1L, 2L, 3L);
         List<String> mockHashes = Arrays.asList("000001", "000002", "000003");
 

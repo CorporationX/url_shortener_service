@@ -29,3 +29,12 @@ app:
     batch-size: 10
     thread-pool-size: 5
     thread-pool-queue-size: 100
+  hash-catch:
+    max-size: 1000
+    refill-threshold: 20
+    executor-config:
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
+
+

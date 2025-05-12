@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository.implementations;
 
-import faang.school.urlshortenerservice.config.app.HashConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 public class HashRepositoryImpl implements HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final HashConfig hashConfig;
+    private final HashGeneratorConfig hashGeneratorConfig;
 
     @Override
     public List<Long> getUniqueNumbers(int n) {
@@ -50,7 +50,7 @@ public class HashRepositoryImpl implements HashRepository {
 
     @Override
     public List<String> getHashBatch() {
-        int batchSize = hashConfig.getBatchSize();
+        int batchSize = hashGeneratorConfig.getBatchSize();
         log.info("getHashBatch called with batchSize: {}", batchSize);
         return jdbcTemplate.query(
                 "DELETE FROM hash WHERE hash IN (" +
