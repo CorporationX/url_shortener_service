@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
     @Modifying
@@ -15,4 +16,8 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
             WHERE last_get_at <= :date
             """)
     void deleteUnusedUrl(@Param(value = "date") LocalDateTime date);
+
+    Optional<Url> findByUrl(String url);
+
+    Optional<Url> findByHash(String hash);
 }

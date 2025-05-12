@@ -16,5 +16,5 @@ CREATE TABLE free_hash (
 );
 
 CREATE SEQUENCE unique_hash_number_seq
-    START WITH 1
+    START WITH 250000
     INCREMENT BY 31;
