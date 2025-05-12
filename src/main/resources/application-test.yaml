@@ -1,0 +1,7 @@
+cache:
+  capacity: 5
+
+url:
+  lifetime: 1 second
+  cleaner:
+    cron: '* * * * * *'
