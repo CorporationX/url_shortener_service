@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,7 @@ public class HashRepository {
     @Value("${hash.batch.size}")
     private int batchSize;
 
-    public List<Long> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(Long n) {
         if (n <= 0) {
             return Collections.emptyList();
         }

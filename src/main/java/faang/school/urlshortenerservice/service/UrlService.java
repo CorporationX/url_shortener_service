@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.component.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -25,7 +26,7 @@ public class UrlService {
             throw new IllegalArgumentException("URL must not be null or empty");
         }
 
-        String hash = hashCache.findHash();
+        String hash = hashCache.getHash();
         if (hash == null) {
             log.error("Failed to generate hash");
             throw new RuntimeException("Could not generate hash");

@@ -60,3 +60,7 @@ urlShortener:
 
 urlController:
   baseUrl: www
+
+hashCache:
+  queue-capacity: 100
+  fill-percent: 20
