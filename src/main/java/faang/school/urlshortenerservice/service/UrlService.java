@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,17 @@ public class UrlService {
             log.warn("Caching process on redis for url {} failed. Details: {}", entityUrl.getHash(), e.toString());
         }
         return SHORT_URL_PATTERN.concat(hash);
+    }
+
+    public String redirectToOriginalUrl(String shortUrl) {
+        int lastIndex = shortUrl.lastIndexOf('/');
+        String hash = shortUrl.substring(lastIndex, shortUrl.length() - 1);
+        Url url = urlCacheRepository.getUrlByHash(hash);
+        if (url == null) {
+            url = urlRepository.getByHash(hash).orElseThrow(
+                    () -> new UrlNotFoundException("Original url with hash %s not found", hash));
+        }
+        return url.getUrl();
     }
 
     @Transactional
