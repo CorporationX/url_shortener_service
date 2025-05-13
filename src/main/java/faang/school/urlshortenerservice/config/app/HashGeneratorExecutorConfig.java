@@ -23,18 +23,4 @@ public class HashGeneratorExecutorConfig {
         executor.initialize();
         return executor;
     }
-
-    /*
-    public ExecutorService hashGeneratorExecutor() {
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(
-            2, // corePoolSize
-            5, // maxPoolSize
-            0L,
-            java.util.concurrent.TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(50)
-    );
-    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-    return executor;
-}
-     */
 }

@@ -22,11 +22,11 @@ public class HashRepositoryImpl implements HashRepository {
     private final HashGeneratorConfig hashGeneratorConfig;
 
     @Override
-    public List<Long> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(int maxRange) {
         return jdbcTemplate.query(
                 "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)",
                 (rs, rowNum) -> rs.getLong(1),
-                n
+                maxRange
         );
     }
 
@@ -63,23 +63,4 @@ public class HashRepositoryImpl implements HashRepository {
                 batchSize
         );
     }
-
-    /*@Override
-    public List<String> getHashBatch() {
-        int batchSize = hashConfig.getBatchSize();
-        return jdbcTemplate.query(
-                """
-                        DELETE FROM hash
-                        WHERE hash IN (
-                            SELECT hash
-                            FROM hash
-                            ORDER BY RANDOM()
-                            LIMIT ?
-                        )
-                        RETURNING hash
-                        """,
-                (rs, rowNum) -> rs.getString("hash"),
-                batchSize
-        );
-    }*/
 }

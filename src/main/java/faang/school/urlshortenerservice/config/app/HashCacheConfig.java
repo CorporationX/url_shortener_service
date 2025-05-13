@@ -17,6 +17,8 @@ public class HashCacheConfig {
 
     private int maxSize;
     private int refillThreshold;
+    private int initialDbSize;
+    private int multiplierDbGeneration;
 
     private ExecutorConfig executorConfig;
 
