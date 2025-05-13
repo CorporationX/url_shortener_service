@@ -2,6 +2,10 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.component.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.exceptions.CacheOperationException;
+import faang.school.urlshortenerservice.exceptions.HashGenerationException;
+import faang.school.urlshortenerservice.exceptions.InvalidUrlException;
+import faang.school.urlshortenerservice.exceptions.UrlShorteningException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,13 +27,13 @@ public class UrlService {
 
         if (urlDto == null || urlDto.url() == null || urlDto.url().isEmpty()) {
             log.error("Invalid URL provided: {}", urlDto);
-            throw new IllegalArgumentException("URL must not be null or empty");
+            throw new InvalidUrlException("URL must not be null or empty");
         }
 
         String hash = hashCache.getHash();
         if (hash == null) {
             log.error("Failed to generate hash");
-            throw new RuntimeException("Could not generate hash");
+            throw new HashGenerationException("Could not generate hash");
         }
 
         try {
@@ -38,7 +42,7 @@ public class UrlService {
             log.info("Successfully shortened URL: {} to hash: {}", urlDto.url(), hash);
         } catch (Exception e) {
             log.error("Error occurred while shortening URL: {}", e.getMessage(), e);
-            throw new RuntimeException("Could not shorten URL", e);
+            throw new CacheOperationException("Could not shorten URL", e);
         }
 
         return hash;
