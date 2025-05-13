@@ -2,10 +2,12 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +23,22 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
     private final HashGenerator hashGenerator;
-    private final HashCache hashCache;
+    private final HashCacheService hashCacheService;
+    private final UrlCacheRepository urlCacheRepository;
 
     @Value("${url-manipulation-setting.months-to-clear-url}")
     private int monthsToClearUrl;
 
+    @Transactional
     public String createShortUrl(UrlDto urlDto) {
         String url = urlDto.longUrl();
-        String hash = hashCache.getCache();
-        urlRepository.save(createUrlAssociation(url, hash));
+        String hash = hashCacheService.getCache();
+        Url entityUrl = urlRepository.save(createUrlAssociation(url, hash));
+        try {
+            urlCacheRepository.cacheUrl(entityUrl);
+        } catch (DataAccessException e) {
+            log.warn("Caching process on redis for url {} failed. Details: {}", entityUrl.getHash(), e.toString());
+        }
         return SHORT_URL_PATTERN.concat(hash);
     }
 
