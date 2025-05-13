@@ -9,10 +9,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleExceptionsWithStatusNotFound(Exception e) {
+        return ResponseEntity.status(NOT_FOUND).body(getErrorResponse(e));
+    }
 
     @ExceptionHandler(PlugValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception e) {
