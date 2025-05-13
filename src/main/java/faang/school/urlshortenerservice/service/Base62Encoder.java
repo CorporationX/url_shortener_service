@@ -1,15 +1,15 @@
-package faang.school.urlshortenerservice.component;
+package faang.school.urlshortenerservice.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 public class Base62Encoder {
 
-    private static final String base62Symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int BASE = base62Symbols.length();
+    private static final String BASE_62_SYMBOLS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int BASE_LENGTH = BASE_62_SYMBOLS.length();
 
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>();
@@ -21,9 +21,9 @@ public class Base62Encoder {
         StringBuilder hashBuilder = new StringBuilder();
 
         while (number > 0) {
-            int remainder = (int)(number % BASE);
-            hashBuilder.append(base62Symbols.charAt(remainder));
-            number /= BASE;
+            int remainder = (int) (number % BASE_LENGTH);
+            hashBuilder.append(BASE_62_SYMBOLS.charAt(remainder));
+            number /= BASE_LENGTH;
         }
         return hashBuilder.toString();
     }
