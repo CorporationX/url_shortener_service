@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -22,18 +23,23 @@ public class HashGenerator {
     @Value("${hash.get:1000}")
     private int maxGetHashes;
 
-
-    @Transactional
-    public void generateHash() {
-        hashRepository.saveAll(hashRepository.getSequences(maxGeneratedHash).stream()
-                .map(this::applyBase64Encoding)
-                .map(FreeHash::new)
-                .toList());
-    }
+    @Value("${hash.min:500}")
+    private int minGetHashes;
 
     @Transactional
     public List<String> getHashes() {
-        return hashRepository.findAndDelete(maxGetHashes);
+        return checkHashesCountAndGenerate(hashRepository.findAndDelete(maxGetHashes));
+    }
+
+    private List<String> checkHashesCountAndGenerate(List<String> hashes) {
+        if (hashes.size() < minGetHashes) {
+            CompletableFuture.runAsync(() ->
+                    hashRepository.saveAll(hashRepository.getSequences(maxGeneratedHash).stream()
+                    .map(this::applyBase64Encoding)
+                    .map(FreeHash::new)
+                    .toList())); //todo add executor
+        }
+        return hashes;
     }
 
     private String applyBase64Encoding(long number) {

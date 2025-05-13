@@ -1,4 +1,4 @@
-name: Test Account Service App
+name: Test Url Shortener App
 
 on:
   push:
