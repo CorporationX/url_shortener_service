@@ -34,6 +34,11 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     /**
+     * Swagger
+     */
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+
+    /**
      * Utils & Logging
      */
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")

@@ -2,9 +2,9 @@ package faang.school.urlshortenerservice.service;
 
 public interface UrlService {
 
-    String saveUrl(String url);
+    String save(String url);
 
-    String getUrl(String hash);
+    String get(String hash);
 
     String getHash(String url);
 

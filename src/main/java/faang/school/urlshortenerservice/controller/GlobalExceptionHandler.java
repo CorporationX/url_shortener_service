@@ -47,9 +47,9 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(
                 ex.getMessage(),
                 status.value(),
-                request.getRequestURI(),
-                Instant.now().toString()
-        );
+                request.getMethod(),
+                request.getRequestURI() + "?" + request.getQueryString(),
+                Instant.now().toString());
         log.error("Обработано исключение: ", ex);
         return ResponseEntity.status(status).body(error);
     }

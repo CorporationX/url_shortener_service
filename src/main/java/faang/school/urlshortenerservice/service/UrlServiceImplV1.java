@@ -25,7 +25,7 @@ public class UrlServiceImplV1 implements UrlService{
 
     @Override
     @CachePut(value = "urlToHash", key = "#url")
-    public String saveUrl(String url) {
+    public String save(String url) {
         String hash = urlRepository.findByUrl(url)
                 .orElseGet(() -> urlRepository.save(Url.builder()
                         .url(url)
@@ -40,7 +40,7 @@ public class UrlServiceImplV1 implements UrlService{
 
     @Override
     @Cacheable(value = "hashToUrl", key = "#hash", unless = "#result == null")
-    public String getUrl(String hash) {
+    public String get(String hash) {
         return urlRepository.findByHash(hash)
                 .orElseThrow(() -> new EntityNotFoundException("url by hash " + hash + " does not exists"))
                 .getUrl();

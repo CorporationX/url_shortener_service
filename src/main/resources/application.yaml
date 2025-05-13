@@ -28,3 +28,13 @@ server:
 logging:
   level:
     root: info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+  api-docs:
+    path: /v1/api-docs
+  default-produces-media-type: application/json
