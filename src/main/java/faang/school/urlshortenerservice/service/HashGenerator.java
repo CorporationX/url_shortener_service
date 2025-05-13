@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.component;
+package faang.school.urlshortenerservice.service;
 
 import com.google.common.collect.Lists;
 import faang.school.urlshortenerservice.entity.Hash;
@@ -7,7 +7,8 @@ import faang.school.urlshortenerservice.repository.UniqueNumberSeqRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class HashGenerator {
 
@@ -31,22 +32,25 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-    public void generateBatch() {
+    public void generateHashes() {
         log.info("Starting {} hashes generation", count);
         List<Long> numbers = sequenceRepository.getUniqueNumbers(count);
-        List<String> uniqueStrings = encoder.encode(numbers);
-        log.debug("Encoding {} hashes successfully", numbers.size());
+        List<String> hashes = encoder.encode(numbers);
+        processAllHashes(hashes);
+        log.info("Finished {} hashes generation", count);
+    }
 
-        List<CompletableFuture<List<Hash>>> futures = getCompletableFuturesHash(uniqueStrings);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processAllHashes(List<String> hashes) {
+        List<CompletableFuture<List<Hash>>> futures = processHashesOnBatches(hashes);
 
         List<Hash> allHashes = futures.stream()
                 .flatMap(future -> future.join().stream())
                 .toList();
         hashRepository.saveAll(allHashes);
-        log.info("Finished {} hashes generation", count);
     }
 
-    private List<CompletableFuture<List<Hash>>> getCompletableFuturesHash(List<String> uniqueStrings) {
+    private List<CompletableFuture<List<Hash>>> processHashesOnBatches(List<String> uniqueStrings) {
         List<CompletableFuture<List<Hash>>> futures = new ArrayList<>();
         List<List<String>> batches = Lists.partition(uniqueStrings, batchSize);
 
