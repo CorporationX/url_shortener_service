@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 @Slf4j
 public class HashCache {
+
     private final HashGenerator hashGenerator;
 
     @Value("${hashCache.queue-capacity}")
@@ -24,10 +25,12 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private  Queue<String> hashes;
+
 
     @PostConstruct
     public void init() {
+        this.hashes = new ArrayBlockingQueue<>(capacity);
         try {
             hashes.addAll(hashGenerator.getHashes((long) capacity));
             log.info("Initialized HashCache with {} hashes", hashes.size());

@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5433/postgres
     username: user
     password: password
 
@@ -59,8 +59,8 @@ urlShortener:
     max-retries: 3
 
 urlController:
-  baseUrl: www
+  baseUrl: http://localhost:8080/www/
 
 hashCache:
-  queue-capacity: 100
+  queue-capacity: 5
   fill-percent: 20

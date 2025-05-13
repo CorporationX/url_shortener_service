@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,30 +13,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UrlController {
 
     private final UrlService urlService;
 
-    @Value("${}")
+    @Value("${urlController.baseUrl}")
     private String baseUrl;
 
-    @PostMapping
+    @PostMapping("/")
     public String shortenUrl(@RequestBody UrlDto urlDto) {
         String shortUrl = urlService.shortenUrl(urlDto);
         return baseUrl + shortUrl;
     }
 
-    @GetMapping("/{hash}")
+    @GetMapping("www/{hash}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
+        log.info(originalUrl.toString());
 
         if (originalUrl == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", originalUrl)
-                .build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
     }
 }
