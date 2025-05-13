@@ -1,0 +1,1 @@
+ALTER SEQUENCE unique_number_seq RESTART WITH 1;

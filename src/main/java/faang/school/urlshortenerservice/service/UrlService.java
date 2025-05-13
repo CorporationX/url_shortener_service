@@ -33,7 +33,7 @@ public class UrlService {
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
         String url = urlDto.longUrl();
-        String hash = hashCacheService.getCache();
+        String hash = hashCacheService.getHash();
         Url entityUrl = urlRepository.save(createUrlAssociation(url, hash));
         try {
             urlCacheRepository.cacheUrl(entityUrl);

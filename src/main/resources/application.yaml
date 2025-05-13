@@ -32,6 +32,10 @@ logging:
   level:
     root: debug
 
+hash-cache-setting:
+  queue-size: 100000
+  percentage-to-generate-new-hashes: 20
+
 hash-generator-settings:
   count-returning-unique-numbers: 100000
   batch-size-processing-hashes: 10000
