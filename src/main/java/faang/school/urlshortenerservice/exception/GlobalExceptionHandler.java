@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.exception;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,7 +19,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(BAD_REQUEST).body(getErrorResponse(e));
     }
 
-    @ExceptionHandler(PlugInternalServerException.class)
+    @ExceptionHandler({
+            PlugInternalServerException.class,
+            DataAccessException.class
+    })
     public ResponseEntity<ErrorResponse> handleInternalServerExceptions(Exception e) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(getErrorResponse(e));
     }
