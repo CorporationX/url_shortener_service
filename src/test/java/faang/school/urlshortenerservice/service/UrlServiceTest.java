@@ -63,7 +63,7 @@ public class UrlServiceTest {
 
     @Test
     public void testNegativeShortenUrlDtoUrlIsEmpty() {
-        assertThrows(InvalidUrlException.class, () -> urlService.shortenUrl(new UrlDto(new String(""))));
+        assertThrows(InvalidUrlException.class, () -> urlService.shortenUrl(new UrlDto("")));
     }
 
     @Test
