@@ -27,3 +27,8 @@ logging:
 Hash:
   batch_size: 10000
   hash_count: 10000
+
+async:
+  core-size: 3
+  max-size: 6
+  queue-capacity: 100

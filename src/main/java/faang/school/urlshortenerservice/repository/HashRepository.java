@@ -21,7 +21,7 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
     @Query("""
             INSERT INTO hash(hash) VALUES (:hash)
             """)
-    void saveHashes(List<Hash> hashes);
+    void saveHashes(List<String> hashes);
 
 
     @Modifying
