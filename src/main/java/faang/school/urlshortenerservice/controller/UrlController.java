@@ -34,7 +34,7 @@ public class UrlController {
     @GetMapping("www/{hash}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
         String originalUrl = urlService.getOriginalUrl(hash);
-        log.info(originalUrl.toString());
+        log.info(originalUrl);
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
     }
