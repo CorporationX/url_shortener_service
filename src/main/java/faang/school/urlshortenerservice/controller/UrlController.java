@@ -36,6 +36,8 @@ public class UrlController {
         String originalUrl = urlService.getOriginalUrl(hash);
         log.info(originalUrl);
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(originalUrl))
+                .build();
     }
 }
