@@ -32,12 +32,13 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-    public void generateHashes() {
+    public List<String> generateHashes() {
         log.info("Starting {} hashes generation", count);
         List<Long> numbers = sequenceRepository.getUniqueNumbers(count);
         List<String> hashes = encoder.encode(numbers);
         processAllHashes(hashes);
         log.info("Finished {} hashes generation", count);
+        return hashes;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
