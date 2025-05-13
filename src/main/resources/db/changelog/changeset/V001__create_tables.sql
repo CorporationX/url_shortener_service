@@ -12,4 +12,4 @@ CREATE TABLE hashes
 
 CREATE SEQUENCE unique_number_seq
     START WITH 1
-    INCREMENT BY 1000;
+    INCREMENT BY 1;
