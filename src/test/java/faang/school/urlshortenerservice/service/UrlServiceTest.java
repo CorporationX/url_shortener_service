@@ -80,5 +80,4 @@ public class UrlServiceTest {
         when(hashCache.getHash()).thenReturn("test");
         assertThrows(CacheOperationException.class, () -> urlService.shortenUrl(urlDto));
     }
-
 }

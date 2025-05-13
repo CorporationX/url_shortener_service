@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exceptions.CacheOperationException;
 import faang.school.urlshortenerservice.exceptions.HashGenerationException;
 import faang.school.urlshortenerservice.exceptions.InvalidUrlException;
-import faang.school.urlshortenerservice.exceptions.UrlShorteningException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -50,11 +49,7 @@ public class UrlService {
 
     public String getOriginalUrl(String hash) {
         Optional<String> cachedUrl = urlCacheRepository.findByHash(hash);
-        if (cachedUrl.isPresent()) {
-            return cachedUrl.get();
-        }
-        return urlRepository.findUrlByHash(hash)
-                .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash));
+        return cachedUrl.orElseGet(() -> urlRepository.findUrlByHash(hash)
+                .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash)));
     }
-
 }
