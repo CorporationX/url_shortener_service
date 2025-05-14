@@ -1,0 +1,66 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379       # стандартный порт Redis
+      password:        # опциональный пароль (если требуется)
+      timeout: 5000    # таймаут соединения в миллисекундах
+      lettuce:
+        pool:
+          max-active: 8 # максимальное количество активных соединений
+          max-idle: 8   # максимальное количество idle соединений
+          min-idle: 2
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+hash:
+  thread-pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 100
+
+  generate:
+    batch:
+      size: 200
+
+  batch:
+    size: 200
+
+cleaner:
+  scheduler:
+    cron: "0 0 0 * * *"
+
+urlShortener:
+  cache:
+    ttl-days: 30
+    max-retries: 3
+
+urlController:
+  baseUrl: http://localhost:8080/www/
+
+hashCache:
+  queue-capacity: 3
+  fill-percent: 20

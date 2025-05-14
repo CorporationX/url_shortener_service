@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.component;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Getter
 public class HashCache {
 
     private final HashGenerator hashGenerator;
@@ -39,6 +41,7 @@ public class HashCache {
             throw new IllegalStateException("HashCache initialization failed", e);
         }
     }
+
     public String getHash() {
         if (shouldRefill()) {
             refillAsync();
@@ -66,6 +69,10 @@ public class HashCache {
     }
 
     private boolean shouldRefill() {
-        return (hashes.size() * 100.0 / capacity) <= fillPercent;
+        if (hashes.isEmpty()) {
+            return true;
+        }
+        double currentFillPercent = (hashes.size() * 100.0) / capacity;
+        return currentFillPercent <= fillPercent;
     }
 }

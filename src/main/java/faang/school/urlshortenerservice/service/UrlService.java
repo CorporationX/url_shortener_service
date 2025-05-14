@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.component.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exceptions.CacheOperationException;
 import faang.school.urlshortenerservice.exceptions.HashGenerationException;
+import faang.school.urlshortenerservice.exceptions.InvalidHashException;
 import faang.school.urlshortenerservice.exceptions.InvalidUrlException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -48,6 +49,10 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String hash) {
+        if (hash == null || hash.isEmpty()) {
+            log.error("Invalid hash provided: {}", hash);
+            throw new InvalidHashException("Hash cannot be null or empty.");
+        }
         Optional<String> cachedUrl = urlCacheRepository.findByHash(hash);
         return cachedUrl.orElseGet(() -> urlRepository.findUrlByHash(hash)
                 .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash)));
