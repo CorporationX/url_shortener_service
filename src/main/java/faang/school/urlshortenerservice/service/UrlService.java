@@ -43,19 +43,18 @@ public class UrlService {
 
     public RedirectView getRedirectUrl(String hash) {
         //search for url in Redis
+        log.info("urlCacheRepository - start search of {}", hash);
         Optional<RedisUrl> optionalRedisUrl = urlCacheRepository.findById(hash);
+        log.info("urlCacheRepository - end search: redisUrl = {} for {}", optionalRedisUrl, hash);
         RedirectView redirectView = new RedirectView();
-        log.info("redisUrl = {}", optionalRedisUrl);
         if(optionalRedisUrl.isPresent()) {
-//            log.info("Hash {} is found in cash", hash);
             redirectView.setUrl(optionalRedisUrl.get().getUrl() +  "/bingo");
             redirectView.setStatusCode(HttpStatusCode.valueOf(200));
-//            log.info("redirectView = {}", redirectView);
            return redirectView;
         } else {
-            log.info("Hash {} is not found in cash. Start Searching in DB", hash);
+            log.info("urlRepository - start search of {}", hash);
             String longUrl = urlRepository.find(hash);
-            log.info("longUrl = {} Searched in SQL DB", longUrl);
+            log.info("urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
             if(longUrl!=null) {
                 redirectView.setUrl(longUrl + "/bingo");
                 redirectView.setStatusCode(HttpStatusCode.valueOf(200));
@@ -67,8 +66,9 @@ public class UrlService {
 
     public RedirectView getRedirectUrlFromSQLDb(String hash) {
             RedirectView redirectView = new RedirectView();
+            log.info("getRedirectUrlFromSQLDb: urlRepository - start search of {}", hash);
             String longUrl = urlRepository.find(hash);
-            log.info("getRedirectUrlFromSQLDb: longUrl = {} Searched in SQL DB", longUrl);
+            log.info("getRedirectUrlFromSQLDb: urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
             if(longUrl!=null) {
                 redirectView.setUrl(longUrl + "/bingo");
                 redirectView.setStatusCode(HttpStatusCode.valueOf(200));
