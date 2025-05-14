@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
-import faang.school.urlshortenerservice.properties.ShortenerProperties;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
-    private final ShortenerProperties properties;
 
     @PostMapping
     public ResponseEntity<UrlResponseDto> createShortUrl(@Validated @RequestBody UrlRequestDto urlRequestDto) {

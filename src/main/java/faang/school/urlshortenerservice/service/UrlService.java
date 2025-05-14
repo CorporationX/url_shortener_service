@@ -24,10 +24,10 @@ public class UrlService {
 
     public String createShortUrl(String originalUrl) {
         Optional<UrlEntity> existing = urlRepository.findByUrl(originalUrl);
+
         if (existing.isPresent()) {
             return properties.getBaseUrl() + "/" + existing.get().getHash();
         }
-
 
         String hash = hashCache.getHash();
 
