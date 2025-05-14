@@ -30,11 +30,9 @@ public class UrlServiceTest {
     @Mock
     private UrlCacheRepository urlCacheRepository;
 
-    @Mock
-    private UrlProperties urlProperties;
-
     @BeforeEach
     void setUp() {
+        UrlProperties urlProperties = new UrlProperties("https://test/", 12);
         urlService = new UrlService(urlRepository, hashGeneratorService, hashCacheService,
                 urlCacheRepository, urlProperties);
     }
