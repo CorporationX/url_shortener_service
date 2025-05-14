@@ -21,7 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private static final String SHORT_URL_PATTERN = "https://shorter-x/";
+    @Value("${server.pattern}")
+    private String shortUrlPattern;
 
     private final UrlRepository urlRepository;
     private final HashGeneratorService hashGeneratorService;
@@ -46,12 +47,10 @@ public class UrlService {
         } catch (DataAccessException e) {
             log.warn("Caching process on redis for url {} failed. Details: {}", entityUrl.getHash(), e.toString());
         }
-        return SHORT_URL_PATTERN.concat(hash);
+        return shortUrlPattern.concat(hash);
     }
 
-    public String redirectToOriginalUrl(String shortUrl) {
-        int lastIndex = shortUrl.lastIndexOf('/');
-        String hash = shortUrl.substring(lastIndex, shortUrl.length() - 1);
+    public String redirectToOriginalUrl(String hash) {
         Url url = urlCacheRepository.getUrlByHash(hash);
         if (url == null) {
             url = urlRepository.getByHash(hash).orElseThrow(
