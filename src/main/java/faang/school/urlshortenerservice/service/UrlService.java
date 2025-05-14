@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -23,7 +24,7 @@ public class UrlService {
     private static final String SHORT_URL_PATTERN = "https://shorter-x/";
 
     private final UrlRepository urlRepository;
-    private final HashGenerator hashGenerator;
+    private final HashGeneratorService hashGeneratorService;
     private final HashCacheService hashCacheService;
     private final UrlCacheRepository urlCacheRepository;
 
@@ -34,9 +35,14 @@ public class UrlService {
     public String createShortUrl(UrlDto urlDto) {
         String url = urlDto.longUrl();
         String hash = hashCacheService.getHash();
+        if (hash == null) {
+            throw new HashNotFoundException("Cache hash is empty");
+        }
         Url entityUrl = urlRepository.save(createUrlAssociation(url, hash));
+        log.debug("Created new association on url {} to DB", url);
         try {
             urlCacheRepository.cacheUrl(entityUrl);
+            log.debug("Created new association on url {} to Redis", url);
         } catch (DataAccessException e) {
             log.warn("Caching process on redis for url {} failed. Details: {}", entityUrl.getHash(), e.toString());
         }
@@ -58,9 +64,10 @@ public class UrlService {
     public void cleanUnusedAssociations() {
         LocalDateTime createdAt = LocalDateTime.now().minusMonths(monthsToClearUrl);
         List<String> hashes = urlRepository.findAndDeleteByCreatedAtBefore(createdAt);
+        hashes.forEach(urlCacheRepository::evictUrlByHash);
         log.debug("Url before {} created date cleared successfully", createdAt);
-        hashGenerator.processAllHashes(hashes);
-        log.info("Hashes saved on database successfully");
+        hashGeneratorService.processAllHashes(hashes);
+        log.debug("Hashes returning on database successfully");
     }
 
     private Url createUrlAssociation(String url, String hash) {

@@ -1,14 +1,14 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.component;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Service
+@Component
 public class HashCreator {
 
     @Async("hashesCreator")

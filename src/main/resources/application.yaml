@@ -33,12 +33,14 @@ logging:
     root: debug
 
 hash-cache-setting:
-  queue-size: 100000
+  queue-size: 10000
   percentage-to-generate-new-hashes: 20
+  fetch-batch-size: 1000
 
 hash-generator-settings:
   count-returning-unique-numbers: 100000
-  batch-size-processing-hashes: 10000
+  batch-size-processing-hashes: 1000
+  available-hashes-on-repository: 1000000
 
 url-manipulation-setting:
   months-to-clear-url: 12
@@ -46,9 +48,20 @@ url-manipulation-setting:
 thread-pool-setting:
   hashes-creator:
     size: 5
-    shutdown-timeout-setting: 30
+    shutdown-timeout-setting: 120
     is-wait-shutdown: true
     thread-prefix: "HashesCreatorPool-"
+  hashes-cleaner:
+    size: 1
+    shutdown-timeout-setting: 60
+    is-wait-shutdown: true
+    thread-prefix: "SchedulerCustomPool-"
+  queue-refilling:
+    size: 2
+    shutdown-timeout-setting: 30
+    is-wait-shutdown: true
+    thread-prefix: "QueueRefillingPool-"
 
 scheduler-setting:
   clean-unused-associations: 0 0 0 * * *
+  hash-created: 0 0 * * * *

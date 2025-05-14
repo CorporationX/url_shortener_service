@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -15,18 +14,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UrlNotFoundException.class)
+    @ExceptionHandler({
+            UrlNotFoundException.class,
+            HashNotFoundException.class
+    })
     public ResponseEntity<ErrorResponse> handleExceptionsWithStatusNotFound(Exception e) {
         return ResponseEntity.status(NOT_FOUND).body(getErrorResponse(e));
     }
 
-    @ExceptionHandler(PlugValidationException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception e) {
-        return ResponseEntity.status(BAD_REQUEST).body(getErrorResponse(e));
-    }
-
     @ExceptionHandler({
-            PlugInternalServerException.class,
             DataAccessException.class
     })
     public ResponseEntity<ErrorResponse> handleInternalServerExceptions(Exception e) {
