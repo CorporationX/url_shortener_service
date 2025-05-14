@@ -26,9 +26,12 @@ public class HashCache {
     @Value("${app.hash.batch.size}")
     private int batchSize;
 
+    @Value("${app.hash.thread}")
+    private int threadAmount;
+
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(threadAmount);
     private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
