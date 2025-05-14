@@ -4,11 +4,12 @@ import com.google.common.collect.Lists;
 import faang.school.urlshortenerservice.component.Base62Encoder;
 import faang.school.urlshortenerservice.component.HashCreator;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.properties.HashGeneratorProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UniqueNumberSeqRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +27,18 @@ public class HashGeneratorService {
     private final Base62Encoder encoder;
     private final HashCreator hashCreator;
     private final HashCacheService hashCacheService;
+    private final HashGeneratorProperties properties;
 
-    @Value("${hash-generator-settings.count-returning-unique-numbers}")
     private int count;
 
-    @Value("${hash-generator-settings.batch-size-processing-hashes}")
-    private int batchSize;
-
-    @Value("${hash-generator-settings.available-hashes-on-repository}")
-    private int availableCountBorder;
+    @PostConstruct
+    public void init() {
+        count = properties.countReturningUniqueNumbers();
+    }
 
     @Transactional
     public void generateHashes() {
-        if (!hashRepository.existsHashesAtLeast(availableCountBorder)) {
+        if (!hashRepository.existsHashesAtLeast(properties.availableHashesOnRepository())) {
             log.info("Starting {} hashes generation", count);
             List<Long> numbers = sequenceRepository.getUniqueNumbers(count);
             List<String> hashes = encoder.encode(numbers);
@@ -59,7 +59,7 @@ public class HashGeneratorService {
 
     private List<CompletableFuture<List<Hash>>> processHashesOnBatches(List<String> uniqueStrings) {
         List<CompletableFuture<List<Hash>>> futures = new ArrayList<>();
-        List<List<String>> batches = Lists.partition(uniqueStrings, batchSize);
+        List<List<String>> batches = Lists.partition(uniqueStrings, properties.batchSizeProcessingHashes());
 
         batches.forEach(batch -> {
             CompletableFuture<List<Hash>> future = hashCreator.createHashes(batch)

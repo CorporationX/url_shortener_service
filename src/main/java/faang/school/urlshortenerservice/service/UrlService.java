@@ -4,11 +4,11 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.HashNotFoundException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.properties.UrlProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlService {
 
-    @Value("${server.pattern}")
-    private String shortUrlPattern;
-
     private final UrlRepository urlRepository;
     private final HashGeneratorService hashGeneratorService;
     private final HashCacheService hashCacheService;
     private final UrlCacheRepository urlCacheRepository;
-
-    @Value("${url-manipulation-setting.months-to-clear-url}")
-    private int monthsToClearUrl;
+    private final UrlProperties urlProperties;
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
@@ -47,7 +42,7 @@ public class UrlService {
         } catch (DataAccessException e) {
             log.warn("Caching process on redis for url {} failed. Details: {}", entityUrl.getHash(), e.toString());
         }
-        return shortUrlPattern.concat(hash);
+        return urlProperties.pattern().concat(hash);
     }
 
     public String redirectToOriginalUrl(String hash) {
@@ -64,7 +59,7 @@ public class UrlService {
 
     @Transactional
     public void cleanUnusedAssociations() {
-        LocalDateTime createdAt = LocalDateTime.now().minusMonths(monthsToClearUrl);
+        LocalDateTime createdAt = LocalDateTime.now().minusMonths(urlProperties.monthsToClearUrl());
         List<String> hashes = urlRepository.findAndDeleteByCreatedAtBefore(createdAt);
         hashes.forEach(urlCacheRepository::evictUrlByHash);
         log.debug("Url before {} created date cleared successfully", createdAt);

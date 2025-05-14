@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/urls")
 public class UrlController {
 
     private final UrlService urlService;
@@ -25,9 +27,9 @@ public class UrlController {
         return urlService.createShortUrl(urlDto);
     }
 
-    @GetMapping("/{shortUrl}")
-    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String shortUrl) {
-        String originalUrl = urlService.redirectToOriginalUrl(shortUrl);
+    @GetMapping("/{hash}")
+    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
+        String originalUrl = urlService.redirectToOriginalUrl(hash);
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(originalUrl))

@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.config.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import faang.school.urlshortenerservice.properties.RedisProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,19 +23,11 @@ import java.time.Duration;
 public class RedisConfig {
 
     private final ObjectMapper objectMapper;
-
-    @Value("${spring.data.redis.host}")
-    private String redisHost;
-
-    @Value("${spring.data.redis.port}")
-    private int redisPort;
-
-    @Value("${spring.data.redis.ttl-days}")
-    private int ttlDays;
+    private final RedisProperties properties;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(properties.host(), properties.port());
         return new LettuceConnectionFactory(config);
     }
 
@@ -53,7 +45,7 @@ public class RedisConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(ttlDays))  // исправлено с minutes на days
+                .entryTtl(Duration.ofDays(properties.ttlDays()))
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(

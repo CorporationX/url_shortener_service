@@ -28,7 +28,8 @@ spring:
 
 server:
   port: 8099
-  pattern: "http://localhost:8099/"
+  pattern: "http://localhost:8099/urls/"
+  months-to-clear-url: 12
 
 logging:
   level:
@@ -37,15 +38,12 @@ logging:
 hash-cache-setting:
   queue-size: 10000
   percentage-to-generate-new-hashes: 20
-  fetch-batch-size: 1000
+  batch-size: 1000
 
-hash-generator-settings:
+hash-generator-setting:
   count-returning-unique-numbers: 100000
   batch-size-processing-hashes: 1000
   available-hashes-on-repository: 1000000
-
-url-manipulation-setting:
-  months-to-clear-url: 12
 
 thread-pool-setting:
   hashes-creator:
@@ -65,5 +63,5 @@ thread-pool-setting:
     thread-prefix: "QueueRefillingPool-"
 
 scheduler-setting:
-  clean-unused-associations: 0 0 0 * * *
-  hash-created: 0 0 * * * *
+  clean-unused-associations: 0 10 0 * * *
+  hash-created: 0 */30 * * * *
