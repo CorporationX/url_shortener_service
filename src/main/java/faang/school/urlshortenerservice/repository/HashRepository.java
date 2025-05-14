@@ -11,10 +11,10 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Modifying
-    @Query(value = "DELETE FROM Hash WHERE hash IN " +
-            "(SELECT h.hash FROM Hash h ORDER BY RANDOM() LIMIT :batchSize) RETURNING hash", nativeQuery = true)
+    @Query(value = "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash LIMIT :batchSize) RETURNING hash",
+            nativeQuery = true)
     List<String> getHashBatch(@Param("batchSize") int batchSize);
 
-    @Query(value = "SELECT EXISTS (SELECT 1 FROM hash LIMIT :limit)", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) >= :limit FROM hash", nativeQuery = true)
     boolean existsHashesAtLeast(@Param("limit") int limit);
 }

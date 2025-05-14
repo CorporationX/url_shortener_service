@@ -53,8 +53,11 @@ public class UrlService {
     public String redirectToOriginalUrl(String hash) {
         Url url = urlCacheRepository.getUrlByHash(hash);
         if (url == null) {
-            url = urlRepository.getByHash(hash).orElseThrow(
-                    () -> new UrlNotFoundException("Original url with hash %s not found", hash));
+            url = urlRepository.getByHash(hash).orElse(null);
+            if (url == null) {
+                throw new UrlNotFoundException("Original url with hash %s not found", hash);
+            }
+            urlCacheRepository.cacheUrl(url);
         }
         return url.getUrl();
     }

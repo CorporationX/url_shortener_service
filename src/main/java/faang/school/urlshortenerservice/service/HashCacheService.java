@@ -40,9 +40,7 @@ public class HashCacheService {
     public void init() {
         hashesCacheQueue = new LinkedBlockingQueue<>(size);
         if (hashRepository.existsHashesAtLeast(size)) {
-            while (hashesCacheQueue.size() < size) {
-                refillQueue();
-            }
+            refillQueueSync();
         }
     }
 
@@ -57,6 +55,12 @@ public class HashCacheService {
         return hashesCacheQueue.poll();
     }
 
+    public void refillQueueSync() {
+        while (hashesCacheQueue.size() < size) {
+            refillQueue();
+        }
+    }
+
     private void refillQueue() {
         int remainingCapacity = size - hashesCacheQueue.size();
         int totalToLoad = Math.min(remainingCapacity, batchSize);
@@ -66,6 +70,6 @@ public class HashCacheService {
         }
         List<String> hashes = hashBatchFetcher.fetchHashes(totalToLoad);
         hashesCacheQueue.addAll(hashes);
-        log.info("Refilled {} hashes from DB", hashes.size());
+        log.info("Refilled {} hashes to hash cache queue", hashes.size());
     }
 }

@@ -44,7 +44,7 @@ public class HashGeneratorService {
             List<String> hashes = encoder.encode(numbers);
             processAllHashes(hashes);
             log.info("Finished {} hashes generation", count);
-            hashCacheService.init();
+            hashCacheService.refillQueueSync();
         }
     }
 

@@ -14,6 +14,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final String UNEXPECTED_EXCEPTION_MESSAGE = "INTERNAL UNEXPECTED SERVER ERROR";
+
     @ExceptionHandler({
             UrlNotFoundException.class,
             HashNotFoundException.class
@@ -35,13 +37,13 @@ public class GlobalExceptionHandler {
     }
 
     private ErrorResponse getErrorResponse(Exception e) {
-        log.error("{}", e.toString());
+        log.error("{}/n{}", e.getMessage(), e.getStackTrace());
         return createErrorResponse(e.getMessage());
     }
 
     private ErrorResponse getUncaughtErrorResponse(Exception e) {
-        log.error("[UNEXPECTED ERROR]: {}", e.toString());
-        return createErrorResponse(e.getMessage());
+        log.error("[UNEXPECTED ERROR]: {}/n{}", e.getMessage(), e.getStackTrace());
+        return createErrorResponse(UNEXPECTED_EXCEPTION_MESSAGE);
     }
 
     private ErrorResponse createErrorResponse(String message) {
