@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.properties.HashProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.shortener.Base62Encoder;
 import lombok.RequiredArgsConstructor;
@@ -16,22 +17,17 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-
-    @Value("${hash.generator.batch.size}")
-    private int batchSize;
+    private final HashProperties hashProperties;
 
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
         try {
-            List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-            log.info("Generated {} unique numbers", numbers.size());
+            List<Long> numbers = hashRepository.getUniqueNumbers(hashProperties.getGenerator().getBatchSize());
 
             List<String> hashes = base62Encoder.encode(numbers);
-            log.info("Encoded to {} hashes", hashes.size());
 
             hashRepository.saveHashes(hashes);
-            log.info("Saved {} hashes to DB", hashes.size());
-
+            log.info("Generated and saved {} hashes", hashes.size());
         } catch (Exception e) {
             log.error("Error during hash batch generation", e);
         }

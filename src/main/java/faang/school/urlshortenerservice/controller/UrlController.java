@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
+import faang.school.urlshortenerservice.properties.ShortenerProperties;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,16 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
+    private final ShortenerProperties properties;
 
     @PostMapping
-    public ResponseEntity<UrlResponseDto> createShortUrl(@Validated @RequestBody UrlRequestDto urlRequestDto){
-        String shortUrl =  urlService.createShortUrl(urlRequestDto.getUrl());
-        return ResponseEntity.ok(new UrlResponseDto(shortUrl));
+    public ResponseEntity<UrlResponseDto> createShortUrl(@Validated @RequestBody UrlRequestDto urlRequestDto) {
+        String resultUrl = urlService.createOrResolveUrl(urlRequestDto.getUrl());
+        return ResponseEntity.ok(new UrlResponseDto(resultUrl));
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirect(@PathVariable String hash){
+    public ResponseEntity<Void> redirect(@PathVariable String hash) {
         String url = urlService.resolveUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(url))

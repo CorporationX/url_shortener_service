@@ -30,16 +30,14 @@ hash:
     refill-threshold-percent: 20
     batch-size: 100
     executor:
-      pool:
-        size: 2
-      queue:
-        size: 50
+      pool-size: 2
+      queue-size: 50
   generator:
     pool:
       size: 4
-    queue:
-      size: 100
-    batch:
-      size: 500
+    queue-size: 100
+    batch-size: 500
 cleaner:
   cron: "0 0 2 * * *"
+shortener:
+  base-url: http://localhost:8080

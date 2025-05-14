@@ -1,11 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.properties.CleanerProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,16 +21,12 @@ public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
+    private final CleanerProperties cleanerProperties;
 
-    @Value("${cleaner.cron}")
-    private String cron;
-
-    @Scheduled(cron = "${cleaner.cron}")
+    @Scheduled(cron = "#{@cleanerProperties.cron}")
     @Transactional
     public void cleanExpiredUrls() {
-        log.info("Starting cleanup job...");
-
-        Instant cutoff = Instant.now().minus(Duration.ofDays(365));
+        Instant cutoff = Instant.now().minus(Duration.ofDays(180));
 
         List<String> freedHashes = urlRepository.deleteOldUrlsBefore(Timestamp.from(cutoff));
         log.info("Deleted {} expired URLs", freedHashes.size());

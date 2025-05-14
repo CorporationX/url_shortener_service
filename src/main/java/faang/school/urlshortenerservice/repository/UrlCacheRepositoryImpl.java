@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,12 +17,14 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
 
     @Override
     public void save(String hash, String url) {
-        redisTemplate.opsForValue().set(PREFIX + hash, url);
+        String key = PREFIX + hash;
+        redisTemplate.opsForValue().set(key, url, 3, TimeUnit.DAYS);
     }
 
     @Override
     public Optional<String> find(String hash) {
-        String url = redisTemplate.opsForValue().get(PREFIX + hash);
+        String key = PREFIX + hash;
+        String url = redisTemplate.opsForValue().get(key);
         return Optional.ofNullable(url);
     }
 }
