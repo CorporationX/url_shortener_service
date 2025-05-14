@@ -31,4 +31,17 @@ public class AsyncConfig {
         executor.setAwaitTerminationSeconds(30);
         return executor;
     }
+
+    @Bean(name = "cachePool")
+    public Executor cacheThreadPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setThreadNamePrefix("HashCash-");
+        executor.setMaxPoolSize(maxSize);
+        executor.setCorePoolSize(coreSize);
+        executor.setQueueCapacity(queueCapacity);
+        executor.initialize();
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(30);
+        return executor;
+    }
 }

@@ -30,6 +30,6 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
             (SELECT hash  FROM hash LIMIT :size FOR UPDATE SKIP LOCKED)
             RETURNING hash
             """)
-    List<Hash> getHashBatch(int size);
+    List<String> getHashBatch(int size);
 
 }

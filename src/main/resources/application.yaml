@@ -25,8 +25,9 @@ logging:
     root: info
 
 Hash:
-  batch_size: 10000
-  hash_count: 10000
+  hash_count: 20000
+  cache-size: 10000
+  fill-percent: 20
 
 async:
   core-size: 3
