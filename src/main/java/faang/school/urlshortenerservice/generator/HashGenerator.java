@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.config.async.AsyncConfig;
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,9 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+    private final AsyncConfig asyncConfig;
 
-    @Value("${spring.hash.generation-batch-size:100}")
+    @Value("${spring.hash.generation-batch-size:5000}")
     private int generationBatchSize;
 
     @Async("hashGeneratorExecutor")
@@ -27,7 +29,6 @@ public class HashGenerator {
             List<Long> numbers = hashRepository.getUniqueNumbers(generationBatchSize);
             List<String> hashes = base62Encoder.encode(numbers);
             hashRepository.save(hashes);
-
             log.info("Generated and saved {} hashes; generationBatchSize={}", hashes.size(), generationBatchSize);
             return CompletableFuture.completedFuture(null);
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.entity.RedisCashUrl;
+import faang.school.urlshortenerservice.entity.RedisUrl;
 import faang.school.urlshortenerservice.entity.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.UUID;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,16 +24,41 @@ import java.util.UUID;
 public class UrlController {
     private final UrlService urlService;
 
-    @GetMapping("{hash}")
+
+    /**
+     * Links short URL to original URL
+     * and saves this bind to Cash and to SQL DB
+     * @param url - original URL that needs to have a short URL
+     * @return - RedisUrl that keeps short and original URL
+     */
+    @PostMapping("/url/{url}")
+    @ResponseBody
+    public RedisUrl setShortUrl(@PathVariable String url){
+        return urlService.setShortUrl(url);
+    }
+
+    @PostMapping("/url")
+    @ResponseBody
+    public RedisUrl setShortUrl(@Validated @RequestBody UrlDto urlDto) {
+        return urlService.setShortUrl(urlDto.getUrl());
+    }
+
+    @GetMapping("/{hash}")
     public RedirectView getRedirectUrl(@PathVariable String hash) {
         RedirectView redirectView = urlService.getRedirectUrl(hash);;
         return redirectView;
     }
 
-    @PostMapping("/url")
+    @GetMapping("/nocache/{hash}")
+    public RedirectView getRedirectUrlFromSQLDb(@PathVariable String hash) {
+        RedirectView redirectView = urlService.getRedirectUrlFromSQLDb(hash);;
+        return redirectView;
+    }
+
+    @PostMapping("/shorturl/cash")
     @ResponseBody
-    public String createShortUrl(@Validated @RequestBody UrlDto urlDto) {
-        return "";
+    public List<String> importShortUrlHashesToCash() throws InterruptedException {
+        return urlService.importShortUrlHashesToQueueCash();
     }
 
     @PostMapping("/hash")
@@ -42,18 +68,6 @@ public class UrlController {
         return "hashes were generated";
     }
 
-    @PostMapping("/cashurl/{url}")
-    @ResponseBody
-    public RedisCashUrl saveUrlToCash(@PathVariable String url){
-        RedisCashUrl redisCashUrl = new RedisCashUrl();
-        UrlDto urlDto = new UrlDto();
-        urlDto.setUrl(url);
-        redisCashUrl.setUrlDto(urlDto);
-        redisCashUrl.setHash(UUID.randomUUID().toString());
-        return urlService.saveCashUrl(redisCashUrl);
-    }
-
-
     @GetMapping("/cashurl/{hash}")
     @ResponseBody
     public ResponseEntity<RedisCashUrl> getUrlFromHash(@PathVariable String hash){
@@ -62,5 +76,18 @@ public class UrlController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(redisCashUrl);
+    }
+
+    @GetMapping("/hash/{number}")
+    @ResponseBody
+    public List<String> getHashesFromUrlTable(@PathVariable int number) {
+        List<String> hashes = urlService.getHashesFromUrlTable(number);
+        return hashes;
+    }
+
+    @GetMapping("/cash/size")
+    @ResponseBody
+    public long getCashSize() {
+        return urlService.getCashQueueSize();
     }
 }

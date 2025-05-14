@@ -5,19 +5,22 @@ import faang.school.urlshortenerservice.entity.RedisUrl;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.RedisUrlRepository;
-import faang.school.urlshortenerservice.repository.RedisUrlRepositoryV2;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.HTTP;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -27,22 +30,27 @@ import java.util.stream.StreamSupport;
 @Slf4j
 public class UrlService {
     private final HashGenerator hashGenerator;
+    private final double hashBatchToFetchRatio = 3.0;
     private final RedisUrlRepository redisRepository;
-    private final RedisUrlRepositoryV2 redisRepositoryV2;
+    private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final String shortUrlQueueName = "ShortUrlList";
+    @Value("${spring.hash.fetch-size:1000}")
+    private int fetchSize;
+    private final ArrayBlockingQueue<String> hashCashQueue;
 
     public RedirectView getRedirectUrl(String hash) {
         //search for url in Redis
-        Optional<RedisUrl> optionalRedisUrl = redisRepositoryV2.findById(hash);
+        Optional<RedisUrl> optionalRedisUrl = urlCacheRepository.findById(hash);
         RedirectView redirectView = new RedirectView();
         log.info("redisUrl = {}", optionalRedisUrl);
         if(optionalRedisUrl.isPresent()) {
-            log.info("Hash {} is found in cash", hash);
-            redirectView.setUrl(optionalRedisUrl.get().getUrl() + "/bingo");
-            redirectView.setStatusCode(HttpStatusCode.valueOf(302));
+//            log.info("Hash {} is found in cash", hash);
+            redirectView.setUrl(optionalRedisUrl.get().getUrl() +  "/bingo");
+            redirectView.setStatusCode(HttpStatusCode.valueOf(200));
+//            log.info("redirectView = {}", redirectView);
            return redirectView;
         } else {
             log.info("Hash {} is not found in cash. Start Searching in DB", hash);
@@ -50,11 +58,22 @@ public class UrlService {
             log.info("longUrl = {} Searched in SQL DB", longUrl);
             if(longUrl!=null) {
                 redirectView.setUrl(longUrl + "/bingo");
-                redirectView.setStatusCode(HttpStatusCode.valueOf(302));
+                redirectView.setStatusCode(HttpStatusCode.valueOf(200));
                 return redirectView;
             }
         }
+        return new RedirectView();
+    }
 
+    public RedirectView getRedirectUrlFromSQLDb(String hash) {
+            RedirectView redirectView = new RedirectView();
+            String longUrl = urlRepository.find(hash);
+            log.info("getRedirectUrlFromSQLDb: longUrl = {} Searched in SQL DB", longUrl);
+            if(longUrl!=null) {
+                redirectView.setUrl(longUrl + "/bingo");
+                redirectView.setStatusCode(HttpStatusCode.valueOf(200));
+                return redirectView;
+        }
         return new RedirectView();
     }
 
@@ -72,17 +91,43 @@ public class UrlService {
         });
     }
 
-    public List<String> importShortUrlHashesToCash(){
+    @Async
+    public List<String> importShortUrlHashesToQueueCash() {
         List<String> hashes = hashRepository.getHashBatch();
-        log.info("importShortUrlHashesToCash: hashes taken from DB: {}", hashes);
-        for(String hash : hashes) {
-            redisTemplate.opsForList().leftPush(shortUrlQueueName, hash);
+        double hashSize = (double)hashRepository.getHashSize();
+        if(hashSize/fetchSize < hashBatchToFetchRatio) {
+            hashGenerator.generateBatch();
         }
+        log.info("importShortUrlHashesToQueueCash: hashes taken from DB: {}", hashes);
+        hashCashQueue.addAll(hashes);
         return hashes;
     }
 
-    public String popShortUrl() {
-        return (String) redisTemplate.opsForList().rightPop(shortUrlQueueName);
+    @PostConstruct
+    public List<String> importShortUrlHashesToQueueCashStart() {
+        List<String> hashes = hashRepository.getHashBatch();
+        double hashSize = (double)hashRepository.getHashSize();
+        if(hashSize/fetchSize < hashBatchToFetchRatio) {
+            hashGenerator.generateBatch();
+        }
+        log.info("importShortUrlHashesToQueueCashStart: hashes taken from DB: {}", hashes);
+        hashCashQueue.addAll(hashes);
+        return hashes;
+    }
+
+    public String popShortUrlFromQueue() {
+        int queueSize = hashCashQueue.size();
+        double cashPercentLevel = ((double)(queueSize)/fetchSize*100);
+        if(cashPercentLevel <= 20) {
+            log.info(">>> Autostart of importShortUrlHashesToQueueCash because cash size less than 20 percent");
+            importShortUrlHashesToQueueCash();
+        }
+        return hashCashQueue.poll();
+    }
+
+    public String popShortUrlFromDB() {
+        List<String> hashes = hashRepository.getHashBatch();
+        return hashes.get(0);
     }
 
     public RedisCashUrl getUrlFromCash(String hash) {
@@ -98,22 +143,22 @@ public class UrlService {
         return redisRepository.save(redisCashUrl);
     }
 
-    public RedisUrl saveCashUrlV2(String url) {
+    public RedisUrl setShortUrl(String url) {
         RedisUrl redisUrl = new RedisUrl();
-        List<Long> shortUrl = new ArrayList<>();
         redisUrl.setUrl(url);
-        redisUrl.setHash(popShortUrl());
-        System.out.println("saveCashUrl working");
+        redisUrl.setHash(popShortUrlFromQueue());
+        log.info("ShortUrl {} is set for URL {}", redisUrl.getHash(), url);
         saveShortAndLongUrlToDataBase(redisUrl.getHash(), redisUrl.getUrl());
-        return redisRepositoryV2.save(redisUrl);
+        return urlCacheRepository.save(redisUrl);
     }
 
+    @Async
     public void saveShortAndLongUrlToDataBase(String hash, String url) {
         urlRepository.save(hash, url);
     }
 
     public RedisUrl getCashUrlV2(String hash) {
-        Optional<RedisUrl> optional = redisRepositoryV2.findById(hash);
+        Optional<RedisUrl> optional = urlCacheRepository.findById(hash);
         if(optional.isPresent()) {
             log.info("Optional<RedisUrl> optional = {}", optional);
         }
@@ -121,8 +166,16 @@ public class UrlService {
     }
 
     public ArrayList<RedisUrl> getCashUrlAllV2() {
-        Iterable<RedisUrl> iterable = redisRepositoryV2.findAll();
+        Iterable<RedisUrl> iterable = urlCacheRepository.findAll();
         return StreamSupport.stream(iterable.spliterator(), false)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public List<String> getHashesFromUrlTable(int number) {
+       return urlRepository.findTop(number);
+    }
+
+    public long getCashQueueSize() {
+        return hashCashQueue.size();
     }
 }

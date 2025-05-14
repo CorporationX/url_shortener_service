@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.RedisUrl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,5 +32,13 @@ public class UrlRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new RuntimeException("Hash is not found in DB");
         }
+    }
+
+    public List<String> findTop(int number) {
+        return jdbcTemplate.query(
+                "SELECT hash FROM url LIMIT ?",
+                (rs, rowNum) -> rs.getString("hash"),
+                number
+        );
     }
 }

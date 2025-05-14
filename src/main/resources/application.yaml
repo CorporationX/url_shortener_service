@@ -18,17 +18,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   hash:
-    generation-batch-size: 20
-    fetch-size: 10
+    generation-batch-size: 10000
+    fetch-size: 2000
 
 
 server:
-  port: 8080
+  port: 8086
 
 logging:
   level:

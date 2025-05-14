@@ -14,7 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,8 +24,7 @@ public class UrlControllerV2 {
     @PostMapping("/cashurl/{url}")
     @ResponseBody
     public RedisUrl saveUrlToCash(@PathVariable String url){
-
-        return urlService.saveCashUrlV2(url);
+        return urlService.setShortUrl(url);
     }
 
     @GetMapping("/cashurl/{hash}")
@@ -52,7 +50,7 @@ public class UrlControllerV2 {
     @PostMapping("/shorturl/cash")
     @ResponseBody
     public List<String> importShortUrlHashesToCash() {
-        return urlService.importShortUrlHashesToCash();
+        return urlService.importShortUrlHashesToQueueCash();
     }
 
     @GetMapping("/url/{hash}")

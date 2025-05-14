@@ -13,10 +13,10 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${spring.hash.batch-size:100}")
+    @Value("${spring.hash.batch-size:1000}")
     private int batchSize;
 
-    @Value("${spring.hash.fetch-size:10}")
+    @Value("${spring.hash.fetch-size:1000}")
     private int fetchSize;
 
     public List<Long> getUniqueNumbers(int n) {
@@ -47,6 +47,14 @@ public class HashRepository {
                         ") SELECT * FROM deleted",
                 String.class,
                 fetchSize
+        );
+    }
+
+    @Transactional
+    public Long getHashSize() {
+        return jdbcTemplate.queryForObject(
+                "SELECT count(hash) FROM hash",
+                Long.class
         );
     }
 }
