@@ -24,15 +24,4 @@ public class CacheConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(ttl));
     }
-
-    @Bean
-    public RedisCacheManager redisCacheManager(
-            RedisConnectionFactory factory,
-            RedisCacheConfiguration configuration
-    ) {
-        return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(factory))
-                .cacheDefaults(configuration)
-                .withCacheConfiguration(urlCacheName, configuration)
-                .build();
-    }
 }

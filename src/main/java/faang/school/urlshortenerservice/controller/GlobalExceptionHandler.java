@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.NoAvailableHashInCacheException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.AllArgsConstructor;
@@ -92,21 +93,5 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Data
-    @AllArgsConstructor
-    private static class ErrorResponse {
-        private String errorCode;
-        private String message;
-        private HttpStatus status;
-
-        public int getStatus() {
-            return status.value();
-        }
-
-        public String getError() {
-            return status.getReasonPhrase();
-        }
     }
 }

@@ -1,9 +1,12 @@
 package faang.school.urlshortenerservice.controller.url;
 
+import faang.school.urlshortenerservice.dto.hash.HashRequestDto;
 import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,10 +39,10 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<UrlResponseDto> getOriginalUrl(
-            @PathVariable String hash
+            @PathVariable @Valid HashRequestDto hash
     ) {
         log.info("Received request to resolve short URL with hash: {}", hash);
-        UrlResponseDto response = urlService.getOriginalUrl(hash);
+        UrlResponseDto response = urlService.getOriginalUrl(hash.getHash());
         log.info("Successfully resolved hash: {} to original URL: {}",
                 hash, response.getUrl());
         return ResponseEntity.status(HttpStatus.FOUND)

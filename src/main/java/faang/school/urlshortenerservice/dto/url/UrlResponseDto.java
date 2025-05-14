@@ -12,5 +12,5 @@ import java.time.LocalDateTime;
 public class UrlResponseDto {
     private String url;
     private String hash;
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 }

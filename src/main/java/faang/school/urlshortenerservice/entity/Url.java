@@ -26,7 +26,7 @@ public class Url {
     @Column(name = "hash", length = 6)
     private String hash;
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", length = 64, nullable = false)
     private String url;
 
     @CreationTimestamp
