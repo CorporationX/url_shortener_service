@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
-import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -14,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Setter
 public class UrlCacheRepository {
 
     private final RedisTemplate<String, String> hashRedisTemplate;

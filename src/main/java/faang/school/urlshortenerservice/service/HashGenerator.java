@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.config.Base62Encoder;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -15,7 +14,6 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Setter
 public class HashGenerator {
 
     private final HashRepository hashRepository;

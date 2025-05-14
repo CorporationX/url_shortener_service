@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Setter
 public class HashCache {
 
     private final HashService hashService;
