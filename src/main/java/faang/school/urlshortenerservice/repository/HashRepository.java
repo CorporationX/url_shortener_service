@@ -30,7 +30,7 @@ public class HashRepository {
     }
 
     public void save(List<String> hashes) {
-        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes, 100, (ps, hash) -> ps.setString(1, hash));
+        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 
     public List<String> getHashBatch() {
@@ -44,6 +44,6 @@ public class HashRepository {
     }
 
     public void saveAll(List<String> hashes) {
-        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes, 100, (ps, hash) -> ps.setString(1, hash));
+        jdbcTemplate.batchUpdate("INSERT INTO hash (hash) VALUES (?)", hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 }
