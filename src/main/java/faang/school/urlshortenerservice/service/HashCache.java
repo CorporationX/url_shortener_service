@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @RequiredArgsConstructor
 public class HashCache {
-
     private final HashCacheConfig config;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
@@ -32,6 +31,7 @@ public class HashCache {
 
     private final Queue<String> cache = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
+    private static final int WAIT_HASHES_AVAILABLE_TIME_MS = 100;
 
     @PostConstruct
     public void init() {
@@ -49,6 +49,10 @@ public class HashCache {
         } catch (Exception e) {
             log.error("Failed to populate database and cache on startup", e);
         }
+    }
+
+    private long getHashSize() {
+        return cache.size();
     }
 
     private CompletableFuture<Void> populateDatabaseAsync() {
@@ -102,7 +106,7 @@ public class HashCache {
                 if (newHashes.isEmpty()) {
                     log.debug("No hashes available yet, waiting...");
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(WAIT_HASHES_AVAILABLE_TIME_MS);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         log.error("Interrupted during cache fill", e);
@@ -130,6 +134,7 @@ public class HashCache {
             return null;
         }
         log.debug("Returning hash: {}", hash);
+        log.info("Размер HashCache: {}", getHashSize());
 
         int currentSize = cache.size();
         int maxSize = config.getMaxSize();
@@ -170,8 +175,10 @@ public class HashCache {
                 int batches = (int) Math.ceil((double) toGenerate / batchSize);
                 log.info("Triggering {} batches to generate ~{} hashes in DB", batches, toGenerate);
                 for (int i = 0; i < batches; i++) {
-                    hashCacheExecutor.submit(() -> hashGenerator.generateBatch());
+                    log.info("Triggering batch {} of {} for async generation", i + 1, batches);
+                    hashCacheExecutor.submit(hashGenerator::generateBatch);
                 }
+                log.info("Triggered {} batches for total ~{} hashes", batches, toFetch);
             }
         } catch (Exception e) {
             log.error("Error refilling cache", e);
