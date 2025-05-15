@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, req);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handle(BadCredentialsException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED, req);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handle(Exception ex, HttpServletRequest req) {
         return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, req);
@@ -50,7 +56,7 @@ public class GlobalExceptionHandler {
                 request.getMethod(),
                 request.getRequestURI() + "?" + request.getQueryString(),
                 Instant.now().toString());
-        log.error("Обработано исключение: ", ex);
+        log.error("Exception handled: ", ex);
         return ResponseEntity.status(status).body(error);
     }
 }

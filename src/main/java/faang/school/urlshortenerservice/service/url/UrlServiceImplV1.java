@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.enity.Url;
 import faang.school.urlshortenerservice.hash.LocalHash;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class UrlServiceImplV1 implements UrlService{
+public class UrlServiceImplV1 implements UrlService {
     private final LocalHash localHash;
     private final UrlRepository urlRepository;
     private final CacheManager cacheManager;

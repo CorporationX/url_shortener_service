@@ -23,11 +23,19 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  port: 8100
+
+user-service:
+  host: localhost
   port: 8080
 
 logging:
   level:
     root: info
+
+jwt:
+  secret: e9ede88e-7c37-49b8-9d37-826b64d8fa63
+  lifetime: 30m
 
 springdoc:
   swagger-ui:

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.url.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
