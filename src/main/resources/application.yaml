@@ -24,15 +24,22 @@ spring:
         connection:
           provider_disables_autocommit: true
 
-
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
   data:
     redis:
-      port: 6379
-      host: localhost
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 scheduler:
   cron:

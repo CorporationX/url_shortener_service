@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HashGenerator {
-    private static final String BASE_62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final Base62Converter base62Converter;
     private final HashRepository hashRepository;
 
     @Value("${hash.max-range}")
@@ -36,20 +36,9 @@ public class HashGenerator {
     private void generateHash() {
         List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashes = numbers.stream()
-                .map(this::applyBase62Encoding)
+                .map(base62Converter::convertToBase62)
                 .toList();
 
         hashRepository.saveAll(hashes);
-    }
-
-    private Hash applyBase62Encoding(long number) {
-        StringBuilder result = new StringBuilder();
-        long num = number;
-        while (num > 0) {
-            result.append(BASE_62_CHARACTERS.charAt((int) (num % BASE_62_CHARACTERS.length())));
-            num /= BASE_62_CHARACTERS.length();
-        }
-
-        return new Hash(result.toString());
     }
 }

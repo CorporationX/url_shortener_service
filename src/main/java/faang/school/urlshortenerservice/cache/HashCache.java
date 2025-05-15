@@ -1,11 +1,10 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.generator.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -36,19 +35,17 @@ public class HashCache {
         return CompletableFuture.completedFuture(hashGenerator.getHashBatch(amount));
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    @PostConstruct
     public void init() {
         hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashBatch(capacity));
     }
 
     public String getHash() {
-        if (hashes.size() / (capacity * 100.0) < fillPercent) {
-            if (filling.compareAndSet(false, true)) {
-                getHashBatchAsync(capacity)
-                        .thenAccept(hashes::addAll)
-                        .thenRun(() -> filling.set(false));
-            }
+        if (hashes.size() / (capacity * 100.0) < fillPercent && filling.compareAndSet(false, true)) {
+            getHashBatchAsync(capacity)
+                    .thenAccept(hashes::addAll)
+                    .thenRun(() -> filling.set(false));
         }
         return hashes.poll();
     }
