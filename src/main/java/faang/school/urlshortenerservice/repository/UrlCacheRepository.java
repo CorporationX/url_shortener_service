@@ -18,7 +18,7 @@ public class UrlCacheRepository {
         return url;
     }
 
-    @Cacheable(key = "#hash")
+    @Cacheable(key = "#hash", unless = "#result == null")
     public Url getUrlByHash(String hash) {
         log.warn("Not found cache with hash {}", hash);
         return null;

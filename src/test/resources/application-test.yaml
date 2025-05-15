@@ -18,3 +18,40 @@ spring:
     redis:
       port: 6379
       host: localhost
+      ttl-days: 14
+
+server:
+  port: 8099
+  pattern: "http://localhost:8099/urls/"
+  months-to-clear-url: 12
+
+hash-cache-setting:
+  queue-size: 20
+  percentage-to-generate-new-hashes: 20
+  batch-size: 20
+
+hash-generator-setting:
+  count-returning-unique-numbers: 100
+  batch-size-processing-hashes: 100
+  available-hashes-on-repository: 200
+
+thread-pool-setting:
+  hashes-creator:
+    size: 5
+    shutdown-timeout-setting: 120
+    is-wait-shutdown: true
+    thread-prefix: "HashesCreatorPool-"
+  hashes-cleaner:
+    size: 1
+    shutdown-timeout-setting: 60
+    is-wait-shutdown: true
+    thread-prefix: "SchedulerCustomPool-"
+  queue-refilling:
+    size: 2
+    shutdown-timeout-setting: 30
+    is-wait-shutdown: true
+    thread-prefix: "QueueRefillingPool-"
+
+scheduler-setting:
+  clean-unused-associations: 0 10 0 * * *
+  hash-created: 0 */30 * * * *

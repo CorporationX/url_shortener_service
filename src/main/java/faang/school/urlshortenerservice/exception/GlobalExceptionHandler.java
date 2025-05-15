@@ -1,12 +1,15 @@
 package faang.school.urlshortenerservice.exception;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -15,6 +18,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class GlobalExceptionHandler {
 
     private static final String UNEXPECTED_EXCEPTION_MESSAGE = "INTERNAL UNEXPECTED SERVER ERROR";
+
+    @ExceptionHandler({
+            ConstraintViolationException.class,
+            MethodArgumentNotValidException.class
+    })
+    public ResponseEntity<ErrorResponse> handleExceptionsWithStatusBadRequest(Exception e) {
+        return ResponseEntity.status(BAD_REQUEST).body(getErrorResponse(e));
+    }
 
     @ExceptionHandler({
             UrlNotFoundException.class,

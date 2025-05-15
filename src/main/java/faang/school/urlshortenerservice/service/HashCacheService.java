@@ -51,6 +51,7 @@ public class HashCacheService {
     }
 
     public void refillQueueSync() {
+        log.info("Check needed refilling cache hash queue");
         while (hashesCacheQueue.size() < size) {
             refillQueue();
         }
