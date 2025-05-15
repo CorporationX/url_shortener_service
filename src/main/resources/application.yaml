@@ -47,7 +47,6 @@ app:
       hash:
         name: "hashes"
   hash:
-    thread: 4
     cache:
       refill:
         threshold: 50
