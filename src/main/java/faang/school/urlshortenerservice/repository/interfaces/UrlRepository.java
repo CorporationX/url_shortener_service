@@ -15,4 +15,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(value = "DELETE FROM url WHERE created_at < :threshold RETURNING hashes", nativeQuery = true)
     List<String> deleteOlderThan(LocalDateTime threshold);
+
+    Url findByHash(String hash);
 }

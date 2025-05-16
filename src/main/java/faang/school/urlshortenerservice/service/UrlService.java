@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.interfaces.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
 
     public String shortenUrl(String originalUrl) {
-        String hash = hashCache.getHash();
+        String  hash = hashCache.getHash();
         if (hash == null) {
             throw new RuntimeException("Failed to generate hash: HashCache is empty");
         }
