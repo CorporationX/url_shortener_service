@@ -52,4 +52,4 @@ hash:
     count: 500
 
 scheduler:
-  freeHash: 0 0 0 * * *
+  free-hash-cron: 0 0 0 * * *

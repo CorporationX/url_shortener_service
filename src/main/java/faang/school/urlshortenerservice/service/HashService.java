@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class HashService {
     private final HashRepository hashRepository;
     private final HashProperties hashProperties;
     private final BaseEncoder baseEncoder;
+    private final ExecutorService generateHashPool;
 
     @Transactional
     public List<String> getHashes() {
@@ -29,12 +31,12 @@ public class HashService {
                     saveAll(hashRepository.getSequences(hashProperties.getGenerate()).stream()
                     .map(baseEncoder::encode)
                     .map(FreeHash::new)
-                    .toList())); //todo add executor
+                    .toList()), generateHashPool);
         }
         return hashes;
     }
 
-    public void saveAll(List<FreeHash> freeHashes) {
+    public void saveAll(List<FreeHash> freeHashes) { // todo add saveAll with baket
         hashRepository.saveAll(freeHashes);
     }
 }

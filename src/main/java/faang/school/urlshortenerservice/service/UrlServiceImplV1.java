@@ -47,7 +47,7 @@ public class UrlServiceImplV1 implements UrlService{
 
     @Override
     @Transactional
-    public void FreeUnusedHash() {
+    public void freeUnusedHash() {
         hashService.saveAll(urlRepository.deleteAndGetUnusedUrl(
                 LocalDateTime.now().minusDays(hashProperties.getSaving().getTime().toDays()),
                 hashProperties.getSaving().getCount()).stream()

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Base62Encoder implements BaseEncoder {
-    private final String BASE64_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String BASE64_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Override
     public String encode(long number) {

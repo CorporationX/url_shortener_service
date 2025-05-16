@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FreeHash { // todo add saveAll with backet
+public class FreeHash {
 
     @Id
     @Column(name = "hash", length = 8, nullable = false, unique = true)
