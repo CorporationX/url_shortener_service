@@ -1,15 +1,16 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.enity.FreeHash;
 import faang.school.urlshortenerservice.enity.Url;
 import faang.school.urlshortenerservice.hash.LocalHash;
+import faang.school.urlshortenerservice.properties.HashProperties;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -18,45 +19,40 @@ import java.time.LocalDateTime;
 public class UrlServiceImplV1 implements UrlService{
     private final LocalHash localHash;
     private final UrlRepository urlRepository;
-    private final CacheManager cacheManager;
-
-    @Value(value = "${hash.time.saving.day:100}")
-    private int savingDays;
+    private final HashService hashService;
+    private final HashProperties hashProperties;
 
     @Override
-    @CachePut(value = "urlToHash", key = "#url")
+    @Transactional
+    @CachePut(value = "hashToUrl", key = "#hash")
     public String save(String url) {
-        String hash = urlRepository.findByUrl(url)
-                .orElseGet(() -> urlRepository.save(Url.builder()
-                        .url(url)
-                        .hash(localHash.getHash())
-                        .last_get_at(LocalDateTime.now())
-                        .build()))
-                .getHash();
-        cacheManager.getCache("hashToUrl").put(hash, url);
-
+        String hash = localHash.getHash();
+        urlRepository.save(Url.builder()
+                .url(url)
+                .hash(hash)
+                .lastGetAt(LocalDateTime.now())
+                .build());
         return hash;
     }
 
     @Override
+    @Transactional
     @Cacheable(value = "hashToUrl", key = "#hash", unless = "#result == null")
     public String get(String hash) {
-        return urlRepository.findByHash(hash)
-                .orElseThrow(() -> new EntityNotFoundException("url by hash " + hash + " does not exists"))
-                .getUrl();
-
+        Url url = urlRepository.findByHash(hash)
+                .orElseThrow(() -> new EntityNotFoundException("url by hash " + hash + " does not exists"));
+        url.setLastGetAt(LocalDateTime.now());
+        return url.getUrl();
     }
 
     @Override
-    @Cacheable(value = "urlToHash", key = "#url", unless = "#result == null")
-    public String getHash(String url) {
-        return urlRepository.findByUrl(url)
-                .orElseThrow(() -> new EntityNotFoundException("url " + url + " does not exists"))
-                .getHash();
-    }
-
-    @Override
-    public void deleteUnusedUrl() {
-        urlRepository.deleteUnusedUrl(LocalDateTime.now().minusDays(savingDays));
+    @Transactional
+    public void FreeUnusedHash() {
+        hashService.saveAll(urlRepository.deleteAndGetUnusedUrl(
+                LocalDateTime.now().minusDays(hashProperties.getSaving().getTime().toDays()),
+                hashProperties.getSaving().getCount()).stream()
+                .map(Url::getHash)
+                .map(FreeHash::new)
+                .toList());
     }
 }

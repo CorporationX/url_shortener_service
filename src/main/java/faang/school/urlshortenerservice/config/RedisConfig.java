@@ -1,8 +1,9 @@
 package faang.school.urlshortenerservice.config;
 
 
+import faang.school.urlshortenerservice.properties.RedisProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -16,23 +17,17 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.time.Duration;
-
 @Configuration
 @EnableRedisRepositories
+@RequiredArgsConstructor
 @Slf4j
 public class RedisConfig {
-
-    @Value("${spring.data.redis.host}")
-    private String host;
-
-    @Value("${spring.data.redis.port}")
-    private int port;
+    private final RedisProperties redisProperties;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfig =
-                new RedisStandaloneConfiguration(host, port);
+                new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
 
         JedisConnectionFactory factory = new JedisConnectionFactory(redisConfig);
         factory.afterPropertiesSet();
@@ -57,14 +52,13 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(7))
+                .entryTtl(redisProperties.getTtl())
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
-        log.info("RedisCacheManager initialized with TTL 7 days for caches: hashToUrl, urlToHash");
+        log.info("RedisCacheManager initialized for caches: hashToUrl");
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withCacheConfiguration("hashToUrl", defaultConfig)
-                .withCacheConfiguration("urlToHash", defaultConfig)
                 .build();
     }
 }

@@ -6,7 +6,5 @@ public interface UrlService {
 
     String get(String hash);
 
-    String getHash(String url);
-
-    void deleteUnusedUrl();
+    void FreeUnusedHash();
 }

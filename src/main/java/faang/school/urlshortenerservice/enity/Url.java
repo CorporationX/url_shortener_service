@@ -23,16 +23,14 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    private long id;
-
-    @Column(name = "url", length = 512, unique = true, nullable = false)
-    private String url;
-
     @Column(name = "hash", length = 8, unique = true, nullable = false)
     private String hash;
 
+    @Column(name = "url", length = 512, nullable = false)
+    private String url;
+
     @Column(name = "last_get_at", nullable = false)
-    private LocalDateTime last_get_at;
+    private LocalDateTime lastGetAt;
 
     @CreationTimestamp
     @Column(name = "created_at")

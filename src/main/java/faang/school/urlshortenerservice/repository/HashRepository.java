@@ -18,17 +18,12 @@ public interface HashRepository extends JpaRepository<FreeHash, Long> {
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM free_hash
-            WHERE id IN (
-                SELECT id FROM free_hash
+            WHERE hash IN (
+                SELECT hash FROM free_hash
                 LIMIT :range
                 FOR UPDATE SKIP LOCKED
             )
             RETURNING hash;
             """)
     List<String> findAndDelete(@Param("range") int range);
-
-    @Query(nativeQuery = true, value = """
-            SELECT COUNT(*) FROM free_hash
-            """)
-    Long getCountHashes();
 }

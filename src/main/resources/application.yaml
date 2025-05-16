@@ -18,6 +18,7 @@ spring:
     redis:
       host: localhost
       port: 6380
+      ttl: 7d
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -38,3 +39,17 @@ springdoc:
   api-docs:
     path: /v1/api-docs
   default-produces-media-type: application/json
+
+hash:
+  generate: 10000
+
+  get:
+    min: 500
+    max: 1000
+  saving:
+    minSize: 200
+    time: 100d
+    count: 500
+
+scheduler:
+  freeHash: 0 0 0 * * *
