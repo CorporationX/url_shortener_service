@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -32,6 +31,7 @@ public class HashCache {
 
     private final Queue<String> cache = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
+    private static final int DELAY_FILLING_DATABASE = 100;
 
     @PostConstruct
     public void init() {
@@ -51,7 +51,7 @@ public class HashCache {
         }
     }
 
-    private CompletableFuture<Void> populateDatabaseAsync() {
+    protected CompletableFuture<Void> populateDatabaseAsync() {
         return CompletableFuture.runAsync(() -> {
             int initialDbBatchSize = config.getInitialDbSize();
             int batchSize = hashGeneratorConfig.getBatchSize();
@@ -88,7 +88,7 @@ public class HashCache {
         }, hashCacheExecutor);
     }
 
-    private CompletableFuture<Void> fillCacheAsync() {
+    protected CompletableFuture<Void> fillCacheAsync() {
         return CompletableFuture.runAsync(() -> {
             int maxSize = config.getMaxSize();
             log.info("Filling cache to maxSize: {}", maxSize);
@@ -102,7 +102,7 @@ public class HashCache {
                 if (newHashes.isEmpty()) {
                     log.debug("No hashes available yet, waiting...");
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(DELAY_FILLING_DATABASE);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         log.error("Interrupted during cache fill", e);
@@ -170,7 +170,7 @@ public class HashCache {
                 int batches = (int) Math.ceil((double) toGenerate / batchSize);
                 log.info("Triggering {} batches to generate ~{} hashes in DB", batches, toGenerate);
                 for (int i = 0; i < batches; i++) {
-                    hashCacheExecutor.submit(() -> hashGenerator.generateBatch());
+                    hashCacheExecutor.submit(hashGenerator::generateBatch);
                 }
             }
         } catch (Exception e) {
