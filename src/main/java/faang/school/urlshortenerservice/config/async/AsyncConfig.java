@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@EnableAsync
 public class AsyncConfig {
 
     @Bean
@@ -36,8 +38,8 @@ public class AsyncConfig {
     @Getter
     @Setter
     public static class HashGeneratorThreadPoolProperties {
-        private int corePoolSize = 2;
-        private int maxPoolSize = 4;
+        private int corePoolSize = 4;
+        private int maxPoolSize = 8;
         private int keepAliveTime = 60;
         private int queueCapacity = 100;
     }

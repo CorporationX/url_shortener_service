@@ -23,71 +23,26 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class UrlController {
     private final UrlService urlService;
-
-
-    /**
+       /**
      * Links short URL to original URL
      * and saves this bind to Cash and to SQL DB
-     * @param url - original URL that needs to have a short URL
+     * @param urlDto - object that has Url in it
      * @return - RedisUrl that keeps short and original URL
      */
-    @PostMapping("/url/{url}")
-    @ResponseBody
-    public RedisUrl setShortUrl(@PathVariable String url){
-        return urlService.setShortUrl(url);
-    }
-
     @PostMapping("/url")
     @ResponseBody
     public RedisUrl setShortUrl(@Validated @RequestBody UrlDto urlDto) {
         return urlService.setShortUrl(urlDto.getUrl());
     }
 
+    /**
+     * Gets original Url from UrlShortenerService by its hash
+     * @param hash - hash that is used to be associated with original Url
+     * @return RedirectView that contains original redirect Url
+     */
     @GetMapping("/{hash}")
     public RedirectView getRedirectUrl(@PathVariable String hash) {
         RedirectView redirectView = urlService.getRedirectUrl(hash);;
         return redirectView;
-    }
-
-    @GetMapping("/nocache/{hash}")
-    public RedirectView getRedirectUrlFromSQLDb(@PathVariable String hash) {
-        RedirectView redirectView = urlService.getRedirectUrlFromSQLDb(hash);;
-        return redirectView;
-    }
-
-    @PostMapping("/shorturl/cash")
-    @ResponseBody
-    public List<String> importShortUrlHashesToCash() throws InterruptedException {
-        return urlService.importShortUrlHashesToQueueCash();
-    }
-
-    @PostMapping("/hash")
-    @ResponseBody
-    public String generateHash(){
-        urlService.generateHashes();
-        return "hashes were generated";
-    }
-
-    @GetMapping("/cashurl/{hash}")
-    @ResponseBody
-    public ResponseEntity<RedisCashUrl> getUrlFromHash(@PathVariable String hash){
-        RedisCashUrl redisCashUrl = urlService.getUrlFromCash(hash);
-        if(redisCashUrl == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(redisCashUrl);
-    }
-
-    @GetMapping("/hash/{number}")
-    @ResponseBody
-    public List<String> getHashesFromUrlTable(@PathVariable int number) {
-        List<String> hashes = urlService.getHashesFromUrlTable(number);
-        return hashes;
-    }
-
-    @GetMapping("/cash/size")
-    @ResponseBody
-    public long getCashSize() {
-        return urlService.getCashQueueSize();
     }
 }
