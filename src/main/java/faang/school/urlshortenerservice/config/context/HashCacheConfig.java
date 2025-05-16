@@ -14,12 +14,15 @@ public class HashCacheConfig {
 
     private final HashProperties hashProperties;
 
+
     @Bean(name = "hashCacheExecutor")
     public Executor hashCacheExecutor() {
+        var executorProps = hashProperties.getCache().getExecutor();
+
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(hashProperties.getCache().getExecutor().getPoolSize());
-        executor.setMaxPoolSize(hashProperties.getCache().getExecutor().getPoolSize());
-        executor.setQueueCapacity(hashProperties.getCache().getExecutor().getQueueSize());
+        executor.setCorePoolSize(executorProps.getCorePoolSize());
+        executor.setMaxPoolSize(executorProps.getMaxPoolSize());
+        executor.setQueueCapacity(executorProps.getQueueSize());
         executor.setThreadNamePrefix("HashCache-");
         executor.initialize();
         return executor;

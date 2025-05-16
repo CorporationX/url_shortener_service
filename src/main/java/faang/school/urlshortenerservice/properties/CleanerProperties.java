@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.properties;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +15,7 @@ public class CleanerProperties {
 
     @NotBlank
     private String cron;
+
+    @Min(1)
+    private Integer expireAfterDays;
 }

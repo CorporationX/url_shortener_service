@@ -26,12 +26,21 @@ public class HashCache {
 
     private final Queue<String> cache = new ConcurrentLinkedQueue<>();
 
+    @PostConstruct
+    public void init() {
+        log.info("Initializing HashCache...");
+        if (cache.isEmpty()) {
+            maybeRefill();
+        }
+    }
+
     public String getHash() {
         maybeRefill();
 
         String hash = cache.poll();
 
         if (hash == null) {
+            log.error("Hash cache is empty! Possibly waiting for async refill...");
             throw new IllegalStateException("No available hashes in cache");
         }
 
@@ -40,7 +49,8 @@ public class HashCache {
 
     private void maybeRefill() {
         int currentSize = cache.size();
-        int threshold = hashProperties.getCache().getMaxSize() * hashProperties.getCache().getRefillThresholdPercent() / 100;
+        var cacheProps = hashProperties.getCache();
+        int threshold = cacheProps.getMaxSize() * cacheProps.getRefillThresholdPercent() / 100;
 
         if (currentSize <= threshold && isRefilling.compareAndSet(false, true)) {
             log.info("Hash cache below threshold ({} of {}). Refilling...", currentSize, hashProperties.getCache().getMaxSize());
@@ -65,11 +75,5 @@ public class HashCache {
         } finally {
             isRefilling.set(false);
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        log.info("Initializing HashCache...");
-        maybeRefill();
     }
 }

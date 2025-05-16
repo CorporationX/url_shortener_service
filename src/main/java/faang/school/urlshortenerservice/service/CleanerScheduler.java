@@ -26,7 +26,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "#{@cleanerProperties.cron}")
     @Transactional
     public void cleanExpiredUrls() {
-        Instant cutoff = Instant.now().minus(Duration.ofDays(180));
+        Instant cutoff = Instant.now().minus(Duration.ofDays(cleanerProperties.getExpireAfterDays()));
 
         List<String> freedHashes = urlRepository.deleteOldUrlsBefore(Timestamp.from(cutoff));
         log.info("Deleted {} expired URLs", freedHashes.size());

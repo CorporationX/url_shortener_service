@@ -16,10 +16,12 @@ public class HashGeneratorConfig {
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor taskExecutor() {
+        var executorProps = hashProperties.getGenerator();
+
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(hashProperties.getGenerator().getPool().getSize());
-        executor.setMaxPoolSize(hashProperties.getGenerator().getPool().getSize());
-        executor.setQueueCapacity(hashProperties.getGenerator().getQueueSize());
+        executor.setCorePoolSize(executorProps.getPool().getSize());
+        executor.setMaxPoolSize(executorProps.getPool().getSize());
+        executor.setQueueCapacity(executorProps.getQueueSize());
         executor.setThreadNamePrefix("HashGenerator-");
         executor.initialize();
         return executor;

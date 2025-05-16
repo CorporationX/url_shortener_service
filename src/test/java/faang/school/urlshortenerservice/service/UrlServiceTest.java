@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.entity.UrlEntity;
+import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.handler.UrlNotFoundException;
 import faang.school.urlshortenerservice.properties.ShortenerProperties;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -44,7 +44,7 @@ class UrlServiceTest {
     class CreateShortUrl {
         @Test
         void returnExistingShortUrl() {
-            UrlEntity existing = new UrlEntity();
+            Url existing = new Url();
             existing.setHash(hash);
             existing.setUrl(originalUrl);
 
@@ -66,7 +66,7 @@ class UrlServiceTest {
             String result = urlService.createShortUrl(originalUrl);
 
             assertThat(result).isEqualTo(shortUrl);
-            verify(urlRepository).save(any(UrlEntity.class));
+            verify(urlRepository).save(any(Url.class));
             verify(urlCacheRepository).save(eq(hash), eq(originalUrl));
         }
     }
@@ -85,7 +85,7 @@ class UrlServiceTest {
 
         @Test
         void returnFromDbAndCache() {
-            UrlEntity entity = new UrlEntity();
+            Url entity = new Url();
             entity.setUrl(originalUrl);
             when(urlCacheRepository.find(hash)).thenReturn(Optional.empty());
             when(urlRepository.findById(hash)).thenReturn(Optional.of(entity));

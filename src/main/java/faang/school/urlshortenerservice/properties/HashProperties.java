@@ -41,7 +41,10 @@ public class HashProperties {
         @Setter
         public static class Executor {
             @Min(1)
-            private int poolSize;
+            private int corePoolSize;
+
+            @Min(1)
+            private int maxPoolSize;
 
             @Min(1)
             private int queueSize;

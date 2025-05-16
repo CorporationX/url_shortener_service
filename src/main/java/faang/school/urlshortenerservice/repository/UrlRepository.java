@@ -1,24 +1,14 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.UrlEntity;
-import feign.Param;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import faang.school.urlshortenerservice.entity.Url;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-public interface UrlRepository extends JpaRepository<UrlEntity, String> {
-
-    @Modifying
-    @Query(value = """
-        DELETE FROM urlEntity
-        WHERE created_at < :cutoff
-        RETURNING hash
-    """, nativeQuery = true)
-    List<String> deleteOldUrlsBefore(@Param("cutoff") Timestamp cutoff);
-
-    Optional<UrlEntity> findByUrl(String url);
+public interface UrlRepository {
+    Optional<Url> findByUrl(String url);
+    Optional<Url> findById(String hash);
+    void save(Url url);
+    List<String> deleteOldUrlsBefore(Timestamp cutoff);
 }

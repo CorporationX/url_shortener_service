@@ -62,7 +62,10 @@ class UrlControllerTest {
                             .contentType("application/json")
                             .content("{\"url\": \"http://unknown.url\"}"))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().string("URL not found"));
+                    .andExpect(content().contentType("application/json"))
+                    .andExpect(jsonPath("$.message").value("URL not found"))
+                    .andExpect(jsonPath("$.status").value(404))
+                    .andExpect(jsonPath("$.error").value("Not Found"));
 
             verify(urlService).createOrResolveUrl(unknownUrl);
         }
