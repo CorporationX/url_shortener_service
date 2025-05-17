@@ -23,3 +23,23 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  cache:
+    max-size: 1000
+    refill-threshold-percent: 20
+    batch-size: 100
+    executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-size: 50
+  generator:
+    pool:
+      size: 4
+    queue-size: 100
+    batch-size: 500
+cleaner:
+  cron: "0 0 2 * * *"
+  expire-after-days: 180
+shortener:
+  base-url: http://localhost:8080
