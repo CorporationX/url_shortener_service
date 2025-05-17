@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
 public class UrlServiceTest {
     private static final String ORIGINAL_URL = "http://example.com";
     private static final String HASH = "abc123";
+
     @Mock
     private UrlRepository urlRepository;
 
@@ -51,6 +53,7 @@ public class UrlServiceTest {
     @BeforeEach
     public void setUp() {
         ReflectionTestUtils.setField(urlService, "baseUrl", "http://urls/");
+        ReflectionTestUtils.setField(urlService, "urlTtl", 24);
     }
 
     @Test
