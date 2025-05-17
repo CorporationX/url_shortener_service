@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class UrlController {
     private final UrlService service;
 
     @PostMapping("/url/{url}")
-        public String getShortLink(@RequestBody @NonNull UrlRequestDto urlRequestDto) {
+        public String getShortLink(@Valid @RequestBody @NonNull UrlRequestDto urlRequestDto) {
         return service.getShortUrlLink(urlRequestDto.url());
     }
 
@@ -31,7 +32,6 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(originalUrl))
                 .build();
-
     }
 
 }

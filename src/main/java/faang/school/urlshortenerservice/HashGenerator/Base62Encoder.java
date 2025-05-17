@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.HashGenerator;
 
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,8 @@ public class Base62Encoder {
 
     public List<String> encode(List<Long> numbers) {
         if (numbers == null || numbers.size() <= 0) {
-            throw new RuntimeException("Необходимо хотя бы одно число");
+            log.error("Список не может быть пуст. Текущий размер списка: {}", numbers.size());
+            throw new DataValidationException("Необходимо хотя бы одно число");
         }
         List<String> result = numbers.stream()
                 .map(number -> {

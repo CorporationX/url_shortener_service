@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.HashGenerator;
 
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +39,17 @@ public class HashGenerator {
 
     @Transactional
     public void saveHashes(List<String> hashes) {
+        if (hashes.isEmpty()) {
+            log.error("Нет хешей для сохранения. В списке: {}", hashes.size());
+            throw new DataValidationException("В списке нет хешей");
+        }
         repository.saveHashes(hashes);
     }
 
     @Transactional(readOnly = true)
     public List<Long> fetchUniqueNumbers(int count) {
         if (count <= 0) {
-            throw new IllegalArgumentException("Количество хешей должно быть положительным");
+            throw new DataValidationException("Количество хешей должно быть положительным");
         }
         return repository.getUniqueNumbers(count);
     }

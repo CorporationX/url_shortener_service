@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.chache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -32,7 +33,6 @@ public class UrlService {
         if (!validateUrl(originalUrl)) {
             throw  new InvalidUrlException("Введен несуществующий адрес: %s", originalUrl);
         }
-
         String hash = String.valueOf(cache.getHash());
         urlRepository.save(new Url(hash, originalUrl, LocalDateTime.now()));
         cacheRepository.save(hash, originalUrl);
@@ -41,6 +41,10 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String hash) {
+        if (hash == null || hash.isBlank()) {
+            log.error("Хеш: {} не может быть пуст", hash);
+            throw new DataValidationException("Ошибка валидации данных");
+        }
         String urlFirstAttempt = cacheRepository.findByHash(hash);
         if (urlFirstAttempt != null) {
             log.debug("Url для хеша {} не найден в кеше", hash);
