@@ -31,18 +31,6 @@ public class HashGenerator {
         return CompletableFuture.completedFuture(null);
     }
 
-    /*@Async("hashGeneratorExecutor")
-    public void generateBatch() {
-        int batchSize = hashGeneratorConfig.getBatchSize();
-        try {
-            List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-            List<String> hashes = base62Encoder.encode(numbers);
-            hashRepository.save(hashes);
-        } catch (Exception e) {
-            throw new HashGenerationException("Failed to generate batch of " + batchSize + " hashes", e);
-        }
-    }*/
-
     public CompletableFuture<Void> generateHashes(int count) {
         log.info("Starting generation of {} hashes", count);
         if (count <= 0) {
