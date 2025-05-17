@@ -16,7 +16,7 @@ public interface HashRepository extends JpaRepository<Hash, Long>, HashCustomRep
             SELECT nextval('unique_seq_number')
             FROM generate_series(1, :number);
             """)
-    List<String> getUniqueNumbers(@Param("number") Integer number);
+    List<Long> getUniqueNumbers(@Param("number") Integer number);
 
     @Query("SELECT h FROM Hash h WHERE h.hash IN :hashes")
     List<Hash> findByHashes(@Param("hashes") List<String> hashes);

@@ -31,3 +31,8 @@ logging:
 
 hash:
   batch-size: 50
+  unique-number: 5
+  thread:
+    core-pool-size: 6
+    max-pool-size: 12
+    queue-capacity: 15
