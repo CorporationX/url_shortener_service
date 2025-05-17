@@ -33,6 +33,8 @@ app:
     hash-count: 20000
     cache-size: 10000
     fill-percent: 20
+  cleaner:
+    cron: "0 0 0 * * ?"
 
 async:
   core-size: 3
