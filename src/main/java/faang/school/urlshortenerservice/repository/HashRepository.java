@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -30,13 +31,13 @@ public class HashRepository {
         if (hashes.isEmpty()) {
             return;
         }
-        String sql = "INSERT INTO hash (hash_value) VALUES (?)";
+        String sql = "INSERT INTO hash (hash) VALUES (?)";
         jdbcTemplate.batchUpdate(sql, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 
     @Transactional
-    public List<String> getHashBatch() {
+    public List<String> getHashBatch(Long amount) {
         String sql = "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash LIMIT ?) RETURNING hash_value";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash_value"), batchSize);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash_value"), amount);
     }
 }
