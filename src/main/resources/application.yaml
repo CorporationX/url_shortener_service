@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5435/postgres
     username: user
     password: password
 
@@ -14,12 +14,35 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  port: 8100
+
+user-service:
+  host: localhost
   port: 8080
 
 logging:
   level:
     root: info
+
+jwt:
+  secret: e9ede88e-7c37-49b8-9d37-826b64d8fa63
+  lifetime: 30m
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+  api-docs:
+    path: /v1/api-docs
+  default-produces-media-type: application/json
