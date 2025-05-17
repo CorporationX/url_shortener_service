@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
@@ -16,5 +17,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(value = "DELETE FROM url WHERE created_at < :threshold RETURNING hashes", nativeQuery = true)
     List<String> deleteOlderThan(LocalDateTime threshold);
 
-    Url findByHash(String hash);
+    Optional<Url> findByHash(String hash);
+
+    Optional<Url> findByUrl(String url);
 }
