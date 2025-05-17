@@ -21,7 +21,7 @@ public class UrlController {
 
     private final UrlService service;
 
-    @PostMapping("/url/{url}")
+    @PostMapping("/url/")
         public String getShortLink(@Valid @RequestBody @NonNull UrlRequestDto urlRequestDto) {
         return service.getShortUrlLink(urlRequestDto.url());
     }

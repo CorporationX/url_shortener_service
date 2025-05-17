@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.HashGenerator;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HashGenerator {
 
     @Value("${app.hash.hash-count}")

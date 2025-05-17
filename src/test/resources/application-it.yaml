@@ -12,17 +12,14 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
 server:
-  port: 8080
+  port: 8090
 
 logging:
   level:
@@ -35,10 +32,8 @@ app:
     fill-percent: 20
   cleaner:
     cron: "0 0 0 * * ?"
-  shortener:
-    url: https://shortener/
 
 async:
   core-size: 3
   max-size: 6
-  queue-capacity: 100
+  queue-capacity: 1

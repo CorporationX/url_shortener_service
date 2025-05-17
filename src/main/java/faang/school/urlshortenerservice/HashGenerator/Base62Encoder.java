@@ -15,8 +15,8 @@ public class Base62Encoder {
     private static final String base62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public List<String> encode(List<Long> numbers) {
-        if (numbers == null || numbers.size() <= 0) {
-            log.error("Список не может быть пуст. Текущий размер списка: {}", numbers.size());
+        if (numbers == null || numbers.isEmpty()) {
+            log.error("Список не может быть пуст");
             throw new DataValidationException("Необходимо хотя бы одно число");
         }
         List<String> result = numbers.stream()

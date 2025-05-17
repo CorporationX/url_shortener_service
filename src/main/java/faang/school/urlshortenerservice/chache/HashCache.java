@@ -43,6 +43,7 @@ public class HashCache {
             try {
                 getHashBatch(cacheSize - hashes.size());
                 hashGenerator.generateBatch();
+
             } finally {
                 filling.set(false);
             }

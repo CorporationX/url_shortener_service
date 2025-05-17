@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +28,19 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository cacheRepository;
 
+    @Value("${app.shortener.url}")
+    private final String shortUrl;
+
     @Transactional
     public String getShortUrlLink(String originalUrl) {
         if (!validateUrl(originalUrl)) {
             throw  new InvalidUrlException("Введен несуществующий адрес: %s", originalUrl);
         }
-        String hash = String.valueOf(cache.getHash());
+        String hash = String.valueOf(cache.getHash().join());
         urlRepository.save(new Url(hash, originalUrl, LocalDateTime.now()));
         cacheRepository.save(hash, originalUrl);
         log.debug("Ссылка {} успешно ассоциирована с хешем {}", originalUrl, hash);
-        return  String.join(originalUrl + hash);
+        return  String.join(shortUrl + hash);
     }
 
     public String getOriginalUrl(String hash) {
@@ -51,7 +54,7 @@ public class UrlService {
             return urlFirstAttempt;
         }
         Url url = urlRepository.findById(hash)
-                .orElseThrow(() -> new UrlNotFoundException("Адрес для хеша %d не найден", hash));
+                .orElseThrow(() -> new UrlNotFoundException("Адрес для хеша %s не найден", hash));
         return url.getUrl();
 
     }
