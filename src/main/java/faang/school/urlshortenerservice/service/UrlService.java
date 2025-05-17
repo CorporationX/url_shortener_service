@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.chache.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,18 @@ public class UrlService {
         cacheRepository.save(hash, originalUrl);
         log.debug("Ссылка {} успешно ассоциирована с хешем {}", originalUrl, hash);
         return  String.join(originalUrl + hash);
+    }
+
+    public String getOriginalUrl(String hash) {
+        String urlFirstAttempt = cacheRepository.findByHash(hash);
+        if (urlFirstAttempt != null) {
+            log.debug("Url для хеша {} не найден в кеше", hash);
+            return urlFirstAttempt;
+        }
+        Url url = urlRepository.findById(hash)
+                .orElseThrow(() -> new UrlNotFoundException("Адрес для хеша %d не найден", hash));
+        return url.getUrl();
+
     }
 
     private boolean validateUrl(String originalUrl) {
