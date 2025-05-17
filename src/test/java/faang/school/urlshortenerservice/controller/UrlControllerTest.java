@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
-import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.Test;

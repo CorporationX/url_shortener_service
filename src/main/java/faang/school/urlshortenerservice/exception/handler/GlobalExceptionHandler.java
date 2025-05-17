@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import faang.school.urlshortenerservice.exception.HashGenerationException;
+import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -52,5 +54,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .header("Content-Type", "text/plain")
                 .body("An unexpected error occurred: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(HashGenerationException.class)
+    public ResponseEntity<String> handleHashGenerationException(HashGenerationException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NoHashAvailableException.class)
+    public ResponseEntity<String> handleNoHashAvailableException(NoHashAvailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ex.getMessage());
     }
 }

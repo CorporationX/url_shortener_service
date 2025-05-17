@@ -1,21 +1,26 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.exception.NoHashAvailableException;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.interfaces.UrlRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,44 +41,114 @@ public class UrlServiceTest {
     private static final String ORIGINAL_URL = "https://example.com";
     private static final String HASH = "abc123";
     private static final String SHORT_URL = "http://short.url/" + HASH;
+    private static final Url URL_ENTITY = new Url();
+
+    @BeforeEach
+    void setUp() {
+        URL_ENTITY.setHash(HASH);
+        URL_ENTITY.setUrl(ORIGINAL_URL);
+    }
 
     @Test
-    void shortenUrl_success() {
+    void shortenUrlSuccess() {
+        when(urlCacheRepository.findHashByUrl(ORIGINAL_URL)).thenReturn(null);
+        when(urlRepository.findByUrl(ORIGINAL_URL)).thenReturn(Optional.empty());
         when(hashCache.getHash()).thenReturn(HASH);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.empty());
 
         String result = urlService.shortenUrl(ORIGINAL_URL);
 
         assertEquals(SHORT_URL, result);
-
-        Url expectedUrl = new Url();
-        expectedUrl.setHash(HASH);
-        expectedUrl.setUrl(ORIGINAL_URL);
-        verify(urlRepository).save(expectedUrl);
+        verify(urlRepository).save(URL_ENTITY);
         verify(urlCacheRepository).save(HASH, ORIGINAL_URL);
-        verify(urlCacheRepository).printValue(HASH);
+        verifyNoMoreInteractions(hashCache, urlRepository, urlCacheRepository);
     }
 
     @Test
-    void shortenUrl_hashCacheEmpty_throwsException() {
-        when(hashCache.getHash()).thenReturn(null);
+    void testShortenUrlHashCacheEmptyThrowsException() {
+        when(hashCache.getHash()).thenThrow(new NoHashAvailableException("No hashes available"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> urlService.shortenUrl(ORIGINAL_URL));
-        assertEquals("Failed to generate hash: HashCache is empty", exception.getMessage());
+        NoHashAvailableException exception = assertThrows(NoHashAvailableException.class, this::execute);
+        assertEquals("No hashes available", exception.getMessage());
 
         verify(urlRepository, never()).save(any());
         verify(urlCacheRepository, never()).save(anyString(), anyString());
-        verify(urlCacheRepository, never()).printValue(anyString());
     }
 
     @Test
-    void shortenUrl_verifyInteractions() {
+    void testShortenUrlHashCollisionThrowsException() {
         when(hashCache.getHash()).thenReturn(HASH);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.of(URL_ENTITY));
 
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> urlService.shortenUrl(ORIGINAL_URL));
+        assertEquals("Hash already exists", exception.getMessage());
+
+        verify(urlRepository, never()).save(any());
+        verify(urlCacheRepository, never()).save(anyString(), anyString());
+    }
+
+    @Test
+    void testShortenUrlExistingUrlInCache() {
+        when(urlCacheRepository.findHashByUrl(ORIGINAL_URL)).thenReturn(HASH);
+
+        String result = urlService.shortenUrl(ORIGINAL_URL);
+
+        assertEquals(SHORT_URL, result);
+        verify(urlRepository, never()).findByUrl(anyString());
+        verify(urlRepository, never()).save(any());
+        verify(urlCacheRepository, never()).save(anyString(), anyString());
+    }
+
+    @Test
+    void testShortenUrlExistingUrlInDb() {
+        when(urlCacheRepository.findHashByUrl(ORIGINAL_URL)).thenReturn(null);
+        when(urlRepository.findByUrl(ORIGINAL_URL)).thenReturn(Optional.of(URL_ENTITY));
+
+        String result = urlService.shortenUrl(ORIGINAL_URL);
+
+        assertEquals(SHORT_URL, result);
+        verify(urlCacheRepository).save(HASH, ORIGINAL_URL);
+        verify(urlRepository, never()).save(any());
+    }
+
+    @Test
+    void testGetOriginalUrlSuccessFromCache() {
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(ORIGINAL_URL);
+
+        String result = urlService.getOriginalUrl(HASH);
+
+        assertEquals(ORIGINAL_URL, result);
+        verify(urlRepository, never()).findByHash(anyString());
+        verify(urlCacheRepository, never()).save(anyString(), anyString());
+    }
+
+    @Test
+    void testGetOriginalUrlSuccessFromDb() {
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(null);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.of(URL_ENTITY));
+
+        String result = urlService.getOriginalUrl(HASH);
+
+        assertEquals(ORIGINAL_URL, result);
+        verify(urlCacheRepository).save(HASH, ORIGINAL_URL);
+    }
+
+    @Test
+    void testGetOriginalUrlNotFoundThrowsException() {
+        when(urlCacheRepository.findByHash(HASH)).thenReturn(null);
+        when(urlRepository.findByHash(HASH)).thenReturn(Optional.empty());
+
+        UrlNotFoundException exception = assertThrows(UrlNotFoundException.class, this::execute2);
+        assertEquals("URL not found for hash: " + HASH, exception.getMessage());
+
+        verify(urlCacheRepository, never()).save(anyString(), anyString());
+    }
+
+    private void execute() {
         urlService.shortenUrl(ORIGINAL_URL);
+    }
 
-        verify(hashCache, times(1)).getHash();
-        verify(urlRepository, times(1)).save(any(Url.class));
-        verify(urlCacheRepository, times(1)).save(HASH, ORIGINAL_URL);
-        verify(urlCacheRepository, times(1)).printValue(HASH);
+    private void execute2() {
+        urlService.getOriginalUrl(HASH);
     }
 }

@@ -1,9 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.component.Base62Encoder;
 import faang.school.urlshortenerservice.component.HashGenerator;
 import faang.school.urlshortenerservice.config.app.HashCacheConfig;
-import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
+import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,23 +11,30 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.atLeast;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HashCacheTest {
+public class HashCacheTest {
 
     @Mock
     private HashCacheConfig config;
@@ -42,60 +48,152 @@ class HashCacheTest {
     @Mock
     private ExecutorService hashCacheExecutor;
 
-    @Mock
-    private HashGeneratorConfig hashGeneratorConfig;
-
-    @Mock
-    private Base62Encoder base62Encoder;
-
     @InjectMocks
     private HashCache hashCache;
 
+    private static final String HASH = "abc123";
+    private static final int MAX_SIZE = 100;
+
     @BeforeEach
     void setUp() {
-        doAnswer(invocation -> {
-            invocation.getArgument(0, Runnable.class).run();
-            return null;
-        }).when(hashCacheExecutor).execute(any(Runnable.class));
-
-        doAnswer(invocation -> {
-            invocation.getArgument(0, Runnable.class).run();
-            return null;
-        }).when(hashCacheExecutor).submit(any(Runnable.class));
-
-        when(config.getMaxSize()).thenReturn(10);
-        when(config.getInitialDbSize()).thenReturn(20);
-        when(config.getRefillThreshold()).thenReturn(20);
-        when(hashGeneratorConfig.getBatchSize()).thenReturn(5);
-
-        doAnswer(invocation -> {
-            List<String> hashes = Arrays.asList("gen_hash1", "gen_hash2", "gen_hash3", "gen_hash4", "gen_hash5");
-            hashRepository.save(hashes);
-            return null;
-        }).when(hashGenerator).generateBatch();
+        hashCache = new HashCache(config, hashRepository, hashGenerator, hashCacheExecutor);
     }
 
     @Test
-    void testInitPopulatesCacheAndGetHashWorks() {
+    void testGetHashFromCacheSuccess() {
+        List<String> hashes = new ArrayList<>();
+        for (int i = 0; i < MAX_SIZE; i++) {
+            hashes.add(HASH + i);
+        }
+        when(hashRepository.getHashBatch()).thenReturn(hashes);
+
+        hashCache.refillCache();
+
+        String result = hashCache.getHash();
+
+        assertEquals(HASH + "0", result);
+        verify(hashCacheExecutor, never()).submit(any(Runnable.class));
+        assertEquals(MAX_SIZE - 1, hashCache.getCacheSize());
+    }
+
+    @Test
+    void testGetHashFromDatabaseSuccess() {
+        when(config.getMaxSize()).thenReturn(MAX_SIZE);
+        when(config.getRefillThreshold()).thenReturn(50);
+        when(hashRepository.getHashBatch()).thenReturn(List.of(HASH));
+        hashCache.clearCache();
+
+        String result = hashCache.getHash();
+
+        assertEquals(HASH, result);
+        verify(hashRepository).getHashBatch();
+        verify(hashCacheExecutor, times(1)).submit(any(Runnable.class));
+        assertEquals(0, hashCache.getCacheSize());
+    }
+
+    @Test
+    void testGetHashRefillTriggeredSuccess() {
+        when(config.getMaxSize()).thenReturn(MAX_SIZE);
+        when(config.getRefillThreshold()).thenReturn(50);
+        List<String> initialBatch = List.of(HASH);
+        List<String> refillBatch = new ArrayList<>();
+        for (int i = 0; i < MAX_SIZE - 1; i++) {
+            refillBatch.add("hash" + i);
+        }
+
         when(hashRepository.getHashBatch())
-                .thenReturn(List.of())
-                .thenReturn(List.of())
-                .thenReturn(Arrays.asList("hash1", "hash2", "hash3"));
+                .thenReturn(initialBatch)
+                .thenReturn(refillBatch);
 
-        CompletableFuture<Void> populateDbFuture = hashCache.populateDatabaseAsync();
-        populateDbFuture.join();
+        when(hashGenerator.generateHashes(anyInt()))
+                .thenReturn(CompletableFuture.completedFuture(null));
 
-        CompletableFuture<Void> fillCacheFuture = hashCache.fillCacheAsync();
-        fillCacheFuture.join();
+        doAnswer(invocation -> {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                hashCache.refillCache();
+            }).start();
+            return null;
+        }).when(hashCacheExecutor).submit(any(Runnable.class));
 
-        verify(hashGenerator, times(4)).generateBatch();
+        hashCache.addToCache(HASH);
 
-        String hash = hashCache.getHash();
-        assertNotNull(hash, "Should return a hash after initialization");
-        assertTrue(hash.matches("hash\\d+"), "Hash should match expected pattern");
+        String result = hashCache.getHash();
 
-        verify(hashRepository, atLeast(3)).getHashBatch();
+        await().atMost(1, TimeUnit.SECONDS).until(() -> hashCache.getCacheSize() == MAX_SIZE);
 
-        verify(hashRepository, times(4)).save(anyList());
+        assertEquals(HASH, result);
+        verify(hashCacheExecutor, times(1)).submit(any(Runnable.class));
+        assertEquals(MAX_SIZE, hashCache.getCacheSize());
+    }
+
+    @Test
+    void testGetHashNoHashesThrowsException() {
+        when(config.getMaxSize()).thenReturn(MAX_SIZE);
+        hashCache.clearCache();
+        when(hashRepository.getHashBatch()).thenReturn(Collections.emptyList());
+        when(hashGenerator.generateHashes(anyInt())).thenReturn(CompletableFuture.completedFuture(null));
+        doAnswer(invocation -> {
+            hashCache.refillCache();
+            return null;
+        }).when(hashCacheExecutor).submit(any(Runnable.class));
+
+        NoHashAvailableException exception = assertThrows(NoHashAvailableException.class, () -> hashCache.getHash());
+        assertEquals("Failed to fill cache to maxSize, current size: 0", exception.getMessage());
+        verify(hashCacheExecutor).submit(any(Runnable.class));
+    }
+
+
+    @Test
+    void testRefillCacheSuccess() throws InterruptedException {
+        when(config.getMaxSize()).thenReturn(MAX_SIZE);
+        List<String> initialBatch = List.of(HASH);
+        List<String> generatedBatch = new ArrayList<>();
+        for (int i = 0; i < MAX_SIZE - 1; i++) {
+            generatedBatch.add("hash" + i);
+        }
+
+        when(hashRepository.getHashBatch())
+                .thenReturn(initialBatch)
+                .thenReturn(generatedBatch);
+        when(hashGenerator.generateHashes(anyInt())).thenReturn(CompletableFuture.completedFuture(null));
+
+        hashCache.refillCache();
+
+        assertEquals(MAX_SIZE, hashCache.getCacheSize());
+        verify(hashRepository, atLeastOnce()).getHashBatch();
+        verify(hashGenerator).generateHashes(anyInt());
+        assertFalse(hashCache.isRefilling());
+    }
+
+    @Test
+    void testRefillCacheNoHashesAfterGenerationThrowsException() {
+        when(config.getMaxSize()).thenReturn(MAX_SIZE);
+        when(hashRepository.getHashBatch()).thenReturn(Collections.emptyList());
+        when(hashGenerator.generateHashes(anyInt())).thenReturn(CompletableFuture.completedFuture(null));
+
+        NoHashAvailableException exception = assertThrows(NoHashAvailableException.class, () -> hashCache.refillCache());
+        assertTrue(exception.getMessage().contains("Failed to fill cache to maxSize"));
+        verify(hashGenerator).generateHashes(anyInt());
+        assertFalse(hashCache.isRefilling());
+    }
+
+    @Test
+    void testPopulateDatabaseAsyncSuccess() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        when(hashGenerator.generateHashes(anyInt())).thenReturn(
+                CompletableFuture.supplyAsync(() -> {
+                    latch.countDown();
+                    return null;
+                }));
+
+        hashCache.populateDatabaseAsync();
+
+        latch.await(2, TimeUnit.SECONDS);
+        verify(hashGenerator).generateHashes(anyInt());
     }
 }

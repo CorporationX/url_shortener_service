@@ -41,7 +41,6 @@ app:
     max-size: 100
     refill-threshold: 20
     initial-db-size: 1000
-    multiplier_db_generation: 2
     executor-config:
       core-pool-size: 5
       max-pool-size: 10

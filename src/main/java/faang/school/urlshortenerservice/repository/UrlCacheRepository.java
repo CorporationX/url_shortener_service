@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -24,10 +23,5 @@ public class UrlCacheRepository {
 
     public String findHashByUrl(String originalUrl) {
         return redisTemplate.opsForValue().get("url:" + originalUrl);
-    }
-
-    public void printValue(String hash) {
-        String value = redisTemplate.opsForValue().get(hash);
-        System.out.println("Value for hash " + hash + ": " + value);
     }
 }
