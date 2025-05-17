@@ -1,20 +1,22 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.config.properties.HashProperties;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class HashCustomRepositoryImpl implements HashCustomRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private final HashProperties properties;
 
     @Override
-    @Transactional
     public void saveHashesByBatch(List<String> hashes) {
         int batchSize = 50;
         for (int i = 0; i < hashes.size(); i++) {
@@ -26,5 +28,23 @@ public class HashCustomRepositoryImpl implements HashCustomRepository {
         }
         entityManager.flush();
         entityManager.clear();
+    }
+
+    @Override
+    public List<String> getHashBatch(Integer batchSize) {
+        String sql = """
+                DELETE FROM hash
+                            WHERE hash.hash IN (
+                                SELECT hash FROM hash ORDER BY random() LIMIT ?
+                            )
+                            RETURNING hash
+                """;
+
+        @SuppressWarnings("unchecked")
+        List<String> hashes = entityManager
+                .createNativeQuery(sql)
+                .setParameter("limit",properties.batchsize())
+                .getResultList();
+        return hashes;
     }
 }
