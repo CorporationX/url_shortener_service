@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -21,16 +22,30 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
     private final HashRepository repository;
 
-    @Transactional
     @Async("hashGeneratorThreadPool")
-    public void generateBatch() {
+    public CompletableFuture<Void> generateBatch() {
         try {
-            List<Long> nums = repository.getUniqueNumbers(hashCount);
+            List<Long> nums = fetchUniqueNumbers(hashCount);
             List<String> hashes = base62Encoder.encode(nums);
-            repository.saveHashes(hashes);
+            saveHashes(hashes);
+            log.debug("Сгенерировано и сохранено {} хешей", hashes.size());
+            return CompletableFuture.completedFuture(null);
         } catch (Exception e) {
             log.error("Ошибка при генерации батча", e);
-            throw e;
+            return CompletableFuture.failedFuture(e);
         }
+    }
+
+    @Transactional
+    public void saveHashes(List<String> hashes) {
+        repository.saveHashes(hashes);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> fetchUniqueNumbers(int count) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("Количество хешей должно быть положительным");
+        }
+        return repository.getUniqueNumbers(count);
     }
 }

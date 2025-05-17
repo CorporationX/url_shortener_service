@@ -1,21 +1,23 @@
 package faang.school.urlshortenerservice.HashGenerator;
 
-import faang.school.urlshortenerservice.entity.Hash;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class Base62Encoder {
 
     private static final String base62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public List<String> encode(List<Long> numbers) {
-
-        return numbers.stream()
+        if (numbers == null || numbers.size() <= 0) {
+            throw new RuntimeException("Необходимо хотя бы одно число");
+        }
+        List<String> result = numbers.stream()
                 .map(number -> {
                     StringBuilder builder = new StringBuilder();
                     while (number > 0) {
@@ -25,6 +27,8 @@ public class Base62Encoder {
                     return  builder.toString();
                 })
                 .toList();
+        log.debug("Получено {} уникальных хеша", numbers.size());
+        return result;
     }
 
 }

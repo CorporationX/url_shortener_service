@@ -42,9 +42,7 @@ public class HashCache {
         if (needRefill() && filling.compareAndSet(false, true)) {
             try {
                 getHashBatch(cacheSize - hashes.size());
-                if (!isHashesEnough()) {
-                    hashGenerator.generateBatch();
-                }
+                hashGenerator.generateBatch();
             } finally {
                 filling.set(false);
             }
@@ -57,9 +55,6 @@ public class HashCache {
         return repository.getHashBatch(size);
     }
 
-    private boolean isHashesEnough() {
-        return (cacheSize < repository.count() / 10);
-    }
 
     private boolean needRefill() {
         return hashes.size() / (cacheSize / 100.0) < fillPercent;
