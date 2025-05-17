@@ -23,11 +23,13 @@ spring:
       port: 6379
 
 server:
+  servlet:
+    context-path: /api
   port: 8080
 
 application:
-  path: /api/v1/shortener
-  base-url: http://localhost:${server.port}${application.path}/
+  path: /v1/shortener
+  base-url: http://localhost:${server.port}${server.servlet.context-path}${application.path}/
 
 logging:
   level:

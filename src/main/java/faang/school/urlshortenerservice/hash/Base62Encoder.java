@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.exception.UniqueNumberOutOfBoundsException;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +9,11 @@ public class Base62Encoder {
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int CHARACTERS_LENGTH = CHARACTERS.length();
 
-    @Value("${hash.max-length}")
-    private Integer maxHashLength;
+    private final int maxHashLength;
+    private final long maxHashNumber;
 
-    private double maxHashNumber;
-
-    @PostConstruct
-    public void init() {
+    public Base62Encoder(@Value("${hash.max-length}") int maxHashLength) {
+        this.maxHashLength = maxHashLength;
         this.maxHashNumber = calculateMaxHashNumber();
     }
 

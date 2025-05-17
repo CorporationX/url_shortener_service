@@ -1,8 +1,11 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.ShortLinkResponseDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -30,13 +33,14 @@ public class UrlController {
             summary = "Create a new short link",
             description = "Add a new short link to the system",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Short link created successfully"),
+                    @ApiResponse(responseCode = "200", description = "Short link created successfully", content = @Content(schema = @Schema(implementation = ShortLinkResponseDto.class))),
                     @ApiResponse(responseCode = "400", description = "Invalid URL"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<String> createShortLink(@RequestBody @Valid UrlDto urlDto) {
-        return ResponseEntity.ok(urlService.createShortLink(urlDto));
+    public ResponseEntity<ShortLinkResponseDto> createShortLink(@RequestBody @Valid UrlDto urlDto) {
+        String shortLink = urlService.createShortLink(urlDto);
+        return ResponseEntity.ok(new ShortLinkResponseDto(shortLink));
     }
 
     @GetMapping("/{hash}")
@@ -49,7 +53,7 @@ public class UrlController {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<Void> getUrl(@PathVariable String hash) {
+    public ResponseEntity<Void> redirect(@PathVariable String hash) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(urlService.getUrl(hash)))

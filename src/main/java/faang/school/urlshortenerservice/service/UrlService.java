@@ -32,20 +32,21 @@ public class UrlService {
     }
 
     public String getUrl(String hash) {
-        if (urlCacheRepository.get(hash).isPresent()) {
-            String url = urlCacheRepository.get(hash).get();
-
-            log.info("URL {} is obtained from Redis", url);
-            return url;
-        }
-        try {
-            String url = urlRepository.get(hash);
-
-            log.info("URL {} is obtained from the database", url);
-            return url;
-        } catch (EmptyResultDataAccessException e) {
-            throw new UrlNotFoundException(formShortUrl(hash));
-        }
+        return urlCacheRepository.get(hash)
+                .map(url -> {
+                    log.info("URL {} obtained from Redis", url);
+                    return url;
+                })
+                .orElseGet(() -> {
+                    try {
+                        String url = urlRepository.get(hash);
+                        log.info("URL {} obtained from database", url);
+                        return url;
+                    } catch (EmptyResultDataAccessException ex) {
+                        log.warn("URL not found for hash: {}", hash);
+                        throw new UrlNotFoundException(formShortUrl(hash));
+                    }
+                });
     }
 
     private String formShortUrl(String hash) {

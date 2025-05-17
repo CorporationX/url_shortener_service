@@ -15,42 +15,42 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+
         log.error("Validation failed: {}", errors);
-        return buildErrorResponseEntity(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
     }
 
     @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<Object> handleUrlNotFoundException(UrlNotFoundException ex) {
-        String message = ex.getMessage();
-        log.error("Url not found: {}", message, ex);
-        return buildErrorResponseEntity(HttpStatus.NOT_FOUND, message);
+    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException ex) {
+        log.error("Url not found: {}", ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(UniqueNumberOutOfBoundsException.class)
-    public ResponseEntity<Object> handleUniqueNumberOutOfBoundsException(UniqueNumberOutOfBoundsException ex) {
+    public ResponseEntity<ErrorResponse> handleUniqueNumberOutOfBoundsException(UniqueNumberOutOfBoundsException ex) {
         log.error("Internal server error: {}", ex.getMessage(), ex);
-        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception ex) {
-        log.error("Internal server error: {}", ex.getMessage(), ex);
-        return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
-    private ResponseEntity<Object> buildErrorResponseEntity(HttpStatus status, String message) {
-        ErrorResponse apiError = new ErrorResponse(status.value(), message);
-        return ResponseEntity.status(status).body(apiError);
+    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), message));
     }
 
-    private ResponseEntity<Object> buildErrorResponseEntity(
-            HttpStatus status, String message, Map<String, String> errors) {
-        ErrorResponse apiError = new ErrorResponse(status.value(), message, errors);
-        return ResponseEntity.status(status).body(apiError);
+    private ResponseEntity<ErrorResponse> buildErrorResponse(
+            HttpStatus status,
+            String message,
+            Map<String, String> errors) {
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(status.value(), message, errors));
     }
 }

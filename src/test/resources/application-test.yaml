@@ -1,4 +1,5 @@
 cache:
+  cron: '* * * * * *'
   capacity: 5
 
 url:

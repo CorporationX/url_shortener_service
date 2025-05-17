@@ -27,6 +27,6 @@ public class CleanerScheduler {
         if (!deletedHashes.isEmpty()) {
             hashRepository.saveBatch(deletedHashes);
         }
-        log.info("Expired hashes have been deleted: {}", deletedHashes);
+        log.info("Deleted {} expired hashes", deletedHashes.size());
     }
 }
