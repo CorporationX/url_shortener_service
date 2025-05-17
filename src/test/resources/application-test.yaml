@@ -9,13 +9,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
-
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
 
   data:
     redis:
@@ -23,27 +20,20 @@ spring:
       host: localhost
       ttl-days: 14
 
-  profiles:
-    active: local
-
 server:
   port: 8099
   pattern: "http://localhost:8099/urls/"
   months-to-clear-url: 12
 
-logging:
-  level:
-    root: debug
-
 hash-cache-setting:
-  queue-size: 10000
+  queue-size: 20
   percentage-to-generate-new-hashes: 20
-  batch-size: 1000
+  batch-size: 20
 
 hash-generator-setting:
-  count-returning-unique-numbers: 100000
-  batch-size-processing-hashes: 1000
-  available-hashes-on-repository: 1000000
+  count-returning-unique-numbers: 100
+  batch-size-processing-hashes: 100
+  available-hashes-on-repository: 200
 
 thread-pool-setting:
   hashes-creator:

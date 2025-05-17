@@ -1,0 +1,2 @@
+DELETE FROM hash;
+DELETE FROM url;
