@@ -36,7 +36,7 @@ public class HashGenerator {
     private void generateHash() {
         List<Long> numbers = hashRepository.getUniqueNumbers(maxRange);
         List<Hash> hashes = numbers.stream()
-                .map(base62Converter::convertToBase62)
+                .map(num -> new Hash(base62Converter.convertToBase62(num)))
                 .toList();
 
         hashRepository.saveAll(hashes);

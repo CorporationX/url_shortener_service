@@ -19,7 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.Duration;
 import java.util.Optional;
 
-import static faang.school.urlshortenerservice.message.ErrorMessage.URL_NOT_CORRECT;
+import static faang.school.urlshortenerservice.message.ErrorMessage.INVALID_URL;
 import static faang.school.urlshortenerservice.message.ErrorMessage.URL_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,12 +54,12 @@ public class UrlServiceTest {
     }
 
     @Test
-    void createUrl_shouldReturnShortUrl() {
+    void createShortUrl_shouldReturnShortShortUrl() {
         when(hashCache.getHash()).thenReturn(HASH);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UrlResponseDto result = urlService.createUrl(ORIGINAL_URL);
+        UrlResponseDto result = urlService.createShortUrl(ORIGINAL_URL);
 
         assertEquals("http://urls/abc123", result.getUrl());
         verify(urlRepository).save(argThat(url ->
@@ -71,13 +71,13 @@ public class UrlServiceTest {
     }
 
     @Test
-    void createUrl_shouldThrowInvalidUrlException_whenUrlIsMalformed() {
+    void createShortUrl_shouldThrowInvalidUrlException_whenShortUrlIsMalformed() {
         String invalidUrl = "example";
 
         InvalidUrlException e = assertThrows(InvalidUrlException.class,
-                () -> urlService.createUrl(invalidUrl));
+                () -> urlService.createShortUrl(invalidUrl));
 
-        assertEquals(URL_NOT_CORRECT, e.getMessage());
+        assertEquals(INVALID_URL, e.getMessage());
     }
 
     @Test

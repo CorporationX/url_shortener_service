@@ -26,13 +26,13 @@ public class HashCache {
     @Value("${hash.cache.percent}")
     private int fillPercent;
 
-    private final AtomicBoolean filling = new AtomicBoolean(false);
+    private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
     private Queue<String> hashes;
 
     @Async("asyncHashGenerator")
     public CompletableFuture<List<String>> getHashBatchAsync(long amount) {
-        return CompletableFuture.completedFuture(hashGenerator.getHashBatch(amount));
+        return CompletableFuture.supplyAsync(() -> hashGenerator.getHashBatch(amount));
     }
 
     @PostConstruct
@@ -42,10 +42,10 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashes.size() / (capacity * 100.0) < fillPercent && filling.compareAndSet(false, true)) {
+        if (hashes.size() / (capacity * 100.0) < fillPercent && isFilling.compareAndSet(false, true)) {
             getHashBatchAsync(capacity)
                     .thenAccept(hashes::addAll)
-                    .thenRun(() -> filling.set(false));
+                    .thenRun(() -> isFilling.set(false));
         }
         return hashes.poll();
     }

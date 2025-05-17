@@ -19,7 +19,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static faang.school.urlshortenerservice.message.ErrorMessage.URL_NOT_CORRECT;
+import static faang.school.urlshortenerservice.message.ErrorMessage.INVALID_URL;
 import static faang.school.urlshortenerservice.message.ErrorMessage.URL_NOT_FOUND;
 
 @Service
@@ -33,11 +33,15 @@ public class UrlServiceImpl implements UrlService {
     @Value("${shortener.base-url}")
     private String baseUrl;
 
+    @Value("${shortener.redis.url-ttl}")
+    private int urlTtl;
+
     @Transactional
     @Override
     public String getOriginalUrl(String hash) {
         String url = redisTemplate.opsForValue().get(hash);
         if (url != null) {
+            log.info("Url found from redis: {}", url);
             return url;
         }
 
@@ -51,7 +55,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Transactional
     @Override
-    public UrlResponseDto createUrl(String originalUrl) {
+    public UrlResponseDto createShortUrl(String originalUrl) {
         validateUrl(originalUrl);
         String hash = hashCache.getHash();
         Url url = Url.builder()
@@ -61,8 +65,8 @@ public class UrlServiceImpl implements UrlService {
                 .build();
 
         urlRepository.save(url);
-        redisTemplate.opsForValue().set(hash, url.getUrl(), Duration.ofHours(24));
-        log.info("Short URL created: {} -> {}", hash, originalUrl);
+        redisTemplate.opsForValue().set(hash, url.getUrl(), Duration.ofHours(urlTtl));
+        log.info("Short URL created: {} -> {}", originalUrl, hash);
         return new UrlResponseDto(baseUrl + hash);
     }
 
@@ -70,8 +74,8 @@ public class UrlServiceImpl implements UrlService {
         try {
             new URL(originalUrl).toURI();
         } catch (URISyntaxException | MalformedURLException e) {
-            log.error(URL_NOT_CORRECT);
-            throw new InvalidUrlException(URL_NOT_CORRECT);
+            log.error(INVALID_URL);
+            throw new InvalidUrlException(INVALID_URL);
         }
     }
 }

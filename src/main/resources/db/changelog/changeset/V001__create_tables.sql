@@ -1,7 +1,7 @@
 CREATE TABLE urls
 (
     hash       VARCHAR(6) PRIMARY KEY NOT NULL UNIQUE,
-    url        VARCHAR(255)           NOT NULL UNIQUE,
+    url        VARCHAR(2048)           NOT NULL UNIQUE,
     created_at TIMESTAMP              NOT NULL
 );
 

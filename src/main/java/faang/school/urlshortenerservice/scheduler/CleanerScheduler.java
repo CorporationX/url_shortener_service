@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,13 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
+    @Value("${shortener.db.url-ttl}")
+    private int urlTtl;
+
     @Transactional
     @Scheduled(cron = "${scheduler.cron.clean}")
     public void clean() {
-        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(urlTtl);
         List<Url> urls = urlRepository.findByCreatedAtBefore(oneYearAgo);
 
         if (!urls.isEmpty()) {

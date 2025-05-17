@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface UrlRepository extends JpaRepository<Url, Hash> {
     Optional<Url> findByHash(String hash);
 

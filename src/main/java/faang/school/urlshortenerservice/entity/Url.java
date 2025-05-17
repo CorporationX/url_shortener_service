@@ -25,7 +25,7 @@ public class Url {
     @Column(name = "hash", length = 6, unique = true, nullable = false)
     private String hash;
 
-    @Column(name = "url", unique = true, nullable = false)
+    @Column(name = "url", length = 2048, unique = true, nullable = false)
     private String url;
 
     @Column(name = "created_at", nullable = false)

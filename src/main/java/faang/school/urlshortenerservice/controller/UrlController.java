@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
-import faang.school.urlshortenerservice.service.UrlServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -52,6 +51,6 @@ public class UrlController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping
     public UrlResponseDto createUrl(@RequestBody @Valid UrlRequestDto url) {
-        return urlService.createUrl(url.getUrl());
+        return urlService.createShortUrl(url.getUrl());
     }
 }
