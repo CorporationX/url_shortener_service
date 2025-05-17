@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.config.app.HashCacheConfig;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
