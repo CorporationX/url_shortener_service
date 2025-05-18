@@ -30,5 +30,4 @@ public class UrlRepository {
         String sql = "SELECT * FROM url WHERE hash = ?";
         return Optional.of(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getString("url"), hash));
     }
-
 }

@@ -20,7 +20,8 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler({
             HashGenerationException.class,
-            CacheOperationException.class
+            CacheOperationException.class,
+            HashCacheInitializationException.class
     })
     public ResponseEntity<ErrorResponse> handleInternalServerError(Exception ex) {
         return buildResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.component;
 
+import faang.school.urlshortenerservice.exceptions.HashCacheInitializationException;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private  Queue<String> hashes;
+    private Queue<String> hashes;
 
 
     @PostConstruct
@@ -38,7 +39,7 @@ public class HashCache {
             log.info("Initialized HashCache with {} hashes", hashes.size());
         } catch (Exception e) {
             log.error("Failed to initialize HashCache", e);
-            throw new IllegalStateException("HashCache initialization failed", e);
+            throw new HashCacheInitializationException("HashCache initialization failed", e);
         }
     }
 
