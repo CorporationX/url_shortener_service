@@ -34,7 +34,7 @@ public class HashCache {
             return cache.poll();
         } else {
             refillTrigger();
-            return cache.poll(); // всё равно пытаемся вернуть, что есть
+            return cache.poll();
         }
     }
 
