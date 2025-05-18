@@ -35,7 +35,9 @@ hash:
      size: 200
 
   batch:
-   size: 200
+    size: 200
+  limit:
+    factor: 10
 
 cleaner:
   scheduler:

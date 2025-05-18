@@ -15,18 +15,20 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    @Value("${hash.limit.factor}")
+    private int limitFactor;
+
     @Value("${hash.batch.size}")
     private int batchSize;
 
-    public List<Long> getUniqueNumbers(int n) {
-        if (n <= 0) {
+    public List<Long> getUniqueNumbers(int number) {
+        if (number <= 0) {
             return Collections.emptyList();
         }
         String sql = "SELECT nextval('unique_number_seq')  FROM generate_series(1, ?)";
-        return jdbcTemplate.queryForList(sql, Long.class, Math.min(n, batchSize * 10)); // Ограничение на batch
+        return jdbcTemplate.queryForList(sql, Long.class, Math.min(number, batchSize * limitFactor));
     }
 
-    @Transactional
     public void save(List<String> hashes) {
         if (hashes.isEmpty()) {
             return;
@@ -35,7 +37,6 @@ public class HashRepository {
         jdbcTemplate.batchUpdate(sql, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 
-    @Transactional
     public List<String> getHashBatch() {
         String sql = "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash LIMIT ?) RETURNING hash_value";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash_value"), batchSize);

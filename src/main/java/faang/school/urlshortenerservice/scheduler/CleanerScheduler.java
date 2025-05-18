@@ -33,9 +33,9 @@ public class CleanerScheduler {
             } else {
                 log.info("No old URLs found for cleanup");
             }
-        } catch (Exception e) { // добавить свое исключение
+        } catch (Exception e) {
             log.error("Error during URL cleanup process", e);
-            throw e;
+            throw new RuntimeException("Failed to clean old URLs", e);
         }
     }
 }
