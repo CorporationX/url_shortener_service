@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
+import faang.school.urlshortenerservice.exceptions.CleanUrlException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -35,7 +36,7 @@ public class CleanerScheduler {
             }
         } catch (Exception e) {
             log.error("Error during URL cleanup process", e);
-            throw new RuntimeException("Failed to clean old URLs", e);
+            throw new CleanUrlException("Failed to clean old URLs", e);
         }
     }
 }
