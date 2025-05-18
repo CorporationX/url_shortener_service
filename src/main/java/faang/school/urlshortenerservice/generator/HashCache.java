@@ -45,7 +45,7 @@ public class HashCache {
     }
 
     public String getHash() {
-        if ((cache.size() * (capacity / 100.0)) < fillPercent) {
+        if ((cache.size() / (double)capacity) * 100 < fillPercent) {
             if (filling.compareAndSet(false, true)) {
                 refreshCache();
                 return cache.poll();

@@ -24,9 +24,9 @@ public class UrlController {
     private final UrlValidate urlValidate;
 
     @PostMapping
-    public void generateShortUrl(@RequestBody @Valid UrlDto originalUrl) {
+    public String generateShortUrl(@RequestBody @Valid UrlDto originalUrl) {
         urlValidate.getUrlValidate(originalUrl);
-        service.generateShortUrl(originalUrl);
+         return service.generateShortUrl(originalUrl);
     }
     @GetMapping("/{requesthash}")
     public RedirectView returnFullUrl(@NotNull @PathVariable("requesthash") String requesthash){

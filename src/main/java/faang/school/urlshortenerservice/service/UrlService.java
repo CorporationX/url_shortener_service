@@ -20,8 +20,8 @@ public class UrlService {
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
-    @Cacheable(cacheNames = "generateShortUrl", key = "#originalUrl")
-    public void generateShortUrl(UrlDto originalUrl) {
+    @Cacheable(cacheNames = "generateShortUrl", key = "#originalUrl.originalUrl")
+    public String generateShortUrl(UrlDto originalUrl) {
         String firstElement = hashCache.getHash();
         if(firstElement == null){
             throw new RuntimeException("Please try again later");
@@ -32,6 +32,7 @@ public class UrlService {
                 .build();
         urlRepository.save(urlBaza);
         log.info("Saved hash {}, and original url in baza",firstElement);
+        return firstElement;
     }
     @Cacheable(cacheNames = "returnFullUrl", key = "#requesthash")
     public String returnFullUrl(String requesthash){
