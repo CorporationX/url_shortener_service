@@ -14,12 +14,57 @@ spring:
       hibernate:
         format_sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 1000
+    pool:
+      max-total: 8
+      max-idle: 8
+      min-idle: 1
+      max-wait: 2000
+
+  hash:
+    max-range: 1000
+    batch-size: 100
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8065
 
 logging:
   level:
     root: info
+
+thread-pool:
+  core-pool-size: 4
+  max-pool-size: 16
+  queue-capacity: 50
+  keep-alive-seconds: 60
+  thread-name-prefix: "async-thread-"
+  allow-core-thread-timeout: true
+  wait-to-complete-on-shutdown: false
+  await-termination-seconds: 30
+
+application:
+  path: "/api/v1/shortener"
+  domain: "short.url"
+
+clean-scheduler:
+  cron: "0 0 0 * * *"
+  expiration-days: 1
+
+retry:
+  max-attempts: 3
+  initial-delay: 1000
+  max-delay: 5000
+  multiplier: 2.0
+
+url-shortener:
+  cache:
+    capacity: 1000
+    max-percentage: 100
+    fill-percentage: 20
+    timeout: 1
