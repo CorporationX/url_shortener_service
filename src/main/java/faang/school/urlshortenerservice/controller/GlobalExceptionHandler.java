@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
+import faang.school.urlshortenerservice.exception.CacheOperationException;
 import faang.school.urlshortenerservice.exception.NoAvailableHashInCacheException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -80,6 +82,32 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CacheOperationException.class)
+    public ResponseEntity<ErrorResponse> handleCacheOperationException(
+            CacheOperationException ex) {
+        log.error("Cache operation failed: {}", ex.getMessage(), ex);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                "CACHE_OPERATION_FAILED",
+                "Cache error: " + ex.getCause().getMessage(),
+                HttpStatus.SERVICE_UNAVAILABLE
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    public ResponseEntity<ErrorResponse> handleRedisConnectionFailure(
+            RedisConnectionFailureException ex) {
+        log.error("Redis connection failed: {}", ex.getMessage(), ex);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                "REDIS_CONNECTION_FAILED",
+                "Redis server unavailable: " + ex.getMessage(),
+                HttpStatus.SERVICE_UNAVAILABLE
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(Exception.class)

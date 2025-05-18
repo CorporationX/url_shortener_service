@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class CleanerScheduler {
     private final UrlRepository urlRepository;
@@ -19,6 +21,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${app.hash.cleaner.scheduler.cron}")
     @Transactional
     public void cleanOldUrls() {
+        log.info("Start cleaning old urls");
         List<String> freedHashes = urlRepository.deleteOldUrls();
         if (!freedHashes.isEmpty()) {
             hashRepository.saveAll(
@@ -31,5 +34,6 @@ public class CleanerScheduler {
                             .toList()
             );
         }
+        log.info("Cleaning old urls finished");
     }
 }

@@ -17,19 +17,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,prometheus
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    distribution:
-      percentiles-histogram:
-        "[http.server.requests]": true
-
 server:
   port: 8080
 
@@ -49,6 +36,7 @@ app:
   hash:
     cache:
       refill:
+        thread-amount: 4
         threshold: 50
     cleaner:
       scheduler:

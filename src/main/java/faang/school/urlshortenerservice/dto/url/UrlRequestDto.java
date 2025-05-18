@@ -10,7 +10,7 @@ import lombok.Data;
 public class UrlRequestDto {
     @NotBlank(message = "URL cannot be empty")
     @Pattern(
-            regexp = "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$",
+            regexp = "^(https?|ftp)://([^\\s/$.?#]+|localhost|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})[^\\s]*$",
             message = "Invalid URL format"
     )
     private String url;

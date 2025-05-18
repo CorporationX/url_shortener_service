@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @RequiredArgsConstructor
 public class HashCache {
-    private static final int THREAD_AMOUNT = 4;
+    @Value("${app.hash.cache.refill.thread-amount}")
+    private int threadAmount;
 
     @Value("${app.hash.cache.refill.threshold}")
     private int refillThreshold;
@@ -29,16 +30,17 @@ public class HashCache {
 
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_AMOUNT);
+    private ExecutorService executorService;
     private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
+        executorService = Executors.newFixedThreadPool(threadAmount);
         refillCache();
     }
 
-    public String getHash() {
+    public synchronized String getHash() {
         if (hashQueue.size() < refillThreshold && isRefilling.compareAndSet(false, true)) {
             refillCache();
         }

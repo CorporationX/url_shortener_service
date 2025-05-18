@@ -1,12 +1,11 @@
 package faang.school.urlshortenerservice.controller.url;
 
-import faang.school.urlshortenerservice.dto.hash.HashRequestDto;
 import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/url")
 @RequiredArgsConstructor
 public class UrlController {
     private final UrlService urlService;
 
-    @PostMapping("/url")
+    @PostMapping()
     public ResponseEntity<UrlResponseDto> generateShortUrl(
             @RequestBody @Valid UrlRequestDto urlRequestDto
     ) {
@@ -39,10 +38,10 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<UrlResponseDto> getOriginalUrl(
-            @PathVariable @Valid HashRequestDto hash
+            @PathVariable @NotBlank @Size(min = 1, max = 6) String hash
     ) {
         log.info("Received request to resolve short URL with hash: {}", hash);
-        UrlResponseDto response = urlService.getOriginalUrl(hash.getHash());
+        UrlResponseDto response = urlService.getOriginalUrl(hash);
         log.info("Successfully resolved hash: {} to original URL: {}",
                 hash, response.getUrl());
         return ResponseEntity.status(HttpStatus.FOUND)
