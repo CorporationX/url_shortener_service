@@ -1,20 +1,23 @@
-package faang.school.urlshortenerservice.andreev.service.generator;
+package faang.school.urlshortenerservice.andreev.cache;
 
 import faang.school.urlshortenerservice.andreev.encoder.Base62Encoder;
+import faang.school.urlshortenerservice.andreev.entity.Hash;
 import faang.school.urlshortenerservice.andreev.exception.HashGenerationException;
 import faang.school.urlshortenerservice.andreev.repository.HashRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static faang.school.urlshortenerservice.andreev.exception.ErrorMessage.HASH_GENERATION_FAILED;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class HashGenerator {
     private static final String INFO_GENERATE_BATCH = "Generated and saved {} hashes";
@@ -25,7 +28,7 @@ public class HashGenerator {
     @Value("${shortener.hash.batch.size}")
     private int batchSize;
 
-    @Async("hashGeneratorExecutor")
+
     public void generateBatch() {
         try {
             List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
@@ -36,5 +39,20 @@ public class HashGenerator {
             log.error(HASH_GENERATION_FAILED, e);
             throw new HashGenerationException(HASH_GENERATION_FAILED);
         }
+    }
+
+    @Transactional
+    public List<String> getHashes(int amount) {
+        List<String> hashes = hashRepository.getHashBatch(amount);
+        if(hashes.size() < amount) {
+            generateBatch();
+            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+        }
+        return hashes;
+    }
+
+    @Async("hashGeneratorExecutor")
+    public CompletableFuture<List<String>> getHashesAsync(int amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }

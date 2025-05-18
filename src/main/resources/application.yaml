@@ -23,10 +23,13 @@ server:
 logging:
   level:
     root: info
+
 shortener:
   hash:
     batch:
       size: 100
+    fill:
+      percent: 20
   async:
     pool:
       size: 5
