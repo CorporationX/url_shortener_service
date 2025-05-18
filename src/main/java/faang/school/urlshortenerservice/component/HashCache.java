@@ -20,7 +20,7 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
 
-    @Value("${hashCache.queue-capacity}")
+    @Value("${hashCache.queue-capacity}00")
     private int capacity;
 
     @Value("${hashCache.fill-percent}")
