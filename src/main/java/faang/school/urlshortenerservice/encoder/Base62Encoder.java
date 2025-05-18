@@ -20,7 +20,7 @@ public class Base62Encoder {
 
     private String toBase62(long number) {
         if (number == 0) {
-            return "0";
+            return String.valueOf(CHARACTERS.charAt(0));
         }
 
         StringBuilder strBuild = new StringBuilder();
