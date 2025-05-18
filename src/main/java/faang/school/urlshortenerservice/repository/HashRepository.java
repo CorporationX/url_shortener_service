@@ -25,7 +25,6 @@ public class HashRepository {
         return jdbcTemplate.queryForList(sql, Long.class, Math.min(n, batchSize * 10)); // Ограничение на batch
     }
 
-    @Transactional
     public void save(List<String> hashes) {
         if (hashes.isEmpty()) {
             return;
@@ -34,7 +33,6 @@ public class HashRepository {
         jdbcTemplate.batchUpdate(sql, hashes, batchSize, (ps, hash) -> ps.setString(1, hash));
     }
 
-    @Transactional
     public List<String> getHashBatch(Long amount) {
         String sql = "DELETE FROM hash WHERE ctid IN (SELECT ctid FROM hash LIMIT ?) RETURNING hash";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"), amount);
