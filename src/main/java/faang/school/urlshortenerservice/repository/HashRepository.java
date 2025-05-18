@@ -21,12 +21,12 @@ public class HashRepository {
     @Value("${hash.batch.size}")
     private int batchSize;
 
-    public List<Long> getUniqueNumbers(int number) {
-        if (number <= 0) {
+    public List<Long> getUniqueNumbers(long numbers) {
+        if (numbers <= 0) {
             return Collections.emptyList();
         }
         String sql = "SELECT nextval('unique_number_seq')  FROM generate_series(1, ?)";
-        return jdbcTemplate.queryForList(sql, Long.class, Math.min(number, batchSize * limitFactor));
+        return jdbcTemplate.queryForList(sql, Long.class, Math.min(numbers, batchSize * limitFactor));
     }
 
     public void save(List<String> hashes) {

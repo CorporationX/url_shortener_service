@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.exceptions.InvalidUrlException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
     private final HashCache hashCache;
 
+    @Transactional
     public String shortenUrl(UrlDto urlDto) {
 
         if (urlDto == null || urlDto.url() == null || urlDto.url().isEmpty()) {
@@ -47,6 +49,7 @@ public class UrlService {
 
         return hash;
     }
+
 
     public String getOriginalUrl(String hash) {
         if (hash == null || hash.isEmpty()) {

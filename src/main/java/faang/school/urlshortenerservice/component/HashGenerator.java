@@ -38,7 +38,7 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes(Long amount) {
-        List<String> hashes = hashRepository.getHashBatch(amount);
+        List<String> hashes = hashRepository.getHashBatch();
         log.info("Retrieved {} unique hashes", hashes.size());
 
         if (hashes.size() < amount) {
@@ -46,7 +46,7 @@ public class HashGenerator {
             CompletableFuture<Void> future = generateHash(amount);
             future.join();
 
-            hashes.addAll(hashRepository.getHashBatch(amount - hashes.size()));
+            hashes.addAll(hashRepository.getHashBatch());
         }
         return hashes;
     }
