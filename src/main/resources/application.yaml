@@ -36,3 +36,8 @@ hash:
     core-pool-size: 6
     max-pool-size: 12
     queue-capacity: 15
+  cache:
+    max-size: 1000
+    refill-percent: 20
+    core-pool: 4
+    capacity: 100
