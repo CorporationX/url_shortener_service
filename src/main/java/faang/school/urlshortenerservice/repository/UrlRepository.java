@@ -12,8 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlRepository {
     private final JdbcTemplate jdbcTemplate;
-
-    @Transactional
+    
     public List<String> deleteOldUrlsAndReturnHashes() {
         String sql = "DELETE FROM url WHERE created_at < NOW() - INTERVAL '1 year' RETURNING hash";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("hash"));
