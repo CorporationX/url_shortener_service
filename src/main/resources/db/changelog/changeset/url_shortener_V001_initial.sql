@@ -1,0 +1,13 @@
+CREATE SEQUENCE IF NOT EXISTS unique_number_seq
+    START 1
+    INCREMENT 1;
+
+CREATE TABLE IF NOT EXISTS hash (
+    hash VARCHAR(6) PRIMARY KEY
+    );
+
+CREATE TABLE IF NOT EXISTS url (
+    hash VARCHAR(6) PRIMARY KEY REFERENCES hash(hash),
+    url VARCHAR(2048) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+    );
