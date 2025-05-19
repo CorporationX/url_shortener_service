@@ -18,16 +18,10 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
     List<Long> getUniqueNumbers(int count);
 
     @Modifying
-    @Query("""
-            INSERT INTO hash(hash) VALUES (:hash)
-            """)
-    void save(List<Hash> hashes);
-
-    @Modifying
-    @Query("""
-            DELETE FROM hash WHERE hash IN
-            (SELECT hash  FROM hash LIMIT :size FOR UPDATE SKIP LOCKED)
-            RETURNING hash
+    @Query(nativeQuery = true, value = """
+                DELETE FROM hash WHERE hash IN
+                (SELECT hash  FROM hash LIMIT :size FOR UPDATE SKIP LOCKED)
+                RETURNING hash
             """)
     List<Hash> getHashBatch(int size);
 }
