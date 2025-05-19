@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
@@ -25,6 +26,8 @@ public class HashGenerator {
     @Value("${hash-generator.min-free-ratio-hashes}")
     private double minFreeRatio;
 
+    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+
     @PostConstruct
     public void init() {
         log.info("Initializing HashGenerator");
@@ -33,8 +36,14 @@ public class HashGenerator {
 
     @Async("hashGeneratorExecutor")
     public void checkAndGenerateHashesAsync() {
-        log.debug("Checking and generating hashes asynchronously");
-        checkAndGenerateHashes();
+        if (isGenerating.compareAndSet(false, true)) {
+            try {
+                log.debug("Checking and generating hashes asynchronously");
+                checkAndGenerateHashes();
+            } finally {
+                isGenerating.set(false);
+            }
+        }
     }
 
     private void checkAndGenerateHashes() {

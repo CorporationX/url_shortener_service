@@ -23,13 +23,15 @@ public class ExecutorServiceConfig {
 
     @Bean(name = "hashGeneratorExecutor")
     public ExecutorService hashGeneratorExecutor() {
-        return new ThreadPoolExecutor(
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 coreSize,
                 maxPoolSize,
                 ttlInSeconds,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(queueCapacity),
-                new ThreadPoolExecutor.CallerRunsPolicy()
+                new ThreadPoolExecutor.DiscardPolicy()
         );
+        executor.allowCoreThreadTimeOut(true);
+        return executor;
     }
 }

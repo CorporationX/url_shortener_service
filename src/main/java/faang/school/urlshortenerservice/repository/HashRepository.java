@@ -64,7 +64,7 @@ public class HashRepository {
     @Transactional
     public List<String> getHashes(int count) {
         if (count <= 0) {
-            log.error("Count must be positive: {}", count);
+            log.error("Count must be positive. Count = {}", count);
             throw new IllegalArgumentException("Count must be positive");
         }
 
@@ -73,7 +73,6 @@ public class HashRepository {
                     WITH selected_hashes AS (
                         SELECT hash
                         FROM hash
-                        ORDER BY random()
                         LIMIT :count
                         FOR UPDATE SKIP LOCKED
                     )
@@ -83,11 +82,7 @@ public class HashRepository {
                     """;
             MapSqlParameterSource params = new MapSqlParameterSource("count", count);
             List<String> hashes = jdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getString("hash"));
-            if (hashes.isEmpty()) {
-                log.warn("No hashes available in hash table");
-            } else {
-                log.debug("Retrieved {} hashes from hash table", hashes.size());
-            }
+            log.debug("Retrieved {} hashes from hash table", hashes.size());
             return hashes;
         } catch (Exception e) {
             log.error("Failed to retrieve hashes, count: {}", count, e);

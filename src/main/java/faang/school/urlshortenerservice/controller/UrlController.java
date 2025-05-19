@@ -30,7 +30,7 @@ public class UrlController {
     @PostMapping("/url")
     public ResponseEntity<String> createShortUrl(@RequestBody @Valid UrlDto urlDto) {
         String shortUrl = urlService.createShortUrl(urlDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.created(URI.create(shortUrl))
                 .body(shortUrl);
     }
 }

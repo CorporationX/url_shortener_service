@@ -37,7 +37,7 @@ public class UrlService {
         }
 
         Url urlEntity = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new UrlNotFoundException("URL not found for hash: " + hash));
+                .orElseThrow(() -> new UrlNotFoundException(hash));
         url = urlEntity.getUrl();
         urlCacheRepository.setUrl(hash, url);
         log.debug("Found URL in DB for hash: {}", hash);

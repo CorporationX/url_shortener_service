@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -29,8 +28,6 @@ public class HashCache {
     private double minFreeRatio;
 
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
-    private final ReentrantLock refillLock = new ReentrantLock();
-    private volatile boolean isRefilling = false;
 
     @PostConstruct
     public void init() {
@@ -54,22 +51,12 @@ public class HashCache {
     }
 
     private void checkAndRefillCacheAsync() {
-        if (shouldRefillCache() && !isRefilling && refillLock.tryLock()) {
-            try {
-                isRefilling = true;
-                executorService.submit(() -> {
-                    try {
-                        refillCache();
-                    } finally {
-                        isRefilling = false;
-                        refillLock.unlock();
-                    }
-                });
-                log.info("Submitted async cache refill task");
-            } catch (Exception e) {
-                isRefilling = false;
-                refillLock.unlock();
-                log.error("Failed to submit cache refill task", e);
+        if (shouldRefillCache()) {
+            synchronized (this) {
+                if (shouldRefillCache()) {
+                    executorService.submit(this::refillCache);
+                    log.info("Submitted async cache refill task");
+                }
             }
         }
     }
