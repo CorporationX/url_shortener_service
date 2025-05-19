@@ -18,8 +18,8 @@ public class LocalHash {
     private final HashService hashService;
     private final HashProperties hashProperties;
     private final ExecutorService getHashesPool;
-    private final Queue<String> concurrentQueue = new ConcurrentLinkedQueue<>();
-    private final AtomicBoolean isEmpty = new AtomicBoolean(false);
+    private volatile Queue<String> concurrentQueue = new ConcurrentLinkedQueue<>();
+    private volatile AtomicBoolean isLow = new AtomicBoolean(false);
 
     @PostConstruct
     private void init() {
@@ -28,15 +28,19 @@ public class LocalHash {
 
     public String getHash() {
         if (concurrentQueue.size() < hashProperties.getSaving().getMinSize()
-                && isEmpty.compareAndExchange(false, true)) {
-            addHashes();
+                && !isLow.compareAndExchange(false, true)) {
+            CompletableFuture<Void> addHashesFuture = addHashes();
+
+            if (concurrentQueue.isEmpty()) {
+                addHashesFuture.join();
+            }
         }
         return concurrentQueue.poll();
     }
 
-    private void addHashes() {
-        CompletableFuture.supplyAsync(hashService::getHashes, getHashesPool)
-                .thenApply(concurrentQueue::addAll)
-                .thenRun(() -> isEmpty.set(false));
+    private CompletableFuture<Void> addHashes() {
+        return CompletableFuture.supplyAsync(hashService::getHashes, getHashesPool)
+                .thenAccept(concurrentQueue::addAll)
+                .thenRun(() -> isLow.set(false));
     }
 }

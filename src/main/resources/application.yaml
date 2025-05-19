@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+          order_inserts: true
+          order_updates: true
 
   data:
     redis:
@@ -29,6 +33,9 @@ server:
 logging:
   level:
     root: info
+    org.hibernate.SQL: DEBUG
+    org.hibernate.engine.jdbc.batch.internal.BatchingBatch: TRACE
+    org.hibernate.engine.jdbc.batch.internal.AbstractBatchImpl: TRACE
 
 springdoc:
   swagger-ui:
@@ -41,15 +48,14 @@ springdoc:
   default-produces-media-type: application/json
 
 hash:
-  generate: 10000
-
+  generate-count: 1000
   get:
-    min: 500
-    max: 1000
+    min: 300
+    max: 500
+    count: 1000
   saving:
-    minSize: 200
+    min-size: 200
     time: 100d
-    count: 500
 
 scheduler:
   free-hash-cron: 0 0 0 * * *

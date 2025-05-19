@@ -12,13 +12,14 @@ import java.time.Duration;
 @Getter
 @Setter
 public class HashProperties {
-    private int generate;
+    private int generateCount;
     private Get get;
     private Saving saving;
 
     @Getter
     @Setter
     public static class Get {
+        private int count;
         private int min;
         private int max;
     }
@@ -28,6 +29,5 @@ public class HashProperties {
     public static class Saving {
         private int minSize;
         private Duration time;
-        private int count;
     }
 }

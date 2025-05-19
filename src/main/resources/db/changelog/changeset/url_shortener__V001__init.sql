@@ -8,9 +8,13 @@ CREATE TABLE url (
 CREATE INDEX idx_hash ON url(hash);
 CREATE INDEX idx_url ON url(url);
 
+CREATE SEQUENCE free_hash_id_seq
+    START WITH 1
+    INCREMENT By 1000;
 
 CREATE TABLE free_hash (
-    hash varchar(8)  PRIMARY KEY UNIQUE NOT NULL
+    id BIGINT PRIMARY KEY DEFAULT nextval('free_hash_id_seq'),
+    hash VARCHAR(7) UNIQUE NOT NULL
 );
 
 CREATE SEQUENCE unique_hash_number_seq

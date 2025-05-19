@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.HashDto;
+import faang.school.urlshortenerservice.dto.RequestUrlDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,13 +46,13 @@ public interface UrlController {
                     )
             }
     )
-    ResponseEntity<String> save(
+    ResponseEntity<HashDto> save(
             @Parameter(
                     description = "Original long URL to be shortened",
                     example = "https://example.com/very/long/page",
                     required = true
             )
-            @RequestParam @NotBlank String url
+            @RequestParam @NotBlank RequestUrlDto url
     );
 
     @Operation(
@@ -89,6 +91,6 @@ public interface UrlController {
                     required = true,
                     example = "aB12Cd"
             )
-            @PathVariable @NotBlank String hash
+            @PathVariable @NotBlank HashDto hash
     );
 }

@@ -15,7 +15,7 @@ public class ThreadPoolConfig {
     }
 
     @Bean
-    public ExecutorService freeUnusedHashPool() {
+    public ExecutorService saveHashesPool() {
         return Executors.newSingleThreadExecutor();
     }
 

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.enity.FreeHash;
 import faang.school.urlshortenerservice.enity.Url;
 import faang.school.urlshortenerservice.hash.LocalHash;
@@ -7,7 +8,6 @@ import faang.school.urlshortenerservice.properties.HashProperties;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,15 +24,15 @@ public class UrlServiceImplV1 implements UrlService{
 
     @Override
     @Transactional
-    @CachePut(value = "hashToUrl", key = "#hash")
-    public String save(String url) {
+    public HashDto save(String url) {
         String hash = localHash.getHash();
-        urlRepository.save(Url.builder()
+        Url url1 = Url.builder()
                 .url(url)
                 .hash(hash)
                 .lastGetAt(LocalDateTime.now())
-                .build());
-        return hash;
+                .build();
+        urlRepository.save(url1);
+        return new HashDto(hash);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class UrlServiceImplV1 implements UrlService{
     public void freeUnusedHash() {
         hashService.saveAll(urlRepository.deleteAndGetUnusedUrl(
                 LocalDateTime.now().minusDays(hashProperties.getSaving().getTime().toDays()),
-                hashProperties.getSaving().getCount()).stream()
+                hashProperties.getGet().getCount()).stream()
                 .map(Url::getHash)
                 .map(FreeHash::new)
                 .toList());
