@@ -45,12 +45,12 @@ class HashGeneratorTest {
     @Test
     void testGetHashesWhenEnoughInDatabase() {
         when(hashProperties.getBatchSize()).thenReturn(3);
-        when(hashRepository.getHashBatch(3)).thenReturn(testHashEntities);
+        when(hashRepository.deleteAndReturnUnusedHashesBatch(3)).thenReturn(testHashEntities);
 
         List<String> result = hashGenerator.getHashes();
 
         assertEquals(testHashes, result);
-        verify(hashRepository).getHashBatch(3);
+        verify(hashRepository).deleteAndReturnUnusedHashesBatch(3);
         verifyNoMoreInteractions(hashRepository);
     }
 

@@ -39,7 +39,7 @@ public class HashCache {
 
     private boolean shouldFillCache() {
         int currentSize = hashes.size();
-        if (hashes.size() >= cacheProps.getCapacity()) {
+        if (currentSize >= cacheProps.getCapacity()) {
             return false;
         }
         return currentSize * cacheProps.getMaxPercentage() / cacheProps.getCapacity() < cacheProps.getFillPercentage();

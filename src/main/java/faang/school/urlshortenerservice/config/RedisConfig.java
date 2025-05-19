@@ -23,25 +23,9 @@ public class RedisConfig {
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
-        log.info("Creating Redis connection factory for {}:{}", properties.getHost(), properties.getPort());
-        RedisStandaloneConfiguration standalone =
-                new RedisStandaloneConfiguration(properties.getHost(), properties.getPort());
-
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(properties.getPool().getMaxTotal());
-        poolConfig.setMaxIdle(properties.getPool().getMaxIdle());
-        poolConfig.setMinIdle(properties.getPool().getMinIdle());
-        poolConfig.setMaxWait(Duration.ofMillis(properties.getPool().getMaxWait()));
-
-        JedisClientConfiguration clientConfig = JedisClientConfiguration.builder()
-                .usePooling()
-                .poolConfig(poolConfig)
-                .and()
-                .connectTimeout(Duration.ofMillis(properties.getTimeout()))
-                .readTimeout(Duration.ofMillis(properties.getTimeout()))
-                .build();
-
-        return new JedisConnectionFactory(standalone, clientConfig);
+        return new JedisConnectionFactory(
+                createRedisStandaloneConfiguration(),
+                createJedisClientConfiguration());
     }
 
     @Bean
@@ -52,6 +36,40 @@ public class RedisConfig {
         template.setHashKeySerializer(serializer);
         template.setHashValueSerializer(serializer);
         template.setEnableTransactionSupport(true);
+
         return template;
+    }
+
+    private RedisStandaloneConfiguration createRedisStandaloneConfiguration() {
+        String host = properties.getHost();
+        Integer port = properties.getPort();
+
+        log.info("Creating Redis connection factory for {}:{}", host, port);
+
+        return new RedisStandaloneConfiguration(host, port);
+    }
+
+    private JedisClientConfiguration createJedisClientConfiguration() {
+        Long timeout = properties.getTimeout();
+
+        return JedisClientConfiguration.builder()
+                .usePooling()
+                .poolConfig(createJedisPoolConfig())
+                .and()
+                .connectTimeout(Duration.ofMillis(timeout))
+                .readTimeout(Duration.ofMillis(timeout))
+                .build();
+    }
+
+    private JedisPoolConfig createJedisPoolConfig() {
+        RedisProperties.Pool pool = properties.getPool();
+
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(pool.getMaxTotal());
+        poolConfig.setMaxIdle(pool.getMaxIdle());
+        poolConfig.setMinIdle(pool.getMinIdle());
+        poolConfig.setMaxWait(Duration.ofMillis(pool.getMaxWait()));
+
+        return poolConfig;
     }
 }

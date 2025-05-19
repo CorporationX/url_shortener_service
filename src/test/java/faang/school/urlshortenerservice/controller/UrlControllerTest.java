@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UrlController.class)
 @ContextConfiguration(classes = {UrlController.class})
 @Import(UrlExceptionHandler.class)
+@TestPropertySource(properties = "application.domain=https://short.url")
 class UrlControllerTest {
 
     @Autowired
@@ -38,38 +40,49 @@ class UrlControllerTest {
     void testCreateShortUrlSuccessfully() throws Exception {
         when(urlService.getHash(testUrl)).thenReturn(testHash);
 
-        mockMvc.perform(post("/api/v1/shortener")
+        mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"" + testUrl + "\"}"))
+                        .content("""
+                                {
+                                  "url": "https://example.com"
+                                }
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.shortUrl").value("short.url/abc123"))
-                .andExpect(jsonPath("$.originalUrl").value(testUrl))
+                .andExpect(jsonPath("$.shortUrl").value("https://short.url/abc123"))
+                .andExpect(jsonPath("$.originalUrl").value("https://example.com"))
                 .andExpect(jsonPath("$.hash").value("abc123"));
     }
 
     @Test
     void testCreateShortUrlWhenInvalidUrl() throws Exception {
-        mockMvc.perform(post("/api/v1/shortener")
+        mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"invalid-url\"}"))
-                .andExpect(status().isNotFound());
+                        .content("""
+                                {
+                                  "url": "invalid-url"
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     void testRedirectToOriginalUrlSuccessfully() throws Exception {
         when(urlService.getOriginalUrl(testHash)).thenReturn(testUrl);
 
-        mockMvc.perform(get("/api/v1/shortener/" + testHash))
+        mockMvc.perform(get("/" + testHash))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", testUrl));
     }
 
     @Test
     void testRedirectToOriginalUrlWhenNotFound() throws Exception {
-        when(urlService.getOriginalUrl(testHash)).thenThrow(new UrlNotFoundException("Hash not found: " + testHash));
+        when(urlService.getOriginalUrl(testHash))
+                .thenThrow(new UrlNotFoundException("Hash not found: " + testHash));
 
-        mockMvc.perform(get("/api/v1/shortener/" + testHash))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/" + testHash))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Hash not found: " + testHash));
     }
 }

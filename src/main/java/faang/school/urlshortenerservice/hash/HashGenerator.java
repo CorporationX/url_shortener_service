@@ -35,12 +35,14 @@ public class HashGenerator {
     )
     public void generateBatch() {
         try {
+            log.info("Starting hash batch generation...");
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashProperties.getMaxRange());
             List<String> hashList = encoder.encode(uniqueNumbers);
             List<Hash> hashes = hashList.stream()
                     .map(hash -> Hash.builder().hash(hash).build())
                     .toList();
             hashRepository.saveAll(hashes);
+            log.info("Saved {} new hashes to the database", hashes.size());
         } catch (Exception exception) {
             log.error("Failed to generate hash batch", exception);
             throw new HashGenerationException("Failed to generate hash batch");
@@ -49,15 +51,21 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes() {
-        List<Hash> hashes = hashRepository.getHashBatch(hashProperties.getBatchSize());
+        int batchSize = hashProperties.getBatchSize();
+        List<Hash> hashes = hashRepository.deleteAndReturnUnusedHashesBatch(batchSize);
 
-        if (hashes.size() < hashProperties.getBatchSize()) {
+        if (hashes.size() < batchSize) {
+            log.warn("Hash pool size ({}) is less than required batch size ({}). Triggering hash regeneration.",
+                    hashes.size(), batchSize);
             generateBatch();
-            hashes.addAll(hashRepository.getHashBatch(hashProperties.getBatchSize()));
+            hashes.addAll(hashRepository.deleteAndReturnUnusedHashesBatch(batchSize));
         }
 
-        return hashes.stream()
+        List<String> result = hashes.stream()
                 .map(Hash::getHash)
                 .toList();
+
+        log.info("Returning {} hashes", result.size());
+        return result;
     }
 }

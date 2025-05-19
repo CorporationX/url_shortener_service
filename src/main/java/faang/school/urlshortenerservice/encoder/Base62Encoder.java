@@ -17,10 +17,11 @@ public class Base62Encoder {
 
     private String encodeNumber(long number) {
         StringBuilder stringBuilder = new StringBuilder(1);
+        int alphabetSize = BASE62_CHARS.length();
 
         do {
-            stringBuilder.insert(0, BASE62_CHARS.charAt((int) (number % BASE62_CHARS.length())));
-            number /= BASE62_CHARS.length();
+            stringBuilder.insert(0, BASE62_CHARS.charAt((int) (number % alphabetSize)));
+            number /= alphabetSize;
         } while (number > 0);
 
         return stringBuilder.toString();

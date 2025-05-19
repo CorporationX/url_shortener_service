@@ -33,6 +33,8 @@ spring:
 
 server:
   port: 8065
+  servlet:
+    context-path: /api/url
 
 logging:
   level:

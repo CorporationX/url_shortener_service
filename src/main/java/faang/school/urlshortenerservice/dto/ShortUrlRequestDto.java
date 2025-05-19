@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
 @Builder
-public record UrlDto(
+public record ShortUrlRequestDto(
 
         @URL(message = "Invalid URL")
         @NotBlank(message = "URL cannot be empty")
