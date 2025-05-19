@@ -25,3 +25,14 @@ server:
 logging:
   level:
     root: info
+
+url-shortener:
+  hash-count: 1000
+  hash-properties:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: url-shortener
+  scheduler:
+    cleaner-cron: 0 0 0 * * *
+    moths-to-clean: 12
