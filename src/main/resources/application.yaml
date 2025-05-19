@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+app:
+  hash:
+    batch: 100
+    maxRange: 10000
