@@ -27,7 +27,7 @@ public class UrlController {
     @Value("${urlController.baseUrl}")
     private String baseUrl;
 
-    @PostMapping("/")
+    @PostMapping()
     public String shortenUrl(@RequestBody UrlDto urlDto) {
         String shortUrl = urlService.shortenUrl(urlDto);
         return baseUrl + shortUrl;
