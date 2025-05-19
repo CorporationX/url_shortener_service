@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.HashGenerator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,23 +17,29 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-@RequiredArgsConstructor
 public class HashCache {
     private final HashRepository repository;
     private final HashGenerator hashGenerator;
-
-    @Value("${Hash.cache-size}")
     private final int cacheSize;
-
-    @Value("${Hash.fill-percent}")
     private final int fillPercent;
 
     private Queue<String> hashes;
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
+    @Autowired
+    public HashCache(HashRepository repository,
+                     HashGenerator hashGenerator,
+                     @Value("${app.hash.cache-size}") int cacheSize,
+                     @Value("${app.hash.fill-percent}") int fillPercent) {
+        this.repository = repository;
+        this.hashGenerator = hashGenerator;
+        this.cacheSize = cacheSize;
+        this.fillPercent = fillPercent;
+        this.hashes = new ArrayBlockingQueue<>(cacheSize);
+    }
+
     @PostConstruct
     public void prepareCache() {
-        hashes = new ArrayBlockingQueue<>(cacheSize);
         hashes.addAll(repository.getHashBatch(cacheSize));
     }
 

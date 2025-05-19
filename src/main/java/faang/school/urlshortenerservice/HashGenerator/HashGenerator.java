@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,23 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class HashGenerator {
 
-    @Value("${app.hash.hash-count}")
-    private int hashCount;
+    //@Value("${app.hash.hash-count}")
+    private final int hashCount;
 
     private final Base62Encoder base62Encoder;
     private final HashRepository repository;
+
+    @Autowired
+    public HashGenerator(@Value("${app.hash.hash-count}") int hashCount,
+                         Base62Encoder base62Encoder,
+                         HashRepository repository) {
+        this.hashCount = hashCount;
+        this.base62Encoder = base62Encoder;
+        this.repository = repository;
+    }
 
     @Async("hashGeneratorThreadPool")
     public CompletableFuture<Void> generateBatch() {

@@ -36,7 +36,7 @@ class HashGeneratorTest {
     @BeforeEach
     public void setUp() {
         hashGenerator = new HashGenerator(
-                //hashCount,
+                hashCount,
                 base62Encoder,
                 repository);
     }

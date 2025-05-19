@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import com.redis.testcontainers.RedisContainer;
+import faang.school.urlshortenerservice.HashGenerator.HashGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(
@@ -23,10 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 )
 @ActiveProfiles("it")
 @Testcontainers
+@Slf4j
 class UrlServiceIntegrationTest {
 
     @Autowired
     private UrlService urlService;
+
+    @Autowired
+    private HashGenerator hashGenerator;
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.6")
@@ -53,5 +60,11 @@ class UrlServiceIntegrationTest {
         String shortUrl = urlService.getShortUrlLink(originalUrl);
 
         assertNotNull(shortUrl);
+        assertEquals(shortUrl, shortUrl);
+    }
+
+    @Test
+    void sequenceExists() {
+        assertDoesNotThrow(() -> repository.getUniqueNumbers(1));
     }
 }

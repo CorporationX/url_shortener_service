@@ -20,16 +20,23 @@ import java.net.URL;
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class UrlService {
 
     private final HashCache cache;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository cacheRepository;
-
-    @Value("${app.shortener.url}")
     private final String shortUrl;
+
+    public UrlService(HashCache cache,
+                      UrlRepository urlRepository,
+                      UrlCacheRepository cacheRepository,
+                      @Value("${app.shortener.url}") String shortUrl) {
+        this.cache = cache;
+        this.urlRepository = urlRepository;
+        this.cacheRepository = cacheRepository;
+        this.shortUrl = shortUrl;
+    }
 
     @Transactional
     public String getShortUrlLink(String originalUrl) {

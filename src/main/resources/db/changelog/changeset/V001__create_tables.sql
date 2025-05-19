@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS url (
 );
 
 CREATE SEQUENCE if NOT EXISTS unique_number_seq
-    START WITH 1,
+    START WITH 1
     INCREMENT BY 1;
 
