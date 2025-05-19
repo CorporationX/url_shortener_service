@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.component;
 
+import faang.school.urlshortenerservice.exceptions.CacheOperationException;
+import faang.school.urlshortenerservice.exceptions.HashCacheInitializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,5 +80,13 @@ class HashCacheTest {
         Queue<String> hashes = hashCache.getHashes();
         assertEquals(7, hashes.size());
     }
+    
+    @Test
+    public void testNegativeGetInitHash() {
+        doThrow(new RuntimeException("DB error"))
+                .when(hashGenerator).getHashes((long)TEST_CAPACITY);
+        assertThrows(HashCacheInitializationException.class, () -> hashCache.init());
+    }
+
 }
 

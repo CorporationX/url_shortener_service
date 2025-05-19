@@ -59,7 +59,7 @@ urlShortener:
     max-retries: 3
 
 urlController:
-  baseUrl: http://localhost:8080/www/
+  baseUrl: ""
 
 hashCache:
   queue-capacity: 3
