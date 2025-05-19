@@ -16,7 +16,6 @@ public class HashCleanupService {
 
     private final HashRepository hashRepository;
 
-    // Запуск джоба с интервалом, например, 1 раз в час (настраивается)
     @Scheduled(fixedDelayString = "${hash.cleanup.job.delay:3600000}")
     @Transactional
     public void cleanupUnusedHashes() {
