@@ -34,7 +34,7 @@ hash-generator:
     ttl-in-seconds: 60
 
 url:
-  short-url-suffix: http://localhost:8080/short
+  short-url-suffix: http://localhost:8080
   short-url-ttl-in-seconds: 31536000
 
 server:
