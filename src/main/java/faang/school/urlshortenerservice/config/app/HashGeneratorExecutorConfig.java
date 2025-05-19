@@ -11,7 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 public class HashGeneratorExecutorConfig {
 
-    private final HashGeneratorConfig hashGeneratorConfig;
+    private final HashGeneratorProperties hashGeneratorConfig;
 
     @Bean(name = "hashGeneratorExecutor")
     public ThreadPoolTaskExecutor hashGeneratorExecutor() {

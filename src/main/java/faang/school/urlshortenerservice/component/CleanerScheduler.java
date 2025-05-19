@@ -25,16 +25,15 @@ public class CleanerScheduler {
 
         LocalDateTime threshold = LocalDateTime.now().minusYears(1);
         List<String> expiredHashes = urlRepository.deleteOlderThan(threshold);
+        final int deletedCount = expiredHashes.size();
 
         if (expiredHashes.isEmpty()) {
             log.info("No expired URLs found to clean");
             return;
         }
 
-        log.info("Deleted {} expired URLs, returning hashes to hash table", expiredHashes.size());
-
+        log.info("Deleted {} expired URLs, returning hashes to hash table", deletedCount);
         hashRepository.save(expiredHashes);
-
-        log.info("Successfully returned {} hashes to hash table", expiredHashes.size());
+        log.info("Successfully returned {} hashes to hash table", deletedCount);
     }
 }

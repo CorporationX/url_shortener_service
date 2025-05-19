@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository.implementations;
 
-import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorProperties;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 public class HashRepositoryImpl implements HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final HashGeneratorConfig hashGeneratorConfig;
+    private final HashGeneratorProperties hashGeneratorConfig;
 
     @Override
     public List<Long> getUniqueNumbers(int maxRange) {

@@ -10,36 +10,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@Configuration
-@ConfigurationProperties(prefix = "app.hash-cache")
-@Data
-public class HashCacheConfig {
-
-    private int maxSize;
-    private int refillThreshold;
-    private int initialDbSize;
-    private int multiplierDbGeneration;
-
-    private ExecutorConfig executorConfig;
-
+    @Configuration
+    @ConfigurationProperties(prefix = "app.hash-cache")
     @Data
-    public static class ExecutorConfig {
-        private int corePoolSize;
-        private int maxPoolSize;
-        private int queueCapacity;
-    }
+    public class HashCacheConfig {
 
-    @Bean(name = "hashCacheExecutor")
-    public ExecutorService hashCacheExecutor() {
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                executorConfig.getCorePoolSize(),
-                executorConfig.getMaxPoolSize(),
-                0L,
-                java.util.concurrent.TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(executorConfig.getQueueCapacity())
-        );
-        executor.setThreadFactory(Executors.defaultThreadFactory());
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        return executor;
+        private final HashCacheProperties properties;
+
+        @Bean(name = "hashCacheExecutor")
+        public ExecutorService hashCacheExecutor() {
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                    properties.getExecutorConfig().getCorePoolSize(),
+                    properties.getExecutorConfig().getMaxPoolSize(),
+                    properties.getExecutorConfig().getKeepAliveTime(),
+                    java.util.concurrent.TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>(properties.getExecutorConfig().getQueueCapacity())
+            );
+            executor.setThreadFactory(Executors.defaultThreadFactory());
+            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+            return executor;
+        }
     }
-}

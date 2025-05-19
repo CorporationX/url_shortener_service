@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.component.HashGenerator;
 import faang.school.urlshortenerservice.config.app.HashCacheConfig;
+import faang.school.urlshortenerservice.config.app.HashCacheProperties;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -21,7 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCache {
 
-    private final HashCacheConfig config;
+    private final HashCacheProperties properties;
+    //private final HashCacheConfig config;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService hashCacheExecutor;
@@ -32,7 +34,7 @@ public class HashCache {
     @PostConstruct
     public void init() {
         log.info("Starting initial database and cache population on application startup");
-        int maxSize = config.getMaxSize();
+        int maxSize = properties.getMaxSize();
         log.info("Initial setup: aiming to fill cache to maxSize = {}", maxSize);
 
         CompletableFuture<Void> populateDbFuture = populateDatabaseAsync();
@@ -43,14 +45,14 @@ public class HashCache {
     }
 
     protected CompletableFuture<Void> populateDatabaseAsync() {
-        int initialDbSize = config.getInitialDbSize();
+        int initialDbSize = properties.getInitialDbSize();
         log.info("Populating database with {} hashes", initialDbSize);
         return hashGenerator.generateHashes(initialDbSize);
     }
 
     protected CompletableFuture<Void> fillCacheAsync() {
         return CompletableFuture.runAsync(() -> {
-            int maxSize = config.getMaxSize();
+            int maxSize = properties.getMaxSize();
             log.info("Filling cache to maxSize: {}", maxSize);
 
             int toFetch = maxSize - cache.size();
@@ -105,8 +107,8 @@ public class HashCache {
 
     private void checkAndRefillIfNeeded() {
         int currentSize = cache.size();
-        int maxSize = config.getMaxSize();
-        int threshold = (int) (maxSize * (config.getRefillThreshold() / 100.0));
+        int maxSize = properties.getMaxSize();
+        int threshold = (int) (maxSize * (properties.getRefillThreshold() / 100.0));
         if (currentSize < threshold && isRefilling.compareAndSet(false, true)) {
             log.info("Cache size {}/{} below threshold ({}), starting async refill",
                     currentSize, maxSize, threshold);
@@ -115,7 +117,7 @@ public class HashCache {
     }
 
     protected void refillCache() {
-        int toFetch = config.getMaxSize() - cache.size();
+        int toFetch = properties.getMaxSize() - cache.size();
         if (toFetch <= 0) {
             log.info("Cache already full, skipping fetch");
             return;
@@ -127,7 +129,7 @@ public class HashCache {
         if (!newHashes.isEmpty()) {
             cache.addAll(newHashes);
             log.info("Added {} hashes to cache from database, current size: {}", newHashes.size(), cache.size());
-            toFetch = config.getMaxSize() - cache.size();
+            toFetch = properties.getMaxSize() - cache.size();
         }
 
         if (toFetch > 0) {
@@ -144,7 +146,7 @@ public class HashCache {
             }
         }
 
-        if (cache.size() < config.getMaxSize()) {
+        if (cache.size() < properties.getMaxSize()) {
             throw new NoHashAvailableException("Failed to fill cache to maxSize, current size: " + cache.size());
         } else {
             log.info("Cache successfully refilled to maxSize: {}", cache.size());

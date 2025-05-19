@@ -20,11 +20,7 @@ public class Base62Encoder {
                 .toList();
     }
 
-    private String convertToBase62(@NonNull Long number) {
-        if (number == 0) {
-            return "0".repeat(HASH_LENGTH);
-        }
-
+    private String convertToBase62(Long number) {
         StringBuilder hash = new StringBuilder();
         long num = number;
         while (num > 0 && hash.length() < HASH_LENGTH) {

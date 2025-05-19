@@ -1,11 +1,10 @@
 package faang.school.urlshortenerservice.component;
 
-import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorProperties;
 import faang.school.urlshortenerservice.exception.HashGenerationException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +18,8 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final HashGeneratorConfig hashGeneratorConfig;
+    private final HashGeneratorProperties hashGeneratorConfig;
     private final ThreadPoolTaskExecutor hashGeneratorExecutor;
-
-    @Async("hashGeneratorExecutor")
-    public CompletableFuture<Void> generateBatch() {
-        int batchSize = hashGeneratorConfig.getBatchSize();
-        List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
-        List<String> hashes = base62Encoder.encode(numbers);
-        hashRepository.save(hashes);
-        return CompletableFuture.completedFuture(null);
-    }
 
     public CompletableFuture<Void> generateHashes(int count) {
         log.info("Starting generation of {} hashes", count);
@@ -51,13 +41,7 @@ public class HashGenerator {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 int currentBatchSize = Math.min(batchSize, remaining);
                 log.info("Generating batch {} of {} with {} hashes", batchIndex + 1, batches, currentBatchSize);
-                int originalBatchSize = hashGeneratorConfig.getBatchSize();
-                try {
-                    hashGeneratorConfig.setBatchSize(currentBatchSize);
-                    generateBatch();
-                } finally {
-                    hashGeneratorConfig.setBatchSize(originalBatchSize);
-                }
+                generateBatch(currentBatchSize);
             }, hashGeneratorExecutor);
             futures.add(future);
         }
@@ -67,5 +51,11 @@ public class HashGenerator {
                 .exceptionally(throwable -> {
                     throw new HashGenerationException("Failed to generate " + count + " hashes", throwable);
                 });
+    }
+
+    protected void generateBatch(int batchSize) {
+        List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
+        List<String> hashes = base62Encoder.encode(numbers);
+        hashRepository.save(hashes);
     }
 }

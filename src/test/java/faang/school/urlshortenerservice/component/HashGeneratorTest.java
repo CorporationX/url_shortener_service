@@ -41,7 +41,7 @@ class HashGeneratorTest {
         when(hashRepository.getUniqueNumbers(3)).thenReturn(mockNumbers);
         when(base62Encoder.encode(mockNumbers)).thenReturn(mockHashes);
 
-        hashGenerator.generateBatch();
+        hashGenerator.generateBatch(3);
 
         verify(hashRepository).getUniqueNumbers(3);
         verify(base62Encoder).encode(mockNumbers);

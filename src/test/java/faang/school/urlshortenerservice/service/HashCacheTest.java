@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.component.HashGenerator;
 import faang.school.urlshortenerservice.config.app.HashCacheConfig;
+import faang.school.urlshortenerservice.config.app.HashCacheProperties;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class HashCacheTest {
 
     @Mock
-    private HashCacheConfig config;
+    private HashCacheProperties config;
 
     @Mock
     private HashRepository hashRepository;
