@@ -3,11 +3,11 @@ name: Test Url Shortener App
 on:
   push:
     branches:
-      - minotaur-master-stream9-artur
+      - minotaur-master-stream9-shortner-artur
 
   pull_request:
     branches:
-      - minotaur-master-stream9-artur
+      - minotaur-master-stream9-shortner-artur
 
 jobs:
   build-and-test:
