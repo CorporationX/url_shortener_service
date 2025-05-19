@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.entity.UrlEntity;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,16 @@ public class UrlService {
         urlCacheRepository.save(hash,longUrl);
 
         return hash;
+    }
+
+    public String getOriginalUrl(String hash) {
+    String cachedUrl = urlCacheRepository.get(hash);
+        if (cachedUrl != null) {
+            return cachedUrl;
+        }
+
+        return urlRepository.findById(hash)
+                .map(entity -> entity.getUrl())
+                .orElseThrow(() -> new UrlNotFoundException(hash));
     }
 }
