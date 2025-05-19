@@ -28,3 +28,6 @@ hash:
   generator:
     job:
     delay: 60000
+  cleanup:
+    job:
+    delay: 3600000
