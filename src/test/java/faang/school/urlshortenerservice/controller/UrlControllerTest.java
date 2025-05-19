@@ -88,7 +88,7 @@ class UrlControllerTest {
     void createShortUrl() throws Exception {
         String originalUrl = "https://www.example.com";
 
-        var result = mockMvc.perform(
+        mockMvc.perform(
                         post("http://localhost:8080/url")
                                 .contentType("application/json")
                                 .header("x-user-id", "123")
