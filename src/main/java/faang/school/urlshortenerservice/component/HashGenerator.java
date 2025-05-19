@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.component;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,9 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+
+    @Value("${hash.generateHash.factor}")
+    private int factor;
 
 
     @Transactional
@@ -38,16 +42,22 @@ public class HashGenerator {
 
     @Transactional
     public List<String> getHashes(Long amount) {
-        List<String> hashes = hashRepository.getHashBatch();
+        List<String> hashes = hashRepository.getHashBatch(amount);
         log.info("Retrieved {} unique hashes", hashes.size());
 
-        if (hashes.size() < amount) {
-            log.info("Not enough hashes retrieved, generating more...");
-            CompletableFuture<Void> future = generateHash(amount);
-            future.join();
 
-            hashes.addAll(hashRepository.getHashBatch());
+        if (hashes.size() < amount) {
+            log.warn("Недостаточно хэшей в БД ({} < {}), запрашиваем дополнительные...", hashes.size(), amount);
+            CompletableFuture.runAsync(() -> generateHash(amount * factor));
+            return hashes;
         }
+
+
+        if (hashRepository.countAvailableHashes() < amount * 2) {
+            log.info("Мало хэшей в БД, запускаем фоновую генерацию...");
+            CompletableFuture.runAsync(() -> generateHash(amount * factor));
+        }
+
         return hashes;
     }
 

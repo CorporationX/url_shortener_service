@@ -20,13 +20,13 @@ public class HashCache {
 
     private final HashGenerator hashGenerator;
 
-    @Value("${hashCache.queue-capacity}00")
+    @Value("${hashCache.queue-capacity}")
     private int capacity;
 
     @Value("${hashCache.fill-percent}")
     private int fillPercent;
 
-    private final AtomicBoolean filling = new AtomicBoolean(false);
+    private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
     private Queue<String> hashes;
 
@@ -51,20 +51,27 @@ public class HashCache {
     }
 
     private void refillAsync() {
-        if (filling.compareAndSet(false, true)) {
-            log.debug("Starting async hash cache refill");
-            hashGenerator.getHashesAsync((long) capacity)
+        if (isRefilling.compareAndSet(false, true)) {
+            log.debug("Начало асинхронного пополнения кэша");
+            int neededHashes = capacity - hashes.size();
+
+            hashGenerator.getHashesAsync((long) neededHashes)
                     .thenAccept(newHashes -> {
-                        hashes.addAll(newHashes);
-                        log.debug("Added {} new hashes to cache", newHashes.size());
+                        // Безопасное добавление с проверкой свободного места
+                        newHashes.forEach(hash -> {
+                            if (!hashes.offer(hash)) {
+                                log.warn("Не удалось добавить хеш - кэш переполнен");
+                            }
+                        });
+                        log.debug("Добавлено {} новых хешей", newHashes.size());
                     })
                     .exceptionally(ex -> {
-                        log.error("Failed to refill hash cache", ex);
+                        log.error("Ошибка при пополнении кэша", ex);
                         return null;
                     })
                     .thenRun(() -> {
-                        filling.set(false);
-                        log.debug("Finished async hash cache refill");
+                        isRefilling.set(false);
+                        log.debug("Пополнение кэша завершено");
                     });
         }
     }

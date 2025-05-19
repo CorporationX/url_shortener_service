@@ -34,11 +34,11 @@ hash:
   thread-pool:
     core-size: 5
     max-size: 10
-    queue-capacity: 100
+    queue-capacity: 10
 
-  generate:
-    batch:
-     size: 200
+  generateHash:
+    factor: 2
+
 
   batch:
     size: 200
@@ -58,5 +58,5 @@ urlController:
   baseUrl: http://localhost:8080/
 
 hashCache:
-  queue-capacity: 5
+  queue-capacity: 10
   fill-percent: 20
