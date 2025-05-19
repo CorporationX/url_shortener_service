@@ -1,0 +1,33 @@
+name: Test Url Shortener App
+
+on:
+  push:
+    branches:
+      - minotaur-master-stream9-artur
+
+  pull_request:
+    branches:
+      - minotaur-master-stream9-artur
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Getting repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Getting permissions to execute the gradlew file
+        run: chmod +x gradlew
+
+      - name: Run Tests
+        run: ./gradlew test --stacktrace --info
+
+      - name: Run Build
+        run: ./gradlew build
