@@ -23,3 +23,8 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    job:
+    delay: 60000
