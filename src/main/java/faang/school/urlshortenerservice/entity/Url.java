@@ -23,7 +23,7 @@ import java.time.Instant;
 public class Url {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @Column(name = "hash", length = 7, nullable = false)
     private String hash;
 
     @OneToOne
@@ -34,6 +34,6 @@ public class Url {
     private String url;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 }

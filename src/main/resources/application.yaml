@@ -26,5 +26,16 @@ logging:
 
 app:
   hash:
-    batch: 100
     maxRange: 10000
+
+scheduling:
+  hash-generation:
+    cron: "0 0 3 * * *" # каждый день в 03:00
+    enabled: true       # возможность выключать задачу без удаления кода
+
+hash-generator:
+  async:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    thread-name-prefix: HashGen-
