@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 50
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
