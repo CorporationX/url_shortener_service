@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class HashGenerator {
 
     @Value("${app.hash.hash-count}")
-    private final int hashCount;
+    private int hashCount;
 
     private final Base62Encoder base62Encoder;
     private final HashRepository repository;

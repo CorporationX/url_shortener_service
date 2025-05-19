@@ -19,7 +19,7 @@ public interface HashRepository extends CrudRepository<Hash, Long> {
 
     @Modifying
     @Query("""
-            INSERT INTO hash(hash) VALUES (:hash)
+            INSERT INTO hash(hash) VALUES (:hashes)
             """)
     void saveHashes(List<String> hashes);
 

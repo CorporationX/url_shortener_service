@@ -2,18 +2,24 @@ package faang.school.urlshortenerservice.HashGenerator;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HashGeneratorTest {
@@ -23,8 +29,17 @@ class HashGeneratorTest {
     @Mock
     private HashRepository repository;
 
-    private final int hashCount = 3;
+    private int hashCount = 3;
+
     private HashGenerator hashGenerator;
+
+    @BeforeEach
+    public void setUp() {
+        hashGenerator = new HashGenerator(
+                //hashCount,
+                base62Encoder,
+                repository);
+    }
 
     @Test
     void positiveGenerateBatch() {

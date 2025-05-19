@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
 import com.redis.testcontainers.RedisContainer;
-import faang.school.urlshortenerservice.HashGenerator.HashGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +28,6 @@ class UrlServiceIntegrationTest {
     @Autowired
     private UrlService urlService;
 
-    @Autowired
-    private HashGenerator hashGenerator;
-
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.6")
             .withDatabaseName("testdb")
@@ -52,7 +48,7 @@ class UrlServiceIntegrationTest {
     }
 
     @Test
-    void getShortUrl_ShouldReturnShortUrl() {
+    void positiveGetShortUrl() {
         String originalUrl = "https://example.com";
         String shortUrl = urlService.getShortUrlLink(originalUrl);
 
