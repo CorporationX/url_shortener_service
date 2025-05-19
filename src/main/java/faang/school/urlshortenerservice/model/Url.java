@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,5 +32,6 @@ public class Url {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 }
