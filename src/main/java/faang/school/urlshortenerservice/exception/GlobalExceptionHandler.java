@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -15,12 +13,12 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception e) {
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(ValidationException e) {
         return ResponseEntity.status(BAD_REQUEST).body(getErrorResponse(BAD_REQUEST.value(), e));
     }
 
     @ExceptionHandler(InternalException.class)
-    public ResponseEntity<ErrorResponse> handleInternalServerExceptions(Exception e) {
+    public ResponseEntity<ErrorResponse> handleInternalServerExceptions(InternalException e) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(getErrorResponse(INTERNAL_SERVER_ERROR.value(), e));
     }
 
@@ -31,19 +29,17 @@ public class GlobalExceptionHandler {
 
     private ErrorResponse getErrorResponse(int status, Exception e) {
         log.error("{}", e.toString());
-        return createErrorResponse(status, e.getMessage());
+        return ErrorResponse.builder()
+                .status(status)
+                .message(e.getMessage())
+                .build();
     }
 
     private ErrorResponse getUncaughtErrorResponse(Exception e) {
         log.error("[UNEXPECTED ERROR]: {}", e.toString());
-        return createErrorResponse(INTERNAL_SERVER_ERROR.value(), e.getMessage());
-    }
-
-    private ErrorResponse createErrorResponse(int status, String message) {
         return ErrorResponse.builder()
-                .status(status)
-                .message(message)
-                .timestamp(LocalDateTime.now())
+                .status(INTERNAL_SERVER_ERROR.value())
+                .message(e.getMessage())
                 .build();
     }
 }
