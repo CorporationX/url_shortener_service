@@ -18,6 +18,10 @@ spring:
       hibernate:
         format_sql: true
 
+  sql:
+    init:
+      mode: always
+
 server:
   port: 8090
 
@@ -27,11 +31,13 @@ logging:
 
 app:
   hash:
-    hash-count: 20000
-    cache-size: 10000
+    hash-count: 10
+    cache-size: 1000
     fill-percent: 20
   cleaner:
     cron: "0 0 0 * * ?"
+  shortener:
+    url: https://shortener/
 
 async:
   core-size: 3

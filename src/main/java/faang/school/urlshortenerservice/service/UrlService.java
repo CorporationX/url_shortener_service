@@ -7,12 +7,10 @@ import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -45,25 +43,29 @@ public class UrlService {
         }
         String hash = String.valueOf(cache.getHash().join());
         urlRepository.save(new Url(hash, originalUrl, LocalDateTime.now()));
+        log.info("Сохранил в репозиторий");
         cacheRepository.save(hash, originalUrl);
+        log.info("Сохранил в кеш");
         log.debug("Ссылка {} успешно ассоциирована с хешем {}", originalUrl, hash);
-        return  String.join(shortUrl + hash);
+        return  shortUrl + hash;
     }
 
     public String getOriginalUrl(String hash) {
         if (hash == null || hash.isBlank()) {
-            log.error("Хеш: {} не может быть пуст", hash);
+            log.error("Хеш не может быть пуст");
             throw new DataValidationException("Ошибка валидации данных");
         }
         String urlFirstAttempt = cacheRepository.findByHash(hash);
         if (urlFirstAttempt != null) {
-            log.debug("Url для хеша {} не найден в кеше", hash);
+            log.debug("Url для хеша {} найден в кеше", hash);
             return urlFirstAttempt;
         }
+        log.debug("Хеш {} отсутствует в кеше, иду в репозиторий", hash);
+
         Url url = urlRepository.findById(hash)
                 .orElseThrow(() -> new UrlNotFoundException("Адрес для хеша %s не найден", hash));
+        log.debug("Url для хеша {} найден в репозитории", hash);
         return url.getUrl();
-
     }
 
     private boolean validateUrl(String originalUrl) {
@@ -82,5 +84,6 @@ public class UrlService {
             return  false;
         }
     }
+
 
 }

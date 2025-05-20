@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.HashGenerator;
 
 import faang.school.urlshortenerservice.exception.DataValidationException;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +52,7 @@ public class HashGenerator {
             log.error("Нет хешей для сохранения. В списке: {}", hashes.size());
             throw new DataValidationException("В списке нет хешей");
         }
+        log.info("Сохранил {} хешей", hashes.size());
         repository.saveHashes(hashes);
     }
 
