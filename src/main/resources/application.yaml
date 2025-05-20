@@ -12,7 +12,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         jdbc:
           batch_size: 50
 
@@ -25,3 +25,22 @@ server:
 logging:
   level:
     root: info
+
+url-shortener:
+  hash-count: 1000
+  hash-properties:
+    core-pool-size: 10
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: url-shortener
+  cache-properties:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 50
+    thread-name-prefix: url-cache
+  scheduler:
+    cleaner-cron: 0 0 0 * * *
+    moths-to-clean: 12
+  cache:
+    capacity: 10000
+    fill-percent: 20

@@ -10,8 +10,7 @@ import java.util.List;
 
 @Repository
 public interface HashRepository extends JpaRepository<Hash, Long> {
-    @Query(
-            nativeQuery = true, value = """
+    @Query(nativeQuery = true, value = """
                 SELECT nextval('unique_number_seq')
                 FROM generate_series(1, :count)
             """)
@@ -20,8 +19,8 @@ public interface HashRepository extends JpaRepository<Hash, Long> {
     @Modifying
     @Query(nativeQuery = true, value = """
                 DELETE FROM hash WHERE hash IN
-                (SELECT hash  FROM hash LIMIT :size FOR UPDATE SKIP LOCKED)
+                (SELECT hash FROM hash LIMIT :size FOR UPDATE SKIP LOCKED)
                 RETURNING hash
             """)
-    List<Hash> getHashBatch(int size);
+    List<String> getHashBatch(int size);
 }
