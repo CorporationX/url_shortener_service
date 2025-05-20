@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -63,5 +64,21 @@ public class UrlCacheRepository {
             throw new CacheOperationException("Failed to delete URL from cache", e);
         }
     }
+
+    public Set<String> findAllHashes() {
+        try {
+            Set<String> keys = redisTemplate.keys("*");
+            if (keys != null && !keys.isEmpty()) {
+                log.debug("Found {} hashes in cache.", keys.size());
+            } else {
+                log.debug("No hashes found in cache.");
+            }
+            return keys;
+        } catch (Exception e) {
+            log.error("Failed to retrieve hashes from cache.", e);
+            throw new CacheOperationException("Failed to retrieve hashes from cache", e);
+        }
+    }
+
 }
 

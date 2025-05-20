@@ -20,14 +20,8 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379       # стандартный порт Redis
-      password:        # опциональный пароль (если требуется)
-      timeout: 5000    # таймаут соединения в миллисекундах
-      lettuce:
-        pool:
-          max-active: 8 # максимальное количество активных соединений
-          max-idle: 8   # максимальное количество idle соединений
-          min-idle: 2
+      port: 6379
+
 
 server:
   port: 8080
@@ -40,7 +34,7 @@ hash:
   thread-pool:
     core-size: 5
     max-size: 10
-    queue-capacity: 100
+    queue-capacity: 10
 
   generate:
     batch:
@@ -56,11 +50,10 @@ cleaner:
 urlShortener:
   cache:
     ttl-days: 30
-    max-retries: 3
 
 urlController:
   baseUrl: ""
 
 hashCache:
-  queue-capacity: 3
+  queue-capacity: 20
   fill-percent: 20
