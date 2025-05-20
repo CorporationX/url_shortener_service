@@ -1,42 +1,75 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.model.Hash;
-import feign.Param;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, String> {
+@RequiredArgsConstructor
+public class HashRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    @Query(value = """
-            SELECT nextval("unique_number_sequence")
-            FROM generate_series(1, :count)
-            """, nativeQuery = true)
-    List<Long> getUniqueNumbers(@Param("count") int n);
+    @Value("${hash.batch}")
+    private int batchSize;
 
-    @Modifying
     @Transactional
-    @Query(value = """
-                 INSERT INTO hash (hash) VALUES (?#{#hashes.![hash]})
-                 ON CONFLICT DO NOTHING
-            """, nativeQuery = true)
-    void saveHashes(List<Hash> hashes);
+    public List<Long> getUniqueNumbers(int batch) {
+        String sql = "SELECT nextval('unique_number_sequence') FROM generate_series(1, ?)";
 
-    @Modifying
+        return jdbcTemplate.queryForList(
+                sql,
+                Long.class,
+                batch
+        );
+    }
+
+    @Transactional()
+    public void save(List<String> hashes) {
+        if (hashes == null || hashes.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < hashes.size(); i += batchSize) {
+            List<String> batch = hashes.subList(i, Math.min(i + batchSize, hashes.size()));
+            jdbcTemplate.batchUpdate(
+                    "INSERT INTO hash (hash) VALUES (?)",
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int j) throws SQLException {
+                            ps.setString(1, hashes.get(j));
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return batch.size();
+                        }
+                    }
+            );
+        }
+    }
+
     @Transactional
-    @Query(value = """
-            DELETE FROM hash
-            WHERE hash IN (
-            SELECT hash FROM hash
-            ORDER BY created_at
-            LIMIT :batchSize
-            )
-            RETURNING hash
-            """, nativeQuery = true)
-    List<String> getHashBatch(@Param("batchSize") int batchSize);
+    public List<String> getHashBatch(int batchSize) {
+        String sql = """
+                DELETE FROM hash
+                WHERE ctid IN (
+                    SELECT ctid FROM hash
+                    LIMIT ?
+                    FOR UPDATE SKIP LOCKED
+                )
+                RETURNING hash
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> rs.getString("hash"),
+                batchSize
+        );
+    }
 }

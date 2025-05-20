@@ -1,26 +1,63 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.exception.NoAvailableHashException;
+import faang.school.urlshortenerservice.exception.SQLSaveException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
 
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final HashCache hashCache;
+
+    @Value("${url.base_url}")
+    private String base_url;
+
+    @Transactional
+    public String saveOriginalUrl(String url) {
+        String hash = hashCache.getHash().orElseThrow(() ->
+                new NoAvailableHashException(url)
+        );
+
+        try {
+            urlRepository.save(hash, url);
+        } catch (DataAccessException exception) {
+            log.error("Failed to save to PostgreSQL: url={}", url, exception);
+            throw new SQLSaveException(url);
+        }
+
+        saveToRedis(hash, url);
+
+        return base_url.concat(hash);
+    }
 
     public String getOriginalUrl(String hash) {
         return urlCacheRepository.findUrlByHash(hash)
                 .orElseGet(() -> {
-                    Url url = urlRepository.findByHash(hash)
-                            .orElseThrow(() -> new UrlNotFoundException(hash));
-                    urlCacheRepository.save(hash, url.getUrl());
-                    return url.getUrl();
+                    String url = urlRepository.findByHash(hash)
+                            .orElseThrow(() -> new UrlNotFoundException(
+                                    String.format("Original URL with hash %s not found", hash)));
+                    saveToRedis(hash, url);
+                    return url;
                 });
+    }
+
+    private void saveToRedis(String hash, String url) {
+        try {
+            urlCacheRepository.save(hash, url);
+        } catch (Exception exception) {
+            log.warn("Failed to save to Redis: hash={}, url={}", hash, url, exception);
+        }
     }
 }
