@@ -78,9 +78,6 @@ class UrlServiceIntegrationTest {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.6");
-            //.withDatabaseName("testdb")
-            //.withUsername("testuser")
-            //.withPassword("testpass");
 
     @Container
     static RedisContainer redis = new RedisContainer(DockerImageName.parse("redis:7.0-alpine"));
