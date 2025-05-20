@@ -2,12 +2,14 @@ package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.config.context.UserContext;
+import faang.school.urlshortenerservice.config.context.UserHeaderFilter;
 import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(UrlControllerImpl.class)
+@Import({UserHeaderFilter.class, UserContext.class})
 class UrlControllerImplTest {
 
     private static final String ROOT_URL = "/api/v1/urls";
@@ -34,15 +37,13 @@ class UrlControllerImplTest {
             "Required request parameter 'url' for method parameter type String is not present";
     private static final String INVALID_HASH = "get.hash.hash: hash should not be null or blank";
 
+    private final long xUserId = 1;
     private final String url = "http://somesite.com";
     private final String hash = "iw31";
     private final HashDto hashDto = new HashDto(hash);
 
     @MockBean
     private UrlService urlService;
-
-    @MockBean
-    private UserContext userContext;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -80,6 +81,7 @@ class UrlControllerImplTest {
                       ResultMatcher result, ResultMatcher responseContent) {
         try {
             mockMvc.perform(endpoint
+                            .header("x-user-id", xUserId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(result)
                     .andExpect(responseContent)
