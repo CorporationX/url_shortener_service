@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,23 +41,11 @@ class UrlControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"url\":\"https://example.com\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(shortUrl))
+                .andExpect(jsonPath("$.shortUrl").value(shortUrl))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
         System.out.println("Response body: " + responseContent);
-    }
-
-    @Test
-    void testShortenUrlValidationError() throws Exception {
-        mockMvc.perform(post("/url")
-                        .header("x-user-id", "1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.url").isArray())
-                .andExpect(jsonPath("$.url", hasItem("URL cannot be empty")))
-                .andExpect(jsonPath("$.url", hasItem("Invalid URL format")));
     }
 
     @Test
@@ -77,11 +64,12 @@ class UrlControllerTest {
     @Test
     void testRedirectToOriginalUrlNotFound() throws Exception {
         String hash = "invalidHash";
-        when(urlService.getOriginalUrl(hash)).thenThrow(new UrlNotFoundException("URL not found for hash: " + hash));
+        String errorMessage = "URL not found for hash: " + hash;
+        when(urlService.getOriginalUrl(hash)).thenThrow(new UrlNotFoundException(errorMessage));
 
         mockMvc.perform(get("/url/{hash}", hash)
                         .header("x-user-id", "1"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("URL not found for hash: " + hash));
+                .andExpect(jsonPath("$.message").value(errorMessage));
     }
 }

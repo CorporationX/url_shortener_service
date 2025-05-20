@@ -10,7 +10,7 @@ public class HashCacheProperties {
     private int maxSize;
     private int refillThreshold;
     private int initialDbSize;
-    private int multiplierDbGeneration;
+    private int cacheTtl;
 
     @NestedConfigurationProperty
     private ExecutorConfig executorConfig = new ExecutorConfig();

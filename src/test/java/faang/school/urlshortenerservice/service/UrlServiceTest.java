@@ -1,22 +1,22 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.component.HashCache;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.interfaces.UrlRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,13 +41,7 @@ public class UrlServiceTest {
     private static final String ORIGINAL_URL = "https://example.com";
     private static final String HASH = "abc123";
     private static final String SHORT_URL = "http://short.url/" + HASH;
-    private static final Url URL_ENTITY = new Url();
-
-    @BeforeEach
-    void setUp() {
-        URL_ENTITY.setHash(HASH);
-        URL_ENTITY.setUrl(ORIGINAL_URL);
-    }
+    private static final UrlDto URL_ENTITY = new UrlDto(HASH, ORIGINAL_URL, LocalDateTime.now());
 
     @Test
     void shortenUrlSuccess() {
@@ -59,7 +53,12 @@ public class UrlServiceTest {
         String result = urlService.shortenUrl(ORIGINAL_URL);
 
         assertEquals(SHORT_URL, result);
-        verify(urlRepository).save(URL_ENTITY);
+
+        verify(urlCacheRepository).findHashByUrl(ORIGINAL_URL);
+        verify(urlRepository).findByUrl(ORIGINAL_URL);
+        verify(hashCache).getHash();
+        verify(urlRepository).findByHash(HASH);
+        verify(urlRepository).save(HASH, ORIGINAL_URL);
         verify(urlCacheRepository).save(HASH, ORIGINAL_URL);
         verifyNoMoreInteractions(hashCache, urlRepository, urlCacheRepository);
     }
@@ -71,7 +70,7 @@ public class UrlServiceTest {
         NoHashAvailableException exception = assertThrows(NoHashAvailableException.class, this::execute);
         assertEquals("No hashes available", exception.getMessage());
 
-        verify(urlRepository, never()).save(any());
+        verify(urlRepository, never()).save(HASH, ORIGINAL_URL);
         verify(urlCacheRepository, never()).save(anyString(), anyString());
     }
 
@@ -83,7 +82,7 @@ public class UrlServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> urlService.shortenUrl(ORIGINAL_URL));
         assertEquals("Hash already exists", exception.getMessage());
 
-        verify(urlRepository, never()).save(any());
+        verify(urlRepository, never()).save(HASH, ORIGINAL_URL);
         verify(urlCacheRepository, never()).save(anyString(), anyString());
     }
 
@@ -95,7 +94,7 @@ public class UrlServiceTest {
 
         assertEquals(SHORT_URL, result);
         verify(urlRepository, never()).findByUrl(anyString());
-        verify(urlRepository, never()).save(any());
+        verify(urlRepository, never()).save(SHORT_URL, ORIGINAL_URL);
         verify(urlCacheRepository, never()).save(anyString(), anyString());
     }
 
@@ -108,7 +107,7 @@ public class UrlServiceTest {
 
         assertEquals(SHORT_URL, result);
         verify(urlCacheRepository).save(HASH, ORIGINAL_URL);
-        verify(urlRepository, never()).save(any());
+        verify(urlRepository, never()).save(HASH, ORIGINAL_URL);
     }
 
     @Test

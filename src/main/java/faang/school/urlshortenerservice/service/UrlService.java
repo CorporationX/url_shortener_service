@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.component.HashCache;
+import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.interfaces.UrlRepository;
@@ -24,13 +25,15 @@ public class UrlService {
     public String shortenUrl(String originalUrl) {
         String existingHash = urlCacheRepository.findHashByUrl(originalUrl);
         if (existingHash != null) {
+            log.info("Found hash in cache for URL: {}", originalUrl);
             return "http://short.url/" + existingHash;
         }
 
-        Optional<Url> existingUrl = urlRepository.findByUrl(originalUrl);
+        Optional<UrlDto> existingUrl = urlRepository.findByUrl(originalUrl);
         if (existingUrl.isPresent()) {
-            String hash = existingUrl.get().getHash();
+            String hash = existingUrl.get().hash();
             urlCacheRepository.save(hash, originalUrl);
+            log.info("Found existing URL in database, hash: {}", hash);
             return "http://short.url/" + hash;
         }
 
@@ -45,10 +48,8 @@ public class UrlService {
             throw new RuntimeException("Hash already exists");
         }
 
-        Url url = new Url();
-        url.setHash(hash);
-        url.setUrl(originalUrl);
-        urlRepository.save(url);
+        urlRepository.save(hash, originalUrl);
+        log.info("Saved new URL with hash: {} for URL: {}", hash, originalUrl);
 
         urlCacheRepository.save(hash, originalUrl);
 
@@ -57,15 +58,16 @@ public class UrlService {
 
     public String getOriginalUrl(String hash) {
         log.info("Looking for URL by hash: {}", hash);
+
         String urlFromCache = urlCacheRepository.findByHash(hash);
         if (urlFromCache != null) {
             log.info("URL found in Redis for hash: {}", hash);
             return urlFromCache;
         }
 
-        Optional<Url> urlFromDb = urlRepository.findByHash(hash);
+        Optional<UrlDto> urlFromDb = urlRepository.findByHash(hash);
         if (urlFromDb.isPresent()) {
-            String url = urlFromDb.get().getUrl();
+            String url = urlFromDb.get().url();
             log.info("URL found in database for hash: {}", hash);
             urlCacheRepository.save(hash, url);
             return url;

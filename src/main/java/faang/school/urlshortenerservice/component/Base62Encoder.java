@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.component;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,7 +14,7 @@ public class Base62Encoder {
     private static final int BASE = 62;
     private static final int HASH_LENGTH = 6;
 
-    public List<String> encode(@NonNull List<Long> numbers) {
+    public List<String> encode(@NotNull List<Long> numbers) {
         return numbers.stream()
                 .map(this::convertToBase62)
                 .toList();

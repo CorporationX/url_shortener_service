@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.UrlDtoRequest;
+import faang.school.urlshortenerservice.dto.UrlDtoResponse;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,13 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public ResponseEntity<?> shortenUrl(@Valid @RequestBody UrlRequestDto requestDto) {
+    public ResponseEntity<UrlDtoResponse> shortenUrl(@Valid @RequestBody UrlDtoRequest requestDto) {
         String shortUrl = urlService.shortenUrl(requestDto.getUrl());
-        return ResponseEntity.ok(shortUrl);
+        return ResponseEntity.ok(new UrlDtoResponse(shortUrl));
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
+    public ResponseEntity<Void> redirect(@PathVariable String hash) {
         log.info("Received request to redirect for hash: {}", hash);
         String originalUrl = urlService.getOriginalUrl(hash);
         return ResponseEntity.status(HttpStatus.FOUND)

@@ -1,14 +1,12 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.component;
 
-import faang.school.urlshortenerservice.component.HashGenerator;
-import faang.school.urlshortenerservice.config.app.HashCacheConfig;
 import faang.school.urlshortenerservice.config.app.HashCacheProperties;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Queue;
@@ -17,43 +15,42 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
 public class HashCache {
 
     private final HashCacheProperties properties;
-    //private final HashCacheConfig config;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService hashCacheExecutor;
 
-    public final Queue<String> cache = new ConcurrentLinkedQueue<>();
+    private final Queue<String> cache = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
     @PostConstruct
-    public void init() {
-        log.info("Starting initial database and cache population on application startup");
+    private void init() {
+        log.debug("Starting initial database and cache population on application startup");
         int maxSize = properties.getMaxSize();
-        log.info("Initial setup: aiming to fill cache to maxSize = {}", maxSize);
+        log.debug("Initial setup: aiming to fill cache to maxSize = {}", maxSize);
 
         CompletableFuture<Void> populateDbFuture = populateDatabaseAsync();
         populateDbFuture.thenRunAsync(() -> {
-            log.info("Database population completed, starting cache fill");
+            log.debug("Database population completed, starting cache fill");
             fillCacheAsync();
         }, hashCacheExecutor);
     }
 
-    protected CompletableFuture<Void> populateDatabaseAsync() {
+    private CompletableFuture<Void> populateDatabaseAsync() {
         int initialDbSize = properties.getInitialDbSize();
-        log.info("Populating database with {} hashes", initialDbSize);
+        log.debug("Populating database with {} hashes", initialDbSize);
         return hashGenerator.generateHashes(initialDbSize);
     }
 
-    protected CompletableFuture<Void> fillCacheAsync() {
+    private CompletableFuture<Void> fillCacheAsync() {
         return CompletableFuture.runAsync(() -> {
             int maxSize = properties.getMaxSize();
-            log.info("Filling cache to maxSize: {}", maxSize);
+            log.debug("Filling cache to maxSize: {}", maxSize);
 
             int toFetch = maxSize - cache.size();
             while (cache.size() < maxSize && toFetch > 0) {
@@ -64,7 +61,7 @@ public class HashCache {
                 }
                 cache.addAll(newHashes);
                 toFetch = maxSize - cache.size();
-                log.info("Added {} hashes to cache, current size: {}, remaining to fetch: {}",
+                log.debug("Added {} hashes to cache, current size: {}, remaining to fetch: {}",
                         newHashes.size(), cache.size(), toFetch);
             }
 
@@ -116,61 +113,45 @@ public class HashCache {
         }
     }
 
-    protected void refillCache() {
+    private void refillCache() {
         int toFetch = properties.getMaxSize() - cache.size();
         if (toFetch <= 0) {
             log.info("Cache already full, skipping fetch");
             return;
         }
 
-        log.info("Refilling cache, need to fetch up to {} hashes", toFetch);
+        log.debug("Refilling cache, need to fetch up to {} hashes", toFetch);
 
-        List<String> newHashes = hashRepository.getHashBatch();
-        if (!newHashes.isEmpty()) {
-            cache.addAll(newHashes);
-            log.info("Added {} hashes to cache from database, current size: {}", newHashes.size(), cache.size());
-            toFetch = properties.getMaxSize() - cache.size();
-        }
-
-        if (toFetch > 0) {
-            log.info("Not enough hashes in database, generating {} new hashes", toFetch);
-            hashGenerator.generateHashes(toFetch).join();
-            log.info("Generation complete, fetching new hashes");
-
-            newHashes = hashRepository.getHashBatch();
+        try {
+            List<String> newHashes = hashRepository.getHashBatch();
             if (!newHashes.isEmpty()) {
                 cache.addAll(newHashes);
-                log.info("Added {} generated hashes to cache, current size: {}", newHashes.size(), cache.size());
-            } else {
-                log.warn("No hashes retrieved after generation");
+                log.info("Added {} hashes to cache from database, current size: {}", newHashes.size(), cache.size());
+                toFetch = properties.getMaxSize() - cache.size();
             }
+
+            if (toFetch > 0) {
+                log.info("Not enough hashes in database, generating {} new hashes", toFetch);
+                hashGenerator.generateHashes(toFetch).join();
+                log.debug("Generation complete, fetching new hashes");
+
+                newHashes = hashRepository.getHashBatch();
+                if (!newHashes.isEmpty()) {
+                    cache.addAll(newHashes);
+                    log.info("Added {} generated hashes to cache, current size: {}", newHashes.size(), cache.size());
+                } else {
+                    log.warn("No hashes retrieved after generation");
+                }
+            }
+
+            if (cache.size() < properties.getMaxSize()) {
+                throw new NoHashAvailableException("Failed to fill cache to maxSize, current size: " + cache.size());
+            } else {
+                log.debug("Cache successfully refilled to maxSize: {}", cache.size());
+            }
+        } finally {
+            isRefilling.set(false);
+            log.debug("Refill completed, isRefilling reset to false");
         }
-
-        if (cache.size() < properties.getMaxSize()) {
-            throw new NoHashAvailableException("Failed to fill cache to maxSize, current size: " + cache.size());
-        } else {
-            log.info("Cache successfully refilled to maxSize: {}", cache.size());
-        }
-
-        isRefilling.set(false);
-        log.info("Refill completed, isRefilling reset to false");
-    }
-
-    protected int getCacheSize() {
-        return cache.size();
-    }
-
-    protected boolean isRefilling() {
-        return isRefilling.get();
-    }
-
-    protected void clearCache() {
-        cache.clear();
-        log.debug("Cache cleared, new size: {}", cache.size());
-    }
-
-    protected void addToCache(String hash) {
-        cache.add(hash);
-        log.debug("Added hash to cache: {}, new size: {}", hash, cache.size());
     }
 }

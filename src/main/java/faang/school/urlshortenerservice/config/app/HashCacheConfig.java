@@ -10,24 +10,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-    @Configuration
-    @ConfigurationProperties(prefix = "app.hash-cache")
-    @Data
-    public class HashCacheConfig {
+@Configuration
+@ConfigurationProperties(prefix = "app.hash-cache")
+@Data
+public class HashCacheConfig {
 
-        private final HashCacheProperties properties;
+    private final HashCacheProperties properties;
 
-        @Bean(name = "hashCacheExecutor")
-        public ExecutorService hashCacheExecutor() {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                    properties.getExecutorConfig().getCorePoolSize(),
-                    properties.getExecutorConfig().getMaxPoolSize(),
-                    properties.getExecutorConfig().getKeepAliveTime(),
-                    java.util.concurrent.TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(properties.getExecutorConfig().getQueueCapacity())
-            );
-            executor.setThreadFactory(Executors.defaultThreadFactory());
-            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-            return executor;
-        }
+    @Bean(name = "hashCacheExecutor")
+    public ExecutorService hashCacheExecutor() {
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                properties.getExecutorConfig().getCorePoolSize(),
+                properties.getExecutorConfig().getMaxPoolSize(),
+                properties.getExecutorConfig().getKeepAliveTime(),
+                java.util.concurrent.TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(properties.getExecutorConfig().getQueueCapacity())
+        );
+        executor.setThreadFactory(Executors.defaultThreadFactory());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        return executor;
     }
+}

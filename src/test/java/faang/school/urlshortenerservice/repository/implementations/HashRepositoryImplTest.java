@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository.implementations;
 
-import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class HashRepositoryImplTest {
     private JdbcTemplate jdbcTemplate;
 
     @Mock
-    private HashGeneratorConfig hashGeneratorConfig;
+    private HashGeneratorProperties hashGeneratorConfig;
 
     @InjectMocks
     private HashRepositoryImpl hashRepository;

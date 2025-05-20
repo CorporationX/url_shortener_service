@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.component;
 
-import faang.school.urlshortenerservice.config.app.HashGeneratorConfig;
+import faang.school.urlshortenerservice.config.app.HashGeneratorProperties;
 import faang.school.urlshortenerservice.repository.interfaces.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class HashGeneratorTest {
     private Base62Encoder base62Encoder;
 
     @Mock
-    private HashGeneratorConfig hashGeneratorConfig;
+    private HashGeneratorProperties hashGeneratorConfig;
 
     @InjectMocks
     private HashGenerator hashGenerator;
