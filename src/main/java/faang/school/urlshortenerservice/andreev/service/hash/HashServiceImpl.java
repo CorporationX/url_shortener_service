@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.andreev.service.hash;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.andreev.cache.HashCache;
 import faang.school.urlshortenerservice.andreev.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.andreev.dto.UrlResponseDto;
@@ -57,7 +58,14 @@ public class HashServiceImpl implements HashService {
         Url existingUrl = findByOriginalUrl(urlRequest);
         if (existingUrl != null) {
             log.info("Found url: {}", urlRequest);
-            return urlMapper.toUrlResponseDto(existingUrl);
+            UrlResponseDto responseDto = urlMapper.toUrlResponseDto(existingUrl);
+            try {
+                String json = new ObjectMapper().writeValueAsString(responseDto);
+                log.info("Will cache UrlResponseDto (existing) as JSON: {}", json);
+            } catch (Exception e) {
+                log.error("Serialization error for existing UrlResponseDto before caching", e);
+            }
+            return responseDto;
         }
 
         String hash = hashCache.getHash();
@@ -68,7 +76,14 @@ public class HashServiceImpl implements HashService {
                 .build();
         urlRepository.save(url);
         log.info("Saved url: {}, hash: {}", url, hash);
-        return urlMapper.toUrlResponseDto(url);
+        UrlResponseDto responseDto = urlMapper.toUrlResponseDto(url);
+        try {
+            String json = new ObjectMapper().writeValueAsString(responseDto);
+            log.info("Will cache UrlResponseDto as JSON: {}", json);
+        } catch (Exception e) {
+            log.error("Serialization error for UrlResponseDto before caching", e);
+        }
+        return responseDto;
     }
 
     private Url findByOriginalUrl(String originalUrl) {

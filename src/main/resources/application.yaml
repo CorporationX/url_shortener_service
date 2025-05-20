@@ -43,6 +43,7 @@ shortener:
       size: 5
       max-size: 10
       queue-capacity: 100
+
 scheduled:
   cleaner:
     cron: "0 0 0 * * *"

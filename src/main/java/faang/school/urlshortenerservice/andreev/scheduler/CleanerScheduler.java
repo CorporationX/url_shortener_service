@@ -17,7 +17,7 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Scheduled(cron = "${shortener.cleaner.cron}")
+    @Scheduled(cron = "${scheduled.cleaner.cron:0 0 * * * *}")
     @Transactional
     public void cleanOldUrls() {
         log.info("Start cleaning old urls");

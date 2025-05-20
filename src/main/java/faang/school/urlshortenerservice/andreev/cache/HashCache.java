@@ -16,17 +16,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
     private final HashGenerator hashGenerator;
 
-    @Value("${shortener.async.pool.queue-capacity}:1000")
+    @Value("${shortener.async.pool.queue-capacity:1000}")
     private int capacity;
 
-    @Value("${shortener.hash.fill.percent}:20")
+    @Value("${shortener.hash.fill.percent:20}")
     private int fillPercent;
 
-    private final Queue<String> hashes = new LinkedBlockingDeque<>(capacity);
+    private Queue<String> hashes;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
+        hashes = new LinkedBlockingDeque<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
     }
 
