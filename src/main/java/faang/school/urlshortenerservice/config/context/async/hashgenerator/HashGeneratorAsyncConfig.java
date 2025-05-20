@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context.async;
+package faang.school.urlshortenerservice.config.context.async.hashgenerator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableAsync
 @EnableConfigurationProperties(HashGeneratorAsyncProperties.class)
-public class AsyncConfig {
+public class HashGeneratorAsyncConfig {
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor(

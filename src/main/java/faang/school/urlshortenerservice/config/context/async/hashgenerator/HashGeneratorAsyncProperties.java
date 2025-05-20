@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context.async;
+package faang.school.urlshortenerservice.config.context.async.hashgenerator;
 
 import lombok.Getter;
 import lombok.Setter;

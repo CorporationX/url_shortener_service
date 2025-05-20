@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -23,8 +24,7 @@ public class HashGenerator {
     private int maxRange;
 
     @Transactional
-    @Async(value = "hashGeneratorExecutor")
-    public void generateHashes() { //TODO можно параллельность добавить.
+    public List<String> generateHashes() { //TODO можно параллельность добавить.
         List<Long> range = hashRepository.getNextRange(maxRange);
 
         List<Hash> hashes = base62Encoder.encode(range).stream()
@@ -34,15 +34,23 @@ public class HashGenerator {
         hashRepository.saveAll(hashes);
 
         log.info("Generated and saved {} hashes", hashes.size());
+        return hashes.stream().map(Hash::getHash).toList();
     }
 
+    @Async(value = "hashGeneratorExecutor")
+    public CompletableFuture<List<String>> generateHashesAsync() {
+        return CompletableFuture.completedFuture(generateHashes());
+    }
+
+
     @Transactional
-    public List<Hash> getHashes(long amount) {
+    @Async("hashGeneratorExecutor") // TODO стоит подумать как сделать так небыло такой ситуации чтоб в двух сервисах одинаковых был вызван этот метод в разных потоках.
+    public CompletableFuture<List<Hash>> getHashes(long amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);
         if (hashes.size() < amount) {
             generateHashes();
-            hashes.addAll(getHashes(amount - hashes.size()));
+            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
         }
-        return hashes;
+        return CompletableFuture.completedFuture(hashes);
     }
 }

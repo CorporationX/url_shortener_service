@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduled;
 
-import faang.school.urlshortenerservice.config.context.scheduler.HashGenerationScheduleProperties;
+import faang.school.urlshortenerservice.config.context.scheduler.hashgenerator.HashGeneratorScheduleProperties;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 public class HashGenerationScheduler {
 
     private final HashGenerator hashGenerator;
-    private final HashGenerationScheduleProperties properties;
+    private final HashGeneratorScheduleProperties properties;
 
-    @Scheduled(cron = "#{@hashGenerationScheduleProperties.cron}")
+    @Scheduled(cron = "#{@hashGeneratorScheduleProperties.cron}")
     public void scheduleHashGeneration() {
         if (!properties.isEnabled()) {
             log.info("Scheduled hash generation is disabled");
@@ -23,7 +23,7 @@ public class HashGenerationScheduler {
         }
 
         log.info("Scheduled hash generation started");
-        hashGenerator.generateHashes();
+        hashGenerator.generateHashesAsync();
         log.info("Scheduled hash generation finished");
     }
 }
