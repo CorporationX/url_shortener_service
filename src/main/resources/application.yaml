@@ -26,4 +26,4 @@ logging:
 
 hash-generator:
   batch_size: 10000
-  thread-pool-size: 3
+  thread-pool-size: -1

@@ -26,7 +26,10 @@ public class ServiceTemplateApplication {
     @Bean
     @SuppressWarnings("unused")
     public ExecutorService hashGeneratorExecutorService(
-            @Value("${hash-generator.thread-pool-size:3}") int treadPoolSize) {
+            @Value("${hash-generator.thread-pool-size:0}") int treadPoolSize) {
+        if (treadPoolSize <= 0) {
+            treadPoolSize = Runtime.getRuntime().availableProcessors() + 1;
+        }
         return Executors.newFixedThreadPool(treadPoolSize);
     }
 }
