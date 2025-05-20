@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.dto.HashDto;
 

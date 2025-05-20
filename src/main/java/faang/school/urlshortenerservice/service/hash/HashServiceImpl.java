@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.service.hash;
 
 import faang.school.urlshortenerservice.enity.FreeHash;
 import faang.school.urlshortenerservice.generator.HashGenerator;
@@ -15,13 +15,13 @@ import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
-public class HashService {
+public class HashServiceImpl implements HashService {
     private final HashRepository hashRepository;
-    private final HashProperties hashProperties;
     private final HashGenerator hashGenerator;
+    private final HashProperties hashProperties;
     private final ExecutorService generateHashPool;
 
-
+    @Override
     @Transactional
     public List<String> getHashes() {
         List<String> hashes = hashRepository.findAndDelete(hashProperties.getGet().getMax());
@@ -39,6 +39,7 @@ public class HashService {
         return hashes;
     }
 
+    @Override
     @Async("saveHashesPool")
     public void saveAll(List<FreeHash> hashes) {
         hashRepository.saveAll(hashes);

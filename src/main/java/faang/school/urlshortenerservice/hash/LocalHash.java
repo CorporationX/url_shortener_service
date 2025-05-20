@@ -1,9 +1,12 @@
 package faang.school.urlshortenerservice.hash;
 
+import faang.school.urlshortenerservice.exception.EmptyQueueException;
 import faang.school.urlshortenerservice.properties.HashProperties;
-import faang.school.urlshortenerservice.service.HashService;
+import faang.school.urlshortenerservice.service.hash.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
@@ -26,20 +29,23 @@ public class LocalHash {
         addHashes();
     }
 
+    @Retryable(
+            retryFor = { EmptyQueueException.class },
+            backoff = @Backoff(value = 1000, multiplier = 2))
     public String getHash() {
         if (concurrentQueue.size() < hashProperties.getSaving().getMinSize()
                 && !isLow.compareAndExchange(false, true)) {
-            CompletableFuture<Void> addHashesFuture = addHashes();
+            addHashes();
+        }
 
-            if (concurrentQueue.isEmpty()) {
-                addHashesFuture.join();
-            }
+        if (concurrentQueue.isEmpty()) {
+            throw new EmptyQueueException("hashes queue is empty");
         }
         return concurrentQueue.poll();
     }
 
-    private CompletableFuture<Void> addHashes() {
-        return CompletableFuture.supplyAsync(hashService::getHashes, getHashesPool)
+    private void addHashes() {
+        CompletableFuture.supplyAsync(hashService::getHashes, getHashesPool)
                 .thenAccept(concurrentQueue::addAll)
                 .thenRun(() -> isLow.set(false));
     }

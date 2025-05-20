@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.HashDto;
-import faang.school.urlshortenerservice.dto.RequestUrlDto;
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.url.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +15,15 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/urls") // todo add example for success request before create a tests
+@RequestMapping("/api/v1/urls")
 @Validated
 public class UrlControllerImpl implements UrlController{
     private final UrlService urlService;
 
     @PostMapping("/url")
     @Override
-    public ResponseEntity<HashDto> save(RequestUrlDto url) {
-        return ResponseEntity.ok().body(urlService.save(url.getUrl()));
+    public ResponseEntity<HashDto> save(String url) {
+        return ResponseEntity.ok().body(urlService.save(url));
     }
 
     @GetMapping("/{hash}")

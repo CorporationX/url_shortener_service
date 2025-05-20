@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.url.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,5 +16,4 @@ public class FreeUnusedHashScheduler {
     public void freeUnusedHash() {
         urlService.freeUnusedHash();
     }
-
 }

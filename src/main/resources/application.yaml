@@ -56,6 +56,12 @@ hash:
   saving:
     min-size: 200
     time: 100d
+  caches:
+    hash-to-url: hashToUrl
+
+thread-pool:
+  sizes:
+    save-to-cache: 10
 
 scheduler:
   free-hash-cron: 0 0 0 * * *

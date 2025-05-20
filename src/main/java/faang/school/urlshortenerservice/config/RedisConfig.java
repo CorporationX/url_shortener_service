@@ -17,6 +17,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableRedisRepositories
 @RequiredArgsConstructor
@@ -57,8 +60,14 @@ public class RedisConfig {
 
         log.info("RedisCacheManager initialized for caches: hashToUrl");
         return RedisCacheManager.builder(redisConnectionFactory)
+                .withInitialCacheConfigurations(cacheConfigurations(defaultConfig))
                 .cacheDefaults(defaultConfig)
-                .withCacheConfiguration("hashToUrl", defaultConfig)
                 .build();
+    }
+
+    private Map<String, RedisCacheConfiguration> cacheConfigurations(RedisCacheConfiguration config) {
+        return new HashMap<>(Map.of(
+                "hashToUrl", config
+        ));
     }
 }

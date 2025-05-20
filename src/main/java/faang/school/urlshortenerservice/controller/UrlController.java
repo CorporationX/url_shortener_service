@@ -1,13 +1,13 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.HashDto;
-import faang.school.urlshortenerservice.dto.RequestUrlDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +25,11 @@ public interface UrlController {
                             description = "Hash generated successfully",
                             content = @Content(
                                     mediaType = "text/plain",
-                                    examples = @ExampleObject(value = "aB12Cd")
+                                    examples = @ExampleObject(value = """
+                                            {
+                                                "hash" = "aB12Cd"
+                                            }
+                                            """)
                             )
                     ),
                     @ApiResponse(
@@ -52,7 +56,7 @@ public interface UrlController {
                     example = "https://example.com/very/long/page",
                     required = true
             )
-            @RequestParam @NotBlank RequestUrlDto url
+            @RequestParam @NotBlank String url
     );
 
     @Operation(
@@ -91,6 +95,6 @@ public interface UrlController {
                     required = true,
                     example = "aB12Cd"
             )
-            @PathVariable @NotBlank HashDto hash
+            @PathVariable @Valid HashDto hash
     );
 }
