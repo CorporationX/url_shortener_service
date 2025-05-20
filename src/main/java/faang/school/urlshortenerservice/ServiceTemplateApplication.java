@@ -30,6 +30,7 @@ public class ServiceTemplateApplication {
         if (treadPoolSize <= 0) {
             treadPoolSize = Runtime.getRuntime().availableProcessors() + 1;
         }
+
         return Executors.newFixedThreadPool(treadPoolSize);
     }
 }
