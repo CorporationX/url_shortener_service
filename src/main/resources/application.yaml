@@ -23,3 +23,7 @@ server:
 logging:
   level:
     root: info
+
+hash-generator:
+  batch_size: 10000
+  thread-pool-size: 3
