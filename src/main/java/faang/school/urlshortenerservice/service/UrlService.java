@@ -50,7 +50,6 @@ public class UrlService {
         return hash;
     }
 
-
     public String getOriginalUrl(String hash) {
         if (hash == null || hash.isEmpty()) {
             log.error("Invalid hash provided: {}", hash);
