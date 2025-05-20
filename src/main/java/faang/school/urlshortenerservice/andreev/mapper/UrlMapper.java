@@ -11,6 +11,7 @@ import org.mapstruct.ReportingPolicy;
 public interface UrlMapper {
     Url toUrl(UrlRequestDto urlRequestDto);
 
+    @Mapping(source = "hash", target = "hash")
     @Mapping(source = "url", target = "url")
     UrlResponseDto toUrlResponseDto(Url url);
 }

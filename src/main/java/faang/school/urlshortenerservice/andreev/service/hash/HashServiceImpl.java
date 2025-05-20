@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.andreev.service.hash;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.andreev.cache.HashCache;
 import faang.school.urlshortenerservice.andreev.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.andreev.dto.UrlResponseDto;
@@ -9,18 +8,19 @@ import faang.school.urlshortenerservice.andreev.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.andreev.exception.UrlNotFound;
 import faang.school.urlshortenerservice.andreev.mapper.UrlMapper;
 import faang.school.urlshortenerservice.andreev.repository.UrlRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDateTime;
 
 import static faang.school.urlshortenerservice.andreev.exception.ErrorMessage.INVALID_URL;
 import static faang.school.urlshortenerservice.andreev.exception.ErrorMessage.URL_NOT_FOUND_BY_HASH;
@@ -35,16 +35,22 @@ public class HashServiceImpl implements HashService {
     private final HashCache hashCache;
 
 
+    @Cacheable(value = "hash", key = "#hash")
+    @Transactional(readOnly = true)
+    public String getOriginalUrlByHash(String hash) {
+        Url url = urlRepository.findByHash(hash)
+                .orElseThrow(() -> new UrlNotFound(String.format(URL_NOT_FOUND_BY_HASH, hash)));
+        return url.getUrl();
+    }
+
     @Override
     @Transactional
-    @Cacheable(value = "hash", key = "#hash")
     public ResponseEntity<String> redirectToOriginalUrl(String hash) {
-        Url url = urlRepository.findByHash(hash).orElseThrow(() ->
-                new UrlNotFound(String.format(URL_NOT_FOUND_BY_HASH, hash)));
-        log.info("Get url: {} by hash: {}", url, hash);
+        String originalUrl = getOriginalUrlByHash(hash);
+        log.info("Get url: {} by hash: {}", originalUrl, hash);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .location(URI.create(url.getUrl()))
+                .location(URI.create(originalUrl))
                 .build();
     }
 
@@ -58,14 +64,8 @@ public class HashServiceImpl implements HashService {
         Url existingUrl = findByOriginalUrl(urlRequest);
         if (existingUrl != null) {
             log.info("Found url: {}", urlRequest);
-            UrlResponseDto responseDto = urlMapper.toUrlResponseDto(existingUrl);
-            try {
-                String json = new ObjectMapper().writeValueAsString(responseDto);
-                log.info("Will cache UrlResponseDto (existing) as JSON: {}", json);
-            } catch (Exception e) {
-                log.error("Serialization error for existing UrlResponseDto before caching", e);
-            }
-            return responseDto;
+            return urlMapper.toUrlResponseDto(existingUrl);
+
         }
 
         String hash = hashCache.getHash();
@@ -73,17 +73,11 @@ public class HashServiceImpl implements HashService {
         Url url = Url.builder()
                 .hash(hash)
                 .url(urlRequest)
+                .createdAt(LocalDateTime.now())
                 .build();
         urlRepository.save(url);
         log.info("Saved url: {}, hash: {}", url, hash);
-        UrlResponseDto responseDto = urlMapper.toUrlResponseDto(url);
-        try {
-            String json = new ObjectMapper().writeValueAsString(responseDto);
-            log.info("Will cache UrlResponseDto as JSON: {}", json);
-        } catch (Exception e) {
-            log.error("Serialization error for UrlResponseDto before caching", e);
-        }
-        return responseDto;
+        return urlMapper.toUrlResponseDto(url);
     }
 
     private Url findByOriginalUrl(String originalUrl) {
