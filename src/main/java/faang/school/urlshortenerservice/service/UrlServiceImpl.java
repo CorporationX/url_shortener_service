@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.config.OpenApiConfig;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
@@ -57,6 +58,11 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public UrlResponseDto createShortUrl(String originalUrl) {
         validateUrl(originalUrl);
+        String existingHash = redisTemplate.opsForValue().get(originalUrl);
+        if (existingHash != null) {
+            return new UrlResponseDto(baseUrl + existingHash);
+        }
+
         String hash = hashCache.getHash();
         Url url = Url.builder()
                 .hash(hash)
@@ -66,7 +72,9 @@ public class UrlServiceImpl implements UrlService {
 
         urlRepository.save(url);
         redisTemplate.opsForValue().set(hash, url.getUrl(), Duration.ofHours(urlTtl));
+        redisTemplate.opsForValue().set(url.getUrl(), hash);
         log.info("Short URL created: {} -> {}", originalUrl, hash);
+
         return new UrlResponseDto(baseUrl + hash);
     }
 
