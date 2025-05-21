@@ -1,28 +1,20 @@
 package faang.school.urlshortenerservice.controller;
 
-import com.redis.testcontainers.RedisContainer;
+import faang.school.urlshortenerservice.config.TestBeans;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.repository.UrlCacheRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Testcontainers
-@SpringBootTest
+@SpringBootTest(classes = TestBeans.class)
 @AutoConfigureMockMvc
 @DisplayName("UrlController Test")
 class UrlControllerTest {
@@ -32,22 +24,6 @@ class UrlControllerTest {
 
     @Autowired
     private UrlService urlService;
-
-    @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
-
-    @Container
-    private static final RedisContainer redis = new RedisContainer(RedisContainer.DEFAULT_IMAGE_NAME.withTag("7.0"));
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.jpa.generate-ddl", () -> true);
-        registry.add("spring.data.redis.host", redis::getHost);
-        registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-    }
 
     @Test
     @DisplayName("Redirect to original URL")
