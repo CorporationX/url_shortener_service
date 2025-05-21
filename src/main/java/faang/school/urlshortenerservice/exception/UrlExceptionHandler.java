@@ -14,26 +14,31 @@ import org.springframework.web.server.ResponseStatusException;
 public class UrlExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
         log.error("Error: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(ex.getStatusCode().value(), ex.getReason());
         return ResponseEntity
                 .status(ex.getStatusCode())
-                .body(ex.getReason());
+                .body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGlobalException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
         log.error("Internal system error: {}", ex.getMessage(), ex);
+        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal system error. Please try again later.");
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Internal system error. Please try again later.");
+                .body(error);
     }
 
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<String> handleValidationException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleValidationException(Exception ex) {
         log.error("Validation error: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                "Data validation error: " + ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body("Data validation error: " + ex.getMessage());
+                .body(error);
     }
 }

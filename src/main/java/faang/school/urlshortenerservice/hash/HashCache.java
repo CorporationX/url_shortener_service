@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,22 +13,23 @@ public class HashCache {
 
     private final HashRepository hashRepository;
 
-    @Value("${cache.min-percentage-filling}")
-    private int cacheMinPercentageFilling;
+    private final int cacheMinPercentageFilling;
     private final int maxSizeCache;
     private final Queue<String> cache;
 
     public HashCache(HashRepository hashRepository,
-                     @Value("${cache.capacity}") int maxSizeCache) {
+                     @Value("${cache.capacity}") int maxSizeCache,
+                     @Value("${cache.min-percentage-filling}") int cacheMinPercentageFilling) {
         this.hashRepository = hashRepository;
         this.maxSizeCache = maxSizeCache;
+        this.cacheMinPercentageFilling = cacheMinPercentageFilling;
         this.cache = new ArrayBlockingQueue<>(maxSizeCache);
     }
 
     public String getHash() {
         if (checkCachePercentFilling()) {
-             List<String> hashes = hashRepository.getAndDeleteHashBatch(maxSizeCache - cache.size());
-             cache.addAll(hashes);
+            List<String> hashes = hashRepository.getAndDeleteHashBatch(maxSizeCache - cache.size());
+            cache.addAll(hashes);
         }
         return cache.peek();
     }

@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -61,6 +62,7 @@ public class UrlService {
         return urlRepository.deleteOldUrlsAndGetHash();
     }
 
+    @Transactional
     public void loadingFreeHashFromDb(List<String> hashes) {
         log.info("Loading free hashes from db");
         hashRepository.saveBatch(hashes);

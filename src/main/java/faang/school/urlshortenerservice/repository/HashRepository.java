@@ -37,7 +37,12 @@ public class HashRepository {
 
     @Transactional
     public List<String> getAndDeleteHashBatch(int uniqueNumbersBatch) {
-        String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING hash";
+        String sql = """
+                DELETE FROM hash 
+                WHERE hash IN (
+                        SELECT hash 
+                        FROM hash LIMIT ?) 
+                RETURNING hash""";
         return jdbcTemplate.query(
                 sql,
                 ps -> ps.setInt(1, uniqueNumbersBatch),

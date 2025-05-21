@@ -30,16 +30,11 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> redirectToUrl(@PathVariable String hash) {
-        try {
+    public ResponseEntity<Void> redirect(@PathVariable String hash) {
             String originalUrl = urlService.getOriginalUrl(hash);
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .header("Location", originalUrl)
                     .build();
-        } catch (ResponseStatusException e) {
-            log.error("Error while redirecting to hash {}: {}", hash, e.getReason() );
-            return ResponseEntity.status(e.getStatusCode()).body(null);
-        }
     }
 }

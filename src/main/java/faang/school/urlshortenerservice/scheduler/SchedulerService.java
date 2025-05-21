@@ -20,7 +20,6 @@ public class SchedulerService {
     }
 
     @Scheduled(cron = "${scheduled.cron.every-day}")
-    @Transactional
     public void clearOldUrls() {
         urlService.loadingFreeHashFromDb(urlService.clearOldUrls());
     }

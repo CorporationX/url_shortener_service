@@ -12,8 +12,11 @@ public class Base62Encoder {
     private static final String BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = BASE62_ALPHABET.length();
 
-    @Value("${hash.max-length}")
-    private Integer maxHashLength;
+    private final Integer maxHashLength;
+
+    public Base62Encoder(@Value("${hash.length}") Integer maxHashLength) {
+        this.maxHashLength = maxHashLength;
+    }
 
     public List<String> encode(List<Long> numbers) {
         List<String> hashes = new ArrayList<>(numbers.size());
@@ -26,11 +29,11 @@ public class Base62Encoder {
     }
 
     private String encodeNumberToBase62(long number) {
-        StringBuilder result = new StringBuilder();
-
         if (number == 0) {
             return String.valueOf(BASE62_ALPHABET.charAt(0));
         }
+
+        StringBuilder result = new StringBuilder();
 
         while (number > 0) {
             int remainder = (int) (number % BASE);
