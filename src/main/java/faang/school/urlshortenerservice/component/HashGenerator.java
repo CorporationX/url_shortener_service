@@ -22,8 +22,6 @@ public class HashGenerator {
     @Value("${hash.generateHash.factor}")
     private int factor;
 
-
-    @Transactional
     @Async("hashGenerationExecutor")
     public CompletableFuture<Void> generateHash(Long batchSize) {
         log.info("Generating batch of {} hashes", batchSize);
@@ -45,24 +43,20 @@ public class HashGenerator {
         List<String> hashes = hashRepository.getHashBatch(amount);
         log.info("Retrieved {} unique hashes", hashes.size());
 
-
         if (hashes.size() < amount) {
             log.warn("Недостаточно хэшей в БД ({} < {}), запрашиваем дополнительные...", hashes.size(), amount);
-            CompletableFuture.runAsync(() -> generateHash(amount * factor));
+            generateHash(amount * factor);
             return hashes;
         }
 
-
-        if (hashRepository.countAvailableHashes() < amount * 2) {
+        if (hashRepository.countAvailableHashes() < amount * factor) {
             log.info("Мало хэшей в БД, запускаем фоновую генерацию...");
-            CompletableFuture.runAsync(() -> generateHash(amount * factor));
+            generateHash(amount * factor);
         }
-
         return hashes;
     }
 
     @Async("hashGenerationExecutor")
-    @Transactional
     public CompletableFuture<List<String>> getHashesAsync(Long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }

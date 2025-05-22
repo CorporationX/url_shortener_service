@@ -29,17 +29,42 @@ public class UrlController {
 
     @PostMapping()
     public String shortenUrl(@RequestBody UrlDto urlDto) {
-        String shortUrl = urlService.shortenUrl(urlDto);
-        return baseUrl + shortUrl;
+        log.info("Received request to shorten URL: {}", urlDto.url());
+
+        try {
+            String shortUrl = urlService.shortenUrl(urlDto);
+            String fullShortUrl = baseUrl + shortUrl;
+
+            log.info("Successfully shortened URL. Original: {}, Short: {}",
+                    urlDto.url(), fullShortUrl);
+
+            return fullShortUrl;
+        } catch (Exception e) {
+            log.error("Failed to shorten URL: {}. Error: {}", urlDto.url(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String hash) {
-        String originalUrl = urlService.getOriginalUrl(hash);
-        log.info(originalUrl);
+        log.info("Received redirect request for hash: {}", hash);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(originalUrl))
-                .build();
+        try {
+            String originalUrl = urlService.getOriginalUrl(hash);
+
+            if (originalUrl == null || originalUrl.isBlank()) {
+                log.warn("No original URL found for hash: {}", hash);
+                return ResponseEntity.notFound().build();
+            }
+
+            log.info("Redirecting hash {} to URL: {}", hash, originalUrl);
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(originalUrl))
+                    .build();
+        } catch (Exception e) {
+            log.error("Error processing redirect for hash: {}. Error: {}", hash, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
