@@ -38,7 +38,7 @@ public class HashCache {
         return localHashes.poll();
     }
 
-    private Boolean needsRefillLocalHash() {
+    private boolean needsRefillLocalHash() {
         return ((double) localHashes.size() / capacity) * 100 < hashGenerationProperties.getMinQueuePercent()
                 && needReFill.compareAndExchange(false,true);
 

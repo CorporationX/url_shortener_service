@@ -44,7 +44,6 @@ scheduler:
 hash:
   generation:
     generationRange: 500
-    cron: "0 0 */12 * * *"
     local-hash-capacity: 100
     min-queue-percent: 20.0
 

@@ -22,7 +22,6 @@ public class HashGenerator {
     private final Base62Encoder base62Encoder;
 
     @Transactional
-    @Scheduled(cron = "#{@hashGenerationProperties.cron}")
     public void generateHashes() {
         List<Long> uniqueNumber = hashRepository.getUniqueHashNumbers(properties.getGenerationRange());
         hashRepository.saveAll(convertNumberToHash(uniqueNumber));

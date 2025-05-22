@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class HashGenerationProperties {
     private long generationRange;
-    private String cron;
     private int localHashCapacity;
     private double minQueuePercent;
 }
