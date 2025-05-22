@@ -47,9 +47,5 @@ public class UrlAsyncService {
             log.error("Error in importShortUrlHashesToQueueCash", e);
             return CompletableFuture.failedFuture(e);
         }
-
-
-
-
     }
 }

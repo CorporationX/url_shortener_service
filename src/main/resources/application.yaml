@@ -24,6 +24,10 @@ spring:
   hash:
     generation-batch-size: 10000
     fetch-size: 2000
+    reuse:
+      cron: 0 0/2 * * * *
+
+
 
 
 server:

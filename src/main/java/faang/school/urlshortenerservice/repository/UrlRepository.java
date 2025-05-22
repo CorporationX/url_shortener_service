@@ -36,7 +36,7 @@ public class UrlRepository {
                     hash
             );
         } catch (EmptyResultDataAccessException e) {
-            log.error(ERROR_HASH_DOES_NOT_EXIST,hash);
+            log.error(ERROR_HASH_DOES_NOT_EXIST, hash);
             throw new NotFoundException("Hash is not found: " + hash);
 //            throw new RuntimeException("Hash is not found in DB");
         }
@@ -47,6 +47,45 @@ public class UrlRepository {
                 "SELECT hash FROM url LIMIT ?",
                 (rs, rowNum) -> rs.getString("hash"),
                 number
+        );
+    }
+
+    public List<String> deleteOldHashesFromUrlAndReuse() {
+        return jdbcTemplate.queryForList(
+                "INSERT deleted into hash WITH deleted AS (" +
+                        "   DELETE FROM url " +
+                        "   WHERE created_at = 2025-05-10 14:21:19.184 +0300 " +
+                        "   RETURNING hash" +
+                        ") ",
+                String.class
+        );
+    }
+
+    @Transactional
+    public void moveOldHashesToHashTable() {
+        // 1. Вставка хэшей из удаляемых записей в таблицу hash
+        jdbcTemplate.update(
+                "INSERT INTO hash (hash) " +
+                        "SELECT DISTINCT u.hash FROM url u " +
+                        "WHERE u.created_at < CURRENT_TIMESTAMP - INTERVAL'2 minute' "
+//                      "WHERE u.created_at < CURRENT_DATE - INTERVAL'1 day' "
+        );
+
+        // 2. Удаление старых записей из таблицы url
+        jdbcTemplate.update(
+//                "DELETE FROM url WHERE created_at < CURRENT_DATE - INTERVAL'1 day'"
+                "DELETE FROM url WHERE created_at < CURRENT_TIMESTAMP - INTERVAL'2 minute' "
+
+        );
+    }
+
+    @Transactional
+    public List<String> findOldHashes() {
+        return jdbcTemplate.query(
+                "SELECT u.hash FROM url u " +
+//                        "WHERE u.created_at < CURRENT_DATE - INTERVAL'1 day' ",
+                "WHERE u.created_at < CURRENT_TIMESTAMP - INTERVAL'2 minute' ",
+                (rs, rowNum) -> rs.getString("hash")
         );
     }
 }
