@@ -25,8 +25,13 @@ logging:
     root: info
 
 app:
-  hash:
-    maxRange: 10000
+
+hash:
+  maxRange: 10000
+  cache:
+    capacity: 5000
+    fill:
+      percent: 30
 
 scheduling:
   hash-generation:

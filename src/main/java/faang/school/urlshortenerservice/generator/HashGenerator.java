@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,13 +21,13 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${app.hash.maxRange}")
+    @Value("${hash.maxRange}")
     private int maxRange;
 
     @Transactional
-    public List<String> generateHashes() { //TODO можно параллельность добавить.
+    @Async(value = "hashGeneratorExecutor")
+    public void generateHashesAsync() { //TODO можно параллельность добавить.
         List<Long> range = hashRepository.getNextRange(maxRange);
-
         List<Hash> hashes = base62Encoder.encode(range).stream()
                 .map(Hash::new)
                 .toList();
@@ -34,23 +35,21 @@ public class HashGenerator {
         hashRepository.saveAll(hashes);
 
         log.info("Generated and saved {} hashes", hashes.size());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW) //TODO подумать
+    // TODO стоит подумать как сделать так небыло такой ситуации чтоб в двух сервисах одинаковых был вызван этот метод в разных потоках.
+    public List<String> getHashes(long amount) {
+        List<Hash> hashes = hashRepository.findAndDelete(amount);
+        if (hashes.size() < amount) {
+            generateHashesAsync();
+            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+        }
         return hashes.stream().map(Hash::getHash).toList();
     }
 
     @Async(value = "hashGeneratorExecutor")
-    public CompletableFuture<List<String>> generateHashesAsync() {
-        return CompletableFuture.completedFuture(generateHashes());
-    }
-
-
-    @Transactional
-    @Async("hashGeneratorExecutor") // TODO стоит подумать как сделать так небыло такой ситуации чтоб в двух сервисах одинаковых был вызван этот метод в разных потоках.
-    public CompletableFuture<List<Hash>> getHashes(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateHashes();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
-        }
-        return CompletableFuture.completedFuture(hashes);
+    public CompletableFuture<List<String>> getHashesAsync(long amount) {
+        return CompletableFuture.completedFuture(getHashes(amount));
     }
 }
