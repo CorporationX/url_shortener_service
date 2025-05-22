@@ -36,14 +36,12 @@ hash:
     max-size: 10
     queue-capacity: 10
 
-  generateHash:
-    factor: 2
-
+  generate:
+    batch:
+      size: 200
 
   batch:
     size: 200
-  limit:
-    factor: 10
 
 cleaner:
   scheduler:
@@ -52,11 +50,10 @@ cleaner:
 urlShortener:
   cache:
     ttl-days: 30
-    max-retries: 3
 
 urlController:
-  baseUrl: http://localhost:8080/
+  baseUrl: ""
 
 hashCache:
-  queue-capacity: 10
+  queue-capacity: 20
   fill-percent: 20
