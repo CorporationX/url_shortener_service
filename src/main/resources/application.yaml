@@ -28,6 +28,11 @@ hash:
   generator:
     job:
     delay: 60000
+    min-hashes: 100
+    batch-size: 500
   cleanup:
     job:
     delay: 3600000
+  cache:
+    batch-size: 100
+    min-threshold: 10

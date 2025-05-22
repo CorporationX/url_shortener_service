@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.cache.UrlCacheRepository;
 import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
 
+    @Transactional
     public String createShortUrl(String longUrl) {
         String hash = hashCache.getHash();
         UrlEntity entity = new UrlEntity(hash,longUrl, LocalDateTime.now());

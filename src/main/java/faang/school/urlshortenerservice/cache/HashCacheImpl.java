@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
+import faang.school.urlshortenerservice.config.HashCacheProperties;
 import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
@@ -18,19 +19,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class HashCacheImpl implements HashCache {
 
     private final HashRepository hashRepository;
-    private static final int BATCH_SIZE = 100;
-    private static final int MIN_THRESHOLD = 10;
+    private final HashCacheProperties properties;
 
     private final Queue<String> hashQueue = new ConcurrentLinkedQueue<>();
 
     @PostConstruct
-    public void init() {
+    private void init() {
         fillCache();
     }
 
     @Override
     public String getHash() {
-        if (hashQueue.size() < MIN_THRESHOLD) {
+        if (hashQueue.size() < properties.getMinThreshold()) {
             fillCache();
         }
         String hash = hashQueue.poll();
@@ -43,7 +43,7 @@ public class HashCacheImpl implements HashCache {
     }
 
     private void fillCache() {
-        List<HashEntity> hashes = hashRepository.findAllBy(PageRequest.of(0, BATCH_SIZE));
+        List<HashEntity> hashes = hashRepository.findAllBy(PageRequest.of(0, properties.getBatchSize()));
         hashes.forEach(h -> hashQueue.add(h.getHash()));
         log.info("Loaded {} hashes into cache", hashes.size());
     }

@@ -19,8 +19,7 @@ public class HashGeneratorService {
 
     private static final String SEQ_QUERY = "SELECT nextval('unique_number_seq')";
 
-    @Transactional
-    public List<String> generateHashes(int count) {
+    public void generateHashes(int count) {
         List<HashEntity> hashes = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Long nextVal = jdbcTemplate.queryForObject(SEQ_QUERY, Long.class);
@@ -28,7 +27,6 @@ public class HashGeneratorService {
             hashes.add(new HashEntity(hash));
         }
         hashRepository.saveAll(hashes);
-        return hashes.stream().map(HashEntity::getHash).toList();
     }
 
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -37,12 +35,12 @@ public class HashGeneratorService {
     private String encodeBase62(Long number) {
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
-            sb.append(ALPHABET.charAt((int) (number % BASE)));
+            sb.insert(0, ALPHABET.charAt((int) (number % BASE)));
             number /= BASE;
         }
         while (sb.length() < 6) {
-            sb.append('0');
+            sb.insert(0, '0');
         }
-        return sb.reverse().toString();
+        return sb.toString();
     }
 }
