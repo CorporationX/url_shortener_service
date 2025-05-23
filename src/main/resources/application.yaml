@@ -23,3 +23,16 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batch-size: 1000
+    thread-pool-size: 2
+    queue-capacity: 500
+  cache:
+    min-size: 100
+    fill-size: 500
+
+scheduler:
+  cleaner:
+    cron: "0 0 3 * * ?" # ежедневно в 3:00
