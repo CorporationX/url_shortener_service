@@ -13,8 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -78,5 +80,27 @@ class UrlControllerTest {
                 .content(new ObjectMapper().writeValueAsString(requestDto)));
 
         result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testRedirectToOriginalUrl() throws Exception {
+        // Arrange
+        var testHash = "abc123";
+        var originalUrl = "https://example.com";
+        when(urlService.redirectToOriginalUrl(testHash)).thenReturn(originalUrl);
+
+        mockMvc.perform(get("/v1/" + testHash))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", originalUrl));
+    }
+
+    @Test
+    public void testRedirectWithNonExistentHash() throws Exception {
+        var nonExistentHash = "nonexistent";
+        when(urlService.redirectToOriginalUrl(nonExistentHash))
+                .thenThrow(new RuntimeException("Hash not found"));
+
+        mockMvc.perform(get("/v1/" + nonExistentHash))
+                .andExpect(status().isNotFound());
     }
 }
