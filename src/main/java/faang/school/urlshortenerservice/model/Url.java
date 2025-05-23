@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.entity;
+package faang.school.urlshortenerservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class Url {
 
     @Id
-    @Column(name = "hash", length = 6, nullable = false)
+    @Column(name = "hash", length = 7, nullable = false)
     private String hash;
 
     @Column(name = "url", nullable = false, unique = true)

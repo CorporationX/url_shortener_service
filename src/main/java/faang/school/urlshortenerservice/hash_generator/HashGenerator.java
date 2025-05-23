@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.hash_generator;
 
-import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
