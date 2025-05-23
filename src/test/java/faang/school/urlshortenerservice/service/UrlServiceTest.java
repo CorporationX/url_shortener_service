@@ -55,7 +55,7 @@ public class UrlServiceTest {
     void getShortUrl_shouldCreateAndSaveUrlAndReturnShortUrl() {
         // Arrange
         var requestDto = new ShortUrlRequestDto(TEST_URL);
-        var urlRedis = new UrlRedis(TEST_HASH, TEST_URL);
+        var urlRedis = new UrlRedis(TEST_HASH, TEST_URL, 1000L);
 
         when(hashCache.getHash()).thenReturn(TEST_HASH);
 

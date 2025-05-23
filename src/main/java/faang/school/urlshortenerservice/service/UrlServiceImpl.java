@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.ShortUrlRequestDto;
+import faang.school.urlshortenerservice.exception.ShortUrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRedisRepository;
@@ -26,6 +27,10 @@ public class UrlServiceImpl implements UrlService {
     @SuppressWarnings("unused")
     private String baseAddress;
 
+    @Value("${url-service.hash-ttl:86400}")
+    @SuppressWarnings("unused")
+    private long hashTtl;
+
     public String getShortUrl(@RequestBody ShortUrlRequestDto requestDto) {
         var hash = hashCache.getHash();
         var resultUrl = baseAddress + hash;
@@ -34,6 +39,7 @@ public class UrlServiceImpl implements UrlService {
         urlRepository.save(urlEntity);
 
         var urlRedis = urlMapper.toUrlRedis(urlEntity);
+        urlRedis.setTimeToLive(hashTtl);
 
         try {
             urlRedisRepository.save(urlRedis);
@@ -43,5 +49,28 @@ public class UrlServiceImpl implements UrlService {
         }
 
         return resultUrl;
+    }
+
+    public String redirectToOriginalUrl(String shortLink) {
+        var hash = shortLink.substring(baseAddress.length());
+
+        try {
+            var urlRedis = urlRedisRepository.findById(hash);
+
+            if (urlRedis.isPresent()) {
+                return urlRedis.get().getUrl();
+            }
+
+            log.debug("Cache miss for hash {}", hash);
+        }
+        catch (Exception ex) {
+            log.error("Failed to get URL from redis by hash {}: {}", hash, ex.getMessage(), ex);
+        }
+
+        var urlEntity = urlRepository.findById(hash)
+                .orElseThrow(() -> new ShortUrlNotFoundException("Short link %s is not registered"
+                        .formatted(shortLink)));
+
+        return urlEntity.getUrl();
     }
 }

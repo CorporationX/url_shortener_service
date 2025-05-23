@@ -6,4 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UrlService {
 
     String getShortUrl(@RequestBody ShortUrlRequestDto requestDto);
+
+    String redirectToOriginalUrl(String shortLink);
 }
