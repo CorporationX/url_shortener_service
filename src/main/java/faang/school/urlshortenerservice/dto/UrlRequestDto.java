@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 public record UrlRequestDto(
         @NotNull
-                @URL
+        @URL
         String url
 ) {
 }

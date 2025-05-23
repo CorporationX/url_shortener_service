@@ -6,6 +6,4 @@ public class UrlNotFoundException extends RuntimeException {
         super(String.format(message, args));
     }
 
-
-
 }

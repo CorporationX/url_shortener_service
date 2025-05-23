@@ -14,10 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor
 public class HashGenerator {
 
-    //@Value("${app.hash.hash-count}")
     private final int hashCount;
 
     private final Base62Encoder base62Encoder;

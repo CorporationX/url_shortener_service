@@ -43,9 +43,9 @@ public class UrlService {
         }
         String hash = String.valueOf(cache.getHash().join());
         urlRepository.save(new Url(hash, originalUrl, LocalDateTime.now()));
-        log.info("Сохранил в репозиторий");
+        log.info("Сохранилссылку: {} и хеш: {} в репозиторий", originalUrl, hash);
         cacheRepository.save(hash, originalUrl);
-        log.info("Сохранил в кеш");
+        log.info("Сохранил ссылку: {} и хеш: {} в кеш", originalUrl, hash);
         log.debug("Ссылка {} успешно ассоциирована с хешем {}", originalUrl, hash);
         return  shortUrl + hash;
     }
@@ -84,6 +84,5 @@ public class UrlService {
             return  false;
         }
     }
-
 
 }

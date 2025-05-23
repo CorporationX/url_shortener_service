@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,7 +24,7 @@ public class HashCache {
     private final HashGenerator hashGenerator;
     private final int cacheSize;
     private final int fillPercent;
-    private Queue<String> hashes;
+    private ArrayBlockingQueue<String> hashes;
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
     @Autowired
