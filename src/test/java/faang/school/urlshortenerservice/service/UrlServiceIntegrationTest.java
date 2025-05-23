@@ -110,9 +110,7 @@ class UrlServiceIntegrationTest {
     @Test
     void positiveFillingHashRepository() {
         List<Long> numbers = hashRepository.getUniqueNumbers(10);
-        System.out.println("Получаю числа:" + numbers);
         List<String> hashes = base62Encoder.encode(numbers);
-        System.out.println("Получаю хеши:" + hashes);
         assertEquals(10, hashes.size());
     }
 
@@ -120,14 +118,11 @@ class UrlServiceIntegrationTest {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void positiveGetShortUrl() {
         String originalUrl = "https://google.com";
-        System.out.println("Original URL: " + originalUrl);
 
         String shortLink = urlService.getShortUrlLink(originalUrl);
-        System.out.println("Generated short URL: " + shortLink);
 
         assertNotNull(shortLink);
         assertTrue(urlRepository.count() != 0);
-        System.out.println(urlRepository.count());
         assertTrue(shortLink.startsWith("http"));
     }
 
@@ -136,11 +131,9 @@ class UrlServiceIntegrationTest {
     void positiveGetManyShortUrl() {
         String firstOriginalLink = "https://google.com";
         String firstShortLink = urlService.getShortUrlLink(firstOriginalLink);
-        System.out.println(firstShortLink);
 
         String secondOriginalLink = "https://google.com";
         String secondShortLink = urlService.getShortUrlLink(secondOriginalLink);
-        System.out.println(secondShortLink);
 
         assertNotNull(firstShortLink);
         assertEquals(2, urlRepository.count());
