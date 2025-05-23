@@ -9,6 +9,7 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +37,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
+    @Transactional
     public String createAndSaveShortUrl(UrlDto urlDto) {
         Optional<Url> existUrl = urlRepository.findByUrl(urlDto.getUrl());
         if (existUrl.isPresent()) {
