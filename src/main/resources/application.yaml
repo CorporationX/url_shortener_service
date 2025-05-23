@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl:
+        hours: 24
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -23,3 +29,32 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  url:
+    base-url: http://localhost:8080/
+
+  cache:
+    max-size: 1500
+    refill-threshold-percent: 25
+    executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+
+  generator:
+    batch-size: 1500
+    executor:
+      pool_size: 3
+      queue_capacity: 5
+
+  repository:
+    fetch-limit: 1000
+    partition-size: 100
+
+  generation:
+    interval: 15000
+
+  cleaner:
+    cron:
+      expression: 0 0 0 * * *
