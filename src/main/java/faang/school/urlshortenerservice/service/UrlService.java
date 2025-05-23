@@ -45,9 +45,8 @@ public class UrlService {
     private final String shortUrlQueueName = "ShortUrlList";
     @Value("${spring.hash.fetch-size:1000}")
     private int fetchSize;
-//    @Value("${spring.hash.reuse.cron: 0 0 * * * *}")
-//    private String hashReuseCron;
-    //    private final ArrayBlockingQueue<String> hashCashQueue;
+    @Value("${spring.hash.reuse.days:14}")
+    private int daysToKeepHashes;
     private final AsyncConfig asyncConfig;
     private final UrlAsyncService urlAsyncService;
     private final HashCacheService hashCacheService;
@@ -73,7 +72,7 @@ public class UrlService {
         RedirectView redirectView = new RedirectView();
         if (optionalRedisUrl.isPresent()) {
             redirectView.setUrl(optionalRedisUrl.get().getUrl() + "/bingo");
-            redirectView.setStatusCode(HttpStatusCode.valueOf(302));
+            redirectView.setStatusCode(HttpStatusCode.valueOf(200));
             return redirectView;
         } else {
             log.info("urlRepository - start search of {}", hash);
@@ -81,7 +80,7 @@ public class UrlService {
             log.info("urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
             if (longUrl != null) {
                 redirectView.setUrl(longUrl + "/bingo");
-                redirectView.setStatusCode(HttpStatusCode.valueOf(302));
+                redirectView.setStatusCode(HttpStatusCode.valueOf(200));
                 return redirectView;
             }
             return new RedirectView();
@@ -102,15 +101,12 @@ public class UrlService {
     }
 
     public void generateHashes() {
-        // Вызов асинхронного метода
         CompletableFuture<Void> future = hashGenerator.generateBatch();
-
-        // Обработка результата (опционально)
         future.whenComplete((result, ex) -> {
             if (ex != null) {
-                System.err.println("Error in hash generation: " + ex.getMessage());
+                log.error("Error in hash generation: {}" , ex.getMessage());
             } else {
-                System.out.println("Successful hash generation");
+                log.info("Successful hash generation");
             }
         });
     }
@@ -142,13 +138,9 @@ public class UrlService {
     public String popShortUrlFromQueue() {
         queueSizeLock = hashCacheService.getQueueSize();
         double cashPercentLevel = ((double) (queueSizeLock) / fetchSize * 100);
-        log.info(">       isImportRunning.get() = {}", isImportRunning.get());
         if (cashPercentLevel <= 20) {
             if(isImportRunning.compareAndSet(false, true)) {
                 try {
-//                    isImportRunning.set(true);
-                    log.info(">>>>> lock1.set(true)");
-                    log.info(">>> Autostart of importShortUrlHashesToQueueCash because cash size less than 20 percent");
                     urlAsyncService.importShortUrlHashesToQueueCash()
                             .whenComplete((result, ex) -> {
                                         isImportRunning.set(false);
@@ -165,23 +157,12 @@ public class UrlService {
         return hashCacheService.popHash();
     }
 
-    public String popShortUrlFromDB() {
-        List<String> hashes = hashRepository.getHashBatch();
-        return hashes.get(0);
-    }
-
     public RedisUrl getCashUrl(String hash) {
         Optional<RedisUrl> optional = urlCacheRepository.findById(hash);
         if (optional.isPresent()) {
             log.info("Optional<RedisUrl> optional = {}", optional);
         }
         return optional.orElseGet(RedisUrl::new);
-    }
-
-    public ArrayList<RedisUrl> getCashUrlAllV2() {
-        Iterable<RedisUrl> iterable = urlCacheRepository.findAll();
-        return StreamSupport.stream(iterable.spliterator(), false)
-                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<String> getHashesFromUrlTable(int number) {
@@ -195,17 +176,12 @@ public class UrlService {
     @Scheduled(cron = ("${spring.hash.reuse.cron: 0 0 * * * *}"))
     public void decoupleAndReuseHashes() {
         log.info(">>> CRON decoupleAndReuseHashes: started ............");
-        List<String> hashes = urlRepository.findOldHashes();
-        log.info(">>>   urlRepository.findOldUrls() : {} ", hashes);
-        log.info(">>>   CRON urlRepository.findOldUrls(); done");
+        List<String> hashes = urlRepository.findOldHashes(daysToKeepHashes);
         List<String> redisKeys = hashes.stream()
                 .map(hash -> "RedisUrl:" + hash)
                 .toList();
-//        urlCacheRepository.deleteAll(hashes);
         Long deleteResult = redisTemplate.delete(redisKeys);
-//        List<String> deletedHashes = redisKeyValueTemplate.delete(hashes);
-        log.info(">>>   CRON redisTemplate.delete(hashes) deleteResult: {}", deleteResult);
-        urlRepository.moveOldHashesToHashTable();
-        log.info(">>> CRON decoupleAndReuseHashes: END ............");
+        urlRepository.moveOldHashesToHashTable(daysToKeepHashes);
+        log.info(">>> CRON decoupleAndReuseHashes: END ... Hashes deleted from Cache={}", deleteResult);
     }
 }

@@ -1,11 +1,9 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.entity.RedisCashUrl;
 import faang.school.urlshortenerservice.entity.RedisUrl;
 import faang.school.urlshortenerservice.entity.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,7 +38,6 @@ public class UrlController {
      */
     @GetMapping("/{hash}")
     public RedirectView getRedirectUrl(@PathVariable String hash) {
-        RedirectView redirectView = urlService.getRedirectUrl(hash);;
-        return redirectView;
+        return urlService.getRedirectUrl(hash);
     }
 }

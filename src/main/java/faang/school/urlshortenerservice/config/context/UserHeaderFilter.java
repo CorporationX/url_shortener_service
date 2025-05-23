@@ -22,7 +22,7 @@ public class UserHeaderFilter implements Filter {
             userContext.setUserId(Long.parseLong(userId));
         }else {
             userContext.setUserId(Long.parseLong("3"));
-//            throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+            throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
         }
         try {
             chain.doFilter(request, response);
