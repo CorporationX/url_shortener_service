@@ -22,5 +22,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                 SELECT hash FROM hash ORDER BY hash  LIMIT :amount
             ) RETURNING *
             """, nativeQuery = true)
-    List<Hash> getHashBatch(int amount);
+    List<Hash> getHashBatch(long amount);
 }

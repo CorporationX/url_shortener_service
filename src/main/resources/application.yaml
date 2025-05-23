@@ -27,3 +27,9 @@ logging:
 hash-generator:
   batch_size: 10000
   thread-pool-size: -1
+  running-timetable: 0 0 0 * * *
+
+hash-cache:
+  thread-pool-size: -1
+  capacity: 500
+  min-threshold-percent: 20
