@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.ShortUrlRequestDto;
+import faang.school.urlshortenerservice.exception.ShortUrlNotFoundException;
 import faang.school.urlshortenerservice.hash_generator.HashCache;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
@@ -17,11 +18,16 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,20 +48,23 @@ public class UrlServiceTest {
     @InjectMocks
     private UrlServiceImpl urlService;
 
-    private final String TEST_HASH = "abc123";
     private final String TEST_URL = "https://example.com/";
     private final String BASE_ADDRESS = "https://sh.com/";
+    private final String TEST_HASH = "abc123";
+    private final String SHORT_LINK = BASE_ADDRESS + TEST_HASH;
+    private final long TEST_TTL = 86400L;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(urlService, "baseAddress", BASE_ADDRESS);
+        ReflectionTestUtils.setField(urlService, "hashTtl", TEST_TTL);
     }
 
     @Test
     void getShortUrl_shouldCreateAndSaveUrlAndReturnShortUrl() {
         // Arrange
         var requestDto = new ShortUrlRequestDto(TEST_URL);
-        var urlRedis = new UrlRedis(TEST_HASH, TEST_URL, 1000L);
+        var urlRedis = new UrlRedis(TEST_HASH, TEST_URL, TEST_TTL);
 
         when(hashCache.getHash()).thenReturn(TEST_HASH);
 
@@ -115,5 +124,77 @@ public class UrlServiceTest {
                 url.getUrl().equals(TEST_URL) &&
                         url.getHash().equals(TEST_HASH)
         ));
+    }
+
+    @Test
+    void redirectToOriginalUrl_FoundInRedis_ReturnsUrl() {
+        // Arrange
+        var redisEntity = new UrlRedis();
+        redisEntity.setUrl(TEST_URL);
+
+        when(urlRedisRepository.findById(TEST_HASH)).thenReturn(Optional.of(redisEntity));
+
+        // Act
+        var result = urlService.redirectToOriginalUrl(SHORT_LINK);
+
+        // Assert
+        assertEquals(TEST_URL, result);
+        verify(urlRedisRepository).findById(TEST_HASH);
+        verifyNoInteractions(urlRepository);
+    }
+
+    @Test
+    void redirectToOriginalUrl_NotFoundInRedisButFoundInRepo_ReturnsUrl() {
+        // Arrange
+        when(urlRedisRepository.findById(TEST_HASH)).thenReturn(Optional.empty());
+
+        var urlEntity = new Url();
+        urlEntity.setUrl(TEST_URL);
+
+        when(urlRepository.findById(TEST_HASH)).thenReturn(Optional.of(urlEntity));
+
+        // Act
+        var result = urlService.redirectToOriginalUrl(SHORT_LINK);
+
+        // Assert
+        assertEquals(TEST_URL, result);
+        verify(urlRedisRepository).findById(TEST_HASH);
+        verify(urlRepository).findById(TEST_HASH);
+    }
+
+    @Test
+    void redirectToOriginalUrl_RedisThrowsException_FallsBackToRepo() {
+        // Arrange
+        when(urlRedisRepository.findById(TEST_HASH)).thenThrow(new RuntimeException("Redis error"));
+
+        var urlEntity = new Url();
+        urlEntity.setUrl(TEST_URL);
+
+        when(urlRepository.findById(TEST_HASH)).thenReturn(Optional.of(urlEntity));
+
+        // Act
+        var result = urlService.redirectToOriginalUrl(SHORT_LINK);
+
+        // Assert
+        assertEquals(TEST_URL, result);
+        verify(urlRedisRepository).findById(TEST_HASH);
+        verify(urlRepository).findById(TEST_HASH);
+    }
+
+    @Test
+    void redirectToOriginalUrl_NotFoundAnywhere_ThrowsException() {
+        // Arrange
+        when(urlRedisRepository.findById(TEST_HASH)).thenReturn(Optional.empty());
+        when(urlRepository.findById(TEST_HASH)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        var exception = assertThrows(
+                ShortUrlNotFoundException.class,
+                () -> urlService.redirectToOriginalUrl(SHORT_LINK)
+        );
+
+        assertTrue(exception.getMessage().contains(SHORT_LINK));
+        verify(urlRedisRepository).findById(TEST_HASH);
+        verify(urlRepository).findById(TEST_HASH);
     }
 }
