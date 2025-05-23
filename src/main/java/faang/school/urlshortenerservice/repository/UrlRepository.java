@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +18,12 @@ public class UrlRepository {
     public Optional<String> findByHash(String hash) {
         String sql = "SELECT url FROM url WHERE hash=?";
 
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(
-                        sql,
-                        String.class,
-                        hash
-                )
-        );
+        try {
+            String url = jdbcTemplate.queryForObject(sql, String.class, hash);
+            return Optional.ofNullable(url);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Transactional
