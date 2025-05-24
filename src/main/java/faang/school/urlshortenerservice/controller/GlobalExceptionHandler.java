@@ -1,8 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
+import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -63,24 +62,5 @@ public class GlobalExceptionHandler {
         log.error("Internal server error: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error"));
-    }
-
-    @Getter
-    @Setter
-    public static class ErrorResponse {
-        private final int status;
-        private final String message;
-        private Map<String, String> details;
-
-        public ErrorResponse(int status, String message) {
-            this.status = status;
-            this.message = message;
-        }
-
-        public ErrorResponse(int status, String message, Map<String, String> details) {
-            this.status = status;
-            this.message = message;
-            this.details = details;
-        }
     }
 }
