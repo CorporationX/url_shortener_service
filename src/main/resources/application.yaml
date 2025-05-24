@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5435/postgres
     username: user
     password: password
 
@@ -13,6 +13,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 100
+          order_inserts: true
+          order_updates: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      urlCacheTtlDays: 10
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +33,23 @@ server:
 logging:
   level:
     root: info
+    org.hibernate.SQL: DEBUG
+    org.hibernate.engine.jdbc.batch.internal.BatchingBatch: TRACE
+    org.hibernate.engine.jdbc.batch.internal.AbstractBatchImpl: TRACE
+
+scheduler:
+  hash-cleaner:
+    cron: "0 0 3 * * *"
+
+hash:
+  generation:
+    generationRange: 500
+    local-hash-capacity: 100
+    min-queue-percent: 20.0
+
+async:
+  executor:
+    core-pool-size: 10
+    max-pool-size: 300
+    queue-capacity: 1000
+    thread-name-prefix: "async-exec-"

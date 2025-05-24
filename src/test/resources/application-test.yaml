@@ -1,0 +1,3 @@
+url:
+  shorten: "/api/v1/url"
+  redirect: "/api/v1/get"

@@ -1,0 +1,19 @@
+CREATE SEQUENCE unique_hash_number_seq
+    START WITH 238328
+    INCREMENT BY 1;
+
+CREATE SEQUENCE free_hash_id_seq
+    START WITH 1
+    INCREMENT By 100;
+
+CREATE TABLE url(
+    hash VARCHAR(7) PRIMARY KEY,
+    url VARCHAR(512) NOT NULL,
+    last_get_at TIMESTAMP WITH TIME ZONE,
+    create_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE free_hash (
+    id BIGINT PRIMARY KEY DEFAULT nextval('free_hash_id_seq'),
+    hash VARCHAR(7) UNIQUE NOT NULL
+);
