@@ -42,3 +42,7 @@ hash-cache:
 url-service:
   base-address: https://sh.com
   hash-ttl: 86400
+
+urls-clean-job:
+  timetable: 0 0 0 * * ?
+  entity-ttl-seconds: 31536000
