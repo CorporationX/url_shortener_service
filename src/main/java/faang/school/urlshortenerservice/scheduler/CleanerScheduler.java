@@ -23,7 +23,7 @@ public class CleanerScheduler {
     public void cleanerScheduler() {
         log.debug("Cleaner scheduler started");
         List<String> unusedHash = urlRepository.deleteOldUrl();
-        if(!unusedHash.isEmpty())
+        if (!unusedHash.isEmpty())
             hashRepository.save(unusedHash);
     }
 }

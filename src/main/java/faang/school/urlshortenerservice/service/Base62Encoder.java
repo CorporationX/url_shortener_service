@@ -14,7 +14,7 @@ public class Base62Encoder {
 
     public List<String> encodeBatch(List<Long> numbers) {
 
-        if(numbers == null || numbers.isEmpty()) {
+        if (numbers == null || numbers.isEmpty()) {
             log.error("numbers is null or empty");
             return List.of();
         }

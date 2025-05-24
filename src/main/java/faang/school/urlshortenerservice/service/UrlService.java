@@ -50,10 +50,10 @@ public class UrlService {
                 .orElseGet(() -> {
                     String url = urlRepository.findByHash(hash)
                             .orElseThrow(() -> {
-                                    log.error("URL not found for hash={}", hash);
-                                    return new UrlNotFoundException(
-                                            String.format("Original URL with hash %s not found", hash)
-                                    );
+                                log.error("URL not found for hash={}", hash);
+                                return new UrlNotFoundException(
+                                        String.format("Original URL with hash %s not found", hash)
+                                );
                             });
                     saveToRedis(hash, url);
                     return url;
