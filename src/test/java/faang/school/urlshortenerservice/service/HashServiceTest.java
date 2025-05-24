@@ -2,6 +2,8 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.properties.CacheProperties;
+import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +25,12 @@ class HashServiceTest {
     @Mock
     private HashCache hashCache;
 
+    @Mock
+    private JdbcHashRepository jdbcHashRepository;
+
+    @Mock
+    private CacheProperties cacheProperties;
+
     @InjectMocks
     private HashService hashService;
 
@@ -32,7 +40,20 @@ class HashServiceTest {
     @Test
     void getNextHash_shouldReturnFromCache() {
         when(hashCache.poll()).thenReturn(testHash);
-        assertEquals(testHash, hashService.getNextHash());
+        String result = hashService.getNextHash();
+        assertEquals(testHash, result);
+    }
+
+    @Test
+    void getNextHash_shouldUseFallbackIfCacheEmpty() {
+        when(hashCache.poll()).thenReturn(null).thenReturn(testHash);
+        when(cacheProperties.getFillSize()).thenReturn(2);
+        when(jdbcHashRepository.getAndRemoveBatch(2)).thenReturn(testHashes);
+
+        String result = hashService.getNextHash();
+
+        verify(hashCache).addAll(testHashes);
+        assertEquals(testHash, result);
     }
 
     @Test

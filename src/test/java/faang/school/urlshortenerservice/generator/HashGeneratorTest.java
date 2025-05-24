@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.properties.HashGeneratorProperties;
 import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,21 +26,23 @@ class HashGeneratorTest {
     @Mock
     private Base62Encoder encoder;
 
+    @Mock
+    private HashGeneratorProperties hashGeneratorProperties;
+
     private HashGenerator hashGenerator;
 
     private final List<Long> numbers = List.of(1L, 2L, 3L);
     private final List<String> hashes = List.of("a", "b", "c");
 
-    @Value("${hash.generator.batch-size}")
-    private int batchSize;
-
     @BeforeEach
     void setUp() {
-        hashGenerator = new HashGenerator(jdbcHashRepository, encoder, batchSize);
+        hashGenerator = new HashGenerator(jdbcHashRepository, encoder, hashGeneratorProperties);
     }
 
     @Test
     void generateBatch_shouldFetchEncodeAndSave() {
+        int batchSize = 3;
+        when(hashGeneratorProperties.getBatchSize()).thenReturn(batchSize);
         when(jdbcHashRepository.getNextNumbers(batchSize)).thenReturn(numbers);
         when(encoder.encode(numbers)).thenReturn(hashes);
 

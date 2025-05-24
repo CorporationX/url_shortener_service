@@ -4,6 +4,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ttl: 7d
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -27,8 +32,6 @@ logging:
 hash:
   generator:
     batch-size: 1000
-    thread-pool-size: 2
-    queue-capacity: 500
   cache:
     min-size: 100
     fill-size: 500
