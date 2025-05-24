@@ -12,7 +12,7 @@ public class JdbcHashRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Long> getNextNumbers(int count) {
-        String sql = "SELECT nextval('hash_sequence') FROM generate_series(1, ?)";
+        String sql = "SELECT nextval('unique_hash_number_seq') FROM generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, count);
     }
 

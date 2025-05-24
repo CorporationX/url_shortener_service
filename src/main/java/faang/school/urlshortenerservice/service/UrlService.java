@@ -22,7 +22,12 @@ public class UrlService {
     @Transactional
     public String shorten(String longUrl) {
         String hash = hashService.getNextHash();
-        Url entity = Url.builder().hash(hash).url(longUrl).createdAt(LocalDateTime.now()).build();
+        Url entity = Url.builder()
+                .hash(hash)
+                .url(longUrl)
+                .createdAt(LocalDateTime.now())
+                .lastGetAt(LocalDateTime.now())
+                .build();
         urlRepository.save(entity);
         urlCacheRepository.put(hash, longUrl);
         log.info("Shortened URL: {} -> {}", longUrl, hash);

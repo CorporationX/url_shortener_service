@@ -25,6 +25,9 @@ public class Url {
     @Column(nullable = false)
     private String url;
 
+    @Column(name = "last_get_at", nullable = false)
+    private LocalDateTime lastGetAt;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }
