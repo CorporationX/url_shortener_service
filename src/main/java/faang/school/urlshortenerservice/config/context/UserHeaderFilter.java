@@ -17,6 +17,15 @@ public class UserHeaderFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
+
+        String path = req.getRequestURI();
+
+        // ⛳️ Пропускаем actuator, swagger и др. тех. эндпоинты
+        if (path.startsWith("/actuator") || path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String userId = req.getHeader("x-user-id");
         if (userId != null) {
             userContext.setUserId(Long.parseLong(userId));
