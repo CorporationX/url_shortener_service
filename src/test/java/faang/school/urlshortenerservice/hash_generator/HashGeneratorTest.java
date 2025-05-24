@@ -40,11 +40,12 @@ public class HashGeneratorTest {
     @Captor
     ArgumentCaptor<Iterable<Hash>> hashIterableCaptor;
 
-    public final int BATCH_SIZE = 100;
+    private static final String BATCH_SIZE_FIELD_NAME = "batchSize";
+    private static final int BATCH_SIZE = 100;
 
     @BeforeEach
     public void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "batchSize", BATCH_SIZE);
+        ReflectionTestUtils.setField(hashGenerator, BATCH_SIZE_FIELD_NAME, BATCH_SIZE);
     }
 
     @Test
@@ -99,7 +100,7 @@ public class HashGeneratorTest {
     public void generateBatch_shouldUseBatchSizeFromConfig() {
         // Arrange
         int newBatchSize = 50;
-        ReflectionTestUtils.setField(hashGenerator, "batchSize", newBatchSize);
+        ReflectionTestUtils.setField(hashGenerator, BATCH_SIZE_FIELD_NAME, newBatchSize);
 
         when(hashRepository.getUniqueNumbers(newBatchSize)).thenReturn(List.of());
         when(base62Encoder.encode(List.of())).thenReturn(List.of());
@@ -115,10 +116,8 @@ public class HashGeneratorTest {
     void getHashes_whenEnoughHashesInRepository_returnAllHashesAtOnce() {
         // Arrange
         long amount = 5;
-        var hashesInRepo = List.of(
-                new Hash("hash1"), new Hash("hash2"), new Hash("hash3"),
-                new Hash("hash4"), new Hash("hash5")
-        );
+        var testHashes = List.of("hash1", "hash2", "hash3", "hash4", "hash5");
+        var hashesInRepo = testHashes.stream().map(Hash::new).toList();
         when(hashRepository.getHashBatch(amount)).thenReturn(hashesInRepo);
 
         // Act
@@ -126,7 +125,7 @@ public class HashGeneratorTest {
 
         // Assert
         assertEquals(5, result.size());
-        assertEquals(List.of("hash1", "hash2", "hash3", "hash4", "hash5"), result);
+        assertEquals(testHashes, result);
         verify(hashRepository, times(1)).getHashBatch(anyLong());
         verifyNoMoreInteractions(hashRepository);
     }

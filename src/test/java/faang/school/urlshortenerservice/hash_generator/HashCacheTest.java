@@ -30,8 +30,9 @@ public class HashCacheTest {
 
     private HashCache hashCache;
 
-    private final int TEST_CAPACITY = 100;
-    private final int TEST_THRESHOLD = 20;
+    private static final String HASHES_FIELD_NAME = "hashes";
+    private static final int TEST_CAPACITY = 100;
+    private static final int TEST_THRESHOLD = 20;
 
     @BeforeEach
     void setUp() {
@@ -63,7 +64,7 @@ public class HashCacheTest {
         int initialSize = TEST_CAPACITY * TEST_THRESHOLD / 100 - 10;
         Queue<String> hashes = new ArrayBlockingQueue<>(TEST_CAPACITY);
         hashes.addAll(generateTestHashes(initialSize));
-        ReflectionTestUtils.setField(hashCache, "hashes", hashes);
+        ReflectionTestUtils.setField(hashCache, HASHES_FIELD_NAME, hashes);
 
         CompletableFuture<List<String>> future = CompletableFuture.completedFuture(
                 generateTestHashes(TEST_CAPACITY));
@@ -82,7 +83,7 @@ public class HashCacheTest {
         // Arrange
         Queue<String> hashes = new ArrayBlockingQueue<>(TEST_CAPACITY);
         hashes.addAll(generateTestHashes(TEST_THRESHOLD - 5));
-        ReflectionTestUtils.setField(hashCache, "hashes", hashes);
+        ReflectionTestUtils.setField(hashCache, HASHES_FIELD_NAME, hashes);
 
         CompletableFuture<List<String>> future = new CompletableFuture<>();
         when(hashGenerator.getHashesAsync(TEST_CAPACITY)).thenReturn(future);
@@ -101,7 +102,7 @@ public class HashCacheTest {
     void getHash_whenCacheEmpty_shouldReturnNull() {
         // Arrange
         Queue<String> emptyHashes = new ArrayBlockingQueue<>(TEST_CAPACITY);
-        ReflectionTestUtils.setField(hashCache, "hashes", emptyHashes);
+        ReflectionTestUtils.setField(hashCache, HASHES_FIELD_NAME, emptyHashes);
 
         CompletableFuture<List<String>> future = new CompletableFuture<>();
         when(hashGenerator.getHashesAsync(anyLong())).thenReturn(future);
@@ -118,7 +119,7 @@ public class HashCacheTest {
     void getHash_whenAsyncRefillCompletes_shouldAddHashesToCache() throws Exception {
         // Arrange
         Queue<String> hashes = new ArrayBlockingQueue<>(TEST_CAPACITY);
-        ReflectionTestUtils.setField(hashCache, "hashes", hashes);
+        ReflectionTestUtils.setField(hashCache, HASHES_FIELD_NAME, hashes);
 
         CompletableFuture<List<String>> future = new CompletableFuture<>();
         when(hashGenerator.getHashesAsync(TEST_CAPACITY)).thenReturn(future);

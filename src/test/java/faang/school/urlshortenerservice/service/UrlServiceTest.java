@@ -48,15 +48,16 @@ public class UrlServiceTest {
     @InjectMocks
     private UrlServiceImpl urlService;
 
-    private final String TEST_URL = "https://example.com/";
-    private final String BASE_ADDRESS = "https://sh.com/";
-    private final String TEST_HASH = "abc123";
-    private final String SHORT_LINK = BASE_ADDRESS + TEST_HASH;
-    private final long TEST_TTL = 86400L;
+    private static final String BASE_ADDRESS_FIELD_NAME = "baseAddress";
+    private static final String TEST_URL = "https://example.com/";
+    private static final String BASE_ADDRESS = "https://sh.com/";
+    private static final String TEST_HASH = "abc123";
+    private static final String SHORT_LINK = BASE_ADDRESS + TEST_HASH;
+    private static final long TEST_TTL = 86400L;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(urlService, "baseAddress", BASE_ADDRESS);
+        ReflectionTestUtils.setField(urlService, BASE_ADDRESS_FIELD_NAME, BASE_ADDRESS);
         ReflectionTestUtils.setField(urlService, "hashTtl", TEST_TTL);
     }
 
@@ -102,7 +103,7 @@ public class UrlServiceTest {
     void getShortUrl_shouldUseConfiguredBaseAddress() {
         // Arrange
         var customBaseAddress = "https://custom.com/";
-        ReflectionTestUtils.setField(urlService, "baseAddress", customBaseAddress);
+        ReflectionTestUtils.setField(urlService, BASE_ADDRESS_FIELD_NAME, customBaseAddress);
 
         var requestDto = new ShortUrlRequestDto(TEST_URL);
         when(hashCache.getHash()).thenReturn(TEST_HASH);
