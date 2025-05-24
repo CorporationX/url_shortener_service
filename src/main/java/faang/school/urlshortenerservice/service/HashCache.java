@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
+import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,8 @@ public class HashCache {
     private final BlockingDeque<String> availableHashes = new LinkedBlockingDeque<>();
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
 
-
+    @Timed(value = "get_hash_timer", description = "Time taken to get hash",
+            histogram = true, percentiles = {0.5, 0.95})
     public Optional<String> getHash() {
         String hash = availableHashes.pollFirst();
 

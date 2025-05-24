@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class UrlRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    @Timed(value = "find_by_hash_timer", description = "Time taken to find URL by hash in PostgreSQL",
+            histogram = true, percentiles = {0.5, 0.95})
     @Transactional
     public Optional<String> findByHash(String hash) {
         String sql = "SELECT url FROM url WHERE hash=?";
@@ -26,6 +29,8 @@ public class UrlRepository {
         }
     }
 
+    @Timed(value = "save_to_url_repository_timer", description = "Time taken to save to URL repository",
+            histogram = true, percentiles = {0.5, 0.95})
     @Transactional
     public void save(String hash, String url) {
         String sql = "INSERT INTO url (hash, url) VALUES (?, ?)";

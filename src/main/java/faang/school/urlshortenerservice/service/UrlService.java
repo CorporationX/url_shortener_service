@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.exception.SQLSaveException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,8 @@ public class UrlService {
     @Value("${url.base_url}")
     private String baseUrl;
 
+    @Timed(value = "save_original_url_timer", description = "Time taken to save original URL",
+            histogram = true, percentiles = {0.5, 0.95})
     @Transactional
     public String saveOriginalUrl(String url) {
         log.info("Creating short URL for originalUrl={}", url);
@@ -44,6 +47,8 @@ public class UrlService {
         return baseUrl.concat(hash);
     }
 
+    @Timed(value = "get_original_url_service_timer", description = "Time taken to get original URL in service layer",
+            histogram = true, percentiles = {0.5, 0.95})
     public String getOriginalUrl(String hash) {
         log.info("Retrieving URL for hash={}", hash);
         return urlCacheRepository.findUrlByHash(hash)
