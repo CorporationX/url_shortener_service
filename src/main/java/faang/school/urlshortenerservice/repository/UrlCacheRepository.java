@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ public class UrlCacheRepository {
     @Value("${url.short-url-ttl-in-seconds}")
     private long timeoutInSeconds;
 
+    @Timed(value = "url.cache.getUrl", description = "Time taken to get URL from cache")
     public String getUrl(String hash) {
         try {
             String url = hashRedisTemplate.opsForValue().get(hash);
@@ -32,6 +34,7 @@ public class UrlCacheRepository {
         }
     }
 
+    @Timed(value = "url.cache.setUrl", description = "Time taken to set URL in cache")
     public void setUrl(String hash, String url) {
         try {
             hashRedisTemplate.opsForValue().set(hash, url, timeoutInSeconds, TimeUnit.SECONDS);
@@ -41,6 +44,7 @@ public class UrlCacheRepository {
         }
     }
 
+    @Timed(value = "url.cache.removeUrl", description = "Time taken to remove URL from cache")
     public void removeUrl(String hash) {
         try {
             hashRedisTemplate.delete(hash);

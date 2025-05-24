@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,6 +18,7 @@ public class HashRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Timed(value = "hash.getUniqueNumbers", description = "Time taken to get unique numbers from sequence")
     @Transactional
     public List<Long> getUniqueNumbers(int count) {
         if (count <= 0) {
@@ -37,6 +39,7 @@ public class HashRepository {
         }
     }
 
+    @Timed(value = "hash.saveHashes", description = "Time taken to save hashes")
     @Transactional
     public void saveHashes(List<String> hashes) {
         if (hashes == null || hashes.isEmpty()) {
@@ -61,6 +64,7 @@ public class HashRepository {
         }
     }
 
+    @Timed(value = "hash.getHashes", description = "Time taken to get hashes")
     @Transactional
     public List<String> getHashes(int count) {
         if (count <= 0) {
@@ -90,6 +94,7 @@ public class HashRepository {
         }
     }
 
+    @Timed(value = "hash.getCountOfHashes", description = "Time taken to get count of hashes")
     public long getCountOfHashes() {
         try {
             String sql = "SELECT count(*) FROM hash";

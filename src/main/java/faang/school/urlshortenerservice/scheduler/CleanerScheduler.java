@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.scheduler;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.HashService;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ public class CleanerScheduler {
     private final UrlCacheRepository urlCacheRepository;
     private final HashService hashService;
 
+    @Timed(value = "url.cleanup.expired", description = "Time taken to clean up expired URLs")
     @Transactional
     @Scheduled(cron = "${hash-generator.cron-delete}")
     public void deleteExpiredUrls() {

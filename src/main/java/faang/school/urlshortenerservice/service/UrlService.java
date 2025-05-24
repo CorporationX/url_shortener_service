@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ public class UrlService {
     @Value("${url.short-url-ttl-in-seconds}")
     private long shortUrlTtlInSeconds;
 
+    @Timed(value = "url.getUrl", description = "Time taken to get URL by hash")
     @Transactional(readOnly = true)
     public String getUrl(String hash) {
         String url = urlCacheRepository.getUrl(hash);
@@ -44,6 +46,7 @@ public class UrlService {
         return url;
     }
 
+    @Timed(value = "url.createShortUrl", description = "Time taken to create short URL")
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
         String existingHash = urlRepository.findHashByUrl(urlDto.getUrl());
