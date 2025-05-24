@@ -4,7 +4,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      max-total: 128
+      max-idle: 128
+      min-idle: 16
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,13 +19,41 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+hash-generator:
+  cache-size: 10000
+  count-generate-hashes: 1000
+  min-free-ratio-hashes: 0.2
+  cron-delete: "0 0 0 * * *"
+  executor:
+    core-size: 4
+    max-pool-size: 8
+    queue-capacity: 100
+    ttl-in-seconds: 60
+
+url:
+  short-url-suffix: http://localhost:8080
+  short-url-ttl-in-seconds: 31536000
 
 server:
   port: 8080
 
 logging:
   level:
-    root: info
+    root: INFO
+    faang.school.urlshortenerservice: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus, metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
