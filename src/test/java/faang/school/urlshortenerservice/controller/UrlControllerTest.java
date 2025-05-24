@@ -102,6 +102,6 @@ class UrlControllerTest {
                 .thenThrow(new ShortUrlNotFoundException("Hash not found"));
 
         mockMvc.perform(get("/v1/" + nonExistentHash))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 }

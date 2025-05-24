@@ -51,7 +51,7 @@ public class HashGenerator {
         return hashes.stream().map(Hash::getHash).toList();
     }
 
-    @Async("hashGeneratorExecutorService")
+    @Async("hashGeneratorTaskExecutor")
     public CompletableFuture<List<String>> getHashesAsync(long amount) {
         return CompletableFuture.completedFuture(getHashes(amount));
     }

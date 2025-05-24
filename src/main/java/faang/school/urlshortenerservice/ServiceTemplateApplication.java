@@ -1,47 +1,22 @@
 package faang.school.urlshortenerservice;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
 @EnableRedisRepositories
+@ConfigurationPropertiesScan
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
-    }
-
-    @Bean
-    @SuppressWarnings("unused")
-    public ExecutorService hashGeneratorExecutorService(
-            @Value("${hash-generator.thread-pool-size:0}") int treadPoolSize) {
-        return getExecutorService(treadPoolSize);
-    }
-
-    @Bean
-    @SuppressWarnings("unused")
-    public ExecutorService hashCacheExecutorService(
-            @Value("${hash-cache.thread-pool-size:0}") int treadPoolSize) {
-        return getExecutorService(treadPoolSize);
-    }
-
-    private static ExecutorService getExecutorService(int treadPoolSize) {
-        if (treadPoolSize <= 0) {
-            treadPoolSize = Runtime.getRuntime().availableProcessors() + 1;
-        }
-
-        return Executors.newFixedThreadPool(treadPoolSize);
     }
 }
