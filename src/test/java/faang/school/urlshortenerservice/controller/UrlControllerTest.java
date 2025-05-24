@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.urlshortenerservice.dto.ShortUrlRequestDto;
+import faang.school.urlshortenerservice.exception.ShortUrlNotFoundException;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +99,7 @@ class UrlControllerTest {
     public void testRedirectWithNonExistentHash() throws Exception {
         var nonExistentHash = "nonexistent";
         when(urlService.redirectToOriginalUrl(nonExistentHash))
-                .thenThrow(new RuntimeException("Hash not found"));
+                .thenThrow(new ShortUrlNotFoundException("Hash not found"));
 
         mockMvc.perform(get("/v1/" + nonExistentHash))
                 .andExpect(status().isNotFound());
