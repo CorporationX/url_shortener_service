@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.NotFoundException;
-import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UrlExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException exception) {
+    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(NotFoundException exception) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage(), exception);
     }
 

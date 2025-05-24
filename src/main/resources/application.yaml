@@ -54,6 +54,7 @@ async:
     core-size: 5
     max-size: 10
     queue-capacity: 100
+    keep-alive-time: 60
 
 hash:
   batch: 1000

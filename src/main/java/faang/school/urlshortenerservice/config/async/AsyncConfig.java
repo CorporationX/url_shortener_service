@@ -21,11 +21,14 @@ public class AsyncConfig {
     @Value("${async.pool.queue-capacity}")
     private int queueCapacity;
 
+    @Value("${async.pool.keep-alive-time}")
+    private Long keepAliveTime;
+
     @Bean("hashCacheExecutor")
     public ExecutorService hashGeneratorThreadPool() {
         return new ThreadPoolExecutor(corePoolSize,
                 maxPoolSize,
-                60L, TimeUnit.SECONDS,
+                keepAliveTime, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(queueCapacity),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );

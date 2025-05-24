@@ -22,13 +22,15 @@ public class UrlService {
     private final HashCache hashCache;
 
     @Value("${url.base_url}")
-    private String base_url;
+    private String baseUrl;
 
     @Transactional
     public String saveOriginalUrl(String url) {
-        String hash = hashCache.getHash().orElseThrow(() ->
-                new NoAvailableHashException(url)
-        );
+        log.info("Creating short URL for originalUrl={}", url);
+        String hash = hashCache.getHash().orElseThrow(() -> {
+            log.error("No available hashes for url={}", url);
+            return new NoAvailableHashException(url);
+        });
 
         try {
             urlRepository.save(hash, url);
@@ -39,15 +41,20 @@ public class UrlService {
 
         saveToRedis(hash, url);
 
-        return base_url.concat(hash);
+        return baseUrl.concat(hash);
     }
 
     public String getOriginalUrl(String hash) {
+        log.info("Retrieving URL for hash={}", hash);
         return urlCacheRepository.findUrlByHash(hash)
                 .orElseGet(() -> {
                     String url = urlRepository.findByHash(hash)
-                            .orElseThrow(() -> new UrlNotFoundException(
-                                    String.format("Original URL with hash %s not found", hash)));
+                            .orElseThrow(() -> {
+                                    log.error("URL not found for hash={}", hash);
+                                    return new UrlNotFoundException(
+                                            String.format("Original URL with hash %s not found", hash)
+                                    );
+                            });
                     saveToRedis(hash, url);
                     return url;
                 });

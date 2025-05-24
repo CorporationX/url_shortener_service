@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class Base62Encoder {
     private static final String BASE62_ALPHABET =
@@ -12,6 +14,10 @@ public class Base62Encoder {
 
     public List<String> encodeBatch(List<Long> numbers) {
 
+        if(numbers == null || numbers.isEmpty()) {
+            log.error("numbers is null or empty");
+            return List.of();
+        }
         return numbers.stream()
                 .parallel()
                 .map(this::base62Encode)
