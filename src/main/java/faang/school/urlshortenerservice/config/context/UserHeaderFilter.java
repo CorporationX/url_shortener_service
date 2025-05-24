@@ -20,7 +20,6 @@ public class UserHeaderFilter implements Filter {
 
         String path = req.getRequestURI();
 
-        // ⛳️ Пропускаем actuator, swagger и др. тех. эндпоинты
         if (path.startsWith("/actuator") || path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
             chain.doFilter(request, response);
             return;
