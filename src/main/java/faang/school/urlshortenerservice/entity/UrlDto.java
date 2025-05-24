@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class UrlDto {
     @Pattern(regexp= "^((http|https):/)[-a-zA-Z0-9@:%._+~#?&/=]*",
-    message = "\"Некорректный URL\"")
-    @NotNull
+    message = "Wrong URL format")
+    @NotNull(message = "URL should not be empty")
     private String url;
 }

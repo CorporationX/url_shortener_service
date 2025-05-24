@@ -20,14 +20,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +48,7 @@ public class UrlService {
     private final HashCacheService hashCacheService;
     private Integer queueSizeLock;
     private final AtomicBoolean isImportRunning = new AtomicBoolean(false);
+    private final String HASH_IS_NOT_FOUND_IN_DB = "Hash is not found in DB";
 
     public RedisUrl setShortUrl(String url) {
         RedisUrl redisUrl = new RedisUrl();
@@ -65,26 +62,20 @@ public class UrlService {
     }
 
     public RedirectView getRedirectUrl(String hash) {
-        //search for url in Redis
-        log.info("urlCacheRepository - start search of {}", hash);
+        log.debug("urlCacheRepository - start search of {}", hash);
         Optional<RedisUrl> optionalRedisUrl = urlCacheRepository.findById(hash);
-        log.info("urlCacheRepository - end search: redisUrl = {} for {}", optionalRedisUrl, hash);
+        log.debug("urlCacheRepository - end search: redisUrl = {} for {}", optionalRedisUrl, hash);
         RedirectView redirectView = new RedirectView();
         if (optionalRedisUrl.isPresent()) {
             redirectView.setUrl(optionalRedisUrl.get().getUrl() + "/bingo");
-            redirectView.setStatusCode(HttpStatusCode.valueOf(200));
-            return redirectView;
         } else {
-            log.info("urlRepository - start search of {}", hash);
+            log.debug("urlRepository - start search of {}", hash);
             String longUrl = urlRepository.find(hash);
-            log.info("urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
-            if (longUrl != null) {
-                redirectView.setUrl(longUrl + "/bingo");
-                redirectView.setStatusCode(HttpStatusCode.valueOf(200));
-                return redirectView;
-            }
-            return new RedirectView();
+            log.debug("urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
+            redirectView.setUrl(longUrl);
         }
+        redirectView.setStatusCode(HttpStatusCode.valueOf(302));
+        return redirectView;
     }
 
     public RedirectView getRedirectUrlFromSQLDb(String hash) {
@@ -93,7 +84,7 @@ public class UrlService {
         String longUrl = urlRepository.find(hash);
         log.info("getRedirectUrlFromSQLDb: urlRepository - end search: DbUrl = {} for {}", longUrl, hash);
         if (longUrl != null) {
-            redirectView.setUrl(longUrl + "/bingo");
+            redirectView.setUrl(longUrl);
             redirectView.setStatusCode(HttpStatusCode.valueOf(302));
             return redirectView;
         }
@@ -104,7 +95,7 @@ public class UrlService {
         CompletableFuture<Void> future = hashGenerator.generateBatch();
         future.whenComplete((result, ex) -> {
             if (ex != null) {
-                log.error("Error in hash generation: {}" , ex.getMessage());
+                log.error("Error in hash generation: {}", ex.getMessage());
             } else {
                 log.info("Successful hash generation");
             }
@@ -139,7 +130,7 @@ public class UrlService {
         queueSizeLock = hashCacheService.getQueueSize();
         double cashPercentLevel = ((double) (queueSizeLock) / fetchSize * 100);
         if (cashPercentLevel <= 20) {
-            if(isImportRunning.compareAndSet(false, true)) {
+            if (isImportRunning.compareAndSet(false, true)) {
                 try {
                     urlAsyncService.importShortUrlHashesToQueueCash()
                             .whenComplete((result, ex) -> {

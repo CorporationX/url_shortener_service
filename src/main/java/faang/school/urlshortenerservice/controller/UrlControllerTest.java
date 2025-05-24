@@ -3,8 +3,11 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.entity.RedisUrl;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,10 +45,11 @@ public class UrlControllerTest {
     @GetMapping("/cashurl/{hash}")
     @ResponseBody
     public ResponseEntity<RedisUrl> getUrlFromHash(@PathVariable String hash){
-        RedisUrl redisCashUrl = urlService.getCashUrl(hash);
-        if(redisCashUrl == null) {
-            return ResponseEntity.notFound().build();
-        }
+
+            RedisUrl redisCashUrl = urlService.getCashUrl(hash);
+            if(redisCashUrl.getUrl() == null ) {
+                return new ResponseEntity<RedisUrl>(HttpStatus.NOT_FOUND);
+            }
         return ResponseEntity.ok(redisCashUrl);
     }
 
