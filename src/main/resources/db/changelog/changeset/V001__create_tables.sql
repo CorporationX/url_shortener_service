@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS hash (
+    hash VARCHAR(6) NOT NULL,
+    CONSTRAINT pk_hash PRIMARY KEY (hash)
+);
+
+CREATE TABLE IF NOT EXISTS url (
+    hash VARCHAR(6) NOT NULL,
+    url text NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT pk_hash PRIMARY KEY (hash)
+);
+
+CREATE SEQUENCE if NOT EXISTS unique_number_seq
+    START WITH 1
+    INCREMENT BY 1;
+

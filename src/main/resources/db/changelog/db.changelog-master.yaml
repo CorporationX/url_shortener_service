@@ -1,0 +1,4 @@
+databaseChangelog:
+  -include:
+    file:
+      db/changelog/changeset/V001__create_tables.sql
