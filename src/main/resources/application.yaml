@@ -17,6 +17,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8080
 
@@ -25,18 +30,23 @@ logging:
     root: info
 
 app:
+  base-url: https://short.ly/
 
 hash:
-  maxRange: 10000
+  max-range: 10000
   cache:
     capacity: 5000
     fill:
       percent: 30
+    ttl-in-seconds: 86 400 # один день в секундах
 
 scheduling:
   hash-generation:
     cron: "0 0 3 * * *" # каждый день в 03:00
     enabled: true       # возможность выключать задачу без удаления кода
+  url-cleaner:
+    cron: "0 0 2 * * ?" # каждый день в 02:00
+    enabled: true
 
 hash-generator:
   async:

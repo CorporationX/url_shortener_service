@@ -21,7 +21,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.maxRange}")
+    @Value("${hash.max-range}")
     private int maxRange;
 
     @Transactional

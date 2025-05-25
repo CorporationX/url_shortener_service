@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.context.async.hashgenerator;
+package faang.school.urlshortenerservice.config.async.hashgenerator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

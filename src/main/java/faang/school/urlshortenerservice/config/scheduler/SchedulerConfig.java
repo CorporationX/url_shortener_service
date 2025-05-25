@@ -1,9 +1,9 @@
-package faang.school.urlshortenerservice.config.context.scheduler.hashgenerator;
+package faang.school.urlshortenerservice.config.scheduler;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableScheduling
-public class HashGeneratorSchedulerConfig {
+public class SchedulerConfig {
 }

@@ -11,19 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface HashRepository extends JpaRepository<Hash, Long> {
+public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true, value = """
             SELECT nextval('unique_hash_number_sequence') FROM generate_series(1, :maxRange);
             """)
     List<Long> getNextRange(@Param("maxRange") int maxRange);
-
-    /*@Query(nativeQuery = true, value = """
-DELETE FROM hash WHERE id IN (
-    SELECT id FROM hash ORDER BY id ASC LIMIT :amount
-) RETURNING *
-""")
-    List<Hash> findAndDelete(long amount);*/ //TODO подумать
 
     @Transactional
     @Modifying

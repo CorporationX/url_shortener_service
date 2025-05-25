@@ -23,12 +23,8 @@ import java.time.Instant;
 public class Url {
 
     @Id
-    @Column(name = "hash", length = 7, nullable = false)
+    @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
-
-    @OneToOne
-    @JoinColumn(name = "hash", referencedColumnName = "hash", insertable = false, updatable = false)
-    private Hash hashRef; //TODO возможно не нужен
 
     @Column(name = "url", nullable = false, length = 2048)
     private String url;

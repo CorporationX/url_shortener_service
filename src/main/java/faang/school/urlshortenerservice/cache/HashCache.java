@@ -27,7 +27,7 @@ public class HashCache {
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
     @PostConstruct
-    public void init() {
+    public void init() { //TODO проверить сколько хешей есть
         hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(hashGenerator.getHashes(capacity));
     }
@@ -36,7 +36,7 @@ public class HashCache {
         if (shouldRefillCache()) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll)
+                        .thenAccept(hashes::addAll) //TODO не потокобезопасный метод???
                         .thenRun(() -> filling.set(false));
             }
         }

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduled;
 
-import faang.school.urlshortenerservice.config.context.scheduler.hashgenerator.HashGeneratorScheduleProperties;
+import faang.school.urlshortenerservice.config.scheduler.HashGeneratorScheduleProperties;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
