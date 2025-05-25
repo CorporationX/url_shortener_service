@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UrlControllerConfig extends BaseContextConfig {
+public class UrlControllerTest extends BaseContextConfig {
     @Autowired
     private HashGenerator hashGenerator;
 
