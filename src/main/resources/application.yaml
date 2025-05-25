@@ -4,6 +4,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl: 600
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -16,6 +21,21 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+hash-generator:
+  cache-size: 10
+  count-generate-hashes: 15
+  min-free-ratio-hashes: 0.4
+  cron-delete: 0/20 * * * * *
+  executor:
+    core-size: 1
+    max-pool-size: 2
+    queue-capacity: 20
+    ttl-in-seconds: 60
+
+url:
+  short-url-suffix: http://localhost:8080/short
+  short-url-ttl-in-seconds: 99999
 
 server:
   port: 8080
