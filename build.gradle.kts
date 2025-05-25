@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 
     /**
      * Database
@@ -45,10 +46,10 @@ dependencies {
     /**
      * Test containers
      */
-    implementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
+    implementation(platform("org.testcontainers:testcontainers-bom:1.19.3"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.redis.testcontainers:testcontainers-redis-junit-jupiter:1.4.6")
+    testImplementation("io.rest-assured:rest-assured:5.5.0")
 
     /**
      * Tests
@@ -56,6 +57,19 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    /**
+     * Swagger
+     */
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+
+    /**
+     * Metrics
+     */
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("com.github.loki4j:loki-logback-appender:1.5.1")
+    implementation("io.micrometer:micrometer-core")
 }
 
 tasks.withType<Test> {

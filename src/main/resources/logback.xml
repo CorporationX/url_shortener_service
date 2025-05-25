@@ -1,10 +1,36 @@
 <configuration>
+
+    <!-- Appender для консоли -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
+    <!-- Appender для Loki -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://localhost:3100/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=url-shortener,host=${HOSTNAME}</pattern>
+            </label>
+            <message>
+                <pattern>level=%level logger=%logger{36},thread=%thread,message=%msg %ex</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <!-- Специфический логгер — только в консоль -->
+    <logger name="faang.school.urlshortenerservice" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Всё остальное — в консоль и Loki -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
     </root>
+
 </configuration>

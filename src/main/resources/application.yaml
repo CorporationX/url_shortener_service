@@ -17,9 +17,51 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+url:
+  cache:
+    ttl-seconds: 86400
+  base_url: http://localhost:8080/
+
+async:
+  pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 100
+    keep-alive-time: 60
+
+hash:
+  batch: 1000
+  cache:
+    size: 1000
+    refill_percent: 20
+
+scheduler:
+  cron: "0 0 0 * * *"
+
