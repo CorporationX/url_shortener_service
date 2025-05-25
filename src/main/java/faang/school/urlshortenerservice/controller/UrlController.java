@@ -19,7 +19,6 @@ public class UrlController {
 
     @PostMapping
     public String createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
-        String shortUrl = urlService.createShortUrl(urlRequest.originalUrl());
-        return shortUrl;
+        return urlService.createShortUrl(urlRequest.originalUrl());
     }
 }
