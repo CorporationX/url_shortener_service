@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.exception.CacheRefillException;
+import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -21,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,11 +84,13 @@ public class UrlServiceImplTest {
     @Test
     void createShortUrl_shouldGenerateHashSaveMappingAndReturnFormattedUrl() {
         when(hashCache.getHash()).thenReturn(TEST_HASH);
+        when(urlRepository.existsByHash(TEST_HASH)).thenReturn(false);
 
         String result = urlService.createShortUrl(TEST_ORIGINAL_URL);
 
         assertEquals(SHORT_URL, result);
         verify(hashCache).getHash();
+        verify(urlRepository).existsByHash(TEST_HASH);
         verify(urlRepository).save(TEST_HASH, TEST_ORIGINAL_URL);
         verify(urlCacheRepository).save(TEST_HASH, TEST_ORIGINAL_URL);
     }
@@ -93,6 +98,9 @@ public class UrlServiceImplTest {
     @Test
     void createShortUrl_shouldUseDifferentHashesForDifferentCalls() {
         when(hashCache.getHash()).thenReturn("firstHash").thenReturn("secondHash");
+
+        when(urlRepository.existsByHash("firstHash")).thenReturn(false);
+        when(urlRepository.existsByHash("secondHash")).thenReturn(false);
 
         String firstResult = urlService.createShortUrl(TEST_ORIGINAL_URL);
         String secondResult = urlService.createShortUrl(TEST_ORIGINAL_URL);
@@ -107,5 +115,50 @@ public class UrlServiceImplTest {
         String result = ReflectionTestUtils.invokeMethod(urlService, "buildShortUrl", hash);
 
         assertEquals(TEST_DOMAIN + "/" + hash, result);
+    }
+
+    @Test
+    void createShortUrl_shouldRetryWhenHashCollisionDetected() {
+        String firstHash = "collisionHash";
+        String secondHash = "uniqueHash";
+
+        when(hashCache.getHash())
+                .thenReturn(firstHash)
+                .thenReturn(secondHash);
+
+        when(urlRepository.existsByHash(firstHash)).thenReturn(true);
+        when(urlRepository.existsByHash(secondHash)).thenReturn(false);
+
+        String result = urlService.createShortUrl(TEST_ORIGINAL_URL);
+
+        assertEquals(TEST_DOMAIN + "/" + secondHash, result);
+        verify(hashCache, times(2)).getHash();
+    }
+
+    @Test
+    void createShortUrl_shouldThrowExceptionForInvalidUrl() {
+        String invalidUrl = "invalid-url";
+
+        assertThrows(InvalidUrlException.class, () -> urlService.createShortUrl(invalidUrl));
+
+        verifyNoInteractions(hashCache);
+        verifyNoInteractions(urlRepository);
+    }
+
+    @Test
+    void createShortUrl_shouldThrowExceptionAfterMaxAttempts() {
+        when(hashCache.getHash()).thenReturn(TEST_HASH);
+        when(urlRepository.existsByHash(TEST_HASH)).thenReturn(true);
+
+        assertThrows(CacheRefillException.class, () -> urlService.createShortUrl(TEST_ORIGINAL_URL));
+
+        verify(hashCache, times(3)).getHash();
+    }
+
+    @Test
+    void validateUrl_shouldThrowExceptionForInvalidScheme() {
+        String invalidSchemeUrl = "ftp://invalid.com";
+
+        assertThrows(InvalidUrlException.class, () -> urlService.createShortUrl(invalidSchemeUrl));
     }
 }

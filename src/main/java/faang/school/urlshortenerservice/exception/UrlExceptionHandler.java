@@ -50,4 +50,9 @@ public class UrlExceptionHandler {
                 .body(Map.of("status", status.value(), "error", status.getReasonPhrase(),
                         "message", message));
     }
+
+    @ExceptionHandler(InvalidUrlException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidUrlException(InvalidUrlException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 }

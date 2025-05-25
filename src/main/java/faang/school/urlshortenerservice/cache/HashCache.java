@@ -59,13 +59,14 @@ public class HashCache {
             log.info("Starting cache refill");
             executorService.submit(() -> {
                 try {
+                    hashGenerator.generateBatch();
                     List<String> newHashes = hashRepository.getHashBatch();
+
                     newHashes.forEach(hash -> {
                         if (cache.size() < maxSize) {
                             cache.offer(hash);
                         }
                     });
-                    hashGenerator.generateBatch();
                 } catch (Exception e) {
                     log.error(CACHE_REFILL_FAILED, e);
                     throw new CacheRefillException(CACHE_REFILL_FAILED);

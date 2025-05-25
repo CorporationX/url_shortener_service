@@ -29,6 +29,12 @@ public class HashGenerator {
     public void generateBatch() {
         try {
             List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
+
+            if (numbers.isEmpty()) {
+                log.error(HASH_GENERATION_FAILED);
+                throw new HashGenerationException(HASH_GENERATION_FAILED);
+            }
+
             List<String> hashes = encoder.encode(numbers);
             hashRepository.save(hashes);
             log.info("Generated and saved {} hashes", hashes.size());

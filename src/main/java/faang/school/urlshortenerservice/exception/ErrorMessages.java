@@ -11,4 +11,8 @@ public class ErrorMessages {
     public static final String SYSTEM_ERROR_LOG_TEMPLATE = "System error: {}";
     public static final String UNEXPECTED_ERROR_LOG_TEMPLATE = "Unexpected error: {}";
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error";
+    public static final String INVALID_URL_TEMPLATE = "Invalid URL: %s";
+    public static final String INVALID_SCHEME_MESSAGE = "URL must use HTTP/HTTPS scheme";
+    public static final String HASH_COLLISION_MESSAGE = "Hash collision: %s";
+    public static final String HASH_GENERATION_ATTEMPTS_FAILED = "Failed to generate unique hash after %d attempts";
 }

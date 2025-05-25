@@ -26,7 +26,6 @@ public class HashRepository {
         } catch (DataAccessException e) {
             throw new DatabaseAccessException(DATABASE_ACCESS_ERROR, e);
         }
-
     }
 
     public void save(List<String> hashes) {

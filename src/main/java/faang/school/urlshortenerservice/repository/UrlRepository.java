@@ -33,4 +33,13 @@ public class UrlRepository {
                 RETURNING hash
                 """, String.class);
     }
+
+    public boolean existsByHash(String hash) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM url WHERE hash = ?",
+                Integer.class,
+                hash
+        );
+        return count != null && count > 0;
+    }
 }
