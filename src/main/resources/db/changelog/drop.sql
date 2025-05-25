@@ -1,3 +1,3 @@
 DROP TABLE hash;
 DROP TABLE url;
-DROP SEQUENCE unique_number_seq;
+DROP SEQUENCE unique_seq_number;

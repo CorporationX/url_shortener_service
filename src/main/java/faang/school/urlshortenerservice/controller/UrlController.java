@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.Service.UrlService;
 import faang.school.urlshortenerservice.dto.UrlRequest;
+import faang.school.urlshortenerservice.dto.UrlResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public String createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
+    public UrlResponse createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
         return urlService.createShortUrl(urlRequest.originalUrl());
     }
 

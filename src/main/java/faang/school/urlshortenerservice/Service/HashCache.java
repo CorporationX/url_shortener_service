@@ -27,21 +27,37 @@ public class HashCache {
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
 
     public String getHash() {
-        int currentSize = cache.size();
         int threshold = (cacheProperties.maxSize() * cacheProperties.refillPercent()) / 100;
+        String hash = cache.poll();
+        if (hash != null) {
 
-        if (currentSize > threshold) {
-            return cache.poll();
-        } else {
-            refillTrigger();
-            return cache.poll();
+            if (cache.size() <= threshold) {
+                refillTrigger();
+            }
+            return hash;
         }
+        refillTrigger();
+        int retries = 20;
+        while (retries-- > 0) {
+            hash = cache.poll();
+            if (hash != null) {
+                return hash;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting for hash refill");
+            }
+        }
+        throw new IllegalStateException("HashCache timeout: no hashes available after async refill");
     }
 
     private void refillTrigger() {
         if (refillInProgress.compareAndSet(false, true)) {
             executorService.submit(() -> {
                 try {
+                    hashGenerator.generateBatch();
                     refillCache();
                     executorService.submit(hashGenerator::generateBatch);
                 } catch (Exception e) {
