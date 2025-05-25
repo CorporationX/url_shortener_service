@@ -29,6 +29,12 @@ public class UrlService {
             histogram = true, percentiles = {0.5, 0.95})
     @Transactional
     public String saveOriginalUrl(String url) {
+        String existingHash = urlRepository.findByOriginalUrl(url).orElse(null);
+        if (existingHash != null) {
+            log.info("Original URL {} already exists", url);
+            return baseUrl.concat(existingHash);
+        }
+
         log.info("Creating short URL for originalUrl={}", url);
         String hash = hashCache.getHash().orElseThrow(() -> {
             log.error("No available hashes for url={}", url);

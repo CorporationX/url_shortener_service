@@ -17,7 +17,7 @@ public class UrlRepository {
 
     @Timed(value = "find_by_hash_timer", description = "Time taken to find URL by hash in PostgreSQL",
             histogram = true, percentiles = {0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<String> findByHash(String hash) {
         String sql = "SELECT url FROM url WHERE hash=?";
 
@@ -48,4 +48,15 @@ public class UrlRepository {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<String> findByOriginalUrl(String url) {
+        String sql = "SELECT hash FROM url WHERE url=?";
+
+        try {
+            String originalUrl = jdbcTemplate.queryForObject(sql, String.class, url);
+            return Optional.ofNullable(originalUrl);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

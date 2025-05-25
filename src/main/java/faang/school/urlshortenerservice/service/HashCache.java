@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashCache {
@@ -38,12 +40,18 @@ public class HashCache {
     @Timed(value = "get_hash_timer", description = "Time taken to get hash",
             histogram = true, percentiles = {0.5, 0.95})
     public Optional<String> getHash() {
-        String hash = availableHashes.pollFirst();
-
         if (shouldRefill()) {
             scheduleRefill();
         }
-        return Optional.ofNullable(hash);
+
+        try {
+            String hash = availableHashes.take();
+            return Optional.of(hash);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread was interrupted while waiting for a hash", e);
+            return Optional.empty();
+        }
     }
 
     private boolean shouldRefill() {
@@ -57,9 +65,12 @@ public class HashCache {
     }
 
     private void refillCache() {
-        hashGenerator.generateBatch();
-
-        List<String> newHashes = hashRepository.getHashBatch(cacheSize);
-        availableHashes.addAll(newHashes);
+        try {
+            hashGenerator.generateBatch();
+            List<String> newHashes = hashRepository.getHashBatch(cacheSize);
+            availableHashes.addAll(newHashes);
+        } finally {
+            refillInProgress.set(false);
+        }
     }
 }
