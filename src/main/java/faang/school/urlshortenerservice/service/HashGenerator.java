@@ -53,7 +53,7 @@ public class HashGenerator {
 
     private void checkAndGenerateHashes() {
         long hashesCount = hashRepository.getCountOfHashes();
-        if (needToGenerateHashes(hashesCount)) {
+        if (isNeededGenerateHashes(hashesCount)) {
             generateHashes(countGenerateHashes);
         }
     }
@@ -66,7 +66,7 @@ public class HashGenerator {
         log.debug("Hashes generated successfully");
     }
 
-    private boolean needToGenerateHashes(double currentHashesCount) {
+    private boolean isNeededGenerateHashes(double currentHashesCount) {
         return currentHashesCount / countGenerateHashes < minHashRatio;
     }
 }

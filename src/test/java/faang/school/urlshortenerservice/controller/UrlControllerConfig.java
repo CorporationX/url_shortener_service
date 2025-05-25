@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.BaseContextTest;
+import faang.school.urlshortenerservice.BaseContextConfig;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.HashGenerator;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UrlControllerTest extends BaseContextTest {
+public class UrlControllerConfig extends BaseContextConfig {
     @Autowired
     private HashGenerator hashGenerator;
 

@@ -49,7 +49,7 @@ public class HashCache {
      * @return свободный хэш, или {@code null}, если очередь пуста (что маловероятно при корректной настройке)
      */
     public String getHash() {
-        if (mustFillCacheInDb()) {
+        if (isNeededFillCache()) {
             fillCache();
         }
 
@@ -63,7 +63,7 @@ public class HashCache {
         log.debug("Hash cache filled");
     }
 
-    private boolean mustFillCacheInDb() {
+    private boolean isNeededFillCache() {
         double ratio = (double) cache.size() / cacheSize;
 
         return ratio < cacheFreeRation;

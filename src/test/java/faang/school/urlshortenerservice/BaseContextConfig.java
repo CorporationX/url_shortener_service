@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,11 +22,10 @@ import org.testcontainers.utility.DockerImageName;
         }
 )
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Testcontainers
 @AutoConfigureMockMvc
-public class BaseContextTest {
+public class BaseContextConfig {
     @Autowired
     protected MockMvc mockMvc;
 

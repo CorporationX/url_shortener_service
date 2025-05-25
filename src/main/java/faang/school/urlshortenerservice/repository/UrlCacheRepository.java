@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class UrlCacheRepository {
     private final RedisTemplate<String, String> hashRedisTemplate;
     @Value("${spring.data.redis.ttl}")
-    private long timeoutInMinutes;
+    private long timeToLiveInMinutes;
 
     @Nullable
     public String getUrl(String hash) {
@@ -23,7 +23,7 @@ public class UrlCacheRepository {
         try {
             url = hashRedisTemplate.opsForValue().get(hash);
             if (url != null) {
-                hashRedisTemplate.expire(hash, timeoutInMinutes, TimeUnit.MINUTES);
+                hashRedisTemplate.expire(hash, timeToLiveInMinutes, TimeUnit.MINUTES);
             }
         } catch (Exception e) {
             log.error("Error while getting url", e);
@@ -34,7 +34,7 @@ public class UrlCacheRepository {
 
     public void setUrl(String hash, String url) {
         try {
-            hashRedisTemplate.opsForValue().set(hash, url, timeoutInMinutes, TimeUnit.MINUTES);
+            hashRedisTemplate.opsForValue().set(hash, url, timeToLiveInMinutes, TimeUnit.MINUTES);
             log.debug("Add url {} to hash {} on redis", url, hash);
         } catch (Exception e) {
             log.error("Error while add url {} to hash {} on redis", url, hash, e);

@@ -17,8 +17,8 @@ public class ExecutorServiceConfig {
     @Value("${hash-generator.executor.ttl-in-seconds}")
     private long hashGeneratorTtlInSeconds;
 
-    @Bean(name = "getHashGeneratorExecutor")
-    public ExecutorService getHashGeneratorExecutor() {
+    @Bean(name = "hashGeneratorExecutor")
+    public ExecutorService hashGeneratorExecutor() {
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(hashGeneratorQueueSize);
         return new ThreadPoolExecutor(
                 hashGeneratorCoreSize,

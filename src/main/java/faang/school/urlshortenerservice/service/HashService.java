@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 public class HashService {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
-    @Resource(name = "getHashGeneratorExecutor")
+    @Resource(name = "hashGeneratorExecutor")
     private final ExecutorService executorService;
 
     /**

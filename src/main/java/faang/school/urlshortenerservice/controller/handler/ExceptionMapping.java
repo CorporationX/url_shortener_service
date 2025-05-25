@@ -12,11 +12,11 @@ import java.sql.SQLException;
 @Getter
 @AllArgsConstructor
 public enum ExceptionMapping {
-    URL_NOT_FOUND_EX(UrlNotFoundException.class, HttpStatus.NOT_FOUND),
-    SQL_EX(SQLException.class, HttpStatus.INTERNAL_SERVER_ERROR),
-    DATA_ACCESS_EX(DataAccessException.class, HttpStatus.INTERNAL_SERVER_ERROR),
-    ARG_NOT_VALID_EX(MethodArgumentNotValidException.class, HttpStatus.BAD_REQUEST),
-    DEFAULT_EX(Exception.class, HttpStatus.INTERNAL_SERVER_ERROR);
+    URL_NOT_FOUND(UrlNotFoundException.class, HttpStatus.NOT_FOUND),
+    SQL(SQLException.class, HttpStatus.INTERNAL_SERVER_ERROR),
+    DATA_ACCESS(DataAccessException.class, HttpStatus.INTERNAL_SERVER_ERROR),
+    ARG_NOT_VALID(MethodArgumentNotValidException.class, HttpStatus.BAD_REQUEST),
+    DEFAULT(Exception.class, HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final Class<? extends Exception> exceptionClass;
     private final HttpStatus httpStatus;
