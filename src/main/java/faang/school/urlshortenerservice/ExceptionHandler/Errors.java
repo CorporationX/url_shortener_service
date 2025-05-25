@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Errors {
     VALIDATION_ERROR("Data is not valid"),
     INVALID_ARGUMENT("Invalid argument"),
-    INTERNAL_ERROR("Internal error");
+    INTERNAL_ERROR("Internal error"),
+    NOT_FOUND("Not found");
 
     private final String message;
 }

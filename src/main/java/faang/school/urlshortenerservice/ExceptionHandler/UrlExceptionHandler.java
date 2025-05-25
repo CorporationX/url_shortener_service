@@ -27,6 +27,10 @@ public class UrlExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST,Errors.INVALID_ARGUMENT,ex.getMessage());
     }
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND,Errors.NOT_FOUND,ex.getMessage());
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
         log.error("Unhandled exception", ex);
