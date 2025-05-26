@@ -48,3 +48,7 @@ hash:
 cleaner:
   scheduler:
     cron: 0 0 0 * * * # At midnight
+    days-to-live: 365
+
+host:
+  base-host: http://localhost:8080

@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,12 @@ public class CleanerScheduler {
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
 
+    @Value("${cleaner.scheduler.days-to-live}")
+    private int daysToLive;
+
     @Scheduled(cron = "${cleaner.scheduler.cron}")
     public void cleanOldUrls() {
-        Instant oneYearAgo = Instant.now().minus(365, ChronoUnit.DAYS);
+        Instant oneYearAgo = Instant.now().minus(daysToLive, ChronoUnit.DAYS);
 
         log.info("Starting cleaning old urls");
 

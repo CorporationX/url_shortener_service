@@ -17,7 +17,6 @@ public class BatchHashRepositoryImpl implements BatchHashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-
     @Override
     @Modifying
     @Transactional

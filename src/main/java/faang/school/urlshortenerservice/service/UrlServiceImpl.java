@@ -2,12 +2,13 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.hash.HashPreGenerator;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,11 @@ public class UrlServiceImpl implements UrlService {
 
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
-    private final HashCache hashCache;
+    private final HashPreGenerator hashPreGenerator;
     private final UrlMapper urlMapper;
+
+    @Value("${host.base-host}")
+    private String host;
 
     @Override
     public String getOriginalUrl(String hash) {
@@ -42,22 +46,17 @@ public class UrlServiceImpl implements UrlService {
         Optional<Url> existUrl = urlRepository.findByUrl(urlDto.getUrl());
         if (existUrl.isPresent()) {
             Url dbUrl = existUrl.get();
-            return createShortUrl(dbUrl.getUrl(), dbUrl.getHash());
+            return createShortUrl(dbUrl.getHash());
         }
-        String hash = hashCache.getHash();
+        String hash = hashPreGenerator.getHash();
         Url url = urlMapper.toEntity(urlDto);
         url.setHash(hash);
         urlRepository.save(url);
         urlCacheRepository.save(url.getUrl(), hash);
-        return createShortUrl(url.getUrl(), hash);
+        return createShortUrl(hash);
     }
 
-    private String createShortUrl(String originalUrl, String hash) {
-        try {
-            URI uri = new URI(originalUrl);
-            return uri.getScheme() + "://" + uri.getHost() + "/" + hash;
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid URL: " + originalUrl, e);
-        }
+    private String createShortUrl(String hash) {
+        return host + "/" + hash;
     }
 }

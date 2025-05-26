@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.hash.HashPreGenerator;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.model.Url;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class UrlServiceImplTest {
     private UrlRepository urlRepository;
 
     @Mock
-    private HashCache hashCache;
+    private HashPreGenerator hashPreGenerator;
 
     @Spy
     private UrlMapper urlMapper = new UrlMapperImpl();
@@ -83,6 +84,7 @@ public class UrlServiceImplTest {
 
     @Test
     public void testCreateAndSaveShortUrlShouldCreateShortUrlCorrectly() {
+        ReflectionTestUtils.setField(urlService, "host", "https://example.com");
         String hash = "xyz789";
         String originalUrl = "https://example.com";
         UrlDto urlDto = new UrlDto();
@@ -92,12 +94,12 @@ public class UrlServiceImplTest {
         url.setUrl(originalUrl);
         url.setHash(hash);
 
-        when(hashCache.getHash()).thenReturn(hash);
+        when(hashPreGenerator.getHash()).thenReturn(hash);
 
         String result = urlService.createAndSaveShortUrl(urlDto);
 
         assertEquals("https://example.com/xyz789", result);
-        verify(hashCache).getHash();
+        verify(hashPreGenerator).getHash();
         verify(urlMapper).toEntity(urlDto);
         verify(urlRepository).save(url);
         verify(urlCacheRepository).save(originalUrl, hash);

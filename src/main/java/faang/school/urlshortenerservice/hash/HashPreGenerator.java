@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class HashCache {
+public class HashPreGenerator {
 
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
