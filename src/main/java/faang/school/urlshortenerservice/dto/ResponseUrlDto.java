@@ -1,11 +1,14 @@
 package faang.school.urlshortenerservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ResponseUrlDto { //TODO возможно одного дто хватит если будет только одно значние в нём
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResponseUrlDto {
 
+    private String originalUrl;
     private String shortUrl;
 }

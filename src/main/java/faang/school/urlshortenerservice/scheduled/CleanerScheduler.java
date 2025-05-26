@@ -32,7 +32,7 @@ public class CleanerScheduler {
         }
         log.info("Starting cleaning old URLs job...");
 
-        Instant oneYearAgo = Instant.now().minus(1, ChronoUnit.YEARS);
+        Instant oneYearAgo = Instant.now().minus(365, ChronoUnit.DAYS); //TODO вынести в yaml
 
         List<String> oldHashes = urlRepository.deleteByCreatedAtBeforeReturningHashes(oneYearAgo);
 

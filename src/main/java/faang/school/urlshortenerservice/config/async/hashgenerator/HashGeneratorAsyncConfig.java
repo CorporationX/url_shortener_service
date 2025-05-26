@@ -9,6 +9,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAsync
@@ -16,19 +17,27 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class HashGeneratorAsyncConfig {
 
     @Bean(name = "hashGeneratorExecutor")
-    public Executor hashGeneratorExecutor(
-            @Qualifier("hashGeneratorAsyncProperties") HashGeneratorAsyncProperties props) {
+    public Executor hashGeneratorExecutor(HashGeneratorAsyncProperties props) {
+        // Валидируем соотношение размеров пулов
+        props.validatePoolSizes();
+        
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(props.getCorePoolSize());
         executor.setMaxPoolSize(props.getMaxPoolSize());
         executor.setQueueCapacity(props.getQueueCapacity());
         executor.setThreadNamePrefix(props.getThreadNamePrefix());
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
-        executor.initialize();
-
+        
+        // Дополнительные потоки будут жить 60 секунд после простоя
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(false);
+        
+        // Используем CallerRunsPolicy чтобы не терять задачи при переполнении
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        
         executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(30);
-
+        executor.setAwaitTerminationSeconds(props.getShutdownTimeoutSeconds());
+        
+        executor.initialize();
         return executor;
     }
 }

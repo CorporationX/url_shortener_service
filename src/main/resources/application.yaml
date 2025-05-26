@@ -21,6 +21,11 @@ spring:
     redis:
       host: localhost
       port: 6379
+      connection-timeout: 2000
+      read-timeout: 2000
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
 
 server:
   port: 8080
@@ -30,7 +35,10 @@ logging:
     root: info
 
 app:
-  base-url: https://short.ly/
+  # Для локального тестирования
+  base-url: http://localhost:8080/
+  api:
+    version: /api/v1
 
 hash:
   max-range: 10000
@@ -38,19 +46,27 @@ hash:
     capacity: 5000
     fill:
       percent: 30
-    ttl-in-seconds: 86 400 # один день в секундах
+    ttl-in-seconds: 86400 # один день в секундах
 
 scheduling:
-  hash-generation:
-    cron: "0 0 3 * * *" # каждый день в 03:00
-    enabled: true       # возможность выключать задачу без удаления кода
+  # Настройки планировщика очистки URL
   url-cleaner:
-    cron: "0 0 2 * * ?" # каждый день в 02:00
+    # Запуск каждый день в 02:00
+    cron: "0 0 2 * * ?"
+    # Включение/выключение задачи
+    enabled: true
+    
+  # Настройки планировщика генерации хешей
+  hash-generation:
+    # Запуск каждый день в 03:00
+    cron: "0 0 3 * * *"
+    # Включение/выключение задачи
     enabled: true
 
 hash-generator:
   async:
-    core-pool-size: 2
-    max-pool-size: 4
-    queue-capacity: 100
-    thread-name-prefix: HashGen-
+    core-pool-size: 2      
+    max-pool-size: 4       
+    queue-capacity: 100   
+    thread-name-prefix: HashGen- 
+    shutdown-timeout-seconds: 30  

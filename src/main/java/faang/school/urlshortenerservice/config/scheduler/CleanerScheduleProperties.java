@@ -1,16 +1,17 @@
 package faang.school.urlshortenerservice.config.scheduler;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-@Component
+@Data
+@Validated
 @ConfigurationProperties(prefix = "scheduling.url-cleaner")
-@Getter
-@Setter
 public class CleanerScheduleProperties {
 
+    @NotBlank(message = "Cron expression must not be blank")
     private String cron;
+    
     private boolean enabled;
 }

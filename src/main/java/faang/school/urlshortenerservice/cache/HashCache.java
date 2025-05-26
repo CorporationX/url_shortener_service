@@ -26,30 +26,61 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
+    private static final int MIN_CAPACITY = 100;
+    private static final int MAX_CAPACITY = 1000000;
+    private static final double MIN_FILL_PERCENT = 10.0;
+    private static final double MAX_FILL_PERCENT = 90.0;
+
     @PostConstruct
-    public void init() { //TODO проверить сколько хешей есть
+    public void init() {
+        validateParameters();
         hashes = new ArrayBlockingQueue<>(capacity);
-        hashes.addAll(hashGenerator.getHashes(capacity));
+        var initialHashes = hashGenerator.getHashes(capacity);
+        if (initialHashes.isEmpty()) {
+            throw new IllegalStateException("Failed to initialize hash cache: could not generate initial hashes");
+        }
+        hashes.addAll(initialHashes);
     }
 
     public String getHash() {
         if (shouldRefillCache()) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(hashes::addAll) //TODO не потокобезопасный метод???
+                        .thenAccept(newHashes -> {
+                            synchronized (hashes) {
+                                hashes.addAll(newHashes);
+                            }
+                        })
                         .thenRun(() -> filling.set(false));
             }
         }
-        String hash = hashes.poll();
-        if (hash == null) {
-            hash = hashGenerator.getHashes(1).stream().findFirst() //TODO вопросики
-                    .orElseThrow(() -> new IllegalStateException("No hashes available"));
-            hashes.addAll(hashGenerator.getHashes(capacity - hashes.size()));
+
+        String hash;
+        synchronized (hashes) {
+            hash = hashes.poll();
+            if (hash == null) {
+                var newHashes = hashGenerator.getHashes(capacity);
+                hash = newHashes.stream().findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Failed to generate hash"));
+                newHashes.remove(hash); // Удаляем первый хеш, который мы вернем
+                hashes.addAll(newHashes);
+            }
         }
         return hash;
     }
 
     private boolean shouldRefillCache() {
         return hashes.size() / (capacity / 100.0) < fillPercent;
+    }
+
+    private void validateParameters() {
+        if (capacity < MIN_CAPACITY || capacity > MAX_CAPACITY) {
+            throw new IllegalStateException(
+                    String.format("Cache capacity must be between %d and %d", MIN_CAPACITY, MAX_CAPACITY));
+        }
+        if (fillPercent < MIN_FILL_PERCENT || fillPercent > MAX_FILL_PERCENT) {
+            throw new IllegalStateException(
+                    String.format("Fill percent must be between %.1f and %.1f", MIN_FILL_PERCENT, MAX_FILL_PERCENT));
+        }
     }
 }
