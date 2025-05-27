@@ -1,0 +1,1 @@
+docker-compose -p shortener down --volumes --remove-orphans

@@ -3,16 +3,14 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -80,6 +78,6 @@ class UrlServiceTest {
         when(urlCacheRepository.get(hash)).thenReturn(null);
         when(urlRepository.findByHash(hash)).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> urlService.resolve(hash));
+        assertThrows(EntityNotFoundException.class, () -> urlService.resolve(hash));
     }
 }

@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @Slf4j
-public class UrlExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex) {

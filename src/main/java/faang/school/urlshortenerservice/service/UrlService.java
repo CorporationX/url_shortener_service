@@ -3,13 +3,13 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,17 +20,17 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
 
     @Transactional
-    public String shorten(String longUrl) {
+    public String shorten(String url) {
         String hash = hashService.getNextHash();
         Url entity = Url.builder()
                 .hash(hash)
-                .url(longUrl)
+                .url(url)
                 .createdAt(LocalDateTime.now())
                 .lastGetAt(LocalDateTime.now())
                 .build();
         urlRepository.save(entity);
-        urlCacheRepository.put(hash, longUrl);
-        log.info("Shortened URL: {} -> {}", longUrl, hash);
+        urlCacheRepository.put(hash, url);
+        log.info("Shortened URL: {} -> {}", url, hash);
         return hash;
     }
 
@@ -43,6 +43,6 @@ public class UrlService {
                     urlCacheRepository.put(hash, url.getUrl());
                     return url.getUrl();
                 })
-                .orElseThrow(() -> new NoSuchElementException("URL not found"));
+                .orElseThrow(() -> new EntityNotFoundException("URL not found"));
     }
 }

@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +64,8 @@ class HashServiceTest {
 
         hashService.generateMoreHashes();
 
-        verify(hashCache).addAll(testHashes);
+        await()
+                .atMost(3, SECONDS)
+                .untilAsserted(() -> verify(hashCache).addAll(testHashes));
     }
 }

@@ -6,10 +6,10 @@ import faang.school.urlshortenerservice.properties.CacheProperties;
 import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -47,13 +47,17 @@ public class HashService {
         }
     }
 
-    @Async("hashGeneratorExecutor")
     public void generateMoreHashes() {
-        try {
-            List<String> hashes = hashGenerator.generateBatch();
-            hashCache.addAll(hashes);
-        } finally {
-            refillInProgress.set(false);
-        }
+        CompletableFuture
+                .supplyAsync(hashGenerator::generateBatch)
+                .thenAccept(hashes -> {
+                    hashCache.addAll(hashes);
+                    refillInProgress.set(false);
+                })
+                .exceptionally(ex -> {
+                    log.error("Failed to generate hashes", ex);
+                    refillInProgress.set(false);
+                    return null;
+                });
     }
 }

@@ -1,4 +1,3 @@
-version: '3'
 services:
   url_shortener_db:
     image: postgres:13.3
@@ -7,14 +6,32 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - url-shortener-service-data:/var/lib/postgresql/data
 
   master_redis:
     image: redis/redis-stack:latest
     ports:
-      - "6379:6379"
+      - "6380:6379"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
 volumes:
-  url-shortener-db-data:
+  url-shortener-service-data:
