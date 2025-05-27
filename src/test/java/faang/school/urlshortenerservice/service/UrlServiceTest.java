@@ -41,7 +41,7 @@ class UrlServiceTest {
     private UrlCacheRepository urlCacheRepository;
 
     @InjectMocks
-    private UrlService urlService;
+    private UrlServiceImpl urlService;
 
     private static final String TEST_URL = "https://example.com";
     private static final String TEST_HASH = "abc123";
