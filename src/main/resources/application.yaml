@@ -1,24 +1,71 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?rewriteBatchedInserts=true
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 13
+      auto-commit: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
+        jdbc:
+          batch_size: 500
+          batch_versioned_data: true
         format_sql: true
+        order_updates: true
+        order_inserts: true
+        connection:
+          provider_disables_autocommit: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      pool:
+        max-total: 13
+        max-idle: 6
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+scheduler:
+  cron:
+    clean: "0 0 3 * * *"
+
+hash:
+  max-range: 1000
+  thread:
+    pool-size: 12
+  cache:
+    capacity: 1000
+    percent: 20
+
+shortener:
+  base-url: "http://localhost:8080/api/v1/urls/"
+  redis:
+    url-ttl: 24
+  db:
+    url-ttl: 365
+
 server:
   port: 8080
+  address: 0.0.0.0
 
 logging:
   level:
