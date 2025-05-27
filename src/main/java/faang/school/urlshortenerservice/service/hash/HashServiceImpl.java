@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
-import faang.school.urlshortenerservice.exception.UrlNotFound;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class HashServiceImpl implements HashService {
     @Transactional(readOnly = true)
     public String getOriginalUrlByHash(String hash) {
         Url url = urlRepository.findByHash(hash)
-                .orElseThrow(() -> new UrlNotFound(String.format(URL_NOT_FOUND_BY_HASH, hash)));
+                .orElseThrow(() -> new UrlNotFoundException(String.format(URL_NOT_FOUND_BY_HASH, hash)));
         return url.getUrl();
     }
 

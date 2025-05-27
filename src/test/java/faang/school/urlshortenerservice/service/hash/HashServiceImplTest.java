@@ -5,7 +5,7 @@ import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
-import faang.school.urlshortenerservice.exception.UrlNotFound;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +71,7 @@ class HashServiceImplTest {
     void testGetOriginalUrlByHash_whenUrlDoesNotExist_shouldThrowException() {
         when(urlRepository.findByHash("hash123")).thenReturn(Optional.empty());
 
-        UrlNotFound exception = assertThrows(UrlNotFound.class, () ->
+        UrlNotFoundException exception = assertThrows(UrlNotFoundException.class, () ->
             hashService.getOriginalUrlByHash("hash123"));
 
         assertTrue(exception.getMessage().contains("hash123"));

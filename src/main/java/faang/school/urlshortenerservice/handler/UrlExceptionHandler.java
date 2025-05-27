@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.exception.HashGenerationException;
 import faang.school.urlshortenerservice.exception.InvalidUrlException;
-import faang.school.urlshortenerservice.exception.UrlNotFound;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UrlExceptionHandler {
     private static final String SERVICE_NAME = "url_shortener_service";
 
-    @ExceptionHandler(UrlNotFound.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(UrlNotFound e) {
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(UrlNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, "Url not found", e.getMessage());
     }
 
