@@ -51,7 +51,7 @@ public class UrlServiceTest {
     private UrlServiceImpl urlService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ReflectionTestUtils.setField(urlService, "baseUrl", "http://urls/");
         ReflectionTestUtils.setField(urlService, "urlTtl", 24);
     }

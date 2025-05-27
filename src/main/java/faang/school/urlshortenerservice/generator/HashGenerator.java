@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -21,11 +22,14 @@ public class HashGenerator {
     private int maxRange;
 
     @Transactional
-    public List<String> getHashBatch(long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateHash();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+    public synchronized List<String> getHashBatch(long amount) {
+        List<Hash> hashes = new ArrayList<>();
+        while (hashes.size() < amount) {
+            List<Hash> newHashes = hashRepository.findAndDelete(amount);
+            hashes.addAll(newHashes);
+            if (hashes.size() < amount) {
+                generateHash();
+            }
         }
 
         return hashes.stream()

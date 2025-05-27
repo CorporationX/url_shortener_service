@@ -61,7 +61,7 @@ shortener:
   redis:
     url-ttl: 24
   db:
-    url-ttl: 1
+    url-ttl: 365
 
 server:
   port: 8080

@@ -13,3 +13,5 @@ CREATE TABLE hashes
 CREATE SEQUENCE unique_number_seq
     START WITH 1
     INCREMENT BY 1;
+
+CREATE INDEX idx_urls_created_at ON urls (created_at);

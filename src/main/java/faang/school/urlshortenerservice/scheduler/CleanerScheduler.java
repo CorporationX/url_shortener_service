@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class CleanerScheduler {
     @Transactional
     @Scheduled(cron = "${scheduler.cron.clean}")
     public void clean() {
-        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(urlTtl);
-        List<Url> urls = urlRepository.findByCreatedAtBefore(oneYearAgo);
+        LocalDateTime daysAgo = LocalDateTime.now().minusDays(urlTtl);
+        List<Url> urls = urlRepository.findByCreatedAtBefore(daysAgo);
 
         if (!urls.isEmpty()) {
             List<Hash> hashes = urlRepository.deleteByHashAndReturn(urls.stream()

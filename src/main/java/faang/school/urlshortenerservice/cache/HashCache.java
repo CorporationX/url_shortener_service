@@ -42,11 +42,26 @@ public class HashCache {
     }
 
     public String getHash() {
-        if (hashes.size() / (capacity * 100.0) < fillPercent && isFilling.compareAndSet(false, true)) {
-            getHashBatchAsync(capacity)
-                    .thenAccept(hashes::addAll)
+        if (shouldRefill()) {
+            refill();
+        }
+
+        return hashes.poll();
+    }
+
+    private boolean shouldRefill() {
+        return (double) hashes.size() / capacity < fillPercent / 100.0;
+    }
+
+    private void refill() {
+        if (isFilling.compareAndExchange(false, true)) {
+            getHashBatchAsync(capacity - hashes.size())
+                    .thenAccept(newHashes -> {
+                        synchronized (hashes) {
+                            hashes.addAll(newHashes);
+                        }
+                    })
                     .thenRun(() -> isFilling.set(false));
         }
-        return hashes.poll();
     }
 }

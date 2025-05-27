@@ -48,7 +48,7 @@ public class UrlController {
                     @ApiResponse(responseCode = "202", description = "Ссылка успешна создана"),
                     @ApiResponse(responseCode = "400", description = "Некорректный формат URL")
             })
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public UrlResponseDto createUrl(@RequestBody @Valid UrlRequestDto url) {
         return urlService.createShortUrl(url.getUrl());
