@@ -16,6 +16,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,6 +36,13 @@ public class UrlService {
         String originalUrl = url.originalUrl();
         log.info("Starting URL shortening for: {}", originalUrl);
 
+        Optional<String> existingHash = urlRepository.findOriginalUrlByHash(originalUrl);
+        if (existingHash.isPresent()) {
+            String hash = existingHash.get();
+            log.debug("Found existing hash for URL: {}", hash);
+            String shortenedUrl = buildShortUrl(hash);
+            return new ShortenedUrlResponse(shortenedUrl);
+        }
         String hash = hashCache.getHash();
 
         UrlMapping urlMapping = new UrlMapping();

@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.HashUnavailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -106,5 +107,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("INTERNAL_ERROR", exception.getMessage()));
+    }
+
+    /**
+     * Обрабатывает исключение {@link ConstraintViolationException},
+     * возникающее при нарушении валидации на уровне JPA, сервисов или REST-клиентов.
+     * Формирует структурированный ответ с перечнем ошибок валидации.
+     *
+     * @param exception Перехваченное исключение {@link ConstraintViolationException}
+     * @return Ответ с HTTP статусом 400 и детализированным описанием ошибок валидации
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
+        List<String> errors = exception.getConstraintViolations()
+                .stream()
+                .map(violation -> String.format("%s: %s",
+                        violation.getPropertyPath(),
+                        violation.getMessage()))
+                .toList();
+
+        log.error("Constraint validation failed: {}", errors);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        "CONSTRAINT_VIOLATION",
+                        exception.getMessage(),
+                        errors));
     }
 }

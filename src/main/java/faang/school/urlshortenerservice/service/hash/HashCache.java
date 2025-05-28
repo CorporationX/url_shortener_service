@@ -41,6 +41,8 @@ public class HashCache {
             }
             return availableHashes.take();
         } catch (InterruptedException e) {
+            log.error("Thread interrupted during hash retrieval. Available hashes: {}",
+                    availableHashes.size(), e);
             Thread.currentThread().interrupt();
             throw new HashUnavailableException("Hash generation interrupted", e);
         }
