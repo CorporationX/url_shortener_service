@@ -13,10 +13,11 @@ public class ThreadPoolConfig {
 
     @Bean(name = "hashExecutor")
     public ThreadPoolTaskExecutor hashExecutor() {
+        var threadPoolPropertiesCache = threadPoolProperties.getCache();
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(threadPoolProperties.getCache().getExecutor().getPoolSize());
-        executor.setMaxPoolSize(threadPoolProperties.getCache().getExecutor().getPoolSize());
-        executor.setQueueCapacity(threadPoolProperties.getCache().getExecutor().getQueueSize());
+        executor.setCorePoolSize(threadPoolPropertiesCache.getExecutor().getPoolSize());
+        executor.setMaxPoolSize(threadPoolPropertiesCache.getExecutor().getPoolSize());
+        executor.setQueueCapacity(threadPoolPropertiesCache.getExecutor().getQueueSize());
         executor.setThreadNamePrefix("HashCache-");
         executor.initialize();
         return executor;

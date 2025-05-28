@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +24,16 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping()
-    public ResponseEntity<String> generateShortUrl(
+    public ResponseEntity<UrlResponseDto> generateShortUrl(
             @RequestBody @Valid UrlDto urlDto
     ) {
-        String response = urlService.createShortLink(urlDto);
+        UrlResponseDto response = urlService.generateShortUrl(urlDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Void> getUrl(@PathVariable String hash) {
+    public ResponseEntity<Void> redirect(@PathVariable String hash) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(urlService.getUrl(hash)))

@@ -27,8 +27,13 @@ public class HashCache {
 
     private final Queue<String> cache = new ConcurrentLinkedQueue<>();
 
+    @PostConstruct
+    public void init() {
+        refill();
+    }
+
     public String getHash() {
-        maybeRefill();
+        refill();
 
         String hash = cache.poll();
 
@@ -39,19 +44,20 @@ public class HashCache {
         return hash;
     }
 
-    private void maybeRefill() {
+    private void refill() {
         int currentSize = cache.size();
-        int threshold = threadPoolProperties.getCache().getMaxSize() * threadPoolProperties.getCache().getRefillThresholdPercent() / 100;
+        var threadPoolPropertiesCache = threadPoolProperties.getCache();
+        int threshold = threadPoolPropertiesCache.getMaxSize() * threadPoolPropertiesCache.getRefillThresholdPercent() / 100;
         if (currentSize <= threshold && isRefilling.compareAndSet(false, true)) {
-            log.info("Hash cache below threshold ({} of {}). Refilling...", currentSize, threadPoolProperties.getCache().getMaxSize());
+            log.info("Hash cache below threshold ({} of {}). Refilling...", currentSize, threadPoolPropertiesCache.getMaxSize());
             hashExecutor.execute(this::refillCacheAsync);
         }
     }
 
     private void refillCacheAsync() {
-        try {
-            while (cache.size() < threadPoolProperties.getCache().getMaxSize()) {
-                var batch = hashRepository.getHashBatch(threadPoolProperties.getCache().getBatchSize());
+        var threadPoolPropertiesCache = threadPoolProperties.getCache();        try {
+            while (cache.size() < threadPoolPropertiesCache.getMaxSize()) {
+                var batch = hashRepository.getHashBatch(threadPoolPropertiesCache.getBatchSize());
                 if (batch.isEmpty()) {
                     log.warn("No hashes available in DB. Triggering generator...");
                     hashGenerator.generateBatch();
@@ -65,10 +71,5 @@ public class HashCache {
         } finally {
             isRefilling.set(false);
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        maybeRefill();
     }
 }

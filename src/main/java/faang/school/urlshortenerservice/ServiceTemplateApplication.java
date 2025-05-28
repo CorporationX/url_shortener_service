@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice;
 
+import faang.school.urlshortenerservice.config.redis.RedisProperties;
 import faang.school.urlshortenerservice.config.threadpool.ThreadPoolProperties;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 @EnableConfigurationProperties({
-        ThreadPoolProperties.class
+        ThreadPoolProperties.class,
+        RedisProperties.class
 })
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
