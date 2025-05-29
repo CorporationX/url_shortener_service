@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.config.TestBeans;
+import faang.school.urlshortenerservice.config.ContainersConfiguration;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = TestBeans.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 @DisplayName("CleanerScheduler Test")
 class CleanerSchedulerTest {
 

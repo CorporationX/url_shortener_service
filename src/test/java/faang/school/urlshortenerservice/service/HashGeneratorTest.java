@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.TestBeans;
+import faang.school.urlshortenerservice.config.ContainersConfiguration;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = TestBeans.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 @DisplayName("HashGenerator Test")
 class HashGeneratorTest {
 

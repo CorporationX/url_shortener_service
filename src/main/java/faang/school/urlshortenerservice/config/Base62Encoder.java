@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -16,9 +15,6 @@ public class Base62Encoder {
     public List<String> encode(List<Long> numbers) {
         if (numbers == null) {
             throw new IllegalArgumentException("Numbers list cannot be null or contain null values");
-        }
-        if (numbers.isEmpty()) {
-            return Collections.emptyList();
         }
 
         return numbers.stream()

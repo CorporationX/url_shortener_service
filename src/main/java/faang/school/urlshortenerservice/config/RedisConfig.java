@@ -49,7 +49,7 @@ public class RedisConfig {
         return new JedisConnectionFactory(redisConfig, clientConfig);
     }
 
-    @Bean(name = "hashRedisTemplate")
+    @Bean
     public RedisTemplate<String, String> hashRedisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());

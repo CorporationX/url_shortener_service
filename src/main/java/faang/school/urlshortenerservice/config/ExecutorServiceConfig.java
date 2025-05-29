@@ -21,7 +21,7 @@ public class ExecutorServiceConfig {
     @Value("${hash-generator.executor.ttl-in-seconds}")
     private long ttlInSeconds;
 
-    @Bean(name = "hashGeneratorExecutor")
+    @Bean
     public ExecutorService hashGeneratorExecutor() {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 coreSize,

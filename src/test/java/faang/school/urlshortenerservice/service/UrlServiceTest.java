@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.TestBeans;
+import faang.school.urlshortenerservice.config.ContainersConfiguration;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = TestBeans.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 @DisplayName("UrlService Test")
 class UrlServiceTest {
 

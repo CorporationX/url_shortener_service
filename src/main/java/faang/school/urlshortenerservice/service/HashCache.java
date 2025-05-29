@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +16,6 @@ import java.util.concurrent.ExecutorService;
 public class HashCache {
 
     private final HashService hashService;
-
-    @Qualifier("hashGeneratorExecutor")
     private final ExecutorService executorService;
 
     @Value("${hash-generator.cache-size}")

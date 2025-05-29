@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.config.TestBeans;
+import faang.school.urlshortenerservice.config.ContainersConfiguration;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = TestBeans.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 @AutoConfigureMockMvc
 @DisplayName("UrlController Test")
 class UrlControllerTest {
