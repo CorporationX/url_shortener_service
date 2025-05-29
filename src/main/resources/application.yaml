@@ -36,6 +36,9 @@ hash:
     min-size: 100
     fill-size: 500
 
+url:
+  retention-period: 1y
+
 scheduler:
   cleaner:
     cron: "0 0 3 * * ?" # ежедневно в 3:00
