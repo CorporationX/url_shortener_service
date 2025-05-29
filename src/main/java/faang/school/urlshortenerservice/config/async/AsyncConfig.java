@@ -24,8 +24,8 @@ public class AsyncConfig {
     @Value("${async.pool.keep-alive-time}")
     private Long keepAliveTime;
 
-    @Bean("hashCacheExecutor")
-    public ExecutorService hashGeneratorThreadPool() {
+    @Bean
+    public ExecutorService hashCacheExecutor() {
         return new ThreadPoolExecutor(corePoolSize,
                 maxPoolSize,
                 keepAliveTime, TimeUnit.SECONDS,
