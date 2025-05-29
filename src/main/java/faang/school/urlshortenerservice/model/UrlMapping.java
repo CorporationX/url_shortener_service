@@ -26,5 +26,5 @@ public class UrlMapping {
     private String originalUrl;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 }

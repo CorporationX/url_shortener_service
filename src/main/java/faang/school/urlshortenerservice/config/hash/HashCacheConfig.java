@@ -1,7 +1,5 @@
 package faang.school.urlshortenerservice.config.hash;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,32 +18,26 @@ import java.util.concurrent.TimeUnit;
 @Validated
 public class HashCacheConfig {
     @Value("${hash.cache.max-size}")
-    @Min(value = 1, message = "Max size must be at least 1")
     private int maxSize;
 
     @Value("${hash.cache.refill-threshold-percent}")
-    @Min(value = 1, message = "Refill threshold must be at least 1%")
-    @Max(value = 100, message = "Refill threshold must not exceed 100%")
     private int refillThresholdPercent;
 
     @Value("${hash.cache.executor.core-pool-size}")
-    @Min(value = 1, message = "Core pool size must be at least 1")
     private int executorCorePoolSize;
 
     @Value("${hash.cache.executor.max-pool-size}")
-    @Min(value = 1, message = "Max pool size must be at least 1")
     private int executorMaxPoolSize;
 
     @Value("${hash.cache.executor.queue-capacity}")
-    @Min(value = 1, message = "Queue capacity must be at least 1")
     private int executorQueueCapacity;
 
-    @Bean("availableHashesQueue")
-    public BlockingQueue<String> freeHashesQueue() {
+    @Bean
+    public BlockingQueue<String> availableHashesQueue() {
         return new ArrayBlockingQueue<>(maxSize);
     }
 
-    @Bean("hashRefillExecutor")
+    @Bean
     public ExecutorService hashRefillExecutor() {
         return new ThreadPoolExecutor(
                 executorCorePoolSize,

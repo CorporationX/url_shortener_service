@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -48,6 +49,7 @@ public class UrlService {
         UrlMapping urlMapping = new UrlMapping();
         urlMapping.setHashValue(hash);
         urlMapping.setOriginalUrl(originalUrl);
+        urlMapping.setCreatedAt(Instant.now());
         urlRepository.save(urlMapping);
 
         eventPublisher.publishEvent(new UrlCreatedEvent(hash, originalUrl));
