@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.sheduler;
 
+import faang.school.urlshortenerservice.properties.UrlProperties;
 import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 @Component
@@ -18,14 +20,25 @@ import java.util.List;
 public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final JdbcHashRepository jdbcHashRepository;
+    private final UrlProperties urlProperties;
 
     @Scheduled(cron = "${scheduler.cleaner.cron}")
     @Transactional
     public void cleanOld() {
-        List<String> freed = urlRepository.deleteOldAndReturnHashes();
-        if (!freed.isEmpty()) {
-            jdbcHashRepository.save(freed);
+        try {
+            List<String> freed = urlRepository.deleteOldAndReturnHashes(
+                    toIntervalString(urlProperties.getRetentionPeriod())
+            );
+            if (!freed.isEmpty()) {
+                jdbcHashRepository.save(freed);
+            }
+            log.info("Cleaned and recycled {} old hashes", freed.size());
+        } catch (Exception ex) {
+            log.error("Failed to clean old URLs", ex);
         }
-        log.info("Cleaned and recycled {} old hashes", freed.size());
+    }
+
+    private String toIntervalString(Duration duration) {
+        return duration.toDays() + " days";
     }
 }

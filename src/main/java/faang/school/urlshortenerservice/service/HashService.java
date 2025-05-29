@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.properties.CacheProperties;
 import faang.school.urlshortenerservice.repository.JdbcHashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,17 @@ public class HashService {
 
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
 
+    @PostConstruct
+    public void initCache() {
+        List<String> initial = jdbcHashRepository.getAndRemoveBatch(cacheProperties.getFillSize());
+        if (!initial.isEmpty()) {
+            hashCache.addAll(initial);
+            log.info("Initialized hash cache with {} items", initial.size());
+        } else {
+            log.warn("Failed to initialize hash cache: no hashes in DB");
+        }
+    }
+
     public String getNextHash() {
         maybeTriggerRefill();
 
@@ -36,7 +48,6 @@ public class HashService {
             hashCache.addAll(fallback);
             hash = hashCache.poll();
         }
-
         return hash;
     }
 

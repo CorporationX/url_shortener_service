@@ -5,9 +5,6 @@ CREATE TABLE IF NOT EXISTS url (
     created_at TIMESTAMPTZ DEFAULT current_timestamp
 );
 
-CREATE INDEX IF NOT EXISTS idx_url_hash ON url(hash);
-CREATE INDEX IF NOT EXISTS idx_url_url ON url(url);
-
 CREATE SEQUENCE IF NOT EXISTS unique_hash_number_seq
     START WITH 250000
     INCREMENT BY 7;

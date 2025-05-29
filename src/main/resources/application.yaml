@@ -37,7 +37,7 @@ hash:
     fill-size: 500
 
 url:
-  retention-period: 1y
+  retention-period: 365d
 
 scheduler:
   cleaner:

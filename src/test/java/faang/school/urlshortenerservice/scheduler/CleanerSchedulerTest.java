@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
+import faang.school.urlshortenerservice.properties.UrlProperties;
 import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.sheduler.CleanerScheduler;
@@ -9,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyList;
@@ -25,6 +27,9 @@ class CleanerSchedulerTest {
     @Mock
     private JdbcHashRepository jdbcHashRepository;
 
+    @Mock
+    private UrlProperties urlProperties;
+
     @InjectMocks
     private CleanerScheduler cleanerScheduler;
 
@@ -32,21 +37,25 @@ class CleanerSchedulerTest {
 
     @Test
     void cleanOld_shouldSaveReturnedHashesWhenNotEmpty() {
-        when(urlRepository.deleteOldAndReturnHashes()).thenReturn(hashes);
+        when(urlProperties.getRetentionPeriod()).thenReturn(Duration.ofDays(365));
+        when(urlRepository.deleteOldAndReturnHashes("365 days")).thenReturn(hashes);
 
         cleanerScheduler.cleanOld();
 
-        verify(urlRepository).deleteOldAndReturnHashes();
+        verify(urlProperties).getRetentionPeriod();
+        verify(urlRepository).deleteOldAndReturnHashes("365 days");
         verify(jdbcHashRepository).save(hashes);
     }
 
     @Test
     void cleanOld_shouldNotCallSaveWhenNoHashesReturned() {
-        when(urlRepository.deleteOldAndReturnHashes()).thenReturn(List.of());
+        when(urlProperties.getRetentionPeriod()).thenReturn(Duration.ofDays(365));
+        when(urlRepository.deleteOldAndReturnHashes("365 days")).thenReturn(List.of());
 
         cleanerScheduler.cleanOld();
 
-        verify(urlRepository).deleteOldAndReturnHashes();
+        verify(urlProperties).getRetentionPeriod();
+        verify(urlRepository).deleteOldAndReturnHashes("365 days");
         verify(jdbcHashRepository, never()).save(anyList());
     }
 }
