@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class Base62Encoder {
     private static final String BASE62_CHARS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -17,7 +16,7 @@ public class Base62Encoder {
                 .toList();
     }
 
-    public String encodeNumber(long number) {
+    private String encodeNumber(long number) {
         if (number == 0) {
             return String.valueOf(BASE62_CHARS.charAt(0));
         }
@@ -28,6 +27,6 @@ public class Base62Encoder {
             encoded.append(BASE62_CHARS.charAt(remainder));
             number /= BASE62_CHARS.length();
         }
-        return encoded.toString();
+        return encoded.reverse().toString();
     }
 }
