@@ -29,7 +29,7 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException ex) {
-        return buildResponse(Errors.NOT_FOUND, ex.getMessage());
+        return buildResponse(ex.getError(), ex.getError().getMessage());
     }
 
     @ExceptionHandler(Exception.class)

@@ -44,6 +44,6 @@ public class UrlService {
                     urlCacheRepository.save(hash, url.getUrl());
                     return url.getUrl();
                 })
-                .orElseThrow(() -> new UrlNotFoundException("can`t found url with hash: " + hash));
+                .orElseThrow(() -> new UrlNotFoundException("Url not found with hash: " + hash));
     }
 }
