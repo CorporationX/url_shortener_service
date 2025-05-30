@@ -20,7 +20,7 @@ public class ExecutorConfig {
         return new ThreadPoolExecutor(
                 cacheProperties.corePool(),
                 cacheProperties.corePool(),
-                0L,
+                cacheProperties.keepAlive(),
                 TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(cacheProperties.capacity()),
                 new ThreadPoolExecutor.AbortPolicy()

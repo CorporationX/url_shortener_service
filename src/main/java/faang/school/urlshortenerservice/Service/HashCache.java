@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @RequiredArgsConstructor
 public class HashCache {
+    private static int RETRIES = 20;
 
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
@@ -37,8 +38,7 @@ public class HashCache {
             return hash;
         }
         refillTrigger();
-        int retries = 20;
-        while (retries-- > 0) {
+        while (RETRIES-- > 0) {
             hash = cache.poll();
             if (hash != null) {
                 return hash;

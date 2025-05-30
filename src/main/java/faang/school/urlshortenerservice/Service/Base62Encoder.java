@@ -12,7 +12,7 @@ public class Base62Encoder {
     private static final int BASE = 62;
 
     List<String> encode(List<Long> numbers) {
-        List<String> encoded = new ArrayList<String>();
+        List<String> encoded = new ArrayList<>();
         for (Long number : numbers) {
             encoded.add(encodeElement(number));
         }
@@ -21,7 +21,7 @@ public class Base62Encoder {
 
     private String encodeElement(long number) {
         if (number == 0) {
-            return String.valueOf(BASE62_ALPHABET[0]);
+            return "0";
         }
         StringBuilder sb = new StringBuilder();
         while (number > 0) {

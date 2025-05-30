@@ -33,14 +33,15 @@ scheduler:
   cleaner-cron: "0 0 0 * * *"
 
 hash:
-  batch-size: 50
-  unique-number: 5
+  batch-size: 500
+  unique-number: 50
   thread:
     core-pool-size: 6
     max-pool-size: 12
     queue-capacity: 15
   cache:
-    max-size: 1000
+    max-size: 10000
     refill-percent: 20
     core-pool: 4
     capacity: 100
+    keep-alive: 0
