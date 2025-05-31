@@ -10,6 +10,5 @@ CREATE SEQUENCE IF NOT EXISTS unique_hash_number_seq
     INCREMENT BY 7;
 
 CREATE TABLE IF NOT EXISTS hash (
-    id BIGINT PRIMARY KEY DEFAULT nextval('unique_hash_number_seq'),
-    hash VARCHAR(7) UNIQUE NOT NULL
+    hash VARCHAR(7) PRIMARY KEY
 );
