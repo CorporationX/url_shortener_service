@@ -1,4 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/V001_url_shortener_tables_init.sql
+  - include:
       file: db/changelog/changeset/V002_drop_fk_url_hash.sql
