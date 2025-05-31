@@ -16,12 +16,12 @@ public class HashService {
 
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final ExecutorService executorService;
+    private final ExecutorService hashGeneratorExecutor;
 
     public List<String> getHashes(int count) {
         List<String> hashes = hashRepository.getHashes(count);
         if (hashes.size() < count) {
-            executorService.submit(hashGenerator::checkAndGenerateHashesAsync);
+            hashGeneratorExecutor.submit(hashGenerator::checkAndGenerateHashesAsync);
         }
         log.debug("Retrieved {} hashes from repository", hashes.size());
         return hashes;

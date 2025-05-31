@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 public class HashCache {
 
     private final HashService hashService;
-    private final ExecutorService executorService;
+    private final ExecutorService hashGeneratorExecutor;
 
     @Value("${hash-generator.cache-size}")
     private int cacheSize;
@@ -51,7 +51,7 @@ public class HashCache {
         if (shouldRefillCache()) {
             synchronized (this) {
                 if (shouldRefillCache()) {
-                    executorService.submit(this::refillCache);
+                    hashGeneratorExecutor.submit(this::refillCache);
                     log.info("Submitted async cache refill task");
                 }
             }
