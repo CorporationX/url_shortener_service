@@ -27,7 +27,7 @@ public class HashGenerator {
     @Value("${shortener.hash.batch.size}")
     private int batchSize;
 
-
+    @Transactional
     public void generateBatch() {
         try {
             List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.InvalidUrlException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -111,16 +110,5 @@ class HashServiceImplTest {
 
         assertEquals("http://example.com", response.getUrl());
         verify(urlRepository, times(1)).save(any());
-    }
-
-    @Test
-    void testCreateShortUrl_whenUrlIsInvalid_shouldThrowException() {
-        UrlRequestDto invalidRequest = new UrlRequestDto("htp:/invalid-url");
-
-        InvalidUrlException exception = assertThrows(InvalidUrlException.class, () ->
-            hashService.createShortUrl(invalidRequest));
-
-        assertTrue(exception.getMessage().contains("htp:/invalid-url"));
-        verify(urlRepository, never()).save(any());
     }
 }

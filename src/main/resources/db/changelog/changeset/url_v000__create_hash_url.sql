@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS url
 );
 
 CREATE INDEX IF NOT EXISTS  url_created_at_idx ON url(created_at);
-CREATE INDEX IF NOT EXISTS  url_url_idx ON url USING hash (url);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_url ON url (url);

@@ -37,13 +37,15 @@ public class HashCache {
     }
 
     private void checkFill() {
-        if(hashes.size() / (capacity / 100.0) < fillPercent) {
-            if(isFilling.compareAndSet(false, true)) {
+        if (hashes.size() / (capacity / 100.0) < fillPercent) {
+            if (isFilling.compareAndSet(false, true)) {
                 log.info("Hash less than {} percent left", fillPercent);
                 hashGenerator.getHashesAsync(capacity)
                         .thenAccept(hashes::addAll)
-                        .thenRun(() -> isFilling.set(false));
-                log.info("Added {} hashes to the cache", hashes.size());
+                        .thenRun(() -> {
+                            isFilling.set(false);
+                            log.info("Added {} hashes to the cache", hashes.size());
+                        });
             }
         }
     }

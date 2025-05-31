@@ -14,6 +14,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 
 import static faang.school.urlshortenerservice.exception.ErrorMessage.HASH_GENERATION_FAILED;
@@ -90,7 +91,7 @@ class HashGeneratorTest {
         when(hashRepository.getHashBatch(2)).thenReturn(hashes);
 
         CompletableFuture<List<String>> future = hashGenerator.getHashesAsync(2);
-        List<String> result = future.get();
+        List<String> result = future.get(1, TimeUnit.SECONDS);
 
         assertEquals(hashes, result);
         verify(hashRepository, times(1)).getHashBatch(2);
