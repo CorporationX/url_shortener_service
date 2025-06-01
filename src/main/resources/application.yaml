@@ -1,9 +1,14 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5433/postgres
     username: user
     password: password
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      ttl: 7d
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -23,3 +28,17 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batch-size: 1000
+  cache:
+    min-size: 100
+    fill-size: 500
+
+url:
+  retention-period: 365d
+
+scheduler:
+  cleaner:
+    cron: "0 0 3 * * ?" # ежедневно в 3:00
