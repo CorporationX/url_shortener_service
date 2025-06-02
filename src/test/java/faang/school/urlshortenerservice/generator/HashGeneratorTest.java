@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repository.SequenceRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,9 +27,6 @@ public class HashGeneratorTest {
     private HashService hashService;
 
     @Mock
-    private Base62Encoder base62Encoder;
-
-    @Mock
     private SequenceRepository sequenceRepository;
 
     @InjectMocks
@@ -45,14 +41,12 @@ public class HashGeneratorTest {
     @DisplayName("generateBatch - success")
     public void testGenerateBatchSuccess() {
         List<Long> numbers = List.of(1L, 2L, 3L);
-        List<String> encodeNumbers = List.of("a", "b", "c");
+        List<String> encodeNumbers = List.of("1", "2", "3");
         when(sequenceRepository.getUniqueNumbers(BATCH_SIZE)).thenReturn(numbers);
-        when(base62Encoder.encodeNumbers(numbers)).thenReturn(encodeNumbers);
 
         hashGenerator.generateBatch();
 
         verify(sequenceRepository, times(1)).getUniqueNumbers(BATCH_SIZE);
-        verify(base62Encoder, times(1)).encodeNumbers(numbers);
         verify(hashService, times(1)).save(encodeNumbers);
     }
 }

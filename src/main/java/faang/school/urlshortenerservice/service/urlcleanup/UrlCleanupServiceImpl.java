@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +25,6 @@ public class UrlCleanupServiceImpl implements UrlCleanupService {
 
     private final HashService hashService;
     private final UrlRepository urlRepository;
-    private final RetentionPeriodParser periodParser;
 
     @Value("${url.cleanup.retention-period}")
     private String urlRetentionPeriod;
@@ -34,7 +33,7 @@ public class UrlCleanupServiceImpl implements UrlCleanupService {
     @Transactional
     public void cleanExpiredUrls() {
         log.info("Starting cleanup expired URLs...");
-        LocalDateTime expiryDate = periodParser.calculateExpiryDate(urlRetentionPeriod);
+        Instant expiryDate = RetentionPeriodParser.calculateExpiryDate(urlRetentionPeriod);
         List<String> freeHashes = urlRepository.cleanExpiredUrls(expiryDate);
         if (freeHashes.isEmpty()) {
             log.info("There is no URLs older than {}", expiryDate);

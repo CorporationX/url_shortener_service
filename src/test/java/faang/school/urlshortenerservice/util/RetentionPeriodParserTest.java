@@ -3,7 +3,8 @@ package faang.school.urlshortenerservice.util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,8 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("Test cases of RetentionPeriodParserTest")
 public class RetentionPeriodParserTest {
 
-    private final RetentionPeriodParser periodParser = new RetentionPeriodParser();
-
     @Test
     @DisplayName("calculateExpiryDate - incorrect retention period format")
     public void testCalculateExpiryDateIncorrectFormat() {
@@ -21,7 +20,7 @@ public class RetentionPeriodParserTest {
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> periodParser.calculateExpiryDate("y1")
+                () -> RetentionPeriodParser.calculateExpiryDate("y1")
         );
 
         assertEquals(expectedMessage, exception.getMessage());
@@ -30,12 +29,21 @@ public class RetentionPeriodParserTest {
     @Test
     @DisplayName("calculateExpiryDate - success")
     public void testCalculateExpiryDateSuccess() {
-        LocalDate expectedDate = LocalDate.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
         assertAll(
-                () -> assertEquals(expectedDate.minusYears(1), periodParser.calculateExpiryDate("1y").toLocalDate()),
-                () -> assertEquals(expectedDate.minusMonths(2), periodParser.calculateExpiryDate("2M").toLocalDate()),
-                () -> assertEquals(expectedDate.minusDays(3), periodParser.calculateExpiryDate("3d").toLocalDate())
+                () -> assertEquals(
+                        now.minusYears(1).toLocalDate(),
+                        RetentionPeriodParser.calculateExpiryDate("1y").atZone(ZoneOffset.UTC).toLocalDate()
+                ),
+                () -> assertEquals(
+                        now.minusMonths(2).toLocalDate(),
+                        RetentionPeriodParser.calculateExpiryDate("2M").atZone(ZoneOffset.UTC).toLocalDate()
+                ),
+                () -> assertEquals(
+                        now.minusDays(3).toLocalDate(),
+                        RetentionPeriodParser.calculateExpiryDate("3d").atZone(ZoneOffset.UTC).toLocalDate()
+                )
         );
     }
 }

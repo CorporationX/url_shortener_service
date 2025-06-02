@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,18 +51,26 @@ public class UrlServiceImpl implements UrlService {
             return new UrlResponseDto(getShortUrl(existingUrl.get().getHash()));
         }
 
-        String hash = hashCache.getHash()
-                .orElseThrow(() -> new EmptyHashCacheException("Hash cache is empty"));
+        try {
+            String hash = hashCache.getHash()
+                    .orElseThrow(() -> new EmptyHashCacheException("Hash cache is empty"));
 
-        Url url = new Url();
-        url.setHash(hash);
-        url.setUrl(originalUrl);
+            Url url = new Url();
+            url.setHash(hash);
+            url.setUrl(originalUrl);
 
-        urlRepository.save(url);
-        urlCacheRepository.saveUrl(hash, originalUrl, cacheTtl);
-        log.info("The short URL for {} has been successfully created", originalUrl);
+            urlRepository.save(url);
+            urlCacheRepository.saveUrl(hash, originalUrl, cacheTtl);
+            log.info("The short URL for {} has been successfully created", originalUrl);
 
-        return new UrlResponseDto(getShortUrl(hash));
+            return new UrlResponseDto(getShortUrl(hash));
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Race condition detected for URL {}", originalUrl);
+            Url existing = urlRepository.findByUrl(originalUrl)
+                    .orElseThrow(() -> new UrlNotFoundException("URL not found already after race condition state"));
+
+            return new UrlResponseDto(getShortUrl(existing.getHash()));
+        }
     }
 
     @Override

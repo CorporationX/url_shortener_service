@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.service.urlcleanup;
 
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashService;
-import faang.school.urlshortenerservice.util.RetentionPeriodParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -33,26 +33,20 @@ public class UrlCleanupServiceImplTest {
     @Mock
     private UrlRepository urlRepository;
 
-    @Mock
-    RetentionPeriodParser periodParser;
-
     @InjectMocks
     private UrlCleanupServiceImpl urlCleanupService;
 
-    private LocalDateTime expiryDate;
+    private Instant expiryDate;
 
     @BeforeEach
     public void setUp() {
-        expiryDate = LocalDateTime.now();
-
         ReflectionTestUtils.setField(urlCleanupService, "urlRetentionPeriod", URL_RETENTION_PERIOD);
     }
 
     @Test
     @DisplayName("cleanExpiredUrls - without expired URLs")
     public void testCleanExpiredUrlsWithoutExpiredUrls() {
-        when(periodParser.calculateExpiryDate(URL_RETENTION_PERIOD)).thenReturn(expiryDate);
-        when(urlRepository.cleanExpiredUrls(expiryDate)).thenReturn(List.of());
+        when(urlRepository.cleanExpiredUrls(any(Instant.class))).thenReturn(List.of());
 
         urlCleanupService.cleanExpiredUrls();
 
@@ -63,8 +57,7 @@ public class UrlCleanupServiceImplTest {
     @DisplayName("cleanExpiredUrls - success")
     public void testCleanExpiredUrlsSuccess() {
         List<String> freeHashes = List.of("hash1", "hash2", "hash3");
-        when(periodParser.calculateExpiryDate(URL_RETENTION_PERIOD)).thenReturn(expiryDate);
-        when(urlRepository.cleanExpiredUrls(expiryDate)).thenReturn(freeHashes);
+        when(urlRepository.cleanExpiredUrls(any(Instant.class))).thenReturn(freeHashes);
 
         urlCleanupService.cleanExpiredUrls();
 

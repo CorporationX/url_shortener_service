@@ -17,12 +17,14 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -102,6 +104,21 @@ public class UrlServiceImplTest {
         assertEquals(EMPTY_HASH_CACHE, exception.getMessage());
         verify(urlRepository, never()).save(any());
         verify(urlCacheRepository, never()).saveUrl(anyString(), anyString(), any());
+    }
+
+    @Test
+    @DisplayName("createShortUrl - race condition to save URL")
+    public void testCreateShortUrlWithRaceCondition() {
+        when(urlRepository.findByUrl(ORIGINAL_URL))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(new Url()));
+        when(hashCache.getHash()).thenReturn(Optional.of(HASH));
+        when(urlRepository.save(any(Url.class))).thenThrow(new DataIntegrityViolationException("Insert error"));
+
+        UrlResponseDto actualUrl = urlService.createShortUrl(urlRequestDto);
+
+        verify(urlRepository, times(2)).findByUrl(ORIGINAL_URL);
+        assertNotNull(actualUrl);
     }
 
     @Test

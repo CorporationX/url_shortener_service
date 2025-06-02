@@ -4,6 +4,9 @@ CREATE TABLE IF NOT EXISTS url (
     created_at TIMESTAMP NOT NULL
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_url_url ON url (url);
+CREATE INDEX IF NOT EXISTS idx_url_created_at ON url (created_at);
+
 CREATE TABLE IF NOT EXISTS hash (
     hash VARCHAR(6) PRIMARY KEY
 );

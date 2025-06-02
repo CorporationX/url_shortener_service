@@ -20,6 +20,9 @@ public class AsyncConfig {
     @Value("${async.pool.hash-generator.queue-capacity}")
     private int hashGeneratorQueueCapacity;
 
+    @Value("${async.pool.hash-generator.thread-name-prefix}")
+    private String hashGeneratorThreadName;
+
     @Value("${async.executor.hash-cache.core-pool-size}")
     private int corePoolSize;
 
@@ -37,7 +40,7 @@ public class AsyncConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(hashGeneratorPoolSize);
         executor.setQueueCapacity(hashGeneratorQueueCapacity);
-        executor.setThreadNamePrefix("hash-generator-");
+        executor.setThreadNamePrefix(hashGeneratorThreadName);
         executor.initialize();
         return executor;
     }

@@ -18,7 +18,6 @@ import java.util.List;
 public class HashGenerator {
 
     private final HashService hashService;
-    private final Base62Encoder base62Encoder;
     private final SequenceRepository sequenceRepository;
 
     @Value("${hash.batch.generation.size:10000}")
@@ -28,7 +27,7 @@ public class HashGenerator {
     public void generateBatch() {
         log.info("Starting generate {} hashes", batchSize);
         List<Long> numbers = sequenceRepository.getUniqueNumbers(batchSize);
-        hashService.save(base62Encoder.encodeNumbers(numbers));
+        hashService.save(Base62Encoder.encodeNumbers(numbers));
         log.info("Successfully generated {} hashes", batchSize);
     }
 

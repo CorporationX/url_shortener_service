@@ -1,18 +1,22 @@
 package faang.school.urlshortenerservice.encoder;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 
-@Component
-public class Base62Encoder {
+public final class Base62Encoder {
 
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = BASE62.length();
+    private static final String ZERO_HASH = "0";
+    private static final String NEGATIVE_VALUE_MESSAGE = "The encoder does not support negative numbers";
 
-    public String encodeNumber(long number) {
+    public static String encodeNumber(long number) {
+        checkValueForNegative(number);
+
+        if (number == 0) {
+            return ZERO_HASH;
+        }
+
         StringBuilder hash = new StringBuilder();
-
         while (number > 0) {
             int remind = (int) (number % BASE);
             hash.append(BASE62.charAt(remind));
@@ -22,9 +26,15 @@ public class Base62Encoder {
         return hash.reverse().toString();
     }
 
-    public List<String> encodeNumbers(List<Long> numbers) {
+    public static List<String> encodeNumbers(List<Long> numbers) {
         return numbers.stream()
-                .map(this::encodeNumber)
+                .map(Base62Encoder::encodeNumber)
                 .toList();
+    }
+
+    private static void checkValueForNegative(long number) {
+        if (number < 0) {
+            throw new IllegalArgumentException(NEGATIVE_VALUE_MESSAGE);
+        }
     }
 }

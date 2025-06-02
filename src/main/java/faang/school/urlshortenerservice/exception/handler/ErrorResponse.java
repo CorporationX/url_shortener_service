@@ -1,16 +1,14 @@
 package faang.school.urlshortenerservice.exception.handler;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @RequiredArgsConstructor
 public class ErrorResponse {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private final LocalDateTime timestamp = LocalDateTime.now();
+    private final Instant timestamp = Instant.now();
     private final String message;
 }

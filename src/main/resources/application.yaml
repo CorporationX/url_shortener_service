@@ -43,6 +43,7 @@ app:
 async:
   pool:
     hash-generator:
+      thread-name-prefix: "hash-generator-"
       core-pool-size: 8
       queue-capacity: 16
   executor:
