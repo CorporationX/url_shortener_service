@@ -39,8 +39,15 @@ app:
     cron: "0 0 2 * * *"
     core-pool-size: 5
     max-pool-size: 10
-  cache:
+    range: 10000
+    max-attempts: 3
+
+  hash-cache:
     size: 10000
     refill-threshold: 0.2
+    core-pool-size: 5
+    max-pool-size: 10
+
   cleaner:
     cron: "0 0 3 * * *"
+    batch-size: 1000

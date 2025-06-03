@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,8 +22,11 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Value("${hash.range:10000}")
+    @Value("${app.hash-generator.range:10000}")
     private int maxRange;
+
+    @Value("${app.hash-generator.max-attempts:3}")
+    private int maxAttempts;
 
     @Transactional
     @Scheduled(cron = "${app.hash-generator.cron}")
@@ -34,22 +38,46 @@ public class HashGenerator {
                 .toList();
 
         hashRepository.saveAll(hashes);
+        log.info("Generated and saved {} hashes", hashes.size());
     }
 
     @Transactional
     public List<String> getHashBatch(long amount) {
-        log.info("Fetching {} hashes from DB", amount);
+        List<Hash> hashes = new ArrayList<>();
 
-        List<Hash> hashes = hashRepository.getHashBatchAndDelete(amount);
-        if (hashes.size() < amount) {
+        for (int attempt = 0; attempt <= maxAttempts; attempt++) {
+            List<Hash> batch = hashRepository.getHashBatchAndDelete(amount - hashes.size());
+            hashes.addAll(batch);
+
+            if (hashes.size() >= amount) {
+                break;
+            }
+
+            log.warn("Only {} hashes available, generating more (attempt {}/{})", hashes.size(), attempt + 1, maxAttempts);
             generateHash();
-            hashes.addAll(hashRepository.getHashBatchAndDelete(amount - hashes.size()));
         }
+
+        if (hashes.isEmpty()) {
+            throw new IllegalStateException("No hashes available after retries");
+        }
+
+        if (hashes.size() < amount) {
+            log.warn("Returned only {} hashes, less than requested {}", hashes.size(), amount);
+        }
+
         return hashes.stream().map(Hash::getHash).toList();
     }
 
     @Async("hashGeneratorExecutor")
     public CompletableFuture<List<String>> getHashBatchAsync(long amount) {
-        return CompletableFuture.completedFuture(getHashBatch(amount));
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+        try {
+            List<String> hashes = getHashBatch(amount);
+            future.complete(hashes);
+        } catch (Exception e) {
+            log.error("Failed to get hash batch asynchronously", e);
+            future.completeExceptionally(e);
+        }
+        return future;
     }
 }

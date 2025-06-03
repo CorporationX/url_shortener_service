@@ -30,8 +30,7 @@ public class UrlController {
     @PostMapping
     public ResponseEntity<UrlResponseDto> createShortUrl(@RequestBody @Valid UrlRequestDto urlRequestDto) {
         String hash = urlService.shortenUrl(urlRequestDto.getUrl());
-        String shortUrl = baseUrl + "/" + hash;
-        return ResponseEntity.ok(new UrlResponseDto(shortUrl));
+        return ResponseEntity.ok(new UrlResponseDto(baseUrl + "/" + hash));
     }
 
     @GetMapping("/{hash}")

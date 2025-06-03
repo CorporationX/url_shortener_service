@@ -13,16 +13,32 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
 
     @Value("${app.hash-generator.core-pool-size:5}")
-    private int corePoolSize;
+    private int hashGeneratorCorePoolSize;
 
     @Value("${app.hash-generator.max-pool-size:10}")
-    private int maxPoolSize;
+    private int hashGeneratorMaxPoolSize;
+
+    @Value("${hash-cache.core-pool-size:5}")
+    private int hashCacheCorePoolSize;
+
+    @Value("${hash-cache.max-pool-size:10}")
+    private int hashCacheMaxPoolSize;
+
+    @Bean(name = "hashCacheExecutor")
+    public Executor hashCacheExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(hashCacheCorePoolSize);
+        executor.setMaxPoolSize(hashCacheMaxPoolSize);
+        executor.setThreadNamePrefix("HashCache-");
+        executor.initialize();
+        return executor;
+    }
 
     @Bean(name = "hashGeneratorExecutor")
     public Executor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
+        executor.setCorePoolSize(hashGeneratorCorePoolSize);
+        executor.setMaxPoolSize(hashGeneratorMaxPoolSize);
         executor.setThreadNamePrefix("HashGenerator-");
         executor.initialize();
         return executor;
