@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.Service;
 
+import faang.school.urlshortenerservice.ExceptionHandler.Errors;
 import faang.school.urlshortenerservice.ExceptionHandler.UrlNotFoundException;
 import faang.school.urlshortenerservice.dto.UrlResponse;
 import faang.school.urlshortenerservice.entity.Url;
@@ -44,6 +45,6 @@ public class UrlService {
                     urlCacheRepository.save(hash, url.getUrl());
                     return url.getUrl();
                 })
-                .orElseThrow(() -> new UrlNotFoundException("Url not found with hash: " + hash));
+                .orElseThrow(() -> new UrlNotFoundException("with hash :"+ hash, Errors.NOT_FOUND));
     }
 }
