@@ -2,8 +2,8 @@ package faang.school.urlshortenerservice.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class NotFoundException extends ApiException {
-    public NotFoundException(String userMessage) {
+public class UrlNotFoundException extends ApiException {
+    public UrlNotFoundException(String userMessage) {
         super(HttpStatus.NOT_FOUND, userMessage, "Resource not found: " + userMessage);
     }
 }

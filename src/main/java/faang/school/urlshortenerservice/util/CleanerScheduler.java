@@ -25,11 +25,11 @@ public class CleanerScheduler {
 
         List<String> hashes = urlRepository.removeOldLinksAndReturnHash();
         if (hashes.isEmpty()) {
-            log.info("No old URLs found to clean");
+            log.debug("No old URLs found to clean");
             return;
         }
         hashRepository.save(hashes);
-        log.info("Saved {} old hashes to the database", hashes.size());
+        log.debug("Saved {} old hashes to the database", hashes.size());
         log.info("Scheduled URL cleaner task completed");
     }
 }

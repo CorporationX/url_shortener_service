@@ -25,13 +25,13 @@ public class HashCache {
     private final Queue<String> hashes = new LinkedBlockingQueue<>();
 
     @Value("${hash.cache.capacity:10000}")
-    private int capacity;
+    private Integer capacity;
 
     @Value("${hash.cache.fill.percent:20}")
-    private int fillPercent;
+    private Integer fillPercent;
 
     @Value("${hash.cache.fill.timeout:180}")
-    private int fillTimeout;
+    private Integer fillTimeout;
 
     @PostConstruct
     public void init() {

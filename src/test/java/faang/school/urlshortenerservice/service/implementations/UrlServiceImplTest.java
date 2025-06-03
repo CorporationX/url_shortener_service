@@ -2,15 +2,19 @@ package faang.school.urlshortenerservice.service.implementations;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlRequest;
+import faang.school.urlshortenerservice.dto.UrlResponse;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.exception.NotFoundException;
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -33,15 +37,11 @@ class UrlServiceImplTest {
     @Mock
     private UrlCacheRepository urlCacheRepository;
 
+    @Spy
+    private UrlMapper urlMapper = Mappers.getMapper(UrlMapper.class);
+
     @InjectMocks
     private UrlServiceImpl urlService;
-
-    private final String baseShortenerUrl = "http://short.url/";
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(urlService, "baseShortenerUrl", baseShortenerUrl);
-    }
 
     @Test
     void testCreateShortUrl_ShouldReturnShortUrl() {
@@ -53,9 +53,9 @@ class UrlServiceImplTest {
         when(hashCache.getHash()).thenReturn(hash);
         when(urlRepository.save(any(Url.class))).thenReturn(url);
 
-        String result = urlService.createShortUrl(request);
+        UrlResponse result = urlService.createShortUrl(request);
 
-        assertEquals(baseShortenerUrl + hash, result);
+        assertEquals(hash, result.getHash());
         verify(hashCache).getHash();
         verify(urlRepository).save(any(Url.class));
         verify(urlCacheRepository).save(hash, originalUrl);
@@ -98,7 +98,7 @@ class UrlServiceImplTest {
         when(urlCacheRepository.findByHash(hash)).thenReturn("");
         when(urlRepository.findById(hash)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> urlService.getOriginalUrl(hash));
+        assertThrows(UrlNotFoundException.class, () -> urlService.getOriginalUrl(hash));
         verify(urlCacheRepository).findByHash(hash);
         verify(urlRepository).findById(hash);
     }

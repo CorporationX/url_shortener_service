@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.UrlRequest;
+import faang.school.urlshortenerservice.dto.UrlResponse;
 import faang.school.urlshortenerservice.service.interfaces.UrlService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -27,18 +28,22 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ResponseEntity<String> createShortUrl(@Valid @RequestBody UrlRequest urlRequest,
-                                                 @RequestHeader("x-user-id") @Min(1) long userId) {
+    public ResponseEntity<UrlResponse> createShortUrl(@Valid @RequestBody UrlRequest urlRequest,
+                                                      @RequestHeader("x-user-id") @Min(1) long userId) {
         return ResponseEntity.ok(urlService.createShortUrl(urlRequest));
     }
 
     @GetMapping("/url/{hash}")
-    public ResponseEntity<?> redirect(@PathVariable String hash,
+    public ResponseEntity<Void> redirect(@PathVariable String hash,
                                       @RequestHeader("x-user-id") @Min(1) long userId) {
         String originalUrl = urlService.getOriginalUrl(hash);
+
+        if (originalUrl == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(originalUrl))
                 .build();
-
     }
 }

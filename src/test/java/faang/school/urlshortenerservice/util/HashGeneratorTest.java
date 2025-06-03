@@ -29,15 +29,10 @@ class HashGeneratorTest {
     private HashRepository hashRepository;
 
     @Mock
-    private Base62Encoder base62Encoder;
+    private HashBatchGenerator hashBatchGenerator;
 
     @InjectMocks
     private HashGenerator hashGenerator;
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(hashGenerator, "maxRange", 100);
-    }
 
     @Test
     void testGetHashes_ShouldReturnRequestedAmount_WhenEnoughInRepository() {
@@ -53,7 +48,7 @@ class HashGeneratorTest {
         assertEquals(3, result.size());
         verify(hashRepository, times(1)).getHashBatch(3);
         verifyNoMoreInteractions(hashRepository);
-        verifyNoInteractions(base62Encoder);
+        verifyNoInteractions(hashBatchGenerator);
     }
 
     @Test
@@ -63,29 +58,12 @@ class HashGeneratorTest {
 
         when(hashRepository.getHashBatch(3)).thenReturn(initialHashes);
         when(hashRepository.getHashBatch(2)).thenReturn(newHashes);
-        when(base62Encoder.encode(anyList())).thenReturn(List.of("hash2", "hash3"));
 
         List<String> result = hashGenerator.getHashes(3);
 
         assertEquals(3, result.size());
         verify(hashRepository, times(2)).getHashBatch(anyLong());
-        verify(hashRepository).save(anyList());
-        verify(base62Encoder).encode(anyList());
-    }
-
-    @Test
-    void testGenerateBatch_ShouldSaveNewHashes() {
-        List<Long> numbers = List.of(1L, 2L, 3L);
-        List<String> encodedHashes = List.of("a", "b", "c");
-
-        when(hashRepository.getUniqueNumbers(100)).thenReturn(numbers);
-        when(base62Encoder.encode(numbers)).thenReturn(encodedHashes);
-
-        hashGenerator.generateBatch();
-
-        verify(hashRepository).getUniqueNumbers(100);
-        verify(base62Encoder).encode(numbers);
-        verify(hashRepository).save(encodedHashes);
+        verify(hashBatchGenerator, times(1)).generateBatch();
     }
 
     @Test
@@ -96,12 +74,10 @@ class HashGeneratorTest {
         when(hashRepository.getHashBatch(anyLong()))
                 .thenReturn(emptyHashes)
                 .thenReturn(newHashas);
-        when(base62Encoder.encode(anyList())).thenReturn(List.of("new1", "new2"));
 
         List<String> result = hashGenerator.getHashes(2);
 
         assertEquals(2, result.size());
         verify(hashRepository, times(2)).getHashBatch(anyLong());
-        verify(hashRepository).save(anyList());
     }
 }

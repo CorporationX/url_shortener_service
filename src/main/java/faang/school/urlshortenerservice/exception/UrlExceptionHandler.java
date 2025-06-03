@@ -16,8 +16,8 @@ public class UrlExceptionHandler {
         return buildResponse(ex);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(NotFoundException ex) {
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUrlNotFoundException(UrlNotFoundException ex) {
         log.warn("URL not found: {}", ex.getMessage());
         return buildResponse(ex);
     }
