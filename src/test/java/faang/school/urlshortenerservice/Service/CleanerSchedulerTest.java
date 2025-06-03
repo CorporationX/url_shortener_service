@@ -28,7 +28,7 @@ public class CleanerSchedulerTest {
     private CleanerScheduler cleanerScheduler;
 
     @Test
-    void cleanOldUrls_shouldDeleteOldUrlsAndSaveHashes_whenHashesAreReturned() {
+    void positiveCleanOldUrlsShouldDeleteOldUrlsAndSaveHashes() {
         List<String> deletedHashes = List.of("hash1", "hash2");
         when(urlRepository.deleteOlderThan(Mockito.any())).thenReturn(deletedHashes);
 
@@ -39,7 +39,7 @@ public class CleanerSchedulerTest {
     }
 
     @Test
-    void cleanOldUrls_shouldDeleteOldUrlsAndNotSaveHashes_whenEmptyListReturned() {
+    void positiveCleanOldUrlsShouldDeleteOldUrlsAndNotSaveHashes() {
         when(urlRepository.deleteOlderThan(Mockito.any())).thenReturn(Collections.emptyList());
 
         cleanerScheduler.cleanOldUrls();
