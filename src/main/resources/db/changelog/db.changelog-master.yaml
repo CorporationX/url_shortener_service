@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/url_shortener_VOO1__initial.sql
+  - include:
+      file: db/changelog/changeset/url_shortener_VOO2.sql
