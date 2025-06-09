@@ -26,10 +26,17 @@ public class HashCache {
 
     private final AtomicBoolean filling = new AtomicBoolean(false);
 
-    private static final int MIN_CAPACITY = 100;
-    private static final int MAX_CAPACITY = 1000000;
-    private static final double MIN_FILL_PERCENT = 10.0;
-    private static final double MAX_FILL_PERCENT = 90.0;
+    @Value("${hash.cache.min-capacity:100}")
+    private int minCapacity;
+
+    @Value("${hash.cache.max-capacity:1000000}")
+    private int maxCapacity;
+
+    @Value("${hash.cache.min-fill-percent:10.0}")
+    private double minFillPercent;
+
+    @Value("${hash.cache.max-fill-percent:90.0}")
+    private double maxFillPercent;
 
     @PostConstruct
     public void init() {
@@ -56,25 +63,19 @@ public class HashCache {
         if (shouldRefillCache()) {
             if (filling.compareAndSet(false, true)) {
                 hashGenerator.getHashesAsync(capacity)
-                        .thenAccept(newHashes -> {
-                            synchronized (hashes) {
-                                hashes.addAll(newHashes);
-                            }
-                        })
-                        .thenRun(() -> filling.set(false));
+                    .thenAccept(newHashes -> {
+                        hashes.addAll(newHashes);
+                    });
             }
         }
 
-        String hash;
-        synchronized (hashes) {
-            hash = hashes.poll();
-            if (hash == null) {
-                var newHashes = hashGenerator.getHashes(capacity);
-                hash = newHashes.stream().findFirst()
-                        .orElseThrow(() -> new IllegalStateException("Failed to generate hash"));
-                newHashes.remove(hash);
-                hashes.addAll(newHashes);
-            }
+        String hash = hashes.poll();
+        if (hash == null) {
+            var newHashes = hashGenerator.getHashes(capacity);
+            hash = newHashes.stream().findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Failed to generate hash"));
+            newHashes.remove(hash);
+            hashes.addAll(newHashes);
         }
         return hash;
     }
@@ -84,13 +85,13 @@ public class HashCache {
     }
 
     private void validateParameters() {
-        if (capacity < MIN_CAPACITY || capacity > MAX_CAPACITY) {
+        if (capacity < minCapacity || capacity > maxCapacity) {
             throw new IllegalStateException(
-                    String.format("Cache capacity must be between %d and %d", MIN_CAPACITY, MAX_CAPACITY));
+                    String.format("Cache capacity must be between %d and %d", minCapacity, maxCapacity));
         }
-        if (fillPercent < MIN_FILL_PERCENT || fillPercent > MAX_FILL_PERCENT) {
+        if (fillPercent < minFillPercent || fillPercent > maxFillPercent) {
             throw new IllegalStateException(
-                    String.format("Fill percent must be between %.1f and %.1f", MIN_FILL_PERCENT, MAX_FILL_PERCENT));
+                    String.format("Fill percent must be between %.1f and %.1f", minFillPercent, maxFillPercent));
         }
     }
 }

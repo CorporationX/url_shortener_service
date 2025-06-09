@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UrlServiceTest {
+class UrlServiceImplTest {
 
     @Mock
     private HashCache hashCache;
@@ -56,6 +56,7 @@ class UrlServiceTest {
 
     @Test
     void testShortenSuccess() {
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
         RequestUrlDto request = new RequestUrlDto(TEST_URL);
         when(hashCache.getHash()).thenReturn(TEST_HASH);
 

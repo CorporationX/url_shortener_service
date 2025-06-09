@@ -12,8 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "hash-generator.async")
 public class HashGeneratorAsyncProperties {
 
-    @Positive(message = "Core pool size must be positive")
-    private int corePoolSize;
+    @Positive(message = "Min pool size must be positive")
+    private int minPoolSize;
 
     @Positive(message = "Max pool size must be positive")
     private int maxPoolSize;
@@ -31,10 +31,10 @@ public class HashGeneratorAsyncProperties {
     private int keepAliveSeconds;
 
     public void validatePoolSizes() {
-        if (maxPoolSize < corePoolSize) {
+        if (maxPoolSize < minPoolSize) {
             throw new IllegalArgumentException(
-                    String.format("Max pool size (%d) must be greater than or equal to core pool size (%d)",
-                            maxPoolSize, corePoolSize));
+                    String.format("Max pool size (%d) must be greater than or equal to min pool size (%d)",
+                            maxPoolSize, minPoolSize));
         }
     }
 }

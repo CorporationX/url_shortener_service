@@ -33,6 +33,9 @@ app:
   base-url: http://localhost:8080/
   api:
     version: /api/v1
+  base62:
+    alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    hash-length: 6
 
 hash:
   max-range: 1000
@@ -41,6 +44,10 @@ hash:
     fill:
       percent: 30
     ttl-in-seconds: 86400 # один день в секундах
+    min-capacity: 100
+    max-capacity: 1000000
+    min-fill-percent: 10.0
+    max-fill-percent: 90.0
 
 scheduling:
   url-cleaner:
@@ -54,7 +61,7 @@ scheduling:
 
 hash-generator:
   async:
-    core-pool-size: 2
+    min-pool-size: 2
     max-pool-size: 4
     queue-capacity: 100
     thread-name-prefix: HashGen-

@@ -69,6 +69,7 @@ public class HashGenerator {
             }
         } catch (Exception e) {
             log.error("Error during hash generation", e);
+            throw new HashGenerationException("Failed to generate hashes", e);
         }
     }
 

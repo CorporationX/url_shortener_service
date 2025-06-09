@@ -11,7 +11,9 @@ import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,19 +35,23 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional
     public ResponseUrlDto shorten(RequestUrlDto requestUrlDto) {
+        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
+        if (!urlValidator.isValid(requestUrlDto.getUrl())) {
+            throw new IllegalArgumentException("Некорректный формат URL: " + requestUrlDto.getUrl());
+        }
         try {
             String hash = hashCache.getHash();
 
             Url url = new Url();
             url.setUrl(requestUrlDto.getUrl());
             url.setHash(hash);
-            urlRepository.save(url);
+            Url savedUrl = urlRepository.save(url);
 
             urlCacheRepository.save(hash, requestUrlDto.getUrl(), ttlInSeconds);
 
             return ResponseUrlDto.builder()
-                    .originalUrl(requestUrlDto.getUrl())
-                    .shortUrl(baseUrlHttps + hash)
+                    .originalUrl(savedUrl.getUrl())
+                    .shortUrl(baseUrlHttps + savedUrl.getHash())
                     .build();
         } catch (Exception e) {
             log.error("Error while shortening URL: {}", requestUrlDto.getUrl(), e);
@@ -56,19 +62,13 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional(readOnly = true)
     public ResponseUrlDto getOriginalUrl(String hash) {
-        String url = getUrlFromCacheOrDatabase(hash);
-        return ResponseUrlDto.builder()
-                .originalUrl(url)
-                .build();
-    }
-
-    private String getUrlFromCacheOrDatabase(String hash) {
-        String cachedUrl;
         try {
-            cachedUrl = urlCacheRepository.get(hash);
+            String cachedUrl = urlCacheRepository.get(hash);
             if (cachedUrl != null) {
                 log.debug("Cache hit for hash: {}", hash);
-                return cachedUrl;
+                return ResponseUrlDto.builder()
+                        .originalUrl(cachedUrl)
+                        .build();
             }
         } catch (Exception e) {
             log.warn("Cache access failed for hash: {}. Falling back to database", hash, e);
@@ -85,11 +85,11 @@ public class UrlServiceImpl implements UrlService {
                 log.warn("Failed to save URL to cache for hash: {}", hash, e);
             }
 
-            return databaseUrl;
-        } catch (UrlNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error while retrieving URL from database for hash: {}", hash, e);
+            return ResponseUrlDto.builder()
+                    .originalUrl(databaseUrl)
+                    .build();
+        } catch (DataAccessException e) {
+            log.error("Database error while retrieving URL for hash: {}", hash, e);
             throw new CacheOperationException("Failed to retrieve URL from database", e);
         }
     }

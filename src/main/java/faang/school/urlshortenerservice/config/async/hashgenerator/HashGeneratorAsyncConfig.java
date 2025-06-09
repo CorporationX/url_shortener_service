@@ -19,16 +19,13 @@ public class HashGeneratorAsyncConfig {
         props.validatePoolSizes();
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(props.getCorePoolSize());
+        executor.setCorePoolSize(props.getMinPoolSize());
         executor.setMaxPoolSize(props.getMaxPoolSize());
         executor.setQueueCapacity(props.getQueueCapacity());
         executor.setThreadNamePrefix(props.getThreadNamePrefix());
-
         executor.setKeepAliveSeconds(props.getKeepAliveSeconds());
         executor.setAllowCoreThreadTimeOut(false);
-
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(props.getShutdownTimeoutSeconds());
 

@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.generator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import jakarta.annotation.PostConstruct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +11,27 @@ import java.util.Objects;
 @Component
 public class Base62Encoder {
 
-    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = BASE62.length();
+    @Value("${app.base62.alphabet}")
+    private String BASE62;
 
-    public static final int HASH_LENGTH = 6;
-    public static final long MAX_VALUE = (long) Math.pow(BASE, HASH_LENGTH) - 1;
+    @Value("${app.base62.hash-length}")
+    private int HASH_LENGTH;
+
+    private int BASE;
+    private long MAX_VALUE;
+
+    @PostConstruct
+    public void init() {
+        if (BASE62 == null) {
+            throw new IllegalStateException("BASE62 alphabet is not initialized");
+        }
+        if (HASH_LENGTH <= 0) {
+            throw new IllegalStateException("HASH_LENGTH must be positive");
+        }
+        
+        this.BASE = BASE62.length();
+        this.MAX_VALUE = (long) Math.pow(BASE, HASH_LENGTH) - 1;
+    }
 
     public List<String> encode(List<Long> numbers) {
         Objects.requireNonNull(numbers, "Numbers list cannot be null");
