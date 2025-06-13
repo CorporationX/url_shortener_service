@@ -17,9 +17,39 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    range: 1000
+    batch-size: 3000
+  pool:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 50
+    thread-name-prefix: HashGen-
+  batch-size: 100
+  thread-pool-size: 5
+  thread-queue-size: 50
+  fill-percent: 20
+
+exception:
+  exception-class: "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже. "
+
+scheduler:
+  cleaner:
+    cron: "0 0 2 * * *"       # каждый день в 2:00 ночи
+    lifetime-years: 1
+
+url:
+  domain: https://itlamp.ru
+  ttl: 24h
