@@ -25,7 +25,7 @@ public class HashCache {
     private final HashProperties hashProperties;
 
     private final Queue<String> hashQueue;
-    private final AtomicBoolean isFetching = new AtomicBoolean(false);
+    private final AtomicBoolean isFetching;
 
     public HashCache(@Qualifier("hashExecutor") Executor executor,
                      HashRepository hashRepository,
@@ -36,6 +36,7 @@ public class HashCache {
         this.hashGenerator = hashGenerator;
         this.hashProperties = hashProperties;
         this.hashQueue = new ConcurrentLinkedQueue<>();
+        this.isFetching = new AtomicBoolean(false);
     }
 
     @PostConstruct
@@ -65,13 +66,7 @@ public class HashCache {
         int batchSize = hashProperties.getBatchSize();
 
         List<Hash> hashes = hashRepository.getHashBatch(batchSize);
-        for (Hash h : hashes) {
-            if (hashQueue.size() < batchSize) {
-                hashQueue.offer(h.getHash());
-            } else {
-                break;
-            }
-        }
+        hashes.forEach(hash -> hashQueue.offer(hash.getHash()));
 
         log.info("Кэш пополнен. Текущий размер: {}", hashQueue.size());
     }
@@ -81,7 +76,7 @@ public class HashCache {
             executor.execute(() -> {
                 try {
                     refillCache();
-                    hashGenerator.generateBatch();
+                    hashGenerator.generateBatchAsync();
                 } catch (Exception e) {
                     log.error("Ошибка при асинхронном пополнении кэша", e);
                 } finally {

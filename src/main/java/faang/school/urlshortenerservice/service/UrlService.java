@@ -27,14 +27,15 @@ public class UrlService {
         urlRepository.save(url);
         cacheRepository.save(hash, originalUrl);
 
-        log.info("Создана короткая ссылка: {} → {}", hash, originalUrl);
+        log.debug("Создана короткая ссылка: {} → {}", hash, originalUrl);
         return hash;
     }
 
     public String getOriginalUrl(String hash) {
         return cacheRepository.findByHash(hash)
                 .orElseGet(() -> {
-                    log.info("Ссылка не найдена в Redis по хэшу: {}", hash);
+                    log.debug("Ссылка не найдена в Redis по хэшу: {}", hash);
+
                     return urlRepository.findById(hash)
                             .map(url -> {
                                 String originalUrl = url.getUrl();

@@ -1,19 +1,19 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.entity.Hash;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
-@Component
+@UtilityClass
 public class Base62Encoder {
 
     private static final String BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = 62;
+    private static final int BASE = BASE62_ALPHABET.length();
 
     public List<Hash> encode(List<Long> numbers) {
         return numbers.stream()
-                .map(this::encodeBase62)
+                .map(Base62Encoder::encodeBase62)
                 .map(Hash::new)
                 .toList();
     }

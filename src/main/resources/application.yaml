@@ -52,3 +52,4 @@ scheduler:
 
 url:
   domain: https://itlamp.ru
+  ttl: 24h
