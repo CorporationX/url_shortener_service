@@ -4,6 +4,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,9 +20,55 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      key-prefix:
+        url: "url:"
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  service:
+    url: default
+    hash: default
+    url-cleanup: default
+
+async:
+  pool:
+    hash-generator:
+      thread-name-prefix: "hash-generator-"
+      core-pool-size: 8
+      queue-capacity: 16
+  executor:
+    hash-cache:
+      core-pool-size: 8
+      max-pool-size: 12
+      keep-alive: 1
+      queue-capacity: 16
+
+hash:
+  cache:
+    capacity: 100
+    refill:
+      threshold: 0.2
+  batch:
+    generation:
+      size: 1000
+    repository:
+      size: 100
+  threshold: 150
+  cron: "0 0 0 * * *"
+
+url:
+  cache-ttl: 24h
+  default-url: "http://localhost:8080/"
+  cleanup:
+    retention-period: "1y" # Example: "1y", "2M", "10d"
+    cron: "0 0 0 * * *"
