@@ -1,16 +1,19 @@
 package faang.school.urlshortenerservice.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class RetentionPeriodParser {
+@UtilityClass
+public class RetentionPeriodParser {
 
-    private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([yMd])");
+    private final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([yMd])");
 
-    public static Instant calculateExpiryDate(String retentionPeriod) {
+    public Instant calculateExpiryDate(String retentionPeriod) {
         Matcher matcher = PERIOD_PATTERN.matcher(retentionPeriod);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Incorrect retention period format. Example: 1y, 2M, 3d");

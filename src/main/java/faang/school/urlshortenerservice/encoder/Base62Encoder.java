@@ -1,15 +1,18 @@
 package faang.school.urlshortenerservice.encoder;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.List;
 
-public final class Base62Encoder {
+@UtilityClass
+public class Base62Encoder {
 
-    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = BASE62.length();
-    private static final String ZERO_HASH = "0";
-    private static final String NEGATIVE_VALUE_MESSAGE = "The encoder does not support negative numbers";
+    private final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final int BASE = BASE62.length();
+    private final String ZERO_HASH = "0";
+    private final String NEGATIVE_VALUE_MESSAGE = "The encoder does not support negative numbers";
 
-    public static String encodeNumber(long number) {
+    public String encodeNumber(long number) {
         checkValueForNegative(number);
 
         if (number == 0) {
@@ -26,13 +29,13 @@ public final class Base62Encoder {
         return hash.reverse().toString();
     }
 
-    public static List<String> encodeNumbers(List<Long> numbers) {
+    public List<String> encodeNumbers(List<Long> numbers) {
         return numbers.stream()
                 .map(Base62Encoder::encodeNumber)
                 .toList();
     }
 
-    private static void checkValueForNegative(long number) {
+    private void checkValueForNegative(long number) {
         if (number < 0) {
             throw new IllegalArgumentException(NEGATIVE_VALUE_MESSAGE);
         }
