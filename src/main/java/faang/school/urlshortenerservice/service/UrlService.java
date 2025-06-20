@@ -8,4 +8,4 @@ public interface UrlService {
     ResponseUrlDto shorten(RequestUrlDto requestUrlDto);
 
     ResponseUrlDto getOriginalUrl(String hash);
-} 
+}
