@@ -1,20 +1,24 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
 public class UrlCacheRepository {
 
-    private final StringRedisTemplate redisTemplate;
+    private static final String KEY_PREFIX = "url:";
 
-    public String getUrlByHash(String hash) {
-        return redisTemplate.opsForValue().get(hash);
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public void save(String keyHash, String url, long ttlInSeconds) {
+        redisTemplate.opsForValue().set(KEY_PREFIX + keyHash, url, ttlInSeconds, TimeUnit.SECONDS);
     }
 
-    public void save(String url, String hash) {
-        redisTemplate.opsForValue().set(hash, url);
+    public String get(String key) {
+        return redisTemplate.opsForValue().get(KEY_PREFIX + key);
     }
 }

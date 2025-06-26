@@ -4,10 +4,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-  data:
-    redis:
-      port: 6379
-      host: localhost
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -16,12 +12,15 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        order_inserts: true
-        order_updates: true
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 8080
@@ -30,25 +29,41 @@ logging:
   level:
     root: info
 
+app:
+  base-url: http://localhost:8080/
+  api:
+    version: /api/v1
+  base62:
+    alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    hash-length: 6
+
 hash:
+  max-range: 1000
   cache:
-    size: 1000
-    refill:
-      threshold: 0.2
-    executor:
-      pool-size: 4
-      queue-size: 100
-  generator:
-    executor:
-      pool-size: 4
-      queue-size: 100
-    batch:
-      size: 100
+    capacity: 1000
+    fill:
+      percent: 30
+    ttl-in-seconds: 86400 # один день в секундах
+    min-capacity: 100
+    max-capacity: 1000000
+    min-fill-percent: 10.0
+    max-fill-percent: 90.0
 
-cleaner:
-  scheduler:
-    cron: 0 0 0 * * * # At midnight
-    days-to-live: 365
+scheduling:
+  url-cleaner:
+    cron: "0 0 2 * * ?"
+    enabled: true
+    retention-days: 365
 
-host:
-  base-host: http://localhost:8080
+  hash-generation:
+    cron: "0 0 3 * * *"
+    enabled: true
+
+hash-generator:
+  async:
+    min-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    thread-name-prefix: HashGen-
+    shutdown-timeout-seconds: 30
+    keep-alive-seconds: 60

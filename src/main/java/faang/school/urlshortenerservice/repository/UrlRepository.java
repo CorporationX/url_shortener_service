@@ -1,25 +1,21 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.entity.Url;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface UrlRepository extends CrudRepository<Url, Long> {
-
-    Optional<Url> findByHash(String hash);
+public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Modifying
-    @Query(value = "DELETE FROM url WHERE created_at < :cutoffDate RETURNING hash",
-            nativeQuery = true)
-    List<String> deleteByCreatedAtBefore(@Param("cutoffDate") Instant cutoffDate);
-
-    Optional<Url> findByUrl(String url);
+    @Transactional
+    @Query(value = "DELETE FROM url WHERE created_at < :threshold RETURNING hash", nativeQuery = true)
+    List<String> deleteByCreatedAtBeforeReturningHashes(@Param("threshold") Instant threshold);
 }

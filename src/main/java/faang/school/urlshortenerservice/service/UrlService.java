@@ -1,10 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.RequestUrlDto;
+import faang.school.urlshortenerservice.dto.ResponseUrlDto;
 
 public interface UrlService {
 
-    String getOriginalUrl(String hash);
+    ResponseUrlDto shorten(RequestUrlDto requestUrlDto);
 
-    String createAndSaveShortUrl(UrlDto urlDto);
+    ResponseUrlDto getOriginalUrl(String hash);
 }
