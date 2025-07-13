@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+hash:
+    max_batch_size: 10
