@@ -26,3 +26,4 @@ logging:
 
 hash:
     max_batch_size: 10
+    max_length: 6
