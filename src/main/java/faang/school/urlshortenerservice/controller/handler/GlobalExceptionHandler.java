@@ -42,5 +42,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponseDto handleException(Exception e) {
+        log.error("Exception with message {} was thrown", e.getMessage());
+        return new ErrorResponseDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.name(),
+                "Something get wrong.",
+                e.getMessage(),
+                LocalDateTime.now().format(formatter)
+        );
+    }
+
 
 }
