@@ -1,0 +1,147 @@
+# Основные настройки pipeline
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+
+# Определяем стадии pipeline
+stages:
+  - build
+  - test
+  - docker-build
+  - docker-push
+  - deploy
+
+# Настройка кеширования для ускорения сборки
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+# Шаблон для Gradle задач
+.gradle_template: &gradle_template
+  image: eclipse-temurin:17-jdk-alpine
+  before_script:
+    - apk add --no-cache git
+    - chmod +x ./gradlew
+
+# Шаблон для Docker задач  
+.docker_template: &docker_template
+  image: docker:24.0.7
+  services:
+    - docker:24.0.7-dind
+  before_script:
+    - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+# === СТАДИЯ BUILD ===
+build:
+  <<: *gradle_template
+  stage: build
+  script:
+    - echo "Сборка проекта..."
+    - ./gradlew clean build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 hour
+  only:
+    - develop
+    - main
+    - merge_requests
+
+# === СТАДИЯ TEST ===
+test:
+  <<: *gradle_template
+  stage: test
+  script:
+    - echo "Запуск тестов..."
+    - ./gradlew test
+  artifacts:
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+    paths:
+      - build/test-results/test/
+    expire_in: 1 week
+  only:
+    - develop
+    - main
+    - merge_requests
+
+# === СТАДИЯ DOCKER BUILD ===
+docker-build-develop:
+  <<: *docker_template
+  stage: docker-build
+  script:
+    - echo "Сборка Docker образа для develop..."
+    - docker build -t $DOCKER_IMAGE_NAME:develop .
+    - echo "Образ собран успешно"
+  only:
+    - develop
+
+docker-build-main:
+  <<: *docker_template
+  stage: docker-build
+  script:
+    - echo "Сборка Docker образа для production..."
+    - docker build -t $DOCKER_IMAGE_NAME:production .
+    - echo "Образ собран успешно"
+  only:
+    - main
+
+# === СТАДИЯ DOCKER PUSH ===
+docker-push-develop:
+  <<: *docker_template
+  stage: docker-push
+  script:
+    - echo "Публикация образа develop в Docker Hub..."
+    - docker build -t $DOCKER_IMAGE_NAME:develop .
+    - docker push $DOCKER_IMAGE_NAME:develop
+    - echo "Образ $DOCKER_IMAGE_NAME:develop опубликован"
+  only:
+    - develop
+
+docker-push-main:
+  <<: *docker_template
+  stage: docker-push
+  script:
+    - echo "Публикация образа production в Docker Hub..."
+    - docker build -t $DOCKER_IMAGE_NAME:production .
+    - docker push $DOCKER_IMAGE_NAME:production
+    - echo "Образ $DOCKER_IMAGE_NAME:production опубликован"
+  only:
+    - main
+
+# === СТАДИЯ DEPLOY (локальная имитация) ===
+deploy-develop:
+  <<: *docker_template
+  stage: deploy
+  script:
+    - echo "Имитация деплоя на тестовый сервер..."
+    - echo "В реальности здесь был бы SSH и docker commands"
+    - echo "docker pull $DOCKER_IMAGE_NAME:develop"
+    - echo "docker stop demo-app-test || true"
+    - echo "docker rm demo-app-test || true"
+    - echo "docker run -d --name demo-app-test -p 8081:8080 $DOCKER_IMAGE_NAME:develop"
+    - echo "Тестовая версия 'развернута' на порту 8081"
+  environment:
+    name: testing
+    url: http://localhost:8081
+  only:
+    - develop
+
+deploy-production:
+  <<: *docker_template
+  stage: deploy
+  script:
+    - echo "Имитация деплоя на продакшн сервер..."
+    - echo "В реальности здесь был бы SSH и docker commands"
+    - echo "docker pull $DOCKER_IMAGE_NAME:production"
+    - echo "docker stop demo-app-prod || true"
+    - echo "docker rm demo-app-prod || true"
+    - echo "docker run -d --name demo-app-prod -p 8080:8080 $DOCKER_IMAGE_NAME:production"
+    - echo "Продакшн версия 'развернута' на порту 8080"
+  environment:
+    name: production
+    url: http://localhost:8080
+  when: manual  # Ручной запуск для продакшна
+  only:
+    - main

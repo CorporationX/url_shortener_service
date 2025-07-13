@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         log.error("Not found exception", e);
         return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
     }
-
+      
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(RuntimeException e, HttpServletRequest request) {

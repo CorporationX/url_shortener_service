@@ -24,6 +24,8 @@ public class Url {
     @Column(name = "hash", nullable = false, unique = true, length = 6)
     private String hash;
 
+
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
