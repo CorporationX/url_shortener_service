@@ -1,4 +1,11 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      cashingDuration: 3 #hours
+      top-hundred-refresh: 0 0 * * * *
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,6 +20,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 5000
+          order_inserts: true
+          order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -22,4 +33,15 @@ server:
 
 logging:
   level:
-    root: info
+    org.springframework.data.redis: DEBUG
+    io.lettuce.core: DEBUG
+
+hashRange:
+  maximum: 10000
+  scheduler_cron: 0 0 0 * * *
+  queue_capacity: 1000
+  queue_critical_load: 10.0
+  amount_to_pull: 750
+sceduled_cleanup_rate: 0 0 0 * * *
+staticUrl: localhost:8080/api/v1/urlShortener/
+
