@@ -1,0 +1,57 @@
+name: Vladimir's Shortener Service CI
+
+on:
+    push:
+        branches: [ "kelpie-stream10-vladimir" ]
+    pull_request:
+        branches: [ "kelpie-stream10-vladimir" ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+            -   name: Setup Gradle
+                uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
+            -   name: Build with Gradle Wrapper
+                run: ./gradlew assemble
+
+    test:
+        runs-on: ubuntu-latest
+        needs: build
+        permissions:
+            contents: read
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+            -   name: Setup Gradle
+                uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
+            -   name: Run tests with Gradle Wrapper
+                run: ./gradlew test
+
+    dependency-submission:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            -   uses: actions/checkout@v4
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+            -   name: Generate and submit dependency graph
+                uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
