@@ -16,9 +16,16 @@ spring:
 
   constants:
     hash_batch_size: 10
+    seq_batch_size: 10
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  async:
+    core_pool_size: 2
+    max_pool_size: 2
+    queue_capacity: 500
+    thread_name_prefix: maintanence-
 
 server:
   port: 8098
