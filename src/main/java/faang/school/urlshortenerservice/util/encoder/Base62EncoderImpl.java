@@ -16,7 +16,7 @@ public class Base62EncoderImpl implements Base62Encoder {
     private final Base62 base62;
     private final ByteBuffer byteBuffer;
 
-    @Value("hash.max_length")
+    @Value("${hash.max_length}")
     private int hashLength;
 
     @Override

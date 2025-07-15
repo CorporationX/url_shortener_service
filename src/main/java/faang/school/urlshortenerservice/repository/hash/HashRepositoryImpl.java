@@ -3,9 +3,11 @@ package faang.school.urlshortenerservice.repository.hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,11 +21,15 @@ public class HashRepositoryImpl implements HashRepository {
     @Value("${hash.max_batch_size}")
     private int maxBatchSize;
 
+    @Override
     public List<Long> getUniqueNumbers(int count) {
         String sql = "select nextval('unique_number_seq') from generate_series(1, ?)";
         return jdbcTemplate.queryForList(sql, Long.class, count);
     }
 
+    @Modifying
+    @Transactional
+    @Override
     public void saveBatch(List<String> hashes) {
         if (hashes.isEmpty()) {
             return;
@@ -43,6 +49,8 @@ public class HashRepositoryImpl implements HashRepository {
         );
     }
 
+    @Modifying
+    @Transactional
     @Override
     public List<String> getHashBatch() {
         String sql = "delete from hash where hash in (select hash from hash limit ?) returning hash";
