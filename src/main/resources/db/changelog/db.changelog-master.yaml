@@ -1,4 +1,4 @@
 databaseChangeLog:
   - include:
-      file: scripts/create.sql
+      file: create.sql
       relativeToChangelogFile: true
