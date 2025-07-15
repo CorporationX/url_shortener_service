@@ -23,4 +23,9 @@ public class HashServiceImpl implements HashService{
     public void deleteHashFromDataBase() {
         hashRepository.getHashBatch(limit);
     }
+
+    @Override
+    public List<String> saveAllHash(List<String> stringList) {
+        return hashRepository.saveByHashList(stringList);
+    }
 }

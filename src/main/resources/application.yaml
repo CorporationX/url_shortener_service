@@ -29,3 +29,7 @@ logging:
 hash:
   batch:
     limit: 10
+
+moderation:
+  shortener:
+    cron: "0 0 * * *"
