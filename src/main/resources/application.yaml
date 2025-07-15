@@ -26,3 +26,10 @@ logging:
 
 hash:
   batch-size: 1000
+  schedule-cron: "0 0 * * * *"
+
+uniqueIdsPerBatch: 1000
+
+generator:
+  pool-core-size: 4
+  queue-capacity: 200
