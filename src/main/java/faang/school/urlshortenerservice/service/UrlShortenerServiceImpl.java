@@ -32,7 +32,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Value("${staticUrl}")
     private String staticUrl;
 
-
     @Transactional
     public String create(UrlShortenerDto urlShortenerDto) {
         String hashToSave = cache.getHash();

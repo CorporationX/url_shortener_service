@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.async.AsyncHashGenerator;
+import faang.school.urlshortenerservice.async.AsyncHashGeneratorImpl;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
@@ -30,10 +30,9 @@ public class LocalCache {
     private int amountToPull;
 
     private final HashGenerator hashGenerator;
-    private final AsyncHashGenerator asyncHashGenerator;
+    private final AsyncHashGeneratorImpl asyncHashGenerator;
     private final ReentrantLock lock = new ReentrantLock();
     private Queue<String> hashes;
-
 
     @PostConstruct
     public void init() {

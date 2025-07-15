@@ -53,6 +53,4 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now().format(formatter)
         );
     }
-
-
 }

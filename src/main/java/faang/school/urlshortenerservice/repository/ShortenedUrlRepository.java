@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface ShortenedUrlRepository extends JpaRepository<ShortenedUrl, Long> {
     @Query("SELECT s FROM ShortenedUrl s WHERE s.hash=:hash")
-    Optional<ShortenedUrl> findByHash(@Param("hash")String actualHash);
+    Optional<ShortenedUrl> findByHash(@Param("hash") String actualHash);
 
     List<ShortenedUrl> findShortenedUrlsByCreatedAtBefore(LocalDateTime cutoff);
 }

@@ -27,6 +27,4 @@ public class UrlShortenerController {
     public String findUrlByHash(@PathVariable String hash) {
         return "redirect:" + urlShortenerService.findUrlByHash(hash);
     }
-
-
 }
