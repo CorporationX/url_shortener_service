@@ -13,3 +13,5 @@ CREATE TABLE urls (
                       hash VARCHAR(7) NOT NULL,
                       CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash(actualHash)
 );
+
+CREATE UNIQUE INDEX idx_urls_hash ON urls (hash);
