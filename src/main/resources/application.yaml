@@ -23,3 +23,12 @@ server:
 logging:
   level:
     root: info
+
+hash-generation:
+  hash-batch: 10000
+  get-numbers: 10000
+
+async:
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 50

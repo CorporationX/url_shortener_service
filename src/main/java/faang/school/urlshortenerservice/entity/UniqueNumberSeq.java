@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "unique_number_sequence")
+@Table(name = "unique_number_seq")
 public class UniqueNumberSeq {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
