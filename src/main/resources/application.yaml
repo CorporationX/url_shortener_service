@@ -25,5 +25,7 @@ logging:
     root: info
 
 app:
+  thread-pool:
+    size: 5
   hash:
     batch-size: 100
