@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "spring.constants")
 public class ConstantsProperties {
-    private int hashBatchSize;
-    private int seqBatchSize;
+    private int generationBathSize;
+    private int localCachingSize;
     private int generationThresholdPercent;
 
     private int cacheGenThreshold;
 
     @PostConstruct
     private void calculateCacheGenThreshold() {
-        cacheGenThreshold = hashBatchSize * generationThresholdPercent / 100;
+        cacheGenThreshold = localCachingSize * generationThresholdPercent / 100;
     }
 }
