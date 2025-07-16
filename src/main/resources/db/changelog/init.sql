@@ -1,15 +1,14 @@
-CREATE SEQUENCE unique_hash_number_seq
+CREATE SEQUENCE unique_number_seq
     START WITH 10000
-    INCREMENT BY 1
+    INCREMENT BY 1;
 
-CREATE TABLE hash (
-    id BIGINT NOT NULL IDENTITY UNIQUE,
-    hash VARCHAR(7) NOT NULL,
-    PRIMARY KEY (id)
+CREATE TABLE hash_value (
+    id BIGSERIAL PRIMARY KEY,
+    hash VARCHAR(7) NOT NULL UNIQUE
 );
 
 CREATE TABLE url (
-    hash VARCHAR(6) PRIMARY KEY,
+    hash VARCHAR(7) PRIMARY KEY,
     url TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
