@@ -44,7 +44,7 @@ public class HashRepositoryImpl implements HashRepository {
                 """;
         return jdbcTemplate.query(
                 sql,
-                (rs, rowNum) -> rs.getString("hash"),
+                (resultSet, rowNum) -> resultSet.getString("hash"),
                 batchSize
         );
     }
