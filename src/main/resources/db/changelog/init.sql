@@ -7,3 +7,9 @@ CREATE TABLE hash (
     hash VARCHAR(7) NOT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE url (
+    hash VARCHAR(6) PRIMARY KEY,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);

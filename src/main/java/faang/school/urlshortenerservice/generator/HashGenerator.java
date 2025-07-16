@@ -1,60 +1,42 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.config.context.HashGeneratorConfig;
+import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repo.HashRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
 
-    private static final String BASE62_CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
     private final HashRepository hashRepository;
-
-    @Value("${hash.range:1000}")
-    private int maxRange;
-
-    @Transactional
-    @Scheduled(cron = "${hash.cron:0 0 0 * * *}")
-    public void generateHash() {
-        List<Long> range = hashRepository.getNextRange(maxRange);
-        List<Hash> hashes = range.parallelStream()
-                .map(this::applyBase62Encoding)
-                .map(Hash::new)
-                .toList();
-        hashRepository.saveAll(hashes);
-    }
-
-    @Transactional
-    public List<String> getHashes (long amount) {
-        List<Hash> hashes = hashRepository.findAndDelete(amount);
-        if (hashes.size() < amount) {
-            generateHash();
-            hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
-        }
-        return hashes.stream().map(Hash::getHash).toList();
-    }
+    private final Base62Encoder base62Encoder;
+    private final HashGeneratorConfig config;
 
     @Async("hashGeneratorExecutor")
-    public CompletableFuture<List<String>> getHashesAsync (long amount) {
-        return CompletableFuture.completedFuture(getHashes(amount));
-    }
+    public CompletableFuture<Void> generateBatch() {
+        try {
+            // Получаем n уникальных чисел из БД
+            List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(config.getBatchSize());
 
-    private String applyBase62Encoding(long number) {
-        StringBuilder builder = new StringBuilder();
-        while (number > 0) {
-            builder.append(BASE62_CHARACTERS.charAt((int) (number % BASE62_CHARACTERS.length())));
-            number /= BASE62_CHARACTERS.length();
+            // Конвертируем числа в base62 хэши (используем новый метод encode(List<Long>))
+            List<String> hashes = base62Encoder.encode(uniqueNumbers);
+
+            // Сохраняем хэши в БД
+            hashRepository.saveAllHashes(hashes);
+
+            log.info("Generated and saved {} hashes", hashes.size());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error generating hash batch", e);
+            return CompletableFuture.failedFuture(e);
         }
-        return builder.toString();
     }
 }

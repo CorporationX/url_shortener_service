@@ -17,6 +17,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+hash-generator:
+  batch-size: 1000
+  pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 500
+
+url:
+  cleaner:
+    cron: "0 0 0 * * *" # Каждый день в полночь
+
 server:
   port: 8080
 
