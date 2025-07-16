@@ -6,22 +6,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class UserHeaderFilter implements Filter {
 
     private final UserContext userContext;
+    private final List<String> privatePath = List.of(
+            "/url"
+    );
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
+        boolean isPrivate = privatePath.stream().anyMatch(req.getRequestURI()::startsWith);
         String userId = req.getHeader("x-user-id");
-        if (userId != null) {
-            userContext.setUserId(Long.parseLong(userId));
-//        }else {
-//            throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+        if (isPrivate) {
+            if (userId != null) {
+                userContext.setUserId(Long.parseLong(userId));
+            } else {
+                throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
+            }
         }
         try {
             chain.doFilter(request, response);
