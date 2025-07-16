@@ -1,12 +1,11 @@
 package faang.school.urlshortenerservice.generator;
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,21 +16,21 @@ public class HashGenerator {
     private final HashRepository hashRepository;
 
     @Value("${hash.range:1000}")
-    int range;
+    private int range;
 
     @Transactional
     @Scheduled(cron = "0 0 * * * ?")
     public void generateHashRange() {
-        List<Long> nextRange = hashRepository.getNextRange(range);
-        List<Hash> hashes = nextRange.stream()
+        List<Long> nextRange = hashRepository.getUniqueNumbers(range);
+        List<String> hashes = nextRange.stream()
                 .map(this::applyBase62Encode)
-                .map(Hash::new)
                 .toList();
-        hashRepository.saveAll(hashes);
+        hashRepository.save(hashes);
     }
 
     private String applyBase62Encode(Long number) {
-        String base62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String base62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (number == 0) return "0";
         StringBuilder encoded = new StringBuilder();
         while (number > 0) {
             encoded.append(base62.charAt((int) (number % 62)));
