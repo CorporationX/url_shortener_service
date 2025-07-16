@@ -33,3 +33,5 @@ uniqueIdsPerBatch: 1000
 generator:
   pool-core-size: 4
   queue-capacity: 200
+
+base-url: https://corpx.com
