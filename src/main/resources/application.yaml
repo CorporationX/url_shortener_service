@@ -18,6 +18,8 @@ spring:
     generation_bath_size: 100
     local_caching_size: 100
     generation_threshold_percent: 20
+    clean_up_batch_size: 1000
+    expiration_interval: "1 year"
 
   data:
     redis:
@@ -36,6 +38,7 @@ spring:
 
   scheduling:
     hash_check_refill: "0/1 * * * * *" #ones a second
+    expired_hash_cleanup: "0 0 0 * * *" #every midnight
 
 server:
   port: 8098

@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/shrot_V001__tables_init.sql
+  - include:
+      file: db/changelog/changeset/shrot_V002__url_index_created_at.sql
