@@ -34,6 +34,9 @@ spring:
     queue_capacity: 500
     thread_name_prefix: maintanence-
 
+  scheduling:
+    hash_check_refill: "0/1 * * * * *" #ones a second
+
 server:
   port: 8098
 

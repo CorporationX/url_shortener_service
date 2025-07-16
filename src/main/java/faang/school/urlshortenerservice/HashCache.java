@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice;
 import faang.school.urlshortenerservice.config.ConstantsProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.LockUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,18 +22,25 @@ public class HashCache {
     private final HashRepository repository;
 
     private final ReentrantLock lock = new ReentrantLock();
+    private int cacheGenThreshold;
 
     public String getHash() {
         return cache.poll();
     }
 
-    @Scheduled(cron = "0/1 * * * * *")
+    @Scheduled(cron = "${spring.scheduling.hash_check_refill}")
     @Async("taskExecutor")
     public void checkAndRefillFreeHashesLeft() {
-        if (cache.size() > (constantsProperties.getCacheGenThreshold())) return;
+        if (cache.size() > cacheGenThreshold) return;
 
         LockUtil.withLock(lock, generator::generateBatch);
         List<String> hashBatch = repository.getHashBatch();
         cache.addAll(hashBatch);
+    }
+
+    @PostConstruct
+    private void calculateCacheGenThreshold() {
+        cacheGenThreshold =
+                constantsProperties.getLocalCachingSize() * constantsProperties.getGenerationThresholdPercent() / 100;
     }
 }
