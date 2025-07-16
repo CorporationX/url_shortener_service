@@ -43,3 +43,9 @@ server:
 logging:
   level:
     root: info
+
+encoding:
+  alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  hash_length: 6
+  max_number: 56800235584 #62^6
+  shuffle_key: 56800235533 #Prime number, close to MAX_NUMBER

@@ -1,0 +1,15 @@
+package faang.school.urlshortenerservice.config;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Data
+@Component
+@ConfigurationProperties("encoding")
+public class HashEncoderProperties {
+    private String alphabet;
+    private int hashLength;
+    private long maxNumber;
+    private long shuffleKey;
+}
