@@ -21,17 +21,19 @@ public class LocalCache {
     private final HashGenerator hashGenerator;
     private final HashRepository hashRepository;
 
-    @Value("${hash.cache.capacity:10000}")
+    @Value("${hash.cache.capacity}")
     private int capacity;
 
-    @Value("${hash.cache.fill.percent:10}")
+    @Value("${hash.cache.fill.percent}")
     private int fillPercent;
 
-    private final AtomicBoolean filling = new AtomicBoolean(false);
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(capacity);
+    private AtomicBoolean filling;
+    private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
+        filling = new AtomicBoolean(false);
+        hashes = new ArrayBlockingQueue<>(capacity);
         fillCache();
     }
 
