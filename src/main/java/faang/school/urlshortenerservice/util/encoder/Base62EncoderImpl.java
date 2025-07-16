@@ -27,8 +27,13 @@ public class Base62EncoderImpl implements Base62Encoder {
     }
 
     @Override
-    public String encode(Long number) {
+    public synchronized String encode(Long number) {
         byte[] bytes = base62.encode(byteBuffer.clear().putLong(number).array());
-        return new String(bytes, StandardCharsets.UTF_8).substring(hashLength);
+        String hash = new String(bytes, StandardCharsets.UTF_8);
+        if (hash.length() > hashLength) {
+            return hash.substring(hashLength);
+        }
+
+        return hash;
     }
 }
