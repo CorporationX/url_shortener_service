@@ -2,7 +2,7 @@ CREATE SEQUENCE unique_number_seq
     START WITH 10000
     INCREMENT BY 1;
 
-CREATE TABLE hash_value (
+CREATE TABLE hash (
     id BIGSERIAL PRIMARY KEY,
     hash VARCHAR(7) NOT NULL UNIQUE
 );

@@ -22,7 +22,7 @@ public class HashRepository {
 
     public void saveAllHashes(List<String> hashes) {
         jdbcTemplate.batchUpdate(
-                "INSERT INTO hash (hash_value) VALUES (?)",
+                "INSERT INTO hash (hash) VALUES (?)",
                 hashes,
                 hashes.size(),
                 (ps, hash) -> ps.setString(1, hash)
@@ -33,12 +33,12 @@ public class HashRepository {
         return jdbcTemplate.queryForList(
                 """
                 DELETE FROM hash
-                WHERE hash_value IN (
-                    SELECT hash_value FROM hash
+                WHERE hash IN (
+                    SELECT hash FROM hash
                     LIMIT ?
                     FOR UPDATE SKIP LOCKED
                 )
-                RETURNING hash_value
+                RETURNING hash
                 """,
                 String.class,
                 limit
