@@ -35,3 +35,11 @@ generator:
   queue-capacity: 200
 
 base-url: https://corpx.com
+
+hash-cache:
+  max-size: 1000
+  refill-threshold: 0.2
+
+executor:
+    pool-size: 5
+    queue-size: 100
