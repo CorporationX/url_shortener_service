@@ -29,6 +29,7 @@ logging:
     root: info
 
 hash-generation:
+  hash-batch: 10000
   get-numbers: 10000
 
 async:

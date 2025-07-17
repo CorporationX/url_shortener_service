@@ -26,13 +26,14 @@ public class HashCache {
     private final int hashBatch;
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private final BlockingQueue<Hash> hashes = new ArrayBlockingQueue<>(capacity);
+    private BlockingQueue<Hash> hashes;
 
     private final HashRepository repository;
     private final HashGenerator generator;
 
     @PostConstruct
     public void init() {
+        hashes = new ArrayBlockingQueue<>(capacity);
         hashes.addAll(generator.getHashes(capacity));
     }
 
