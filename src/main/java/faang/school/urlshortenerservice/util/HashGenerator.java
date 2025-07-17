@@ -11,8 +11,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class HashGenerator {
-    @Value("${hash-generation.hash-batch")
-    private final int hashBatchAmount;
     @Value("${hash-generation.get-numbers")
     private final int uniqueNumbersAmount;
 
