@@ -1,11 +1,14 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.util.cache;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.util.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -14,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
-public class HashCacheService {
+public class HashCache {
     @Value("${cache.hash.capacity")
     private final int capacity;
     @Value("${cache.hash.min")
@@ -23,20 +26,29 @@ public class HashCacheService {
     private final int hashBatch;
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private final BlockingQueue<Hash> queue = new ArrayBlockingQueue<>(capacity);
+    private final BlockingQueue<Hash> hashes = new ArrayBlockingQueue<>(capacity);
 
     private final HashRepository repository;
+    private final HashGenerator generator;
+
+    @PostConstruct
+    public void init() {
+        hashes.addAll(generator.getHashes(capacity));
+    }
+
 
     public Hash getHash() {
-        if(queue.size() < min && isRunning.compareAndSet(false, true)) {
+        if(hashes.size() < min && isRunning.compareAndSet(false, true)) {
             fillHashCache();
         }
-        return queue.poll();
+        return hashes.poll();
     }
 
     @Async("Executor")
+    @Transactional
     private void fillHashCache() {
-            List<Hash> hashes = repository.getHashBatch(hashBatch);
-            queue.addAll(hashes);
+            List<Hash> hashes = repository.findAndDelete(hashBatch);
+            this.hashes.addAll(hashes);
+            generator.generateBatch();
     }
 }

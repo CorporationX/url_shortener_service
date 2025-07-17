@@ -11,28 +11,14 @@ import java.util.List;
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = """
-            WITH updated AS (
-                UPDATE unique_number_seq
-                SET sequence = sequence + :count
-                RETURNING sequence - :count AS start_value, sequence AS end_value
-            )
-            SELECT generate_series(updated.start_value, updated.end_value - 1) AS value
-            FROM updated
+            SELECT nextval('unique_number_seq') FROM generate_series(1, :count)
             """, nativeQuery = true)
     List<Long> getUniqueNumbers(@Param("count") int count);
 
     @Query(value = """
-            WITH to_delete AS (
-                SELECT *
-                FROM hash
-                ORDER BY hash
-                LIMIT :count
-                FOR UPDATE SKIP LOCKED
-            )
-            DELETE FROM hash
-            USING to_delete
-            WHERE hash.hash = to_delete.hash
-            RETURNING to_delete.*;
+            DELETE FROM hash WHERE id IN(
+                SELECT id FROM hash ORDER BY id ASC LIMIT :amount
+            ) RETURNING *
             """, nativeQuery = true)
-    List<Hash> getHashBatch(@Param("count") int count);
+    List<Hash> findAndDelete(@Param("amount") long amount);
 }

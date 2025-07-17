@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -37,3 +41,7 @@ cache:
   hash:
     capacity: 15000
     min: 3000
+  expiration-hours: 48
+
+scheduling:
+  cleaner: "0 0 * * *"
