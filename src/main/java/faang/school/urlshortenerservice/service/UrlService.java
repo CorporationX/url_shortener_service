@@ -10,6 +10,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -23,7 +24,7 @@ public class UrlService {
     public String create(UrlDto urlDto) {
         String url = urlDto.url();
         String hash = hashCache.getHash().getHash();
-        Url newUrl = Url.builder().hash(hash).url(url).build();
+        Url newUrl = Url.builder().hash(hash).url(url).createdAt(LocalDateTime.now()).build();
         redisCache.save(hash, url);
         urlRepository.save(newUrl);
         return hash;
