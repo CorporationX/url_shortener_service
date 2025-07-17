@@ -29,3 +29,8 @@ hash:
     max_length: 6
     generated_count: 100
     pool_size: 3
+    queue_size: 5
+    cache:
+        min_generated_percentage: 20
+        pool_size: 3
+        max_size: 1000

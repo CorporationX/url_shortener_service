@@ -15,6 +15,8 @@ import java.nio.ByteBuffer;
 public class HashConfig {
     @Value("${hash.pool_size}")
     private int hashGeneratorPoolSize;
+    @Value("${hash.queue_size}")
+    private int hashGeneratorQueueSize;
 
     @Bean
     public Base62 base62() {
@@ -29,10 +31,8 @@ public class HashConfig {
     @Bean
     public TaskExecutor hashGeneratorPool() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(25);
-        executor.setThreadNamePrefix("Async-");
+        executor.setMaxPoolSize(hashGeneratorPoolSize);
+        executor.setQueueCapacity(hashGeneratorQueueSize);
         executor.initialize();
         return executor;
     }
