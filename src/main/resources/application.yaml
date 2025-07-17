@@ -32,3 +32,8 @@ async:
   core-pool-size: 5
   max-pool-size: 10
   queue-capacity: 50
+
+cache:
+  hash:
+    capacity: 15000
+    min: 3000

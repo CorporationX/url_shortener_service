@@ -22,14 +22,17 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(@Param("count") int count);
 
     @Query(value = """
-            DELETE FROM hash
-            WHERE hash IN (
-                SELECT hash FROM hash
+            WITH to_delete AS (
+                SELECT *
+                FROM hash
                 ORDER BY hash
                 LIMIT :count
                 FOR UPDATE SKIP LOCKED
             )
-            RETURNING hash
+            DELETE FROM hash
+            USING to_delete
+            WHERE hash.hash = to_delete.hash
+            RETURNING to_delete.*;
             """, nativeQuery = true)
-    List<String> getHashBatch(@Param("count") int count);
+    List<Hash> getHashBatch(@Param("count") int count);
 }
