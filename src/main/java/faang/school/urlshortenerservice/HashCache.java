@@ -33,9 +33,11 @@ public class HashCache {
     public void checkAndRefillFreeHashesLeft() {
         if (cache.size() > cacheGenThreshold) return;
 
-        LockUtil.withLock(lock, generator::generateBatch);
-        List<String> hashBatch = repository.getHashBatch();
-        cache.addAll(hashBatch);
+        LockUtil.withLock(lock, () -> {
+            generator.generateBatch();
+            List<String> hashBatch = repository.getHashBatch();
+            cache.addAll(hashBatch);
+        });
     }
 
     @PostConstruct

@@ -28,4 +28,36 @@ public class UrlRepository {
                 (rs, rowNum) -> rs.getString("url"));
         return url.stream().findFirst();
     }
+
+    public Long countExpired(String interval) {
+        String sql = "SELECT COUNT (*) FROM url WHERE created_at < NOW() - CAST(? as INTERVAL)";
+        return jdbcTemplate.query(
+                sql,
+                ps -> ps.setString(1, interval),
+                rs -> rs.next() ? rs.getLong(1) : 0L
+        );
+    }
+
+    @Transactional
+    public List<String> getHashesAndDelete(String interval, int cleanUpBatchSize) {
+        String sql = """
+                WITH to_delete AS (
+                    SELECT hash FROM url
+                    WHERE created_at < NOW() - CAST(? AS INTERVAL)
+                    FOR UPDATE SKIP LOCKED
+                    LIMIT ?)
+                DELETE FROM url
+                USING to_delete
+                WHERE url.hash = to_delete.hash
+                RETURNING url.hash
+                """;
+        return jdbcTemplate.query(
+                sql,
+                ps -> {
+                    ps.setString(1, interval);
+                    ps.setInt(2, cleanUpBatchSize);
+                },
+                (rs, rowNum) -> rs.getString("hash")
+        );
+    }
 }

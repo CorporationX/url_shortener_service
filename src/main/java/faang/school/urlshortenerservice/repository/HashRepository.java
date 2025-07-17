@@ -31,7 +31,7 @@ public class HashRepository {
         String sql = "INSERT INTO hash (hash) VALUES (?)";
         try {
             int[][] updateCountArray = jdbcTemplate.batchUpdate(
-                    sql, hashes, hashes.size(), (pps, hash) -> pps.setString(1, hash));
+                    sql, hashes, hashes.size(), (ps, hash) -> ps.setString(1, hash));
             boolean anyFailed = Arrays.stream(updateCountArray)
                     .flatMapToInt(Arrays::stream)
                     .anyMatch(updateCount -> updateCount == 0);
