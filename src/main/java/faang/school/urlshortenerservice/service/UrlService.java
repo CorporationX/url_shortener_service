@@ -2,8 +2,8 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.HashCache;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.repo.UrlRepository;
 import faang.school.urlshortenerservice.repo.UrlCache;
+import faang.school.urlshortenerservice.repo.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

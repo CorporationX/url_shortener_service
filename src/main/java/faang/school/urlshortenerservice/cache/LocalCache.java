@@ -52,7 +52,6 @@ public class LocalCache {
         if (filling.compareAndSet(false, true)) {
             log.info("Starting to fill hash cache");
 
-            // Синхронное получение хэшей
             try {
                 List<String> batch = hashRepository.getHashBatch(capacity);
                 hashes.addAll(batch);
@@ -62,8 +61,6 @@ public class LocalCache {
             } finally {
                 filling.set(false);
             }
-
-            // Асинхронная генерация новых хэшей
             hashGenerator.generateBatch()
                     .thenRun(() -> log.info("New batch of hashes generated"))
                     .exceptionally(ex -> {
@@ -81,8 +78,6 @@ public class LocalCache {
         } catch (Exception e) {
             log.error("Failed to initialize hash cache", e);
         }
-
-        // Запускаем фоновую генерацию новых хэшей
         hashGenerator.generateBatch();
     }
 }

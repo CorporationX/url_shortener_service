@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "url")
 public class Url {
+
     @Id
     @Column(name = "url", nullable = false)
     private String originalUrl;

@@ -23,13 +23,10 @@ public class HashGenerator {
     @Async("hashGeneratorExecutor")
     public CompletableFuture<Void> generateBatch() {
         try {
-            // Получаем n уникальных чисел из БД
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(config.getBatchSize());
 
-            // Конвертируем числа в base62 хэши (используем новый метод encode(List<Long>))
             List<String> hashes = base62Encoder.encode(uniqueNumbers);
 
-            // Сохраняем хэши в БД
             hashRepository.saveAllHashes(hashes);
 
             log.info("Generated and saved {} hashes", hashes.size());

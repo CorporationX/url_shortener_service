@@ -20,7 +20,7 @@ public class CleanerScheduler {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${url.cleaner.cron:0 0 0 * * *}") // По умолчанию в полночь каждый день
+    @Value("${url.cleaner.cron:0 0 0 * * *}")
     private String cleanerCron;
 
     @Scheduled(cron = "${url.cleaner.cron:0 0 0 * * *}")
