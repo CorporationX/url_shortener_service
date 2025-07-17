@@ -3,10 +3,8 @@ package faang.school.urlshortenerservice.url;
 import com.redis.testcontainers.RedisContainer;
 import faang.school.urlshortenerservice.controller.UrlController;
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
-import faang.school.urlshortenerservice.util.cache.HashCache;
-import faang.school.urlshortenerservice.util.cache.UrlRedisCache;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,6 +59,12 @@ public class UrlServiceContainerTest {
         UrlDto urlDto = new UrlDto(url);
         String hash = encoder.encode(1);
         assertEquals(hash, controller.createHash(urlDto));
+    }
+
+    @Test
+    void wrongDto() {
+        UrlDto urlDto = new UrlDto("23");
+        assertThrows(ConstraintViolationException.class, () -> controller.createHash(urlDto));
     }
 
     @Test
