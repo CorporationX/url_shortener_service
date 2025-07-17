@@ -21,14 +21,17 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value = """
-            DELETE FROM hash
-            WHERE hash IN(
-            SELECT hash
-            FROM hash
-            ORDER BY random()
-            LIMIT :n
+            WITH cte AS (
+              SELECT hash
+                FROM hash
+                FOR UPDATE SKIP LOCKED
+                ORDER BY random()
+                LIMIT :n
             )
-            RETURNING hash
+            DELETE FROM hash
+            USING cte
+            WHERE hash.hash = cte.hash
+            RETURNING cte.hash;
             """)
     List<String> getHashBatch(@Param("n") int n);
 }
