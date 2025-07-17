@@ -48,12 +48,7 @@ public class UrlServiceContainerTest {
             throw new RuntimeException(e);
         }
     }
-    @Autowired
-    private HashCache hashCache;
-    @Autowired
-    private UrlRedisCache redisCache;
-    @Autowired
-    private UrlRepository urlRepository;
+
     @Autowired
     private UrlController controller;
     @Autowired
