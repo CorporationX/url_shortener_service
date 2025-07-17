@@ -22,7 +22,7 @@ public class HashGenerator {
     @Async("Executor")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepo.getUniqueNumbers(uniqueNumbersAmount);
-        List<Hash> hashes = encoder.encode(uniqueNumbers).map(a -> new Hash(a)).toList();
+        List<Hash> hashes = encoder.encode(uniqueNumbers).map(Hash::new).toList();
         hashRepo.saveAll(hashes);
     }
 
