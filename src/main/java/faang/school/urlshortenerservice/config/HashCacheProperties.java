@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "hash-cache")
 public class HashCacheProperties {
     @Value("${hash-cache.max-size}")
-    private int maxSize;
+    private int maxSize = 1000;
     @Value("${hash-cache.refill-threshold}")
     private double refillThreshold;
 }
