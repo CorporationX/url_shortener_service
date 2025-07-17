@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "spring.constants")
-public class ConstantsProperties {
-    private int generationBathSize;
-    private int localCachingSize;
-    private int generationThresholdPercent;
+@ConfigurationProperties("encoding")
+public class HashEncoderProperties {
+    private String alphabet;
+    private int hashLength;
+    private long maxNumber;
+    private long shuffleKey;
 }

@@ -1,16 +1,19 @@
 package faang.school.urlshortenerservice;
 
+import faang.school.urlshortenerservice.config.HashEncoderProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class Base62Encoder {
-    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final int BASE = ALPHABET.length();
+    private final HashEncoderProperties properties;
+    private final int base;
 
-    private static final long MAX_NUMBER = 56800235584L;//62^6
-    private static final long SHUFFLE_KEY = 56800235533L;//Prime number, close to MAX_NUMBER
+    public Base62Encoder(HashEncoderProperties properties) {
+        this.properties = properties;
+        this.base = properties.getAlphabet().length();
+    }
 
     public List<String> encode(List<Long> numbers) {
         return numbers.stream()
@@ -20,16 +23,16 @@ public class Base62Encoder {
     }
 
     private long shuffleNumber(long number) {
-        return (number * SHUFFLE_KEY) % (MAX_NUMBER + 1);
+        return (number * properties.getShuffleKey()) % (properties.getMaxNumber() + 1);
     }
 
     private String encodeToBase62(long shuffledNumber) {
         StringBuilder sb = new StringBuilder();
         long argumentCopy = shuffledNumber;
 
-        for (int i = 0; i < 6; i++) {
-            sb.insert(0, ALPHABET.charAt((int) (argumentCopy % BASE)));
-            argumentCopy /= BASE;
+        for (int i = 0; i < properties.getHashLength(); i++) {
+            sb.insert(0, properties.getAlphabet().charAt((int) (argumentCopy % base)));
+            argumentCopy /= base;
         }
 
         return sb.toString();
