@@ -17,8 +17,8 @@ import java.util.List;
 public class HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${spring.constants.hash_batch_size}")
-    private int N_BATCH_SIZE;
+    @Value("${spring.constants.local_caching_size}")
+    private int LOCAL_BATCH_SIZE;
 
     @Transactional
     public List<Long> getUniqueNumbers(int n) {
@@ -45,6 +45,11 @@ public class HashRepository {
     @Transactional
     public List<String> getHashBatch() {
         String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING hash";
-        return jdbcTemplate.queryForList(sql, String.class, N_BATCH_SIZE);
+        return jdbcTemplate.queryForList(sql, String.class, LOCAL_BATCH_SIZE);
+    }
+
+    public Long countHashes() {
+        String sql = "SELECT COUNT(*) FROM hash";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
 }
