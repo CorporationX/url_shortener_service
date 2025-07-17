@@ -5,14 +5,16 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    @Value("${hash-generation.get-numbers")
-    private final int uniqueNumbersAmount;
+    @Value("${hash-generation.get-numbers}")
+    private int uniqueNumbersAmount;
 
     private final HashRepository hashRepo;
     private final Base62Encoder encoder;
@@ -20,7 +22,7 @@ public class HashGenerator {
     @Async("Executor")
     public void generateBatch() {
         List<Long> uniqueNumbers = hashRepo.getUniqueNumbers(uniqueNumbersAmount);
-        List<Hash> hashes = encoder.encode(uniqueNumbers).map(Hash::new).toList();
+        List<Hash> hashes = encoder.encode(uniqueNumbers).map(a -> new Hash(a)).toList();
         hashRepo.saveAll(hashes);
     }
 

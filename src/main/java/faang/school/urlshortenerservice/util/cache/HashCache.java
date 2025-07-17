@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,15 +15,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class HashCache {
-    @Value("${cache.hash.capacity")
-    private final int capacity;
-    @Value("${cache.hash.min")
-    private final int min;
-    @Value("${hash-generation.hash-batch")
-    private final int hashBatch;
+    @Value("${cache.hash.capacity}")
+    private int capacity;
+    @Value("${cache.hash.min}")
+    private int min;
+    @Value("${hash-generation.hash-batch}")
+    private int hashBatch;
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private BlockingQueue<Hash> hashes;

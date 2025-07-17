@@ -11,8 +11,9 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class UrlRedisCache {
     private final StringRedisTemplate redisTemplate;
-    @Value("${cache.expiration-hours")
-    private final int expirationHours;
+
+    @Value("${cache.expiration-hours}")
+    private int expirationHours;
 
     public void save(String key, String value) {
         redisTemplate.opsForValue().set(key, value, Duration.ofHours(expirationHours));

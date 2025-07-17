@@ -44,4 +44,4 @@ cache:
   expiration-hours: 48
 
 scheduling:
-  cleaner: "0 0 * * *"
+  cleaner: "0 0 0 * * *"

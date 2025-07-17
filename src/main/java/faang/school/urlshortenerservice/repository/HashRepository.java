@@ -16,8 +16,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers(@Param("count") int count);
 
     @Query(value = """
-            DELETE FROM hash WHERE id IN(
-                SELECT id FROM hash ORDER BY id ASC LIMIT :amount
+            DELETE FROM hash WHERE hash IN(
+                SELECT hash FROM hash ORDER BY hash ASC LIMIT :amount
             ) RETURNING *
             """, nativeQuery = true)
     List<Hash> findAndDelete(@Param("amount") long amount);
