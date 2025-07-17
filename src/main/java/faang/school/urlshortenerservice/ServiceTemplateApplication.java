@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice;
 
 import org.springframework.boot.Banner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -12,10 +11,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+        "faang.school.urlshortenerservice",
+        "faang.school.urlshortenerservice.exception"
+})
 @EnableScheduling
 @EnableFeignClients("faang.school.urlshortenerservice.client")
-@EnableJpaRepositories(basePackages = "faang.school.urlshortenerservice.repository")
+@EnableJpaRepositories(basePackages = "faang.school.urlshortenerservice.repo")
 public class ServiceTemplateApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceTemplateApplication.class)
