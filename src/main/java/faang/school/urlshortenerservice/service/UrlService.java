@@ -22,8 +22,8 @@ public class UrlService {
 
     @Transactional
     public String generateShortUrl(String longUrl) {
-        String hash = hashCache.getHash();
-        urlRepository.save(hash, longUrl, LocalDateTime.now());
+        String candidate = hashCache.getHash();
+        String hash = urlRepository.saveOrGet(candidate, longUrl, LocalDateTime.now());
         urlCacheRepository.putUrl(hash, longUrl);
         return baseUrl + "/" + hash;
     }

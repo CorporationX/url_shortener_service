@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,17 +15,24 @@ public class JdbcUrlRepository {
 
     private final JdbcTemplate jdbc;
 
-    public boolean save(String hash, String url, LocalDateTime createdAt) {
-        try {
-            jdbc.update(
-                    "INSERT INTO urls(hash, url, created_at) VALUES (?, ?, ?)",
-                    hash, url, createdAt
-            );
-            return true;
-        } catch (DuplicateKeyException ex) {
-            return false;
-        }
+    /**
+     * Возвращает hash, привязанный к данному url
+     * (существующий или только что сгенерированный).
+     */
+    public String saveOrGet(String hash, String url, LocalDateTime createdAt) {
+        return jdbc.queryForObject(
+                """
+                INSERT INTO urls(hash, url, created_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT (url)
+                DO UPDATE SET hash = urls.hash
+                RETURNING hash
+                """,
+                String.class,
+                hash, url, createdAt
+        );
     }
+
 
 
     public Optional<String> findUrlByHash(String hash) {
