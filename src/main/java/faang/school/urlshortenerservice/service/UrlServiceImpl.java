@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.HashCache;
+import faang.school.urlshortenerservice.hash.HashCache;
 import faang.school.urlshortenerservice.config.HashEncoderProperties;
 import faang.school.urlshortenerservice.repository.RedisRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;

@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice;
+package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.HashEncoderProperties;
 import org.springframework.stereotype.Component;
