@@ -7,5 +7,5 @@ create table if not exists url (
 );
 
 create table if not exists hash (
-    hash char(6) primary key not null unique
+    hash varchar(6) primary key not null unique
 );
