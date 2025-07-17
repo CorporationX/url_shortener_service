@@ -12,14 +12,14 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Value("${hash-generator.pool-size}")
+    @Value("${config.async.hash-generator.pool-size}")
     private int hashGeneratorPoolSize;
-    @Value("${hash-generator.queue-capacity}")
+    @Value("${config.async.hash-generator.queue-capacity}")
     private int hashGeneratorQueueCapacity;
 
-    @Value("${hash-cache-filler.pool-size}")
+    @Value("${config.async.hash-cache-filler.pool-size}")
     private int hashCacheFillerPoolSize;
-    @Value("${hash-cache-filler.queue-capacity}")
+    @Value("${config.async.hash-cache-filler.queue-capacity}")
     private int hashCacheFillerQueueCapacity;
 
     @Bean(name = "hashGeneratorExecutor")

@@ -9,11 +9,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
-    @Query(value = "SELECT nextval('unique_number_seq') FROM generte_series(1, :count)", nativeQuery = true)
+    @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :count)", nativeQuery = true)
     List<Long> getNextUniqueNumbers(@Param("count") int count);
 
     @Transactional

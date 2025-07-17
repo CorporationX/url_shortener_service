@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class UrlCacheService {
 
-    @Value("${url-cache.ttl}")
+    @Value("${service.url-cache-service.ttl-days}")
     private long ttl;
 
     private final RedisTemplate<String, Url> redis;
@@ -23,5 +24,11 @@ public class UrlCacheService {
 
     public Url getUrl(String hash) {
         return redis.opsForValue().get(hash);
+    }
+
+    public List<String> checkUnusedHashes(List<String> hashes) {
+        return hashes.stream()
+                .filter(hash -> !redis.hasKey(hash))
+                .toList();
     }
 }
