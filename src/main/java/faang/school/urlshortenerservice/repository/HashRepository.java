@@ -10,7 +10,7 @@ import faang.school.urlshortenerservice.model.Hash;
 
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :n);", nativeQuery = true)
-    List<Long> getNextOrderNumber(int n);
+    List<Long> getNextNumBachOf(int n);
 
     @Modifying
     @Query(value = """
@@ -26,5 +26,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
         RETURNING hash
         """, 
         nativeQuery = true)
-    List<String> getHashBatch(int count);
+    List<String> getHashBatchOf(int count);
 }

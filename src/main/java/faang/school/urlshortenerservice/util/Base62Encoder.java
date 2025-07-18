@@ -6,13 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Base62Encoder {
     @Value("${base.chars}")
-    private final String baseChars;
+    private String baseChars;
 
     public List<String> encode(List<Long> numbers) {
         List<String> encodedStrings = new ArrayList<>();
