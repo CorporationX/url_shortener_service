@@ -45,7 +45,6 @@ public class GlobalExceptionHandler {
             ServerError.class,
             ExecutionException.class,
             RejectedExecutionException.class,
-            ExecutionException.class,
             TaskRejectedException.class
     })
     public ResponseEntity<Object> handleServerErrors(Exception ex) {

@@ -22,7 +22,7 @@ public class UrlController {
     }
 
     @GetMapping("/{hash}")
-    public ResponseEntity<Object> getUrl(@PathVariable("id") @NotEmpty(message = "hash should be not empty") String hash) {
+    public ResponseEntity<Object> getUrl(@PathVariable("hash") @NotEmpty(message = "hash should be not empty") String hash) {
         return ResponseEntity.
                 status(302).
                 body(service.find(hash));

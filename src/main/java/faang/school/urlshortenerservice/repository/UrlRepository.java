@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Query(value = """
-            DELETE FROM your_table
+            DELETE FROM url
             WHERE created_at < CURRENT_DATE - INTERVAL '1 year'
             RETURNING *;
             """, nativeQuery = true)
