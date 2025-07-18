@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @CacheConfig
@@ -45,5 +47,10 @@ public class UrlServiceImpl implements UrlService {
         }
 
         return urlDto;
+    }
+
+    @Override
+    public List<String> retrieveOldUrls(int daysCount) {
+        return urlRepository.retrieveOldUrls(daysCount);
     }
 }
