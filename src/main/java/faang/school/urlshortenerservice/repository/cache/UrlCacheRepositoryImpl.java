@@ -17,4 +17,9 @@ public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     public void set(String hash, UrlDto url, int ttl) {
         redisTemplate.opsForValue().set(hash, url, ttl, TimeUnit.DAYS);
     }
+
+    @Override
+    public UrlDto get(String hash) {
+        return (UrlDto) redisTemplate.opsForValue().get(hash);
+    }
 }

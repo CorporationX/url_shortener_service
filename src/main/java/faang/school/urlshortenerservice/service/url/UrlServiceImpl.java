@@ -7,6 +7,7 @@ import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
@@ -33,5 +34,16 @@ public class UrlServiceImpl implements UrlService {
         urlCacheRepository.set(savedUrl.getHash(), savedUrlDto, ttl);
 
         return savedUrlDto;
+    }
+
+    @Override
+    public UrlDto getUrl(String hash) {
+        UrlDto urlDto = urlCacheRepository.get(hash);
+        if (urlDto == null) {
+            return urlMapper.toUrlDto(urlRepository.findById(hash).orElseThrow(() ->
+                    new EntityNotFoundException(String.format("Url with hash [%s] not found", hash))));
+        }
+
+        return urlDto;
     }
 }
