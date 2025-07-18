@@ -37,7 +37,7 @@ public class HashCache {
         hashes.addAll(generator.getHashes(capacity));
     }
 
-
+    @Transactional
     public Hash getHash() {
         if(hashes.size() < min && isRunning.compareAndSet(false, true)) {
             fillHashCache();
@@ -46,8 +46,7 @@ public class HashCache {
     }
 
     @Async("Executor")
-    @Transactional
-    private void fillHashCache() {
+    public void fillHashCache() {
             List<Hash> hashes = repository.findAndDelete(hashBatch);
             this.hashes.addAll(hashes);
             generator.generateBatch();

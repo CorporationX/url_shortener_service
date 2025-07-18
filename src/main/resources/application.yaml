@@ -45,3 +45,6 @@ cache:
 
 scheduling:
   cleaner: "0 0 0 * * *"
+
+url:
+  base-url: "http://127.0.0.1:8080/url/"

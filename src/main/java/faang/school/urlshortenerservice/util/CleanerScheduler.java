@@ -20,9 +20,9 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${scheduling.cleaner}")
     @Transactional
-    public void clean() {
+    public List<Hash> clean() {
         List<Url> newUrls = urlRepository.getAndDeleteYearOldObjects();
         List<Hash> newHashes = newUrls.stream().map(a -> new Hash(a.getHash())).toList();
-        hashRepository.saveAll(newHashes);
+        return hashRepository.saveAll(newHashes);
     }
 }

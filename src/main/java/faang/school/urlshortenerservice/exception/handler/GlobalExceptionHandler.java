@@ -1,9 +1,7 @@
 package faang.school.urlshortenerservice.exception.handler;
 
-import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.core.task.TaskRejectedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,12 +9,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
-import java.rmi.ServerError;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
 @ControllerAdvice
@@ -39,14 +34,7 @@ public class GlobalExceptionHandler {
         return badRequest(ex);
     }
 
-    @ExceptionHandler({
-            RuntimeException.class,
-            ServletException.class,
-            ServerError.class,
-            ExecutionException.class,
-            RejectedExecutionException.class,
-            TaskRejectedException.class
-    })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleServerErrors(Exception ex) {
         return internalServerError(ex);
     }

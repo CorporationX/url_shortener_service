@@ -4,6 +4,7 @@ import com.redis.testcontainers.RedisContainer;
 import faang.school.urlshortenerservice.controller.UrlController;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.util.Base62Encoder;
+import faang.school.urlshortenerservice.util.CleanerScheduler;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,6 +54,8 @@ public class UrlServiceContainerTest {
     private UrlController controller;
     @Autowired
     private Base62Encoder encoder;
+    @Autowired
+    private CleanerScheduler cleaner;
 
     private static final String url = "https://www.pirojok.com/java";
 
@@ -72,5 +77,11 @@ public class UrlServiceContainerTest {
         UrlDto urlDto = new UrlDto(url);
         String hash = controller.createHash(urlDto);
         assertEquals(ResponseEntity.status(302).body(url), controller.getUrl(hash));
+    }
+
+    @Test
+    public void scheduledMethodTest() {
+        assertNotNull(cleaner.clean());
+        assertInstanceOf(List.class, cleaner.clean());
     }
 }
