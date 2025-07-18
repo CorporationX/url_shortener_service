@@ -17,9 +17,27 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-server:
-  port: 8080
-
 logging:
   level:
     root: info
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1 # All endpoints get this prefix
+
+base:
+  chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+hashes:
+  numberOfNumbers: 7
+  numberOfHashes: 1
+
+scheduler:
+  frequencyDays: 1
+
+async:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 50
+  threadNamePrefix: async-
