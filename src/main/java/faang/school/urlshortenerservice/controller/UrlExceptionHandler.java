@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.exception;
+package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.ErrorResponseDto;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.ConstantsProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
-    private final HashRepository hashRepository;
+    private final HashRepositoryJdbcImpl hashRepository;
     private final Base62Encoder encoder;
     private final ConstantsProperties constantsProperties;
 

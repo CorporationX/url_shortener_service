@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.ConstantsProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
 import faang.school.urlshortenerservice.util.LockUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class HashCache {
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue();
     private final ConstantsProperties constantsProperties;
     private final HashGenerator generator;
-    private final HashRepository repository;
+    private final HashRepositoryJdbcImpl repository;
 
     private final ReentrantLock lock = new ReentrantLock();
     private int cacheGenThreshold;

@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.ConstantsProperties;
-import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
+import faang.school.urlshortenerservice.repository.UrlRepositoryJdbcImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.scheduling.annotation.Async;
@@ -15,8 +15,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
-    private final HashRepository hashRepository;
-    private final UrlRepository urlRepository;
+    private final HashRepositoryJdbcImpl hashRepository;
+    private final UrlRepositoryJdbcImpl urlRepository;
     private final ConstantsProperties constantsProperties;
 
     @Scheduled(cron = "${spring.scheduling.expired_hash_cleanup}")
