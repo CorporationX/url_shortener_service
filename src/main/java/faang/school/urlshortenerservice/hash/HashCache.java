@@ -24,6 +24,12 @@ public class HashCache {
     private final ReentrantLock lock = new ReentrantLock();
     private int cacheGenThreshold;
 
+    @PostConstruct
+    private void calculateCacheGenThreshold() {
+        cacheGenThreshold =
+                constantsProperties.getLocalCachingSize() * constantsProperties.getGenerationThresholdPercent() / 100;
+    }
+
     public String getHash() {
         return cache.poll();
     }
@@ -38,11 +44,5 @@ public class HashCache {
             List<String> hashBatch = repository.getHashBatch();
             cache.addAll(hashBatch);
         });
-    }
-
-    @PostConstruct
-    private void calculateCacheGenThreshold() {
-        cacheGenThreshold =
-                constantsProperties.getLocalCachingSize() * constantsProperties.getGenerationThresholdPercent() / 100;
     }
 }

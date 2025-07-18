@@ -18,18 +18,18 @@ public class HashGenerator {
 
     private Long generatorThreshold;
 
+    @PostConstruct
+    private void settingsInitializer() {
+        generatorThreshold =
+                Math.max(10L * constantsProperties.getGenerationThresholdPercent(),
+                        constantsProperties.getLocalCachingSize());
+    }
+
     @Async("taskExecutor")
     public void generateBatch() {
         if (hashRepository.countHashes() > generatorThreshold) return;
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(constantsProperties.getGenerationBathSize());
         List<String> newHashes = encoder.encode(uniqueNumbers);
         hashRepository.save(newHashes);
-    }
-
-    @PostConstruct
-    private void settingsInitializer() {
-        generatorThreshold =
-                Math.max(10L * constantsProperties.getGenerationThresholdPercent(),
-                        constantsProperties.getLocalCachingSize());
     }
 }
