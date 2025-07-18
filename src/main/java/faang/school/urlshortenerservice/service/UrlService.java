@@ -25,8 +25,8 @@ public class UrlService {
         String url = urlDto.url();
         String hash = hashCache.getHash().getHash();
         Url newUrl = Url.builder().hash(hash).url(url).createdAt(LocalDateTime.now()).build();
-        redisCache.save(hash, url);
         urlRepository.save(newUrl);
+        redisCache.save(hash, url);
         return hash;
     }
 
