@@ -36,10 +36,6 @@ spring:
     queue_capacity: 500
     thread_name_prefix: maintanence-
 
-  scheduling:
-    hash_check_refill: "0/1 * * * * *" #ones a second
-    expired_hash_cleanup: "0 0 0 * * *" #every midnight
-
 server:
   port: 8098
 
@@ -52,3 +48,6 @@ encoding:
   hash_length: 6
   max_number: 56800235584 #62^6
   shuffle_key: 56800235533 #Prime number, close to MAX_NUMBER
+
+scheduling:
+  expired_hash_cleanup: "0 0 0 * * *" #every midnight

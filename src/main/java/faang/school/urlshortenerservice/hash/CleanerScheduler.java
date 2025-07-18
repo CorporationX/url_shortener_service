@@ -19,7 +19,7 @@ public class CleanerScheduler {
     private final UrlRepositoryJdbcImpl urlRepository;
     private final ConstantsProperties constantsProperties;
 
-    @Scheduled(cron = "${spring.scheduling.expired_hash_cleanup}")
+    @Scheduled(cron = "${scheduling.expired_hash_cleanup}")
     @Async("taskExecutor")
     public void cleanUpHashes() {
         int cleaned;

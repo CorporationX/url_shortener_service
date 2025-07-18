@@ -1,48 +1,5 @@
 package faang.school.urlshortenerservice.hash;
 
-import faang.school.urlshortenerservice.config.ConstantsProperties;
-import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
-import faang.school.urlshortenerservice.util.LockUtil;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.ReentrantLock;
-
-@Component
-@RequiredArgsConstructor
-public class HashCache {
-    private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue();
-    private final ConstantsProperties constantsProperties;
-    private final HashGenerator generator;
-    private final HashRepositoryJdbcImpl repository;
-
-    private final ReentrantLock lock = new ReentrantLock();
-    private int cacheGenThreshold;
-
-    @PostConstruct
-    private void calculateCacheGenThreshold() {
-        cacheGenThreshold =
-                constantsProperties.getLocalCachingSize() * constantsProperties.getGenerationThresholdPercent() / 100;
-    }
-
-    public String getHash() {
-        return cache.poll();
-    }
-
-    @Scheduled(cron = "${spring.scheduling.hash_check_refill}")
-    @Async("taskExecutor")
-    public void checkAndRefillFreeHashesLeft() {
-        if (cache.size() > cacheGenThreshold) return;
-
-        LockUtil.withLock(lock, () -> {
-            generator.generateBatch();
-            List<String> hashBatch = repository.getHashBatch();
-            cache.addAll(hashBatch);
-        });
-    }
+public interface HashCache {
+    String getHash();
 }

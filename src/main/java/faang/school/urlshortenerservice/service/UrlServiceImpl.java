@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.hash.HashCache;
+import faang.school.urlshortenerservice.hash.HashCacheImpl;
 import faang.school.urlshortenerservice.config.HashEncoderProperties;
 import faang.school.urlshortenerservice.repository.CacheRepositoryRedisImpl;
 import faang.school.urlshortenerservice.repository.UrlRepositoryJdbcImpl;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UrlServiceImpl implements UrlService {
     private final UrlRepositoryJdbcImpl urlRepository;
     private final CacheRepositoryRedisImpl cacheRepository;
-    private final HashCache hashCache;
+    private final HashCacheImpl hashCache;
     private final HashEncoderProperties hashEncoderProperties;
 
     @Override

@@ -19,7 +19,7 @@ public class HashGenerator {
     private Long generatorThreshold;
 
     @PostConstruct
-    private void settingsInitializer() {
+    private void init() {
         generatorThreshold =
                 Math.max(10L * constantsProperties.getGenerationThresholdPercent(),
                         constantsProperties.getLocalCachingSize());
