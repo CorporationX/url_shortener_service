@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.util.CleanerScheduler;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -56,6 +57,9 @@ public class UrlServiceContainerTest {
     private Base62Encoder encoder;
     @Autowired
     private CleanerScheduler cleaner;
+    @Value("${url.base-url}")
+    private String baseUrl;
+
 
     private static final String url = "https://www.pirojok.com/java";
 
@@ -63,7 +67,7 @@ public class UrlServiceContainerTest {
     void createTest() {
         UrlDto urlDto = new UrlDto(url);
         String hash = encoder.encode(1);
-        assertEquals(hash, controller.createHash(urlDto));
+        assertEquals(baseUrl + hash, controller.createHash(urlDto));
     }
 
     @Test
@@ -75,7 +79,8 @@ public class UrlServiceContainerTest {
     @Test
     public void findRedisTest() {
         UrlDto urlDto = new UrlDto(url);
-        String hash = controller.createHash(urlDto);
+        String urlHash = controller.createHash(urlDto);
+        String hash = urlHash.replaceAll(baseUrl, "");
         assertEquals(ResponseEntity.status(302).body(url), controller.getUrl(hash));
     }
 

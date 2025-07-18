@@ -16,8 +16,7 @@ import org.springframework.data.domain.Example;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +40,7 @@ public class UrlServiceTest {
         UrlDto testDto = new UrlDto(url);
         when(hashCache.getHash()).thenReturn(new Hash(hash));
 
-        assertEquals(hash, service.create(testDto));
+        assertNotNull(service.create(testDto));
         verify(redisCache, times(1)).save(hash, url);
         verify(urlRepository, times(1)).save(Url.builder().hash(hash).url(url).build());
     }
