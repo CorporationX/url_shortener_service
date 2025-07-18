@@ -1,0 +1,23 @@
+hash:
+  cache:
+    capacity: 10
+    low-cache-mark-percentage: 2
+    poll-timeout-ms: 3000
+    startup-timeout-seconds: 20
+  db:
+    replenish-cron: 0/10 * * * * *
+    low-data-mark: 20
+    replenish-batch-size: 100
+
+async:
+  executor:
+    hash-refiller:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 500
+      thread-name-prefix: "Hash-Refiller-"
+
+url:
+  cleanup:
+    cron: 0/15 * * * * *
+    batch-size: 1_000
