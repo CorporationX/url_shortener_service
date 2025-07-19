@@ -1,44 +1,36 @@
 package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.ConstantsProperties;
-import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
-import faang.school.urlshortenerservice.repository.UrlRepositoryJdbcImpl;
+import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.ExpiredHashCleanerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.aop.framework.AopContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CleanerScheduler {
-    private final HashRepositoryJdbcImpl hashRepository;
-    private final UrlRepositoryJdbcImpl urlRepository;
     private final ConstantsProperties constantsProperties;
+    private final ExpiredHashCleanerService hashCleanerService;
+    private final UrlRepository urlRepository;
 
     @Scheduled(cron = "${scheduling.expired_hash_cleanup}")
     @Async("taskExecutor")
     public void cleanUpHashes() {
-        int cleaned;
+        Long expiredNumber = urlRepository.countExpired(constantsProperties.getExpirationInterval());
+        log.info("Expired links cleanup started for {} hashes", expiredNumber);
+        int cycleCounter = 0;
+
+        int cycleCleaned;
         do {
-            cleaned = getSelf().cleanUpBatch();
-        } while (cleaned == constantsProperties.getCleanUpBatchSize());
-    }
+            cycleCleaned = hashCleanerService.cleanUpBatch();
+            cycleCounter++;
+        } while (cycleCleaned == constantsProperties.getCleanUpBatchSize());
 
-    @Transactional
-    public int cleanUpBatch() {
-        List<String> removedHashes = urlRepository.getHashesAndDelete(
-                constantsProperties.getExpirationInterval(),
-                constantsProperties.getCleanUpBatchSize()
-        );
-        hashRepository.save(removedHashes);
-        return removedHashes.size();
-    }
-
-    private CleanerScheduler getSelf() {
-        return (CleanerScheduler) AopContext.currentProxy();
+        long cleanedByInstance = (long) (cycleCounter - 1) * constantsProperties.getCleanUpBatchSize() + cycleCleaned;
+        log.info("Expired url cleanup FINISHED, {} url cleaned with shard", cleanedByInstance);
     }
 }
