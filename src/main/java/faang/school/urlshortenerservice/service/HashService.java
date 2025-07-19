@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class HashService {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    @Value("${app.hash.memory-cache-size:2000}")
+    @Value("${app.hash.table-size:10000}")
     private int tableSize;
     @Value("${app.hash.lock-id}")
     private int lockId;

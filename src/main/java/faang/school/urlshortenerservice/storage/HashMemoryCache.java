@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashMemoryCache {
     private final HashService hashService;
-    @Value("${app.hash.table-size:10000}")
+    @Value("${app.hash.memory-cache-size:2000}")
     private int hashSize;
     @Value("${app.hash.memory-cache-min-percent:20.0}")
     private double minPercentLocalHash;
