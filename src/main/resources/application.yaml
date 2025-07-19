@@ -22,9 +22,36 @@ spring:
       port: 6379
       host: localhost
 
+  cache:
+    type: redis
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  hash:
+    memory-cache-min-percent: 20.0
+    memory-cache-size: 2000
+    table-size: 10000
+    lock-id: 42
+
+  executor:
+    filling-memory-cache:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: filling-memory-cache-
+
+  job:
+    hash:
+      generate:
+        cron: "* * * * *" # раз в минуту
+
+  cache:
+    hash:
+      key-prefix: url
+      ttl: 30 # 30 секунд

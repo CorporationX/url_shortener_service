@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.facade;
 
+import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,5 +12,9 @@ public class UrlFacade {
 
     public String getUrlByHash(String hash) {
         return urlService.getUrlByHash(hash).getUrl();
+    }
+
+    public String generateHash(UrlRequestDto urlRequestDto) {
+        return urlService.generateHash(urlRequestDto.url()).getHash();
     }
 }

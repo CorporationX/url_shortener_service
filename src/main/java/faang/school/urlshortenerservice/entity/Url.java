@@ -13,6 +13,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "url")
-public class Url {
+public class Url implements Serializable {
     @Id
     @Column(name = "hash", nullable = false, updatable = false, unique = true)
     private String hash;
