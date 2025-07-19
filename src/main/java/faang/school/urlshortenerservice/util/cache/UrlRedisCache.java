@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,5 +22,13 @@ public class UrlRedisCache {
 
     public String get(String key) {
         return redisTemplate.opsForValue().get(key);
+    }
+
+    public boolean delete(String key) {
+        return redisTemplate.delete(key);
+    }
+
+    public Long deleteAll(List<String> keys) {
+        return redisTemplate.delete(keys);
     }
 }

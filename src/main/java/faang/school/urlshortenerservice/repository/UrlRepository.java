@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
@@ -15,4 +16,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING *;
             """, nativeQuery = true)
     List<Url> getAndDeleteYearOldObjects();
+
+    Optional<Url> findByHash(String hash);
 }

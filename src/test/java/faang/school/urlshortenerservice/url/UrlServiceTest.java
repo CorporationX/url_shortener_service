@@ -12,9 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -53,17 +52,15 @@ public class UrlServiceTest {
 
     @Test
     public void findRepoTest() {
-        Example<Url> urlExample = Example.of(Url.builder().hash(hash).build());
         when(redisCache.get(hash)).thenReturn(null);
-        when(urlRepository.findAll(urlExample)).thenReturn(List.of(Url.builder().hash(hash).url(url).build()));
+        when(urlRepository.findByHash(hash)).thenReturn(Optional.of(Url.builder().hash(hash).url(url).build()));
         assertEquals(url, service.find(hash));
     }
 
     @Test
     public void couldNotFindTest() {
-        Example<Url> urlExample = Example.of(Url.builder().hash(hash).build());
         when(redisCache.get(hash)).thenReturn(null);
-        when(urlRepository.findAll(urlExample)).thenReturn(List.of());
+        when(urlRepository.findByHash(any())).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> service.find(hash));
     }
 }

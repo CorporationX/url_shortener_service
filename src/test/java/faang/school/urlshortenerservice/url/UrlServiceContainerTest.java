@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.controller.UrlController;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.CleanerScheduler;
+import faang.school.urlshortenerservice.util.cache.UrlRedisCache;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class UrlServiceContainerTest {
     @Autowired
     private Base62Encoder encoder;
     @Autowired
+    private UrlRedisCache redisCache;
+    @Autowired
     private CleanerScheduler cleaner;
     @Value("${url.base-url}")
     private String baseUrl;
@@ -66,7 +69,7 @@ public class UrlServiceContainerTest {
     @Test
     void createTest() {
         UrlDto urlDto = new UrlDto(url);
-        String hash = encoder.encode(1);
+        String hash = encoder.encode(2);
         assertEquals(baseUrl + hash, controller.createHash(urlDto));
     }
 
@@ -81,6 +84,15 @@ public class UrlServiceContainerTest {
         UrlDto urlDto = new UrlDto(url);
         String urlHash = controller.createHash(urlDto);
         String hash = urlHash.replaceAll(baseUrl, "");
+        assertEquals(ResponseEntity.status(302).body(url), controller.getUrl(hash));
+    }
+
+    @Test
+    public void findDBTest() {
+        UrlDto urlDto = new UrlDto(url);
+        String urlHash = controller.createHash(urlDto);
+        String hash = urlHash.replaceAll(baseUrl, "");
+        redisCache.delete(hash);
         assertEquals(ResponseEntity.status(302).body(url), controller.getUrl(hash));
     }
 

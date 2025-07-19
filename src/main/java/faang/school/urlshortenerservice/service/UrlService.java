@@ -7,7 +7,6 @@ import faang.school.urlshortenerservice.util.cache.HashCache;
 import faang.school.urlshortenerservice.util.cache.UrlRedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +33,9 @@ public class UrlService {
     }
 
     public String find(String hash) {
-        Example<Url> urlExample = Example.of(Url.builder().hash(hash).build());
         return Optional.ofNullable(redisCache.get(hash))
                 .orElseGet(() ->
-                        urlRepository.findAll(urlExample)
-                                .stream()
-                                .findFirst()
+                        urlRepository.findByHash(hash)
                                 .orElseThrow(() -> new IllegalArgumentException("Nonexistent hash"))
                                 .getUrl()
                 );
