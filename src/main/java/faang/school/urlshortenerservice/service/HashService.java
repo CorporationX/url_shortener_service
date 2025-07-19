@@ -4,25 +4,39 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class HashService {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
+    private final Executor saveHashBatchExecutor;
+
+    public HashService(HashRepository hashRepository,
+                       Base62Encoder base62Encoder,
+                       @Qualifier("saveHashBatchExecutor") Executor saveHashBatchExecutor) {
+        this.hashRepository = hashRepository;
+        this.base62Encoder = base62Encoder;
+        this.saveHashBatchExecutor = saveHashBatchExecutor;
+    }
+
     @Value("${app.hash.table-size:10000}")
-    private int tableSize;
+    private long tableSize;
     @Value("${app.hash.lock-id}")
     private int lockId;
 
-    public List<String> getHashes(int count) {
+    public List<String> getHashes(long count) {
         List<String> hashes = getHashList(count);
 
         if (hashes.size() < count) {
@@ -35,15 +49,15 @@ public class HashService {
         return hashes;
     }
 
-    private List<String> getHashList(int count) {
+    private List<String> getHashList(long count) {
         return hashRepository.findAndDeleteLimit(count)
                 .stream()
                 .map(Hash::getHash)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Async("fillingMemoryCacheExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(int count) {
+    public CompletableFuture<List<String>> getHashesAsync(long count) {
         return CompletableFuture.completedFuture(getHashes(count));
     }
 
@@ -56,20 +70,38 @@ public class HashService {
 
         try {
             long currentCount = hashRepository.count();
-            int missingCount = (int) (tableSize - currentCount);
+            long missingCount = tableSize - currentCount;
             if (missingCount <= 0) {
                 return;
             }
 
-            List<Hash> hashes = hashRepository.getNextSequenceValues(missingCount)
-                    .stream()
-                    .map(base62Encoder::encode)
-                    .map(Hash::new)
+
+            List<Long> numbers = hashRepository.getNextSequenceValues(missingCount);
+
+            List<List<Long>> batchNumbers = ListUtils.partition(numbers, 15);
+
+            List<CompletableFuture<List<Hash>>> futureBatchHash = batchNumbers.stream()
+                    .map(batch -> CompletableFuture.supplyAsync(
+                            () -> mapBatch(batch), saveHashBatchExecutor)
+                    )
+                    .toList();
+
+            List<Hash> hashes = futureBatchHash.stream()
+                    .map(CompletableFuture::join)
+                    .flatMap(Collection::stream)
                     .toList();
 
             hashRepository.saveAll(hashes);
         } finally {
             hashRepository.unlock(lockId);
         }
+    }
+
+    private List<Hash> mapBatch(List<Long> batchNumbers) {
+        return batchNumbers
+                .stream()
+                .map(base62Encoder::encode)
+                .map(Hash::new)
+                .toList();
     }
 }

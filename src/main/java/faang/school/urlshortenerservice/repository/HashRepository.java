@@ -31,5 +31,5 @@ public interface HashRepository extends JpaRepository<Hash, String> {
                            LIMIT :count)
             RETURNING *
             """)
-    List<Hash> findAndDeleteLimit(@Param("count") int count);
+    List<Hash> findAndDeleteLimit(@Param("count") long count);
 }

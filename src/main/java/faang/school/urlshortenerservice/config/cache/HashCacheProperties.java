@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.config.cache;
 
 import lombok.Getter;
 import lombok.Setter;

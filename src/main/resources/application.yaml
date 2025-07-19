@@ -26,7 +26,7 @@ spring:
     type: redis
 
 server:
-  port: 8080
+  port: 9081
 
 logging:
   level:
@@ -38,6 +38,8 @@ app:
     memory-cache-size: 2000
     table-size: 10000
     lock-id: 42
+  url:
+    url-prefix: https://com.shortner/api/v1/url/
 
   executor:
     filling-memory-cache:
@@ -45,11 +47,16 @@ app:
       max-pool-size: 4
       queue-capacity: 100
       prefix: filling-memory-cache-
+    save-hash-batch:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: save-hash-batch-
 
   job:
     hash:
       generate:
-        cron: "* * * * *" # раз в минуту
+        cron: "* * * * * *" # Каждую минуту
 
   cache:
     hash:

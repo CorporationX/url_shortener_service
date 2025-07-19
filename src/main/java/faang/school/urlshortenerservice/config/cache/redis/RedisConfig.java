@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.cache.redis;
+package faang.school.urlshortenerservice.config.cache.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,12 +29,5 @@ public class RedisConfig {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new StringRedisSerializer());
         return redisTemplate;
-    }
-
-    @Bean
-    RedisMessageListenerContainer listenerContainer(JedisConnectionFactory connectionFactory) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        return container;
     }
 }
