@@ -37,6 +37,7 @@ app:
     memory-cache-min-percent: 20.0
     memory-cache-size: 2000
     table-size: 10000
+    batch-size: 20
     lock-id: 42
   url:
     url-prefix: https://com.shortner/api/v1/url/

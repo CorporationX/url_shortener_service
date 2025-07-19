@@ -34,6 +34,8 @@ public class HashService {
     private long tableSize;
     @Value("${app.hash.lock-id}")
     private int lockId;
+    @Value("${app.hash.batch-size}")
+    private int batchSize;
 
     public List<String> getHashes(long count) {
         List<String> hashes = getHashList(count);
@@ -77,7 +79,7 @@ public class HashService {
 
             List<Long> numbers = hashRepository.getNextSequenceValues(missingCount);
 
-            List<List<Long>> batchNumbers = ListUtils.partition(numbers, 15);
+            List<List<Long>> batchNumbers = ListUtils.partition(numbers, batchSize);
 
             List<CompletableFuture<List<Hash>>> futureBatchHash = batchNumbers.stream()
                     .map(batch -> CompletableFuture.supplyAsync(
