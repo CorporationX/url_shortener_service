@@ -38,3 +38,4 @@ logging:
 hash:
     batch_size: 1000
     generate_batch_size: 10000
+    max_length: 6

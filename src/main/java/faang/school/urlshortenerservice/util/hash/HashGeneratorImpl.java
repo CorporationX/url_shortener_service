@@ -18,7 +18,8 @@ public class HashGeneratorImpl implements HashGenerator {
 
     @Override
     public void generateBatch() {
-        hashRepository.getUniqueNumbers(generateBatchSize);
+        hashRepository.save(
+                base62Encoder.encode(hashRepository.getUniqueNumbers(generateBatchSize)));
 
     }
 }
