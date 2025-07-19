@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
@@ -24,6 +25,9 @@ public class HashCache {
     @Value("${hash.threshold.percent:0.2}")
     private double thresholdPercent;
 
+    @Value("${hash.wanted.percent:0.8}")
+    private double wantedPercent;
+
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
 
     private Queue<Hash> freeHashes;
@@ -31,26 +35,39 @@ public class HashCache {
     @PostConstruct
     public void init() {
         this.freeHashes = new ArrayBlockingQueue<>(capacity);
-        freeHashes.addAll(hashGenerator.getStartHashes((int)(capacity*thresholdPercent)));
+        freeHashes.addAll(hashGenerator.getStartHashes());
     }
 
+    @Async("value = hashCacheExecutor")
     public Hash getHash() {
-        if (isGenerating.compareAndSet(false, true)) {
-            hashGenerator.getHashes().whenComplete((hashes, ex) -> {
-                try {
-                    if (hashes != null && !hashes.isEmpty()) {
-                        for (Hash h : hashes) {
-                            freeHashes.offer(h);
-                        }
-                    }
-                    if (ex != null) {
-                        log.error(ex.getMessage());
-                    }
-                } finally {
+        Hash hash = freeHashes.poll();
+
+        if (freeHashes.size() < capacity * thresholdPercent) {
+            if (isGenerating.compareAndSet(false, true)) {
+                fillHashesAsync();
+            }
+        }
+
+        return hash;
+    }
+
+    private void fillHashesAsync() {
+        hashGenerator.getHashBatch().whenComplete((hashes, ex) -> {
+            try {
+                if (ex != null) {
+                    log.error("Error during hash generation", ex);
+                } else if (hashes != null && !hashes.isEmpty()) {
+                    freeHashes.addAll(hashes);
+                }
+                if (freeHashes.size() < capacity * wantedPercent) {
+                    fillHashesAsync();
+                }
+            } finally {
+                if (freeHashes.size() >= capacity * wantedPercent) {
                     isGenerating.set(false);
                 }
-            });
-        }
-        return freeHashes.poll();
+            }
+        });
     }
+
 }

@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.entity.Hash;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -10,5 +11,5 @@ public interface HashRepository {
 
     void save(List<String> hashes);
 
-    List<String> getHashBatch();
+    List<Hash> getHashBatch(int batchSize);
 }
