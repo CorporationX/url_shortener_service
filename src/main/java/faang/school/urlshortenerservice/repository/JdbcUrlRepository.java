@@ -43,4 +43,12 @@ public class JdbcUrlRepository {
         );
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
+
+    public List<String> deleteOldAndReturnHashes(LocalDateTime threshold) {
+        return jdbc.query(
+                "DELETE FROM urls WHERE created_at < ? RETURNING hash",
+                (rs, rowNum) -> rs.getString("hash"),
+                threshold
+        );
+    }
 }

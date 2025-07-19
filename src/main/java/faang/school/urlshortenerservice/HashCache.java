@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.config.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.FreeHashRepository;
+import faang.school.urlshortenerservice.repository.JdbcHashRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

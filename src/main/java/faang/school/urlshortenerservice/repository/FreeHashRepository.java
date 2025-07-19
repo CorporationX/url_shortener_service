@@ -13,9 +13,12 @@ public interface FreeHashRepository extends JpaRepository<Hash, String> {
     @Query(value = """
             SELECT h.hash
             FROM hashes h
+            WHERE NOT EXISTS (
+                SELECT 1 FROM urls u WHERE u.hash = h.hash
+            )
+            FOR UPDATE SKIP LOCKED
             LIMIT :count
             """, nativeQuery = true)
-
     List<String> fetchFreeHashes(@Param("count") int count);
     default String fetchFreeHash() {
         List<String> list = fetchFreeHashes(1);

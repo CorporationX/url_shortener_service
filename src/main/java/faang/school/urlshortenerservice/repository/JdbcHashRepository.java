@@ -41,17 +41,4 @@ public class JdbcHashRepository implements HashRepository{
             jdbcTemplate.batchUpdate(sql, batchArgs);
         }
     }
-
-    @Transactional
-    @Override
-    public List<String> getHashBatch() {
-        String sql = """
-                WITH picked AS (
-                SELECT hash FROM hashes ORDER BY random() LIMIT ?
-                )
-                DELETE FROM hashes USING picked WHERE hashes.hash = picked.hash
-                RETURNING hashes.hash
-                """;
-        return jdbcTemplate.queryForList(sql, new Object[]{batchSize}, String.class);
-    }
 }

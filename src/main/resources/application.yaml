@@ -43,3 +43,6 @@ hash-cache:
 executor:
     pool-size: 5
     queue-size: 100
+
+cleaner:
+  schedule-cron: "0 0 3 * * *"
