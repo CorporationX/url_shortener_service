@@ -8,6 +8,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HashEncoderProperties {
     private String alphabet;
     private int hashLength;
-    private long maxNumber;
-    private long shuffleKey;
 }

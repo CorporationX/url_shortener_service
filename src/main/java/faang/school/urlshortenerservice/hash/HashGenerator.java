@@ -30,6 +30,6 @@ public class HashGenerator {
         if (hashRepository.countHashes() > generatorThreshold) return;
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(constantsProperties.getGenerationBathSize());
         List<String> newHashes = encoder.encode(uniqueNumbers);
-        hashRepository.save(newHashes);
+        boolean save = hashRepository.save(newHashes);
     }
 }

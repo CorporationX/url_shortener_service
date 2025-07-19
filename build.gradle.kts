@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     implementation("commons-validator:commons-validator:1.7")
+    implementation ("org.sqids:sqids:0.1.0")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**

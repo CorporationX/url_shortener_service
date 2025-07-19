@@ -17,7 +17,7 @@ import java.util.List;
 public class HashRepositoryJdbcImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${constants.local_caching_size}")
+    @Value("${constants.local_hash_cache_butch_size}")
     private int LOCAL_BATCH_SIZE;
 
     @Override
