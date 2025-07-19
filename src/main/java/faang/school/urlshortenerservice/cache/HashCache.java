@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.entity;
+package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
 import faang.school.urlshortenerservice.repo.HashRepository;
@@ -75,7 +75,6 @@ public class HashCache {
                 List<String> hashes = base62Encoder.encode(numbers);
                 hashRepository.saveAllHashes(hashes);
 
-                // Добавляем новые хэши сразу в кэш
                 hashQueue.addAll(hashes);
             } catch (Exception e) {
                 log.error("Error generating additional hashes", e);

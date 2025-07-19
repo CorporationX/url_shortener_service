@@ -20,7 +20,4 @@ public class Hash {
     @Column(name = "hash", unique = true, nullable = false, length = 7)
     private String hash;
 
-    public Hash(String hash) {
-        this.hash = hash;
-    }
 }

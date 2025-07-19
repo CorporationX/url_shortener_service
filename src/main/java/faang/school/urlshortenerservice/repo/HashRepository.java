@@ -12,11 +12,11 @@ public class HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Long> getUniqueNumbers(int n) {
+    public List<Long> getUniqueNumbers(int count) {
         return jdbcTemplate.queryForList(
                 "SELECT nextval('unique_number_seq') FROM generate_series(1, ?)",
                 Long.class,
-                n
+                count
         );
     }
 

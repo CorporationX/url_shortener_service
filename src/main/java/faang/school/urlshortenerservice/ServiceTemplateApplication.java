@@ -11,10 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
-@SpringBootApplication(scanBasePackages = {
-        "faang.school.urlshortenerservice",
-        "faang.school.urlshortenerservice.exception"
-})
+@SpringBootApplication
 @EnableScheduling
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 @EnableJpaRepositories(basePackages = "faang.school.urlshortenerservice.repo")

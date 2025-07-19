@@ -21,4 +21,8 @@ public class UrlCache {
                 TimeUnit.DAYS
         );
     }
+
+    public String get(String hash) {
+        return redisTemplate.opsForValue().get(KEY_PREFIX + hash);
+    }
 }

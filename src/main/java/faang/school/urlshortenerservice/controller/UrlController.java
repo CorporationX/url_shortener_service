@@ -6,14 +6,18 @@ import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/url")
+@RequestMapping("/url")
 public class UrlController {
 
     private final UrlService urlService;
@@ -27,5 +31,14 @@ public class UrlController {
         return ShortUrlResponseDto.builder()
                 .shortUrl(baseUrl + "/" + hash)
                 .build();
+    }
+
+    @GetMapping("/{hash}")
+    public String getOriginalUrl(@PathVariable String hash) {
+        return urlService.getOriginalUrl(hash)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "URL not found for hash: " + hash
+                ));
     }
 }

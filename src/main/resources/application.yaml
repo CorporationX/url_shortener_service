@@ -32,6 +32,8 @@ url:
 server:
   port: 8080
   base-url: http://localhost:8080
+  servlet:
+    context-path: /api
 
 logging:
   level:
@@ -42,9 +44,9 @@ hash:
     size: 1000
     refill-threshold-percent: 20
     executor:
-      corePoolSize: 4
-      maxPoolSize: 8
-      queueCapacity: 100
+      core-pool-size: 4
+      max-pool-size: 8
+      queue-capacity: 100
     capacity: 10000
     fill:
       percent: 10

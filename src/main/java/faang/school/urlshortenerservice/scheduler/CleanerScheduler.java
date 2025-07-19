@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.repo.HashRepository;
 import faang.school.urlshortenerservice.repo.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +18,6 @@ public class CleanerScheduler {
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
-
-    @Value("${url.cleaner.cron:0 0 0 * * *}")
-    private String cleanerCron;
 
     @Scheduled(cron = "${url.cleaner.cron:0 0 0 * * *}")
     @Transactional
