@@ -4,8 +4,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 20
+      data-source-properties:
+         reWriteBatchedInserts: true
 
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
@@ -13,6 +18,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        order_inserts: true
+        order_updates: true
+        jdbc:
+            batch_size: 1000
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +34,7 @@ server:
 logging:
   level:
     root: info
+
+hash:
+    batch_size: 1000
+    generate_batch_size: 10000
