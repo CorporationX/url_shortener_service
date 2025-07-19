@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.utils;
+package faang.school.urlshortenerservice.storage;
 
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
-public class HashCache {
+public class HashMemoryCache {
     private final HashService hashService;
     @Value("${app.hash.table-size:10000}")
     private int hashSize;

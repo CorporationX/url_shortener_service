@@ -3,7 +3,7 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.url.HashNotFoundException;
 import faang.school.urlshortenerservice.repository.UrlRepository;
-import faang.school.urlshortenerservice.utils.HashCache;
+import faang.school.urlshortenerservice.storage.HashMemoryCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -16,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
-    private final HashCache hashCache;
+    private final HashMemoryCache hashMemoryCache;
 
-    @Cacheable(value = "urlCache", key = "#hash")
+    @Cacheable(cacheManager = "redisCacheManager",
+            cacheNames = "${app.cache.hash.key-prefix}",
+            key = "#hash")
     @Transactional(readOnly = true)
     public Url getUrlByHash(String hash) {
         return urlRepository.findById(hash)
@@ -29,10 +31,12 @@ public class UrlService {
                 });
     }
 
-    @CachePut(value = "urlCache", key = "#result.hash")
+    @CachePut(cacheManager = "redisCacheManager",
+            cacheNames = "${app.cache.hash.key-prefix}",
+            key = "#result.hash")
     @Transactional
     public Url generateHash(String url) {
-        String hash = hashCache.getHash();
+        String hash = hashMemoryCache.getHash();
         Url urlEntity = new Url();
         urlEntity.setUrl(url);
         urlEntity.setHash(hash);

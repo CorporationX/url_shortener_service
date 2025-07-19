@@ -4,8 +4,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Base62Encoder {
-    // TODO: base62
+    private static final String BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     public String encode(long value) {
-        return String.valueOf(value);
+        StringBuilder encoded = new StringBuilder();
+        while (value > 0) {
+            int remainder = (int) (value % BASE62_ALPHABET.length());
+            encoded.append(BASE62_ALPHABET.charAt(remainder));
+            value /= BASE62_ALPHABET.length();
+        }
+        return encoded.reverse().toString();
     }
 }

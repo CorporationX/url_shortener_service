@@ -17,7 +17,7 @@ CREATE TABLE hash (
 --changeset sanya_popenko:unique_number_seq
 --comment: Создание секвенции unique_number_seq
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 56800235584
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
