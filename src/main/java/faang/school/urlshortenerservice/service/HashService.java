@@ -26,9 +26,11 @@ public class HashService {
         List<String> hashes = getHashList(count);
 
         if (hashes.size() < count) {
-            // TODO: не будет рабоать с текущими локами
-            generateHashBatchIfNeeded();
-            hashes.addAll(getHashList(count - hashes.size()));
+            List<String> newHashes = hashRepository.getNextSequenceValues(count - hashes.size())
+                    .stream()
+                    .map(base62Encoder::encode)
+                    .toList();
+            hashes.addAll(newHashes);
         }
         return hashes;
     }
@@ -45,7 +47,6 @@ public class HashService {
         return CompletableFuture.completedFuture(getHashes(count));
     }
 
-    // TODO: альтернативы
     @Transactional
     public void generateHashBatchIfNeeded() {
         boolean lockAcquired = hashRepository.tryLock(lockId);
@@ -60,9 +61,8 @@ public class HashService {
                 return;
             }
 
-            List<Long> numbers = hashRepository.getNextSequenceValues(missingCount);
-
-            List<Hash> hashes = numbers.stream()
+            List<Hash> hashes = hashRepository.getNextSequenceValues(missingCount)
+                    .stream()
                     .map(base62Encoder::encode)
                     .map(Hash::new)
                     .toList();

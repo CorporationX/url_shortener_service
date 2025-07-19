@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -19,8 +19,7 @@ public class HashMemoryCache {
     @Value("${app.hash.memory-cache-min-percent:20.0}")
     private double minPercentLocalHash;
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
-    // TODO: посмотреть другие виды очередей
-    private final Queue<String> hashCacheQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<String> hashCacheQueue = new LinkedBlockingQueue<>(hashSize);
 
     @PostConstruct
     public void init() {
@@ -29,7 +28,7 @@ public class HashMemoryCache {
 
     public String getHash() {
         if (isFilling.compareAndExchange(false, true) && checkCurrentPercent()) {
-            hashService.getHashesAsync(15)
+            hashService.getHashesAsync(hashSize - hashCacheQueue.size())
                     .thenAccept(hashCacheQueue::addAll)
                     .thenRun(() -> isFilling.set(false));
         }
