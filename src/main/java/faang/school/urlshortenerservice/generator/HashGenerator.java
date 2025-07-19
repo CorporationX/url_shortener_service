@@ -25,11 +25,10 @@ public class HashGenerator {
     public void generateBatch() {
         log.info("HashGenerator: starting batch of {} hashes", batchSize);
 
+
         List<Long> ids = hashRepository.getUniqueNumbers(batchSize);
 
-        List<String> hashes = ids.stream()
-                .map(base62Encoder::encode)
-                .toList();
+        List<String> hashes = base62Encoder.encode(ids);
 
         hashRepository.saveAll(
                 hashes.stream()
