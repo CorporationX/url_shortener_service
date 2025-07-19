@@ -6,7 +6,6 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.storage.HashMemoryCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
