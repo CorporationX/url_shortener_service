@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.config.context;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,12 +17,15 @@ public class UserHeaderFilter implements Filter {
     private final List<String> privatePath = List.of(
             "/url"
     );
+    @Value("${spring.web.servlet.context-path}")
+    private String apiVersion;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
-        boolean isPrivate = privatePath.stream().anyMatch(req.getRequestURI()::startsWith);
+        boolean isPrivate = privatePath.stream()
+                .anyMatch(path -> req.getRequestURI().startsWith(apiVersion + path));
         String userId = req.getHeader("x-user-id");
         if (isPrivate) {
             if (userId != null) {

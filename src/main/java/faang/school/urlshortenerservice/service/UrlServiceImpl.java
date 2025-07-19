@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.hash.HashCacheImpl;
 import faang.school.urlshortenerservice.config.HashEncoderProperties;
+import faang.school.urlshortenerservice.hash.HashCacheImpl;
 import faang.school.urlshortenerservice.repository.CacheRepositoryRedisImpl;
 import faang.school.urlshortenerservice.repository.UrlRepositoryJdbcImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,14 +30,14 @@ public class UrlServiceImpl implements UrlService {
     public String findOriginal(String hash) {
         validateHash(hash);
         return cacheRepository
-                .get(hash)
-                .orElseGet(() -> urlRepository
-                        .findByHash(hash)
-                        .map(longUrl -> {
-                            cacheRepository.put(hash, longUrl);
-                            return longUrl;
-                        })
-                        .orElseThrow(EntityNotFoundException::new));
+            .get(hash)
+            .orElseGet(() -> urlRepository
+                .findByHash(hash)
+                .map(longUrl -> {
+                    cacheRepository.put(hash, longUrl);
+                    return longUrl;
+                })
+                .orElseThrow(()-> new EntityNotFoundException("No url found for hash " + hash)));
     }
 
     private void validateHash(String hash) {
@@ -45,6 +45,9 @@ public class UrlServiceImpl implements UrlService {
                 hash.chars().allMatch(c -> hashEncoderProperties.getAlphabet().indexOf(c) >= 0)) {
             return;
         }
-        throw new IllegalArgumentException("Provided hash wrong format");
+        String errorMessage = String.format(
+            "Provided hash %s has wrong format, must be %d symbols long, contains digits, small, and BIG letters only",
+            hash, hashEncoderProperties.getHashLength());
+        throw new IllegalArgumentException(errorMessage);
     }
 }

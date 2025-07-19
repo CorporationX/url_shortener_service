@@ -19,7 +19,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleNotFound(EntityNotFoundException e) {
-        log.error("EntityNotFoundException with message {} was thrown", e.getMessage());
+        log.error("EntityNotFoundException with message {} was thrown", e.getMessage(), e);
         return new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.name(),
                 "The required url was not found.",
@@ -31,7 +31,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleIllegalArgument(IllegalArgumentException e) {
-        log.error("IllegalArgumentException {}", e.getMessage());
+        log.error("IllegalArgumentException {}", e.getMessage(), e);
         return new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.name(),
                 "Invalid input data",
@@ -43,7 +43,7 @@ public class UrlExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleException(Exception e) {
-        log.error("Exception with message {} was thrown", e.getMessage());
+        log.error("Exception with message {} was thrown", e.getMessage(), e);
         return new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 "Something get wrong.",

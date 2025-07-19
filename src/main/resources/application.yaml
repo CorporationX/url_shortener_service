@@ -14,13 +14,6 @@ spring:
       hibernate:
         format_sql: true
 
-  constants:
-    generation_bath_size: 100
-    local_caching_size: 100
-    generation_threshold_percent: 20
-    clean_up_batch_size: 1000
-    expiration_interval: "1 year"
-
   data:
     redis:
       port: 6379
@@ -36,12 +29,23 @@ spring:
     queue_capacity: 500
     thread_name_prefix: maintanence-
 
+  web:
+    servlet:
+      context-path: /api/v1
+
 server:
   port: 8098
 
 logging:
   level:
     root: info
+
+constants:
+  generation_bath_size: 100
+  local_caching_size: 100
+  generation_threshold_percent: 20
+  clean_up_batch_size: 1000
+  expiration_interval: "1 year"
 
 encoding:
   alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
