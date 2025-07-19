@@ -52,4 +52,8 @@ encoding:
   hash_length: 6
 
 scheduling:
-  expired_hash_cleanup: "0 0 0 * * *" #every midnight
+  cron:
+    expired_hash_cleanup: "0 0 0 * * *" #every midnight
+  lock:
+    url_cleaner_lock_name: "url_cleaner"
+    at_most_time: "PT3M"

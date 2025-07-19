@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.ExpiredHashCleanerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,11 @@ public class CleanerScheduler {
     private final ExpiredHashCleanerService hashCleanerService;
     private final UrlRepository urlRepository;
 
-    @Scheduled(cron = "${scheduling.expired_hash_cleanup}")
+    @Scheduled(cron = "${scheduling.cron.expired_hash_cleanup}")
+    @SchedulerLock(
+            name = "${scheduling.lock.url_cleaner_lock_name}",
+            lockAtLeastFor = "${scheduling.lock.at_most_time}"
+    )
     @Async("taskExecutor")
     public void cleanUpHashes() {
         Long expiredNumber = urlRepository.countExpired(constantsProperties.getExpirationInterval());
@@ -31,6 +36,6 @@ public class CleanerScheduler {
         } while (cycleCleaned == constantsProperties.getCleanUpBatchSize());
 
         long cleanedByInstance = (long) (cycleCounter - 1) * constantsProperties.getCleanUpBatchSize() + cycleCleaned;
-        log.info("Expired url cleanup FINISHED, {} url cleaned with shard", cleanedByInstance);
+        log.info("Expired url cleanup FINISHED, {} url cleaned with instance", cleanedByInstance);
     }
 }
