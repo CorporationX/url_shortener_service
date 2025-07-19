@@ -28,5 +28,10 @@ logging:
     root: info
 
 hash:
-  cache:
+  generator:
     batch-size: 100
+async:
+  pool:
+    core-size: 4        # базовое число потоков
+    max-size: 8         # максимум
+    queue-capacity: 50  # длина очереди задач
