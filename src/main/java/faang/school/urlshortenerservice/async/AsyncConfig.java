@@ -11,10 +11,8 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class AsyncConfig {
 
-    private final AsyncProperties properties;
-
     @Bean
-    public Executor taskExecutor() {
+    public Executor taskExecutor(AsyncProperties properties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(properties.getCorePoolSize());
         executor.setMaxPoolSize(properties.getMaxPoolSize());
