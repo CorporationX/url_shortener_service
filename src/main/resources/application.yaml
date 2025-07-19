@@ -31,7 +31,7 @@ url:
 
 server:
   port: 8080
-  base-url: http://localhost:8080
+  base-url: http://localhost:8080/api/url/
   servlet:
     context-path: /api
 

@@ -3,7 +3,9 @@ package faang.school.urlshortenerservice.config.context;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,5 +32,16 @@ public class ExecutorConfig {
                 new LinkedBlockingQueue<>(queueCapacity),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
+    }
+
+    @Bean(name = "hashGeneratorExecutor")
+    public Executor hashGeneratorExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(executor.getPoolSize());
+        executor.setMaxPoolSize(executor.getMaxPoolSize());
+        executor.setQueueCapacity(executor.getQueueCapacity());
+        executor.setThreadNamePrefix("hash-generator-");
+        executor.initialize();
+        return executor;
     }
 }
