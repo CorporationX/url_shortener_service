@@ -14,14 +14,8 @@
     <logger name="faang.school" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE2"/>
     </logger>
-    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE2"/>
-    </logger>
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
-        <appender-ref ref="CONSOLE2"/>
-    </logger>
 
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>
