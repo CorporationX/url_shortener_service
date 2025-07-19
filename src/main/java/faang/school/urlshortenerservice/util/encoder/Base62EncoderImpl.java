@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.util.encoder;
 
 import faang.school.urlshortenerservice.util.Base62Encoder;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class Base62EncoderImpl implements Base62Encoder {
     private final Base62 base62;
