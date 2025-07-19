@@ -27,7 +27,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String findOriginal(String hash) {
+    public String findOriginalUrl(String hash) {
         validateHash(hash);
         return cacheRepository
             .get(hash)

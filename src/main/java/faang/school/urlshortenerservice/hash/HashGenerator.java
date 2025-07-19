@@ -22,7 +22,7 @@ public class HashGenerator {
     private void init() {
         generatorThreshold =
                 Math.max(10L * constantsProperties.getGenerationThresholdPercent(),
-                        constantsProperties.getLocalCachingSize());
+                        constantsProperties.getLocalHashCacheButchSize());
     }
 
     @Async("taskExecutor")

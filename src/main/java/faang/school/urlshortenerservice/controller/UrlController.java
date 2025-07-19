@@ -26,7 +26,7 @@ public class UrlController {
 
     @GetMapping("/{hash}")
     public RedirectView redirectOriginal(@PathVariable String hash) {
-        String originalUrl = urlService.findOriginal(hash);
+        String originalUrl = urlService.findOriginalUrl(hash);
         return new RedirectView(originalUrl);
     }
 }

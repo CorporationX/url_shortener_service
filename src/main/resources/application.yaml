@@ -42,7 +42,7 @@ logging:
 
 constants:
   generation_bath_size: 100
-  local_caching_size: 100
+  local_hash_cache_butch_size: 100
   generation_threshold_percent: 20
   clean_up_batch_size: 1000
   expiration_interval: "1 year"

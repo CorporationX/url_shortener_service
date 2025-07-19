@@ -26,7 +26,7 @@ public class HashCacheImpl implements HashCache {
 
     @PostConstruct
     private void init() {
-        cacheGenThreshold = constantsProperties.getLocalCachingSize() *
+        cacheGenThreshold = constantsProperties.getLocalHashCacheButchSize() *
                 constantsProperties.getGenerationThresholdPercent() / 100;
         cache = new ConcurrentLinkedQueue<>();
         checkAndRefillFreeHashesLeft();
