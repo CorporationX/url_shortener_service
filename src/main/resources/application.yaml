@@ -21,7 +21,18 @@ server:
   port: 8080
 
 hash:
-  batch-size: 100
+  batch-size: 10_000
+
+async:
+  hash-generator:
+    thread-pool-size: 5
+    thread-pool-queue-capacity: 50
+
+retry:
+  hash-generator:
+    max-attempts: 3
+    delay: 1000
+    multiplier: 2.0
 
 logging:
   level:
