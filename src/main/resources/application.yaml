@@ -29,7 +29,7 @@ service:
   hash-service:
     batch-size: 100
   hash-cache-service:
-    capacity: 10000
+    capacity: 10
     percent-of-filled-cache-to-start-generation: 20
   url-cache-service:
     ttl-days: 1

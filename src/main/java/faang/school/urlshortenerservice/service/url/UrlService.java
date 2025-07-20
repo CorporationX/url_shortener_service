@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.service.url;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.hash.HashCacheService;
 import faang.school.urlshortenerservice.service.hash.HashService;
@@ -24,7 +23,6 @@ public class UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheService urlCacheService;
     private final HashService hashService;
-    private final UrlMapper urlMapper;
 
     @Value("${service.url-service.base-url}")
     private String baseUrl;
@@ -52,7 +50,7 @@ public class UrlService {
 
     @Transactional
     public String createShortUrl(UrlDto urlDto) {
-        String url = urlMapper.toString(urlDto);
+        String url = urlDto.getUrl();
 
         log.info("Getting Hash for URL: {}", url);
         String hash = hashCacheService.getHash();
