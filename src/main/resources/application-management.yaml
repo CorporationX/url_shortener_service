@@ -1,0 +1,17 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  boot:
+    admin:
+      client:
+        url: http://localhost:8081
+
+monitored:
+  application:
+    host: localhost
+    port: 8080
+    actuator-endpoint: /actuator

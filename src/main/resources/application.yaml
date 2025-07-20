@@ -6,18 +6,29 @@ spring:
     password: password
 
   config:
-    import: 'optional:consul:'
+    import:
+      - 'optional:consul:'
+      - classpath:application-management.yaml
   application:
     name: url-shortener-service
   cloud:
     consul:
-      host: localhost
+      host: 158.160.192.60
       port: 8500
       discovery: url-shortener-service-i1
       config:
         enabled: true
         watch:
           enabled: true
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      ttl-hours: 24
+      hashes:
+        ttl-minutes: 1440
+        cache-name: urls
+
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -29,7 +40,7 @@ spring:
         format_sql: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog/db.changelog-master.xml
 
 server:
   port: 8080
@@ -37,3 +48,29 @@ server:
 logging:
   level:
     root: info
+
+custom-thread-pool:
+  core-pool-size: 15
+  max-pool-size: 32
+  queue-capacity: 1500
+  thread-name-prefix: "url-hash-"
+  wait-for-tasks-to-complete-on-shutdown: true
+  await-termination-seconds: 60
+
+scheduler:
+  daily-cron: "0 0 3 * * *"
+
+hashes:
+  generate:
+    batch-size: 2000
+    chunk-size: 350
+  local-cache:
+    capacity: 2000
+    threshold: 500
+  expired:
+    delete:
+      batch: 1000
+    cutoff-days: 365
+
+app:
+  base-url: http://localhost:8080
