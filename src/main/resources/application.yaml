@@ -47,3 +47,18 @@ app:
   cache:
     capacity: 5000
     fill-percentage: 20
+  scheduler:
+    clean-unused:
+      cron: "0 0 0 * * ?"
+      lock-name: "cleaningUnusedTask"
+      lock-at-least-for: "5m"
+      lock-at-most-for: "10m"
+
+shedlock:
+  enabled: true
+  defaults:
+    lock-at-most-for: "10m"
+  provider:
+    jdbc:
+      table-name: "shedlock"
+      use-db-time: true
