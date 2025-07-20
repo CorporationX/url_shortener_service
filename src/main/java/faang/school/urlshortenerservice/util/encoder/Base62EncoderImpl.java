@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.util.encoder;
 
 import faang.school.urlshortenerservice.util.Base62Encoder;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
