@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/shorter")
+@RequestMapping
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -30,6 +30,7 @@ public class UrlController {
     @PostMapping
     public ResponseEntity<ShortUrlResponse> createShortUrl(@Valid @RequestBody ShortUrlRequest shortUrlRequest) {
         ShortUrlResponse shortUrlResponse = urlControllerFacade.createShortUrl(shortUrlRequest);
-        return ResponseEntity.ok(shortUrlResponse);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(shortUrlResponse);
     }
 }
