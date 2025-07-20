@@ -25,6 +25,7 @@ public class UrlController {
     public ResponseEntity<Object> getUrl(@PathVariable("hash") @NotEmpty(message = "hash should be not empty") String hash) {
         return ResponseEntity.
                 status(302).
-                body(service.find(hash));
+                header("Location", service.find(hash))
+                .build();
     }
 }
