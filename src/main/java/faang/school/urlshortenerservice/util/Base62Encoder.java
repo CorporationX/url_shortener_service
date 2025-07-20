@@ -13,7 +13,7 @@ public class Base62Encoder {
     private static final int MIN_LENGTH = 4;
     private static final int MAX_LENGTH = 6;
 
-    public List<String> encode(List<Long> numbers) {
+    public static List<String> encode(List<Long> numbers) {
         return numbers.stream()
                 .map(Base62Encoder::encodeBase62)
                 .toList();
