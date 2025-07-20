@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class GenerateHashJob {
     private final HashService hashService;
 
-    @Scheduled(cron = "${app.job.hash.generate.cron:* * * * * *}")
-    public void generateHash() {
+    @Scheduled(cron = "${app.job.hash.generate.cron}")
+    public void run() {
         hashService.generateHashBatchIfNeeded();
     }
 }

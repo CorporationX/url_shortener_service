@@ -74,10 +74,10 @@ public class UrlControllerIT {
                 ).andExpect(status().isCreated())
                 .andReturn();
 
-        // TODO: как получить ответ
         String responseDto = mvcResult.getResponse().getContentAsString();
+        String hash = responseDto.substring(responseDto.lastIndexOf("/") + 1);
 
-        Url urlEntity = urlRepository.findById(responseDto)
+        Url urlEntity = urlRepository.findById(hash)
                 .orElseThrow(() -> new AssertionError("Url not found in DB"));
 
         assertThat(urlEntity)
@@ -85,7 +85,7 @@ public class UrlControllerIT {
                         Url::getUrl
                 )
                 .containsExactly(
-                        responseDto,
+                        hash,
                         url
                 );
         assertThat(urlEntity.getCreatedAt()).isNotNull();
