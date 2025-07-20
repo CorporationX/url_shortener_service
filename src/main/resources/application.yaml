@@ -38,4 +38,7 @@ app:
   thread-pool:
     size: 5
   hash:
-    batch-size: 100
+    batch-size: 5000
+  cache:
+    capacity: 10000
+    fill-percentage: 20

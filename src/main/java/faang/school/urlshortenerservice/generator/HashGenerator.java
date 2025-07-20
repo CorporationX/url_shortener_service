@@ -27,7 +27,7 @@ public class HashGenerator {
         List<Hash> hashes = encoder.encode(numbers).stream()
                 .map(Hash::new)
                 .toList();
-        log.info("Hashes {} was successfully generated", hashes);
+        log.info("Hashes was successfully generated");
         return CompletableFuture.supplyAsync(() -> hashRepository.saveAll(hashes));
     }
 }
