@@ -30,6 +30,7 @@ logging:
 hash:
   generator:
     batch-size: 100
+    refill-threshold-percent: 0.2
 async:
   pool:
     core-size: 4        # базовое число потоков

@@ -15,7 +15,7 @@ public class Base62Encoder {
                 .toList();
     }
 
-    public String encodeOne(long value) {
+    private String encodeOne(long value) {
         if (value == 0) {
             return String.valueOf(BASE_62_CHARACTERS.charAt(0));
         }
