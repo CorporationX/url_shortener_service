@@ -26,7 +26,7 @@ server:
 redis:
   host: localhost
   port: 6379
-  
+
 logging:
   level:
     root: info
@@ -40,3 +40,7 @@ async:
     core-size: 4        # базовое число потоков
     max-size: 8         # максимум
     queue-capacity: 50  # длина очереди задач
+
+app:
+  url:
+    base: "https://sh.c"
