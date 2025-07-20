@@ -2,12 +2,14 @@ package faang.school.urlshortenerservice.hash;
 
 import faang.school.urlshortenerservice.config.ConstantsProperties;
 import faang.school.urlshortenerservice.repository.HashRepositoryJdbcImpl;
+import io.micrometer.core.instrument.Counter;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +17,7 @@ public class HashGenerator {
     private final HashRepositoryJdbcImpl hashRepository;
     private final Base62Encoder encoder;
     private final ConstantsProperties constantsProperties;
+    private final Counter failedSavedCounter;
 
     private Long generatorThreshold;
 
@@ -30,6 +33,12 @@ public class HashGenerator {
         if (hashRepository.countHashes() > generatorThreshold) return;
         List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(constantsProperties.getGenerationBathSize());
         List<String> newHashes = encoder.encode(uniqueNumbers);
-        boolean save = hashRepository.save(newHashes);
+        boolean saved = hashRepository.save(newHashes);
+
+        if (saved) {//for metrics testing purpose only
+            Random random = new Random();
+            saved = random.nextBoolean();
+        }
+        if (!saved) failedSavedCounter.increment();
     }
 }
