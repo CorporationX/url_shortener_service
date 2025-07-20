@@ -20,13 +20,12 @@ public class HashCache {
     private final HashGenerator hashGenerator;
 
     private Queue<String> hashQueue;
-    private AtomicBoolean isGeneratingHashes;
+    private AtomicBoolean isGeneratingHashes = new AtomicBoolean(false);
 
     @PostConstruct
     public void init() {
         hashQueue = new ArrayBlockingQueue<>(cacheConfig.getCapacity());
-        generateAndFillCacheAsync()
-                .join();
+        generateAndFillCacheAsync();
     }
 
     public String getHash() {
