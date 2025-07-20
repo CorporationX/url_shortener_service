@@ -46,7 +46,8 @@ dependencies {
     implementation("net.javacrumbs.shedlock:shedlock-spring:5.12.0")
     implementation("net.javacrumbs.shedlock:shedlock-provider-redis-spring:5.12.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     /**
      * Test containers

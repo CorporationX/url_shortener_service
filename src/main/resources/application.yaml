@@ -57,3 +57,20 @@ scheduling:
   lock:
     url_cleaner_lock_name: "url_cleaner"
     at_most_time: "PT3M"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: url-shortener-service
+      instance: ${HOSTNAME:unknown}
+  endpoint:
+    prometheus:
+      enabled: true
+
