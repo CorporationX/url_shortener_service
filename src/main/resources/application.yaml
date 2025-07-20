@@ -37,5 +37,9 @@ logging:
 
 hash:
     batch_size: 1000
-    generate_batch_size: 10000
+    generate_batch_size: 5000
     max_length: 6
+    core_pool_size: 3
+    max_pool_size: 10
+    queue_capacity: 500
+    prefix: HashGenPool

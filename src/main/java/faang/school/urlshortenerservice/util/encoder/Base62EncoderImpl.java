@@ -17,7 +17,6 @@ import java.util.List;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class Base62EncoderImpl implements Base62Encoder {
     private final Base62 base62;
@@ -25,7 +24,7 @@ public class Base62EncoderImpl implements Base62Encoder {
             ThreadLocal.withInitial(() -> ByteBuffer.allocate(Long.BYTES));
 
     @Value("${hash.max_length}")
-    private int hashLength;
+    private final int hashLength;
 
     @Override
     public List<String> encode(List<Long> numbers) {
