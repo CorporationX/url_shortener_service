@@ -40,10 +40,10 @@ logging:
 
 hash:
   storage:
-    size: 1000
+    size: 100000
     update_percent: 20
   cache:
-    size: 100
+    size: 10000
     update_percent: 20
 
 shorter:
@@ -58,7 +58,7 @@ executor:
 scheduler:
   expired-urls-clean:
     # каждый день в 4 часа ночи
-    cron: "0 0/10 * * * *"
+    cron: "0 0 4 * * *"
     zone: "Europe/Moscow"
     batch-size: 2000
     fetch-limit: 10000

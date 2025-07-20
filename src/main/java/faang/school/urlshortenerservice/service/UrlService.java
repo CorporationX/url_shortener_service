@@ -72,7 +72,7 @@ public class UrlService {
     }
 
     private LocalDateTime setExpirationTimeOrDefault(ShortUrlRequest request) {
-        LocalDateTime maxExpirationTime = LocalDateTime.now().plusMinutes(DEFAULT_EXPIRATION_TIME_YEAR_DELTA);
+        LocalDateTime maxExpirationTime = LocalDateTime.now().plusYears(DEFAULT_EXPIRATION_TIME_YEAR_DELTA);
         boolean defaultRequired = request.expirationTime() == null || request.expirationTime().isAfter(maxExpirationTime);
         return defaultRequired ? maxExpirationTime : request.expirationTime();
     }
