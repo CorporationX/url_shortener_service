@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashService {
 
     private final HashConfig hashConfig;
-
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ThreadPoolTaskExecutor executor;
