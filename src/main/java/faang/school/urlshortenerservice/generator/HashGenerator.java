@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +25,14 @@ public class HashGenerator {
     @Qualifier("hashExecutor")
     private final Executor hashExecutor;
 
+    @Value("${hash.generator.batch-size}")
+    private final int maxSize;
+
     @Transactional
-    public List<String> generateNewHashes(int batchSize) {
-        log.info("Generating a batch of {} hashes", batchSize);
-        List<Long> ids = hashRepository.getUniqueNumbers(batchSize);
+    @Scheduled(cron = "")
+    public List<String> generateNewHashes() {
+        log.info("Generating a batch of {} hashes", maxSize);
+        List<Long> ids = hashRepository.getUniqueNumbers(maxSize);
         List<String> hashes = base62Encoder.encode(ids);
         hashRepository.saveAll(
                 hashes.stream()
@@ -38,8 +43,17 @@ public class HashGenerator {
         return hashes;
     }
 
+    @Transactional
+    public List<String> getHashes(int batchSize) {
+        List<String> result = hashRepository.getHashBatch(batchSize);
+        if (result.size() < batchSize) {
+            result.addAll(hashRepository.getHashBatch(batchSize - result.size()));
+        }
+        return result;
+    }
+
     @Async("hashExecutor")
-    public CompletableFuture<List<String>> generateBatchAsync(int batchSize) {
-        return CompletableFuture.supplyAsync(() -> generateNewHashes(batchSize), hashExecutor);
+    public CompletableFuture<List<String>> getHashesAsync(int maxSize) {
+        return CompletableFuture.supplyAsync(() -> getHashes(maxSize), hashExecutor);
     }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,12 +32,18 @@ public class HashCache {
     @PostConstruct
     public void initializeCache() {
         hashes = new LinkedBlockingQueue<>(maxSize);
-        hashes.addAll(hashGenerator.generateNewHashes(maxSize));
+        hashes.addAll(hashGenerator.getHashes(maxSize));
         log.info("HashCache initialized with {} hashes", hashes.size());
     }
 
     public Optional<String> getHash() {
         String h = hashes.poll();
+
+        if (h == null) {
+            List<String> fresh = hashGenerator.getHashes(maxSize);
+            hashes.addAll(fresh);
+            h = hashes.poll();
+        }
 
         if (hashes.size() <= (int)(maxSize * refillThresholdPercent)) {
             refillCache();
@@ -56,7 +63,7 @@ public class HashCache {
                 return;
             }
 
-            hashGenerator.generateBatchAsync(amountToGenerate)
+            hashGenerator.getHashesAsync(amountToGenerate)
                     .thenAccept(newHashes -> {
                         hashes.addAll(newHashes);
                         log.info("Cache successfully refilled with {} hashes. New size: {}",
