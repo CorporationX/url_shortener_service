@@ -1,4 +1,18 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: yourpassword
+      timeout: 1000ms
+      client-type: lettuce
+      default_ttl_seconds: 3600
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 2
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -9,17 +23,49 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
+        jdbc.batch_size: 1000
+        order_inserts: true
+        order_updates: true
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8078
 
 logging:
   level:
     root: info
+
+hash:
+  storage:
+    size: 100000
+    update_percent: 20
+  cache:
+    size: 10000
+    update_percent: 20
+
+shorter:
+  address: https://sh.r/
+
+executor:
+  hash:
+    core-pool-size: 5
+    max-pool-size: 20
+    thread-name-prefix: 'HashExecutor-'
+
+scheduler:
+  expired-urls-clean:
+    # каждый день в 4 часа ночи
+    cron: "0 0 4 * * *"
+    zone: "Europe/Moscow"
+    batch-size: 2000
+    fetch-limit: 10000
+    executor-config:
+      core-pool-size: 5
+      max-pool-size: 20
+      thread-name-prefix: 'ExpiredCleaner-'
