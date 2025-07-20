@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -35,10 +34,6 @@ public class HashGenerator {
         List<String> newHashes = encoder.encode(uniqueNumbers);
         boolean saved = hashRepository.save(newHashes);
 
-        if (saved) {//for metrics testing purpose only
-            Random random = new Random();
-            saved = random.nextBoolean();
-        }
         if (!saved) failedSavedCounter.increment();
     }
 }
