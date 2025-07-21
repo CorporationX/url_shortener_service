@@ -17,6 +17,21 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        achievement: achievement_channel
+        follower: follower_channel
+        comment: comment_channel
+        postCreated: post_created
+
+cache:
+  type: redis
+  redis:
+    ttl: 3600
+
 logging:
   level:
     root: info
@@ -31,7 +46,8 @@ base:
 
 hashes:
   numberOfNumbers: 7
-  numberOfHashes: 1
+  numberOfHashes: 10
+  mimThresholdPercent: 20
 
 scheduler:
   frequencyDays: 1

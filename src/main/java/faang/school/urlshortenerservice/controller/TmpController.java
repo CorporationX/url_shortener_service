@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import faang.school.urlshortenerservice.model.Hash;
+import faang.school.urlshortenerservice.model.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.HashGenerator;
@@ -20,6 +22,7 @@ public class TmpController {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final HashGenerator hashGenerator;
+    private final HashCache hashCache;
 
     @GetMapping("/nextNumBatchOf/{count}")
     public List<Long> getNextNumBatch(@PathVariable int count) {
@@ -31,6 +34,11 @@ public class TmpController {
     public List<String> getHashBatch(@PathVariable int count) {
         List<String> hashes = hashRepository.getHashBatchOf(count);
         return hashes;
+    }
+
+    @GetMapping("/hash")
+    public CompletableFuture<String> getHash() {
+        return hashCache.getHash();
     }
 
     @PostMapping("/nextHashBatchOf/{count}")
