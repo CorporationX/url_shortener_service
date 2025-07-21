@@ -25,7 +25,6 @@ public interface HashRepository extends JpaRepository<Hash, String> {
               SELECT hash
                 FROM hash
                 FOR UPDATE SKIP LOCKED
-                ORDER BY random()
                 LIMIT :n
             )
             DELETE FROM hash

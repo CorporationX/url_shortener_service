@@ -44,3 +44,7 @@ async:
 app:
   url:
     base: "https://sh.c"
+  scheduler:
+    cleaner-cron: "0 0 0 * * ?"
+    batch-size: 500
+    age-interval: "INTERVAL '1 year'"

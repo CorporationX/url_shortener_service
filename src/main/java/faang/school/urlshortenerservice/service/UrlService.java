@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.config.UrlProperties;
 import faang.school.urlshortenerservice.exception.HashUnavailableException;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.generator.HashCache;
@@ -18,9 +19,7 @@ public class UrlService {
     private final UrlCacheRepository cache;
     private final UrlRepository repo;
     private final HashCache hashCache;
-
-    @Value("${app.url.base}")
-    private String baseUrl;
+    private final UrlProperties baseUrl;
 
     @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
