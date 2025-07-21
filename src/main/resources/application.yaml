@@ -23,3 +23,25 @@ server:
 logging:
   level:
     root: info
+
+hash_generator:
+  countUniqueNumber: 20
+
+thread_pool:
+  core_pool_size: 10
+  maximum_pool_size: 100
+  keep_alive_time: 10
+
+cleaner_scheduler:
+  cron: "0 0 0 * * *"
+
+hash_cache:
+  list_size_hashes: 20
+  percent: 20
+  cron: "*/2 * * * * *"
+
+redis:
+  host: "localhost"
+  port: 6379
+  cacheable: "hashesUrl"
+  duration_days: 30
