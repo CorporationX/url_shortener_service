@@ -29,7 +29,6 @@ public class HashGenerator {
     private final int maxSize;
 
     @Transactional
-    @Scheduled(cron = "")
     public List<String> generateNewHashes() {
         log.info("Generating a batch of {} hashes", maxSize);
         List<Long> ids = hashRepository.getUniqueNumbers(maxSize);
