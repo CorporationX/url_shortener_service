@@ -18,10 +18,8 @@ public class Url {
     @Id
     @Column(name = "hash", length = 6, nullable = false)
     private String hash;
-
     @Column(name = "url", nullable = false)
     private String url;
-
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
