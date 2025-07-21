@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Component
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class HashCacheImpl implements HashCache {
     private final ExecutorService hashCachePool;
     private final HashRepository hashRepository;
