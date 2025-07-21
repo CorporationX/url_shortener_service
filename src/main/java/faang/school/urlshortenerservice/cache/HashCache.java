@@ -31,8 +31,8 @@ public class HashCache {
     @Value("${hash_cache.percent}")
     private int percent;
 
-    @Value("${hash_generator.n}")
-    private Long n;
+    @Value("${hash_generator.countUniqueNumber}")
+    private Long countUniqueNumber;
 
     private BlockingQueue<String> hashList;
     private Queue<String> pendingHashes;
@@ -70,7 +70,7 @@ public class HashCache {
     }
 
     private void refillCache() {
-        List<String> hashes = hashRepository.getHashBatch(n);
+        List<String> hashes = hashRepository.getHashBatch(countUniqueNumber);
 
         List<String> added = hashes.parallelStream()
                 .limit(maxSizeHashList - hashList.size())

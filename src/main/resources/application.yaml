@@ -25,7 +25,7 @@ logging:
     root: info
 
 hash_generator:
-  n: 20
+  countUniqueNumber: 20
 
 thread_pool:
   core_pool_size: 10

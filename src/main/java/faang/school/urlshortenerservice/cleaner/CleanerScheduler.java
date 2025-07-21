@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class CleanerScheduler {
 
     @Scheduled(cron = "${cleaner_scheduler.cron}")
     @Async(value = "customPool")
-    @Transactional
     public void cleaner() {
         List<String> oldUrl = urlRepository.getOldHash();
         List<Hash> hashes = oldUrl.stream()

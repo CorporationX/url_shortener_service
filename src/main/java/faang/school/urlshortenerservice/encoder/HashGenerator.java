@@ -18,15 +18,15 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
 
-    @Value(value = "${hash_generator.n}")
-    private Long n;
+    @Value(value = "${hash_generator.countUniqueNumber}")
+    private Long countUniqueNumber;
 
     @Async(value = "customPool")
     @Transactional
     public void generateBatch(){
-        List<Long> listLong = hashRepository.getUniqueNumbers(n);
+        List<Long> listLong = hashRepository.getUniqueNumbers(countUniqueNumber);
         List<Hash> hashes = encoder.encode(listLong);
         hashRepository.saveAll(hashes);
-        log.info("______________________Save n = {} new hashes________________________________________", n);
+        log.info("______________________Save n = {} new hashes____________________________________", countUniqueNumber);
     }
 }
