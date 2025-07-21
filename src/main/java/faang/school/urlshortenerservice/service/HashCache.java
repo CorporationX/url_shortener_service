@@ -1,15 +1,13 @@
 package faang.school.urlshortenerservice.service;
 
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,21 +39,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class HashCache {
 
-    private static final String FREE_HASH = "FREE_HASH";
-
-    @Value("${app.cache.max-amount:10}")
-    private Long maxAmount;
-    @Value("${app.min-percent:3}")
-    private int minPercent;
-
-    private final AtomicBoolean lock = new AtomicBoolean(false);
+    private static final int safeDelta = 5;
 
     private final HashGenerator hashGenerator;
-    private final StringRedisTemplate stringRedisTemplate;
     private final ExecutorService executorService;
+    private final AtomicBoolean lock = new AtomicBoolean(false);
+
+    private final Long maxAmount;
+    private final int minPercent;
+    private final Queue<String> hashQueue;
+
+    public HashCache(
+        HashGenerator hashGenerator,
+        ExecutorService executorService,
+        @Value("${app.cache.max-amount:10}") Long maxAmount,
+        @Value("${app.min-percent:3}") int minPercent
+    ) {
+        this.hashGenerator = hashGenerator;
+        this.executorService = executorService;
+        this.maxAmount = maxAmount;
+        this.minPercent = minPercent;
+        int capacity = (int) (maxAmount + (maxAmount * minPercent / 100) + safeDelta);
+        this.hashQueue = new ArrayBlockingQueue<>(capacity);
+    }
 
     @PostConstruct
     public void init() {
@@ -67,25 +75,15 @@ public class HashCache {
     }
 
     public String getNewHash() {
-        /* todo:
-         *  - достать значение из кеша с хешами
-         *  - проверить процент заполнения кеша и если оно меньше запустить процесс наполнения из БД
-         *  - что делать если кеш пустой?
-         *  - что делать если и в таблице hashes нет сгенерированных хешей?
-         */
         do {
-            String hash = setOps().pop(FREE_HASH);
+            String hash = hashQueue.poll(); // String hash = setOps().pop(FREE_HASH);
             if (hash == null) {
                 if (lock.compareAndExchange(false, true)) {
                     log.info("Redis Hash Cache is empty. Filling the cache Synchronously.");
-                    /* todo: попробовать вычитать данные из HashGenerator через метод getHashes(maxAmount);
-                     */
                     fillCache();
                     lock.set(false);
                 }
             } else {
-                /* todo: проверить процент заполнения кеша и если он меньше запустить процесс наполнения из БД
-                 */
                 if (isNeedExtend()) {
                     log.debug("NEED extend cache. lock is: {}", lock.get());
                     if (lock.compareAndSet(false, true)) {
@@ -116,7 +114,7 @@ public class HashCache {
     }
 
     private boolean isNeedExtend() {
-        Long cacheSize = Objects.requireNonNullElse(setOps().size(FREE_HASH), 0L);
+        int cacheSize = hashQueue.size();
         log.debug("free hash size: {}", cacheSize);
         return cacheSize < (maxAmount * minPercent / 100);
     }
@@ -126,24 +124,8 @@ public class HashCache {
         addHashPortion(freeHashes);
     }
 
-    private SetOperations<String, String> setOps() {
-        return stringRedisTemplate.opsForSet();
-    }
-
     private void addHashPortion(List<String> freeHashes) {
         log.debug("Adding Hash Portion. Portion: {}", freeHashes);
-        setOps().add(FREE_HASH, freeHashes.toArray(new String[0]));
+        hashQueue.addAll(freeHashes);
     }
-
-    // private List<String> getPortionOfHashes(Long range) {
-    //     do {
-    //         List<String> portion = hashRepository.getPortionOfHashes(maxAmount);
-    //         if (portion.isEmpty()) {
-    //             hashGenerator.generateBatch();
-    //         } else {
-    //             log.debug("getting hashes. portion size is: {}", portion.size());
-    //             return portion;
-    //         }
-    //     } while (true);
-    // }
 }

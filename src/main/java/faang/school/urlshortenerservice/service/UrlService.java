@@ -11,8 +11,10 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.util.Utils;
+import io.lettuce.core.RedisConnectionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,13 +37,14 @@ public class UrlService {
     private final Utils utils;
 
     public String redirectByHash(String hash) {
-        String url = urlCacheRepository.findByHash(hash)
-            .orElseGet(() -> urlRepository.findByHash(hash)
-                .map(Url::getUrl)
-                .orElseThrow(() -> new UrlNotFound(utils.format(URL_NOT_FOUND, hash))));
-
-        urlCacheRepository.addUrl(urlMapper.toUrlDto(url, hash));
-        return url;
+        try {
+            String url = urlCacheRepository.findByHash(hash)
+                .orElseGet(() -> findHashInRepository(hash));
+            urlCacheRepository.addUrl(urlMapper.toUrlDto(url, hash));
+            return url;
+        } catch (RedisConnectionException | RedisConnectionFailureException e) {
+            return findHashInRepository(hash);
+        }
     }
 
     @Transactional
@@ -50,38 +53,71 @@ public class UrlService {
         if (!utils.isUrlValid(urlEncodeDto.url())) {
             throw new InvalidUrlFormatException(INVALID_URL);
         }
-        Optional<String> hash = Optional.ofNullable(urlCacheRepository.findByUrl(urlEncodeDto.url())
-            .orElseGet(() -> urlRepository.findByUrl(urlEncodeDto.url())
-                .map(Url::getHash)
-                .orElse(null)));
-        if (hash.isPresent()) {
-            urlCacheRepository.addUrl(urlMapper.toUrlDto(urlEncodeDto, hash.get()));
-            return hash.get();
+        String hash = getExistingHash(urlEncodeDto);
+        if (hash != null) {
+            return hash;
         }
 
         String newHash = hashCache.getNewHash();
-
         Url url = urlMapper.toUrl(urlEncodeDto, newHash);
         urlRepository.save(url);
 
-        UrlDto urlDto = urlMapper.toUrlDto(urlEncodeDto, newHash);
-        urlDto.setHash(newHash);
-        urlCacheRepository.addUrl(urlDto);
+        try {
+            UrlDto urlDto = urlMapper.toUrlDto(urlEncodeDto, newHash);
+            urlDto.setHash(newHash);
+            urlCacheRepository.addUrl(urlDto);
+        } catch (RedisConnectionException | RedisConnectionFailureException ignored) {
+            // !!! do nothing !!!
+        }
+
         return newHash;
     }
 
     @Transactional
-    public void clearOldUrls() {
-        List<Url> deletedUrl = urlRepository.clearOldUrls();
+    // public void clearOldUrls(String interval) {
+    public void clearOldUrls(int interval) {
+        log.debug("interval for clear old url is: {} months", interval);
+        List<Url> deletedUrl = urlRepository.clearOldUrls(interval);
         List<String> deletedHashes = deletedUrl.stream().map(Url::getHash).toList();
         List<String> deletedUrls = deletedUrl.stream().map(Url::getUrl).toList();
 
-        urlCacheRepository.deleteHashes(deletedHashes);
-        urlCacheRepository.deleteUrls(deletedUrls);
+        try {
+            urlCacheRepository.deleteHashes(deletedHashes);
+            urlCacheRepository.deleteUrls(deletedUrls);
+        } catch (RedisConnectionException | RedisConnectionFailureException ignored) {
+            // !!! do nothing !!!
+        }
 
         List<Hash> restoringHashes = deletedHashes.stream()
             .map(Hash::new)
             .toList();
         hashRepository.saveAll(restoringHashes);
+    }
+
+    private String getExistingHash(UrlEncodeDto urlEncodeDto) {
+        try {
+            Optional<String> hash = Optional.ofNullable(urlCacheRepository.findByUrl(urlEncodeDto.url())
+                .orElseGet(() -> findUrlInRepository(urlEncodeDto)));
+            if (hash.isPresent()) {
+                urlCacheRepository.addUrl(urlMapper.toUrlDto(urlEncodeDto, hash.get()));
+                return hash.get();
+            }
+        } catch (RedisConnectionException | RedisConnectionFailureException e) {
+            log.warn(e.getMessage(), e);
+            return findUrlInRepository(urlEncodeDto);
+        }
+        return null;
+    }
+
+    private String findHashInRepository(String hash) {
+        return urlRepository.findByHash(hash)
+            .map(Url::getUrl)
+            .orElseThrow(() -> new UrlNotFound(utils.format(URL_NOT_FOUND, hash)));
+    }
+
+    private String findUrlInRepository(UrlEncodeDto urlEncodeDto) {
+        return urlRepository.findByUrl(urlEncodeDto.url())
+            .map(Url::getHash)
+            .orElse(null);
     }
 }

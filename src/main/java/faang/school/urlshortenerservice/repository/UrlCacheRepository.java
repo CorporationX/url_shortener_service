@@ -3,12 +3,14 @@ package faang.school.urlshortenerservice.repository;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -19,6 +21,9 @@ public class UrlCacheRepository {
     private static final String H_KEY = "HASH_KEY:";
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    @Value("${app.cache.time-to_life}")
+    private Long timeToLife;
 
     public Optional<String> findByHash(String hash) {
         String key = H_KEY + hash;
@@ -32,8 +37,8 @@ public class UrlCacheRepository {
         log.debug("addUrl hash:{}; url: {}", urlDto.getHash(), urlDto.getUrl());
         log.debug("set >> key: {}, value : {}", H_KEY + urlDto.getHash(), urlDto.getUrl());
         log.debug("set >> key: {}, value : {}", U_KEY + urlDto.getUrl(), urlDto.getHash());
-        mapOps().setIfAbsent(H_KEY + urlDto.getHash(), urlDto.getUrl());
-        mapOps().setIfAbsent(U_KEY + urlDto.getUrl(), urlDto.getHash());
+        mapOps().setIfAbsent(H_KEY + urlDto.getHash(), urlDto.getUrl(), timeToLife, TimeUnit.SECONDS);
+        mapOps().setIfAbsent(U_KEY + urlDto.getUrl(), urlDto.getHash(), timeToLife, TimeUnit.SECONDS);
     }
 
     public Optional<String> findByUrl(String url) {

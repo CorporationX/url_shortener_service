@@ -7,12 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <h2>Задание</h2>
@@ -35,6 +33,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashGenerator {
 
+    private final HashRepository hashRepository;
+    private final Base62Encoder base62Encoder;
+
     @Value("${app.generator.max_amount:10}")
     private Long maxAmount;
     @Value("${app.min-percent:3}")
@@ -42,10 +43,6 @@ public class HashGenerator {
     @Value("${app.generator.coeff:10}")
     private int coeff;
 
-    private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
-
-    private final AtomicBoolean lock = new AtomicBoolean(false);
 
     @Transactional
     public List<String> getHashes(Long range) {
@@ -60,15 +57,13 @@ public class HashGenerator {
         } while (true);
     }
 
-
-    @Scheduled(cron = "${app.generator.cron.expression}")
     @Transactional
-    public void generateBatchBySchedule() {
-        log.debug("Try generating batch of {} hashes", maxAmount);
+    public void generateBatchBySchedule(Long range) {
+        log.debug("Try generating batch of {} hashes", range);
         if (isNeedGenerate()) {
-            generateBatch(maxAmount);
+            generateBatch(range);
         } else {
-            log.info("No batch of {} hashes", maxAmount);
+            log.info("No batch of {} hashes", range);
         }
     }
 

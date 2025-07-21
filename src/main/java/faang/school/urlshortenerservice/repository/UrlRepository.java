@@ -24,8 +24,8 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(nativeQuery = true, value = """
         delete from urls u
-         where u.created_at + INTERVAL '1 YEAR' < now()
+         where u.created_at + make_interval(months => :interval) < now()
          returning *
         """)
-    List<Url> clearOldUrls();
+    List<Url> clearOldUrls(@Param("interval") int interval);
 }
