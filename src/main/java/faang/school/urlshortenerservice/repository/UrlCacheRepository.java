@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
