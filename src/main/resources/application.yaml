@@ -36,10 +36,15 @@ logging:
     root: info
 
 hash:
-    batch_size: 1000
+    get_batch_size: 1600
+    save_batch_size: 500
     generate_batch_size: 5000
     max_length: 6
     core_pool_size: 3
     max_pool_size: 10
     queue_capacity: 500
     prefix: HashGenPool
+    cache:
+        min_percent: 20
+        max_cache_size: 2000
+        cache_pool_size: 5
