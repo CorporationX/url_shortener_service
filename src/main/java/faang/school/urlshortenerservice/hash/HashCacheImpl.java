@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Component
@@ -19,6 +20,7 @@ public class HashCacheImpl implements HashCache {
     private final HashGenerator generator;
     private final HashRepositoryJdbcImpl repository;
     private final Executor taskExecutor;
+    private final AtomicInteger hashCacheSizeGauge;
 
     private final ReentrantLock lock = new ReentrantLock();
     private ConcurrentLinkedQueue<String> cache;
@@ -44,7 +46,9 @@ public class HashCacheImpl implements HashCache {
     }
 
     private void checkAndRefillFreeHashesLeft() {
-        if (cache.size() > cacheGenThreshold) return;
+        int cacheSize = cache.size();
+        hashCacheSizeGauge.set(cacheSize);
+        if (cacheSize > cacheGenThreshold) return;
 
         LockUtil.withLock(lock, () -> {
             generator.generateBatch();
