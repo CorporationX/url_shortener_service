@@ -1,0 +1,76 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://host.docker.internal:5432/postgres
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      port: 6379
+      host: host.docker.internal
+      cache_ttl_seconds: 3600
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  async:
+    core_pool_size: 2
+    max_pool_size: 5
+    queue_capacity: 500
+    thread_name_prefix: maintanence-
+
+  web:
+    servlet:
+      context-path: /api/v1
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+constants:
+  generation_bath_size: 1000
+  local_hash_cache_butch_size: 1000
+  generation_threshold_percent: 20
+  clean_up_batch_size: 1000
+  expiration_interval: "1 year"
+
+encoding:
+  alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  hash_length: 6
+
+scheduling:
+  cron:
+    expired_hash_cleanup: "0 0 0 * * *" #every midnight
+  lock:
+    url_cleaner_lock_name: "url_cleaner"
+    at_most_time: "PT3M"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: url-shortener-service
+      instance: ${HOSTNAME:docker}
+  endpoint:
+    prometheus:
+      enabled: true
+

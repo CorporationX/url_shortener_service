@@ -35,7 +35,12 @@ public class HashCacheImpl implements HashCache {
     @Override
     public String getHash() {
         taskExecutor.execute(this::checkAndRefillFreeHashesLeft);
-        return cache.poll();
+        String hash = cache.poll();
+        while (hash == null) {
+            checkAndRefillFreeHashesLeft();
+            hash = cache.poll();
+        }
+        return hash;
     }
 
     private void checkAndRefillFreeHashesLeft() {
