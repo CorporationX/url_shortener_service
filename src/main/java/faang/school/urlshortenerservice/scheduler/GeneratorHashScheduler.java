@@ -32,9 +32,9 @@ public class GeneratorHashScheduler {
     private final UrlService urlService;
     private final HashGenerator hashGenerator;
 
-    @Value("${app.cleaner.interval}")
+    @Value("${app.cleaner.interval:10}")
     private int interval;
-    @Value("${app.generator.max_amount}")
+    @Value("${app.generator.max_amount:10}")
     private Long hashRange;
 
     @Scheduled(cron = "${app.cleaner.cron.expression}")

@@ -20,6 +20,12 @@ class UtilsTest {
     @Test
     void testFormatWithTwoArguments() {
         assertEquals("You have 10 apples.",
+            utils.format("{} have 10 {}.", "You", "apples"));
+    }
+
+    @Test
+    void testFormatWithThreeArguments() {
+        assertEquals("You have 10 apples.",
             utils.format("{} have {} {}.", "You", 10, "apples"));
     }
 

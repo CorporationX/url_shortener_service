@@ -74,7 +74,6 @@ public class UrlService {
     }
 
     @Transactional
-    // public void clearOldUrls(String interval) {
     public void clearOldUrls(int interval) {
         log.debug("interval for clear old url is: {} months", interval);
         List<Url> deletedUrl = urlRepository.clearOldUrls(interval);

@@ -53,7 +53,6 @@ public class UrlController {
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     public String encodeUrl(@Valid @RequestBody UrlEncodeDto urlDto) {
-        // https://stackoverflow.com/questions/2659952/maximum-length-of-http-get-request
         return urlService.encodeUrl(urlDto);
     }
 }
