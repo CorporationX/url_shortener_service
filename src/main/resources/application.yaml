@@ -45,7 +45,7 @@ base:
   chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 hashes:
-  numberOfNumbers: 7
+  numberOfNumbers: 10
   numberOfHashes: 10
   mimThresholdPercent: 20
 

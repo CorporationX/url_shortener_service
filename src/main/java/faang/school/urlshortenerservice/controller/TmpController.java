@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +36,7 @@ public class TmpController {
     }
 
     @GetMapping("/hash")
-    public CompletableFuture<String> getHash() {
+    public String getHash() {
         return hashCache.getHash();
     }
 
