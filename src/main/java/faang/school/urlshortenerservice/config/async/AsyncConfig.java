@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
     private final FillingMemoryCacheExecutorProperties fillingMemoryCacheExecutorProperties;
     private final SaveHashBatchExecutorProperties saveHashBatchExecutorProperties;
+
     @Bean(name = "fillingMemoryCacheExecutor")
     public Executor fillingMemoryCacheExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

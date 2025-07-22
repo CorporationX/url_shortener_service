@@ -24,10 +24,10 @@ import java.time.LocalDateTime;
 @Table(name = "url")
 public class Url implements Serializable {
     @Id
-    @Column(name = "hash", nullable = false, updatable = false, unique = true, length = 7)
+    @Column(name = "hash", length = 6)
     private String hash;
 
-    @Column(name = "url", nullable = false, updatable = false, length = 4000)
+    @Column(name = "url", length = 4000)
     private String url;
 
     @CreatedDate

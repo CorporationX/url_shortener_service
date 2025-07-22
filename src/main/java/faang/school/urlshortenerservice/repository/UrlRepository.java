@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
-    @Query( nativeQuery = true, value = """
+    @Query(nativeQuery = true, value = """
             DELETE FROM url
             WHERE created_at < :minDate
             RETURNING *

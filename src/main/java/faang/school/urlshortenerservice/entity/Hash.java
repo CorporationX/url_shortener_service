@@ -19,6 +19,6 @@ import lombok.ToString;
 @Table(name = "hash")
 public class Hash {
     @Id
-    @Column(name = "hash", nullable = false, updatable = false, unique = true, length = 7)
+    @Column(name = "hash", length = 6)
     private String hash;
 }

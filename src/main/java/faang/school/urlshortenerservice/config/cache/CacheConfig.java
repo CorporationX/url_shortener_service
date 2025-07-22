@@ -17,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CacheConfig {
     private final HashCacheProperties hashCacheProperties;
+
     @Bean
     public RedisCacheManager redisCacheManager(JedisConnectionFactory connectionFactory) {
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
