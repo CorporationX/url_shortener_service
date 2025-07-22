@@ -46,7 +46,7 @@ public class HashServiceTest {
 
         when(hashRepository.findAndDeleteLimit(count)).thenReturn(hashes);
 
-        List<String> result = hashService.getHashes(count);
+        List<String> result = hashService.getHashesFromSequence(count);
 
         assertEquals(result, hashes.stream().map(Hash::getHash).toList());
         verify(hashRepository).findAndDeleteLimit(count);
@@ -63,7 +63,7 @@ public class HashServiceTest {
         when(hashRepository.findAndDeleteLimit(count)).thenReturn(hashes);
         when(hashRepository.getNextSequenceValues(count - hashes.size())).thenReturn(sequenceNumber);
 
-        List<String> result = hashService.getHashes(count);
+        List<String> result = hashService.getHashesFromSequence(count);
 
         assertEquals(result.size(), count);
         verify(hashRepository).findAndDeleteLimit(count);

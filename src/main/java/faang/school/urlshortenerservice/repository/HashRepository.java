@@ -23,11 +23,14 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = "SELECT pg_advisory_unlock(:lockId)")
     void unlock(@Param("lockId") int lockId);
 
+
+    // TODO: мб как-то ещё можно
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM hash
             WHERE hash IN (SELECT hash
                            FROM hash
+                           ORDER BY random()
                            LIMIT :count)
             RETURNING *
             """)

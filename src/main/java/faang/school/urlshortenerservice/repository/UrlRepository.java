@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
+    // TODO: Ну а если их миллион и несколько инстансов по крону одновременно это начнут делать
     @Modifying
     @Query(nativeQuery = true, value = """
             DELETE FROM url

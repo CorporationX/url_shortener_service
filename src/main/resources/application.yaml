@@ -13,13 +13,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#        order_inserts: true
-#        order_updates: true
-#        jdbc:
-#          batch_size: 100
-#          batch_versioned_data: true
-#          id:
-#            new_generator_mappings: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -71,5 +64,5 @@ app:
 
   cache:
     hash:
-      key-prefix: url
+      key-prefix: hash
       ttl: 30 # 30 секунд

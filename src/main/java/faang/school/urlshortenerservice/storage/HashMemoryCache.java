@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.storage;
 import faang.school.urlshortenerservice.service.HashService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class HashMemoryCache {
     private final HashService hashService;
@@ -31,7 +33,12 @@ public class HashMemoryCache {
         if (isFilling.compareAndExchange(false, true) && checkCurrentPercent()) {
             hashService.getHashesAsync(defaultCacheSize - hashCacheQueue.size())
                     .thenAccept(hashCacheQueue::addAll)
-                    .thenRun(() -> isFilling.set(false));
+                    .whenComplete((result, throwable) -> {
+                        isFilling.set(false);
+                        if (throwable != null) {
+                            log.error("An error occurred while asynchronously fetching hashes", throwable);
+                        }
+                    });
         }
         return hashCacheQueue.poll();
     }

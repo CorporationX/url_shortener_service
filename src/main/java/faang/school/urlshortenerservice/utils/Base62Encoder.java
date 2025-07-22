@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Base62Encoder {
     private static final String BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     public String encode(long value) {
         StringBuilder encoded = new StringBuilder();
         while (value > 0) {
