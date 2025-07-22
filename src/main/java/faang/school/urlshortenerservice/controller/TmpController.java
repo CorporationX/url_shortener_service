@@ -35,7 +35,7 @@ public class TmpController {
         return hashes;
     }
 
-    @GetMapping("/hash")
+    @GetMapping("/hashText")
     public String getHash() {
         return hashCache.getHash();
     }

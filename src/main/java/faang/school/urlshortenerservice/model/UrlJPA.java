@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "url")
-public class Url {
+public class UrlJPA {
     @Id
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
