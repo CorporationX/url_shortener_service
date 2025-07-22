@@ -49,6 +49,7 @@ hash:
     queue_capacity: 500
     prefix: HashGenPool
     cache:
+        ttl_days: 5
         min_percent: 20
         max_cache_size: 2000
         cache_pool_size: 5
