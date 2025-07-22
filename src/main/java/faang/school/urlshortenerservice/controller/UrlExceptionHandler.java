@@ -12,27 +12,27 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public class UrlExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleMethodNotValidException(MethodArgumentNotValidException validException) {
-        return validException.getBindingResult().getAllErrors().stream()
-                .collect(Collectors.toMap(
-                        error -> ((FieldError) error).getField(),
-                        error -> Objects.requireNonNullElse(error.getDefaultMessage(), "")
-                ));
-    }
-    @ExceptionHandler(Throwable.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleInternalSystem(Throwable t){
-        return t.getMessage();
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public GeneralFormatException handleRuntimeException(Exception e) {
-        return new GeneralFormatException(e.getMessage());
-    }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public Map<String, String> handleMethodNotValidException(MethodArgumentNotValidException validException) {
+//        return validException.getBindingResult().getAllErrors().stream()
+//                .collect(Collectors.toMap(
+//                        error -> ((FieldError) error).getField(),
+//                        error -> Objects.requireNonNullElse(error.getDefaultMessage(), "")
+//                ));
+//    }
+//    @ExceptionHandler(Throwable.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public String handleInternalSystem(Throwable t){
+//        return t.getMessage();
+//    }
+//
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public GeneralFormatException handleRuntimeException(Exception e) {
+//        return new GeneralFormatException(e.getMessage());
+//    }
 }

@@ -29,9 +29,21 @@ logging:
 hash:
   batch:
     limit: 10
+  range:
+    maxRange: 1000
 
 moderation:
   shortener:
     cron: "0 0 * * * *"
     batch_size: 1000
     limit: 10
+  executor:
+    core_pool_size: 5
+    max_thread_pool_size: 20
+
+executor:
+  hash:
+    core: 5
+    max: 10
+    prefix: 'CustomExecutor-'
+    queue: 50

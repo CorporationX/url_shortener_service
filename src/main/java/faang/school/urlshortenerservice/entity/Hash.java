@@ -8,11 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 
 @Entity
-@Builder
 @Data
 @Table(name = "hash")
 public class Hash {
     @Id
-    @Column(name = "hash", length = 128)
+    @Column(name = "hash", length = 7)
     private String hash;
+
+    public Hash(String hash) {
+        this.hash = hash;
+    }
 }

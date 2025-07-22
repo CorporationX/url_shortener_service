@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.config.moderation.UrlModerationConfigura
 import faang.school.urlshortenerservice.service.moderation.UrlModerationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,8 @@ public class UrlModerationJob {
     private final Integer batchSize;
 
     public UrlModerationJob(UrlModerationService urlModerationService,
-                            ThreadPoolTaskExecutor executor, UrlModerationConfiguration configuration) {
+                            @Qualifier("taskExecutor") ThreadPoolTaskExecutor executor,
+                            UrlModerationConfiguration configuration) {
         this.urlModerationService = urlModerationService;
         this.executor = executor;
         this.batchSize = configuration.getBatchSize();

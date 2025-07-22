@@ -11,9 +11,9 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(nativeQuery = true, value = """
             "SELECT nextval('unique_number_seq') AS generated_value" +
-                        "FROM generated_series(1, 1000)"
+                        "FROM generated_series(1, :maxRange)"
             """)
-    List<Long> getUniqueNumbers();
+    List<Long> getUniqueNumbers(int maxRange);
 
     @Query(nativeQuery = true, value = """
             "DELETE FROM hash 
