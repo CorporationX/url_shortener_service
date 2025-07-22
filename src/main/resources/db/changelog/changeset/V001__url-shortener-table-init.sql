@@ -3,12 +3,12 @@ START WITH 1
 INCREMENT BY 1;
 
 CREATE TABLE hash (
-    hash VARCHAR(128) PRIMARY KEY
+    hash            VARCHAR(7) PRIMARY KEY
 );
 
 CREATE TABLE url (
-    hash VARCHAR(6) PRIMARY KEY,
-    url VARCHAR(128) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-    CONSTRAINT fk_hash FOREIGN KEY (hash) REFERENCES hash(hash) ON DELETE CASCADE
+    hash            VARCHAR(6) PRIMARY KEY,
+    url             VARCHAR(128) NOT NULL,
+    created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    expiration_time TIMESTAMP NOT NULL
 );

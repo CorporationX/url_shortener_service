@@ -9,7 +9,5 @@ public interface HashService {
 
     List<Hash> saveAllHashes(List<Hash> hashes);
 
-    void deleteHashFromDataBase();
-
-    List<String> saveAllHash(List<String> stringList);
+    List<Hash> deleteHashFromDataBase();
 }

@@ -9,11 +9,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Builder;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Builder
+@Data
 @Table(name = "url")
 public class Url {
 
@@ -28,7 +32,6 @@ public class Url {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hash", referencedColumnName = "hash", insertable = false, updatable = false)
-    private Hash hashEntity;
+    @Column(name = "expiration_time")
+    private LocalDateTime expirationTime;
 }

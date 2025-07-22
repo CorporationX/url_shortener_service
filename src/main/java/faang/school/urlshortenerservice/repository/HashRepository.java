@@ -16,18 +16,14 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     List<Long> getUniqueNumbers();
 
     @Query(nativeQuery = true, value = """
-            "WITH selected_hashes AS (" +
-                        "    SELECT hash FROM hash" +
-                        "    ORDER BY RANDOM()" +
-                        "    LIMIT :limit" +
-                        ")" +
-                        "DELETE FROM hash" +
-                        "WHERE hash IN (SELECT hash FROM selected_hashes)" +
-                        "RETURNING hash;"
+            "DELETE FROM hash 
+            WHERE hash IN (
+                SELECT hash 
+                FROM hash
+                ORDER BI RANDOM()
+                LIMIT :limit
+            )
+            RETURNING *;"
             """)
-    void getHashBatch(@Param("limit") int limit);
-    @Query(nativeQuery = true, value = """
-            "INSERT INTO hash (hash) VALUES :string_list"
-            """)
-    List<String> saveByHashList(@Param("string_list") List<String> stringList);
+    List<Hash> getHashBatch(int limit);
 }

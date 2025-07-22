@@ -32,4 +32,6 @@ hash:
 
 moderation:
   shortener:
-    cron: "0 0 * * *"
+    cron: "0 0 * * * *"
+    batch_size: 1000
+    limit: 10

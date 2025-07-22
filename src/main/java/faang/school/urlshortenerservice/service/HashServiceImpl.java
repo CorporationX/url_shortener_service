@@ -10,9 +10,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HashServiceImpl implements HashService{
-    @Value("${hash.batch.limit}")
+    //@Value("${hash.batch}")
     private int limit;
-
     private final HashRepository hashRepository;
     @Override
     public List<Hash> saveAllHashes(List<Hash> hashes) {
@@ -20,12 +19,8 @@ public class HashServiceImpl implements HashService{
     }
 
     @Override
-    public void deleteHashFromDataBase() {
-        hashRepository.getHashBatch(limit);
+    public List<Hash> deleteHashFromDataBase() {
+        return hashRepository.getHashBatch(limit);
     }
 
-    @Override
-    public List<String> saveAllHash(List<String> stringList) {
-        return hashRepository.saveByHashList(stringList);
-    }
 }

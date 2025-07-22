@@ -11,4 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UrlModerationConfiguration {
     private String cron;
+    private int batchSize;
+    private int limit;
 }

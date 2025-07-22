@@ -15,10 +15,13 @@ public class UrlServiceImpl {
 
     private final UrlRepository urlRepository;
     private final HashService hashService;
-    @Scheduled(cron = "${@urlModerationConfiguration.cron}")
     @Transactional
-    public List<String> deleteUrlOlderOneYearAndSaveByHash() {
-        List<String> hashes = urlRepository.deleteUrlsOlderOneYearAndSaveByHash();
-        return hashService.saveAllHash(hashes);
+    public void deleteUrlOlderOneYearAndSaveByHash(int limit) {
+        List<String> hashes = urlRepository.findExpiredUrlsHashes(limit);
+        urlRepository.deleteAllByIdInBatch(hashes);
+    }
+    @Transactional(readOnly = true)
+    public int countUrlsOlder(){
+        return urlRepository.countOfOldUrl();
     }
 }
