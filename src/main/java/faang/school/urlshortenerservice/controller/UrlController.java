@@ -20,10 +20,10 @@ public class UrlController {
         return urlService.createShortUrl(urlDto);
     }
 
-    @GetMapping("/url")
-    public RedirectView redirectToUrl(@Valid @RequestBody ShortUrlDto shortUrlDto) {
+    @GetMapping("/{hash}")
+    public RedirectView redirectToUrl(@PathVariable String hash) {
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(urlService.getUrl(shortUrlDto).getUrl());
+        redirectView.setUrl(urlService.getUrl(hash).getUrl());
         redirectView.setStatusCode(HttpStatus.FOUND);
 
         return redirectView;

@@ -5,6 +5,6 @@ import faang.school.urlshortenerservice.dto.UrlDto;
 
 public interface UrlService {
     ShortUrlDto createShortUrl(UrlDto urlDto);
-    UrlDto getUrl(ShortUrlDto shortUrlDto);
+    UrlDto getUrl(String hash);
     void reuseOldUrls(int yearsCount);
     }

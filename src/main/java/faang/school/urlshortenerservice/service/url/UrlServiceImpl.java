@@ -47,15 +47,15 @@ public class UrlServiceImpl implements UrlService {
 
 
     @Override
-    public UrlDto getUrl(ShortUrlDto shortUrlDto) {
-        Url urlFromCache = urlCacheRepository.get(getHashFromShortUrl(shortUrlDto));
+    public UrlDto getUrl(String hash) {
+        Url urlFromCache = urlCacheRepository.get(hash);
         if (urlFromCache == null) {
             log.debug("Url for hash: {} was not found in cache, start searching in url Repo",
-                    getHashFromShortUrl(shortUrlDto));
-            Url urlFromRepo = urlRepository.findById(getHashFromShortUrl(shortUrlDto))
+                    hash);
+            Url urlFromRepo = urlRepository.findById(hash)
                     .orElseThrow(() -> {
                         log.error("Url for Hash: {} was not found in url repo",
-                                getHashFromShortUrl(shortUrlDto));
+                                hash);
 
                         return new EntityNotFoundException();
 
@@ -73,9 +73,5 @@ public class UrlServiceImpl implements UrlService {
         log.info("Found old hashes quantity : {} hashes", oldHashes.size());
         hashRepository.save(oldHashes);
         log.info("Old hashes delete was finished");
-    }
-
-    private String getHashFromShortUrl(ShortUrlDto shortUrlDto) {
-        return shortUrlDto.getShortUrl().replaceFirst(shortUrlPrefix, "");
     }
 }
