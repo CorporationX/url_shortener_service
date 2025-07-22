@@ -26,21 +26,9 @@ public class UrlController {
     @PostMapping
     public ShortUrlDto createShortUrl
             (@Valid @RequestBody UrlRequestDto requestDto, HttpServletRequest request) {
-        log.debug("Creating a new URL - Started");
+        log.info("Creating a new URL - Started");
         String longUrl = requestDto.getUrl();
-        String hash = urlService.createShortUrl(longUrl);
-        String baseUrl = getBaseUrl(request);
-        String shortUrl = baseUrl + "/redirect/" + hash;
-        return new ShortUrlDto(shortUrl);
-    }
-
-    private String getBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-        String servletPath = request.getServletPath();
-        return scheme + "://" + serverName + serverPort + contextPath + servletPath;
+        return urlService.createShortUrl(longUrl, request);
     }
 
     @GetMapping("/redirect/{hash}")

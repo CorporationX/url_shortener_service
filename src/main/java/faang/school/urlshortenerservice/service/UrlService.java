@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,13 +29,25 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     @Transactional
-    public String createShortUrl(String longUrl) {
+    public ShortUrlDto createShortUrl(String longUrl, HttpServletRequest request) {
         String hash = hashCache.getHash().getHash();
         Url url = new Url(hash, longUrl);
         urlRepository.save(url);
         redisTemplate.opsForValue().set(hash, longUrl, redisTtlSeconds, TimeUnit.SECONDS);
-        log.debug("Short URL created: {} -> {}", hash, longUrl);
-        return hash;
+        String baseUrl = getBaseUrl(request);
+        String shortUrl = baseUrl + "/redirect/" + hash;
+        log.info("Short URL created: {} -> {}", hash, longUrl);
+        return new ShortUrlDto(shortUrl);
+    }
+
+
+    private String getBaseUrl(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+        String contextPath = request.getContextPath();
+        String servletPath = request.getServletPath();
+        return scheme + "://" + serverName + serverPort + contextPath + servletPath;
     }
 
     public String getLongUrl(String hash) {
