@@ -21,7 +21,7 @@ public class HashGeneratorImpl implements HashGenerator {
     private final TaskExecutor hashGeneratorPool;
 
     @Value("${hash.generate_batch_size}")
-    private final int generateBatchSize;
+    private int generateBatchSize;
 
     @Override
     @Async("hashGeneratorPool")

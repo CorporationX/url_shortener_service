@@ -23,7 +23,7 @@ public class Base62EncoderImpl implements Base62Encoder {
             ThreadLocal.withInitial(() -> ByteBuffer.allocate(Long.BYTES));
 
     @Value("${hash.max_length}")
-    private final int hashLength;
+    private int hashLength;
 
     @Override
     public List<String> encode(List<Long> numbers) {

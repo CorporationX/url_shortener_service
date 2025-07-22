@@ -6,23 +6,28 @@ import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final HashRepository hashRepository;
 
     @Value("${url.short_prefix}")
     private final String shortUrlPrefix;
@@ -61,7 +66,17 @@ public class UrlServiceImpl implements UrlService {
         return urlMapper.tDto(urlFromCache);
     }
 
-    public String getHashFromShortUrl(ShortUrlDto shortUrlDto) {
+    @Transactional
+    @Override
+    public void reuseOldUrls(int yearsCount) {
+        log.info("Starting old hashes delete");
+        List<String> oldHashes = urlRepository.reuseOldUrls(yearsCount);
+        log.info("Found old hashes quantity : {} hashes", oldHashes.size());
+        hashRepository.save(oldHashes);
+        log.info("Old hashes delete was finished");
+    }
+
+    private String getHashFromShortUrl(ShortUrlDto shortUrlDto) {
         return shortUrlDto.getShortUrl().replaceFirst(shortUrlPrefix, "");
     }
 }

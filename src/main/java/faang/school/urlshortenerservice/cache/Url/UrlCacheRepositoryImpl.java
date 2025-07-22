@@ -1,9 +1,7 @@
 package faang.school.urlshortenerservice.cache.Url;
 
 import faang.school.urlshortenerservice.cache.UrlCacheRepository;
-import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cache.CacheException;
@@ -16,11 +14,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     @Value("${hash.cache.ttl_days}")
-    private final int ttl;
+    private int ttl;
 
     @Override
     public void save(String hash, Url url) {

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.cache.HashCache;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class HashCacheImpl implements HashCache {
     private final ExecutorService hashCachePool;
@@ -25,9 +23,9 @@ public class HashCacheImpl implements HashCache {
     private final HashGenerator hashGenerator;
 
     @Value("${hash.cache.min_percent}")
-    private final int minPercent;
+    private int minPercent;
     @Value("${hash.cache.max_cache_size}")
-    private final int maxCacheSize;
+    private int maxCacheSize;
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
     private final ReentrantLock lock = new ReentrantLock();
 
