@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 
-import faang.school.urlshortenerservice.repository.hash.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;

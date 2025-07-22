@@ -27,6 +27,10 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  data:
+    redis:
+        host: localhost
+        port: 6379
 
 server:
   port: 8080
@@ -48,3 +52,5 @@ hash:
         min_percent: 20
         max_cache_size: 2000
         cache_pool_size: 5
+url:
+    short_prefix: https://rob.ert/

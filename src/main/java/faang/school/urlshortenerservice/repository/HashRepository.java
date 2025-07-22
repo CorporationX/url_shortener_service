@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.repository.hash;
+package faang.school.urlshortenerservice.repository;
 
 import org.springframework.stereotype.Repository;
 
