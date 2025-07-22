@@ -5,10 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Entity
 @Table(name = "hash")
 @AllArgsConstructor
+@Getter
 public class Hash {
 
     @Id

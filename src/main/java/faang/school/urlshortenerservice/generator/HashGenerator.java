@@ -26,7 +26,7 @@ public class HashGenerator {
     private final Executor hashExecutor;
 
     @Value("${hash.generator.batch-size}")
-    private final int maxSize;
+    private  int maxSize;
 
     @Transactional
     public List<String> generateNewHashes() {

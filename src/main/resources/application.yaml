@@ -46,5 +46,6 @@ app:
     base: "https://sh.c"
   scheduler:
     cleaner-cron: "0 0 0 * * ?"
+  cleaner:
     batch-size: 500
     age-interval: "INTERVAL '1 year'"

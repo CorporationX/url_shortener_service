@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@Setter
 public class HashCache {
 
     private final HashGenerator hashGenerator;
