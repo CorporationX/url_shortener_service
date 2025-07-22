@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.HashBatchProperties;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,6 @@ public class HashServiceTest {
     private HashRepository hashRepository;
     @InjectMocks
     private HashServiceImpl hashService;
-
     private List<Hash> hashesList;
     private List<String> stringList;
     private int limit;
@@ -51,19 +49,6 @@ public class HashServiceTest {
         assertEquals("187asr", resultHash.get(0).getHash() );
 
         verify(hashRepository, times(1)).saveAll(hashesList);
-    }
-
-    @Test
-    public void testSaveAllHash(){
-        when(hashRepository.saveByHashList(stringList)).thenReturn(stringList);
-
-        List<String> resultList = hashService.saveAllHash(stringList);
-
-        assertNotNull(resultList);
-        assertEquals(3, resultList.size());
-        assertEquals("985adr", resultList.get(0));
-
-        verify(hashRepository, times(1)).saveByHashList(stringList);
     }
 
 }
