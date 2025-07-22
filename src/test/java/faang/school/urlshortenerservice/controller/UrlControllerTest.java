@@ -5,11 +5,13 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.LocalCache;
 import faang.school.urlshortenerservice.util.BaseContextTest;
+import net.javacrumbs.shedlock.core.LockProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -42,6 +44,9 @@ class UrlControllerTest extends BaseContextTest {
 
     @Autowired
     private LocalCache localCache;
+
+    @MockBean
+    private LockProvider lockProvider;
 
     @BeforeEach
     void setUp() {

@@ -41,6 +41,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
 
     /**
      * Test containers
