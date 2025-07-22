@@ -59,7 +59,6 @@ public class UrlService {
         Optional<Url> urlOptional = urlRepository.findByHash(hash);
         if (urlOptional.isPresent()) {
             url = urlOptional.get().getUrl();
-            redisTemplate.opsForValue().set(hash, url, redisTtlSeconds, TimeUnit.SECONDS);
             return url;
         }
 
