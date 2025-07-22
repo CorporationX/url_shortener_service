@@ -1,4 +1,11 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      timeout: 3000ms
+      ttl-hours: 24
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -13,6 +20,52 @@ spring:
     properties:
       hibernate:
         format_sql: true
+#  mvc:
+#    servlet:
+#      path: "/api/v1"
+
+shortener:
+  generator:
+    unique-numbers-count: 20000
+  encoder:
+    alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345678"
+    length: 6
+    multiplier: 15485863
+  cache:
+    capacity: 50000
+    batch-size: 20000
+    threshold: 20
+  cleaner:
+    expiry-date: 365
+    batch-size: 500
+    max-batches: 400
+
+scheduler:
+  cleaner:
+      cron: "0 0 2 * * *"
+      lock-name: "cleanerLock"
+      lock-at-least-for: "PT5M"
+      lock-at-most-for: "PT10M"
+
+shedlock:
+  enabled: true
+  defaults:
+    lock-at-most-for: "PT10M"
+  provider:
+    jdbc:
+      table-name: "shedlock"
+      use-db-time: true
+
+executors:
+  hash-generator:
+    pool-size: 4
+    queue-capacity: 12
+    await-seconds: 20
+  hash-cache:
+    pool-size: 4
+    queue-capacity: 12
+    await-seconds: 20
+
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

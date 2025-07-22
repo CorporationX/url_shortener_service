@@ -30,6 +30,8 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("redis.clients:jedis:4.3.2")
     runtimeOnly("org.postgresql:postgresql")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:6.3.1")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.3.1")
 
     /**
      * Utils & Logging
