@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class HashDbMaintainer {
-    private static final int HASH_REPLENISH_LOCK_KEY = 1;
-
     private final HashDao hashDao;
     private final HashGenerator hashGenerator;
 
@@ -24,27 +23,18 @@ public class HashDbMaintainer {
     private int replenishBatchSize;
 
     @Scheduled(cron = "${hash.db.replenish-cron}")
+    @SchedulerLock(name = "replenishDbHashes", lockAtMostFor = "${hash.db.replenish-lock-at-most-for}")
     public void replenishDbHashes() {
-        log.info("Attempting to acquire lock for db hash replenishment check.");
-        if (hashDao.tryLock(HASH_REPLENISH_LOCK_KEY)) {
-            try {
-                log.info("Acquire lock. Checking db hash supply.");
-                long hashes = hashDao.countHashes();
-                if (hashes < dbLowDataMark) {
-                    log.info("Db hash supply is low. Attempting to generate and store {} new hashes.",
-                            replenishBatchSize);
-                    hashGenerator.generateBatch(replenishBatchSize);
-                    log.info("Successfully generated and stored {} new hashes in the database.",
-                            replenishBatchSize);
-                } else {
-                    log.info("Db hash supply is high. Skipping replenishment.");
-                }
-            } finally {
-                hashDao.unlock(HASH_REPLENISH_LOCK_KEY);
-                log.info("Released database hash replenishment lock.");
-            }
+        log.info("Checking DB hash supply");
+        long hashes = hashDao.countHashes();
+        if (hashes < dbLowDataMark) {
+            log.info("DB hash supply is low. Attempting to generate and store {} new hashes.",
+                    replenishBatchSize);
+            hashGenerator.generateBatch(replenishBatchSize);
+            log.info("Successfully generated and stored {} new hashes in the database.",
+                    replenishBatchSize);
         } else {
-            log.info("Could not acquire lock. Another instance is likely handling the check.");
+            log.info("Db hash supply is high. Skipping replenishment.");
         }
     }
 }
