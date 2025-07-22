@@ -26,8 +26,8 @@ public class UrlController {
     @PostMapping
     public ShortUrlDto createShortUrl
             (@Valid @RequestBody UrlRequestDto requestDto, HttpServletRequest request) {
-        log.info("Creating a new URL - Started");
         String longUrl = requestDto.getUrl();
+        log.info("Creating a new short URL for {} - Started", longUrl);
         return urlService.createShortUrl(longUrl, request);
     }
 
