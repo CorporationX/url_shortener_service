@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final HashMemoryCache hashMemoryCache;
-    private final HashService hashService;
 
     @Cacheable(cacheManager = "redisCacheManager",
             cacheNames = "${app.cache.hash.key-prefix}",

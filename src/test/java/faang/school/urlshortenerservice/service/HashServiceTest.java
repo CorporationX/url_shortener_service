@@ -46,27 +46,10 @@ public class HashServiceTest {
 
         when(hashRepository.findAndDeleteLimit(count)).thenReturn(hashes);
 
-        List<String> result = hashService.getHashesFromSequence(count);
+        List<String> result = hashService.getHashes(count);
 
         assertEquals(result, hashes.stream().map(Hash::getHash).toList());
         verify(hashRepository).findAndDeleteLimit(count);
         verify(hashRepository, never()).getNextSequenceValues(anyLong());
-    }
-
-    @Test
-    public void testGetHashes_getAndGenerateNextSequenceValues() {
-        int count = hashes.size();
-        List<Long> sequenceNumber = List.of(456L, 457L);
-        hashes.remove(hashes.size() - 1);
-        hashes.remove(hashes.size() - 1);
-
-        when(hashRepository.findAndDeleteLimit(count)).thenReturn(hashes);
-        when(hashRepository.getNextSequenceValues(count - hashes.size())).thenReturn(sequenceNumber);
-
-        List<String> result = hashService.getHashesFromSequence(count);
-
-        assertEquals(result.size(), count);
-        verify(hashRepository).findAndDeleteLimit(count);
-        verify(hashRepository).getNextSequenceValues(count - hashes.size());
     }
 }
