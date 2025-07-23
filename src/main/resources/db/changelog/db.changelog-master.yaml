@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/V001_hash_table.sql
+  - include:
+      file: db/changelog/changeset/V002_shedlock.sql

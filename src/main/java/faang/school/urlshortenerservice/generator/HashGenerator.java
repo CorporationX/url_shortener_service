@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +10,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.unbrokendome.base62.Base62;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
-    private final Base62Encoder encoder;
 
     private final AtomicBoolean isHashDBGenerating = new AtomicBoolean(false);
 
@@ -33,7 +35,9 @@ public class HashGenerator {
     @Scheduled(cron = "${hash.schedule.cron:0 0/5 * * * ?}")
     public void generateHashes() {
         List<Long> nextRange = hashRepository.getUniqueNumbers(range);
-        List<String> hashes = encoder.encode(nextRange);
+        List<String> hashes = nextRange.stream()
+                .map(Base62::encode)
+                .collect(Collectors.toList());
         hashRepository.save(hashes);
     }
 
