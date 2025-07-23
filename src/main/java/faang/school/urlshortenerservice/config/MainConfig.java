@@ -16,6 +16,9 @@ public class MainConfig {
     @Value("${hashes.numberOfHashes}")
     private int numberOfHashes;
 
+    @Value("${hashes.mimThresholdPercent}")
+    private int mimThresholdPercent;
+
     @Value("${async.corePoolSize}")
     private int corePoolSize;
 

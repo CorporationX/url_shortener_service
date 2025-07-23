@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import faang.school.urlshortenerservice.model.Hash;
 
+@Repository
 public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = "SELECT nextval('unique_number_seq') FROM generate_series(1, :n);", nativeQuery = true)
     List<Long> getNextNumBachOf(int n);

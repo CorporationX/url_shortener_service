@@ -8,15 +8,15 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
-import faang.school.urlshortenerservice.model.Url;
+import faang.school.urlshortenerservice.model.UrlJPA;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface UrlMapper {
-    Url toEntity(UrlDto dto);
-    UrlDto toDto(Url entity);
+public interface UrlJPAMapper {
+    UrlJPA toEntity(UrlDto dto);
+    UrlDto toDto(UrlJPA entity);
 
-    List<Url> toEntityList(List<UrlDto> dtos);
-    List<UrlDto> toDtoList(List<Url> entities);
+    List<UrlJPA> toEntityList(List<UrlDto> dtos);
+    List<UrlDto> toDtoList(List<UrlJPA> entities);
 }

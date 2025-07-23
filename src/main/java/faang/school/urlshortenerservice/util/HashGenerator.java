@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import faang.school.urlshortenerservice.config.MainConfig;
@@ -20,8 +19,7 @@ public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
 
-    @Async("customTaskExecutor")
-    public void generateBatch() {
+    public List<Hash> generateBatch() {
         log.info("The thread {}.", Thread.currentThread().getName());
         log.info("Generating hashes... for {} numbers.", mainCofig.getNumberOfNumbers());
 
@@ -32,6 +30,6 @@ public class HashGenerator {
         for (String hash : hashes) {
             generatedHashes.add(new Hash(hash));
         }
-        hashRepository.saveAll(generatedHashes);
+        return hashRepository.saveAll(generatedHashes);
     }
 }

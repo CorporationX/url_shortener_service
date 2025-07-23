@@ -13,13 +13,15 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "url")
-public class Url {
+public class UrlJPA {
     @Id
     @Column(name = "hash", length = 6, nullable = false, unique = true)
     private String hash;
