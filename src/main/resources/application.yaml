@@ -50,10 +50,10 @@ hashes:
   mimThresholdPercent: 20
 
 scheduler:
-  frequencyDays: 1
+  cronCleanHash: "0 0 2 * * *" # daily 2am
 
 async:
   corePoolSize: 5
   maxPoolSize: 10
   queueCapacity: 50
-  threadNamePrefix: async-
+  threadNamePrefix: HashGen-

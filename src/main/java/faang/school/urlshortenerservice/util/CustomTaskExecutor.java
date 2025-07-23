@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.util;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -15,10 +17,11 @@ public class CustomTaskExecutor extends ThreadPoolTaskExecutor {
 
     public ThreadPoolTaskExecutor customTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(mainConfig.getCorePoolSize());          // Initial number of threads
-        executor.setMaxPoolSize(mainConfig.getMaxPoolSize());          // Maximum number of threads
-        executor.setQueueCapacity(mainConfig.getQueueCapacity());      // Queue capacity for holding tasks
-        executor.setThreadNamePrefix(mainConfig.getThreadNamePrefix()); // Thread name prefix
+        executor.setCorePoolSize(mainConfig.getCorePoolSize());
+        executor.setMaxPoolSize(mainConfig.getMaxPoolSize());
+        executor.setQueueCapacity(mainConfig.getQueueCapacity());
+        executor.setThreadNamePrefix(mainConfig.getThreadNamePrefix());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;
     }
