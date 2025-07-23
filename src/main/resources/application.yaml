@@ -41,3 +41,6 @@ async:
   maxPoolSize: 10
   queueCapacity: 50
   threadNamePrefix: async-
+
+scheduler:
+  cronCleanHash: "0 0 2 * * *" # daily 2am
