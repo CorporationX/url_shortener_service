@@ -8,23 +8,16 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
-
-    @Value("${redis.ttl.seconds:3600}")
-    private final long redisTtlSeconds;
-
-    private final RedisTemplate<String, String> redisTemplate;
+    private final UrlCacheService cacheService;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
 
@@ -34,7 +27,7 @@ public class UrlServiceImpl implements UrlService {
         String hash = hashCache.getHash().getHash();
         Url url = new Url(hash, longUrl);
         urlRepository.save(url);
-        redisTemplate.opsForValue().set(hash, longUrl, redisTtlSeconds, TimeUnit.SECONDS);
+        cacheService.saveNewPair(hash, longUrl);
         String baseUrl = getBaseUrl(request);
         String shortUrl = baseUrl + "/redirect/" + hash;
         log.info("Short URL created: {} -> {}", hash, longUrl);
@@ -53,7 +46,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getLongUrl(String hash) {
-        String url = redisTemplate.opsForValue().get(hash);
+        String url = cacheService.getByHash(hash);
         if (url != null) {
             return url;
         }
