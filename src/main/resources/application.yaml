@@ -9,17 +9,52 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    # show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
+        jdbc:
+          batch_size: 50
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+        use_sql_comments: true
+        generate_statistics: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+#      timeout: 5s
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
-    root: info
+    org:
+      springframework:
+        data:
+          repository: DEBUG
+    root: INFO
+
+app:
+  pool-count: 5 # величина thread-пула который используется для генерации новых hash ключей
+  min-percent: 40 # величина в %, ниже которой необходимо запускать процесс генерации hash-значений и запускать процесс наполнения кеша приложения с hash-значениями
+  cache:
+    max-amount: 10 # количество hash-значений, которые будут храниться в кеше приложения
+    time-to_life: 500 # время жизни в кеше, в секундах
+  generator:
+    cron:
+#      expression: 0/30 * * * * * # Запуск генератора хешей в БД. Каждые 15 секунд.
+      expression: 0 0/10 * * * * # Запуск генератора хешей в БД. Каждые 15 секунд.
+    max_amount: 100 # количество генерируемых hash-значений, которые кладутся в БД
+    coeff: 10
+  cleaner:
+    interval: 12 # в месяцах, период
+    cron:
+      expression: 0 1 0 * * * # Запуск процесса очистки старых хешей в БД. Ежедневно в 00:01
+#      expression: 0/5 * * * * * # Запуск процесса очистки старых хешей в БД. Ежедневно в 00:01
