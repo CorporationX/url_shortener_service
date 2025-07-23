@@ -4,18 +4,18 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.utils.Base62Encoder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @Slf4j
 @Component
@@ -23,12 +23,15 @@ public class HashService {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
     private final Executor saveHashBatchExecutor;
+    private final Executor fillingMemoryCacheExecutor;
 
     public HashService(HashRepository hashRepository,
                        Base62Encoder base62Encoder,
+                       @Qualifier("fillingMemoryCacheExecutor") Executor fillingMemoryCacheExecutor,
                        @Qualifier("saveHashBatchExecutor") Executor saveHashBatchExecutor) {
         this.hashRepository = hashRepository;
         this.base62Encoder = base62Encoder;
+        this.fillingMemoryCacheExecutor = fillingMemoryCacheExecutor;
         this.saveHashBatchExecutor = saveHashBatchExecutor;
     }
 
@@ -36,89 +39,95 @@ public class HashService {
     private long tableSize;
     @Value("${app.hash.lock-id}")
     private int lockId;
-    @Value("${app.hash.batch-size}")
+    @Value("${app.hash.batch-size:500}")
     private int batchSize;
+
+    @Value("${app.hash.table-min-percent:20.0}")
+    private double tableMinPercent;
+
+    public CompletableFuture<List<String>> getHashesAsync(long count) {
+        return CompletableFuture.supplyAsync(() -> getHashes(count), fillingMemoryCacheExecutor);
+    }
 
     @Transactional
     public List<String> getHashes(long count) {
         List<String> hashes = getHashList(count);
 
         if (hashes.size() < count) {
-            List<String> newHashes = getHashesFromSequence(count - hashes.size());
+            List<String> newHashes = getHashesFromSequence(count - hashes.size())
+                    .stream()
+                    .map(Hash::getHash)
+                    .toList();
             hashes.addAll(newHashes);
         }
         return hashes;
     }
 
     private List<String> getHashList(long count) {
-        return hashRepository.findAndDeleteLimit(count)
+        List<String> hashes = hashRepository.findAndDeleteLimit(count)
                 .stream()
                 .map(Hash::getHash)
                 .collect(Collectors.toList());
+
+        generateHashBatchIfNeeded();
+
+        return hashes;
     }
 
-    @Async("fillingMemoryCacheExecutor")
-    public CompletableFuture<List<String>> getHashesAsync(long count) {
-        return CompletableFuture.completedFuture(getHashesFromSequence(count));
-    }
-
-    @Transactional
-    public void generateHashBatchIfNeeded() {
-        boolean lockAcquired = hashRepository.tryLock(lockId);
-        if (!lockAcquired) {
-            return;
-        }
-
-        try {
-            long currentCount = hashRepository.count();
-            long missingCount = tableSize - currentCount;
-            if (missingCount <= 0) {
-                return;
+    private void generateHashBatchIfNeeded() {
+        if (!hashRepository.tryLock(lockId)) {
+            long currentHashCount = hashRepository.count();
+            if (checkCurrentPercent(currentHashCount)) {
+                getHashesFromSequenceAsync(tableSize - currentHashCount)
+                        .thenAccept(hashes -> {
+                            List<Hash> hashesSaved = hashRepository.saveAll(hashes);
+                            log.info("Hashes {} has been saved", hashesSaved);
+                        })
+                        .whenComplete((result, throwable) -> {
+                            hashRepository.unlock(lockId);
+                            if (throwable != null) {
+                                log.error("An error occurred during asynchronous hash generation", throwable);
+                            }
+                        });
             }
-
-            List<Hash> hashes = getHashesFromSequence(missingCount)
-                    .stream()
-                    .map(Hash::new)
-                    .toList();
-
-            saveAll(hashes);
-            log.info("Hashes {} has been saved", hashes);
-        } finally {
-            hashRepository.unlock(lockId);
         }
     }
 
-    @Transactional
-    public List<Hash> saveAll(List<Hash> hashes) {
-        List<Hash> hashesSaved = hashRepository.saveAll(hashes);
-        log.info("Hashes {} has been saved", hashesSaved);
-
-        return hashesSaved;
-    }
-
-
-    private List<String> encodeBatch(List<Long> batchNumbers) {
+    private List<Hash> encodeBatch(List<Long> batchNumbers) {
         return batchNumbers
                 .stream()
                 .map(base62Encoder::encode)
+                .map(Hash::new)
                 .toList();
     }
 
-    // TODO: можно улучить
-    private List<String> getHashesFromSequence(long missingCount) {
-        List <Long> numbers = hashRepository.getNextSequenceValues(missingCount);
+    private boolean checkCurrentPercent(long currentHashCount) {
+        return (currentHashCount * 100.0 / tableSize) <= tableMinPercent;
+    }
 
-        List<List<Long>> batchNumbers = ListUtils.partition(numbers, batchSize);
+    private CompletableFuture<List<Hash>> getHashesFromSequenceAsync(long missingCount) {
+        return CompletableFuture.supplyAsync(() -> getHashesFromSequence(missingCount), saveHashBatchExecutor);
+    }
 
-        List<CompletableFuture<List<String>>> futureBatchHash = batchNumbers.stream()
-                .map(batch -> CompletableFuture.supplyAsync(
-                        () -> encodeBatch(batch), saveHashBatchExecutor)
-                )
+    private List<Hash> getHashesFromSequence(long missingCount) {
+        List<CompletableFuture<List<Hash>>> futureBatchHash = LongStream.range(0, missingCount)
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / batchSize))
+                .values()
+                .stream()
+                .map(indexes -> CompletableFuture.supplyAsync(() -> {
+                    List<Long> numbers = hashRepository.getNextSequenceValues(indexes.size());
+                    return encodeBatch(numbers);
+                }, saveHashBatchExecutor))
                 .toList();
 
-        return futureBatchHash.stream()
+        List<Hash> hashes = futureBatchHash.stream()
                 .map(CompletableFuture::join)
                 .flatMap(Collection::stream)
-                .toList();
+                .collect(Collectors.toList());
+
+        Collections.shuffle(hashes);
+
+        return hashes;
     }
 }

@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +21,9 @@ public class UrlFacade {
 
     public String generateHash(UrlRequestDto urlRequestDto) {
         Url url = urlService.generateHash(urlRequestDto.url());
-        return hashUrlPrefix + url.getHash();
+        return UriComponentsBuilder
+                .fromHttpUrl(hashUrlPrefix)
+                .pathSegment(url.getHash())
+                .toUriString();
     }
 }

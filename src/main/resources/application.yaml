@@ -37,6 +37,7 @@ app:
     memory-cache-min-percent: 20.0
     memory-cache-size: 2000
     table-size: 10000
+    table-min-percent: 20.0
     batch-size: 500
     lock-id: 42
   url:
@@ -53,14 +54,6 @@ app:
       max-pool-size: 4
       queue-capacity: 100
       prefix: save-hash-batch-
-
-  job:
-    hash:
-      generate:
-        cron: "* * * * * *" # Каждую минуту
-      cleaner:
-          cron: "0 0 2 * * *" # Каждый день в 2 часа ночи
-          min-seconds: 31536000  # 1 год в секундах
 
   cache:
     hash:
