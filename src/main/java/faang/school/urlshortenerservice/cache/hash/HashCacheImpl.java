@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -32,20 +33,24 @@ public class HashCacheImpl implements HashCache {
     @Override
     public String getHash() {
         String hash = cache.poll();
-        if (hash == null) {
-            log.warn("Cache is empty");
-            refillCache();
-            return cache.poll();
+        if (hash != null) {
+            if (lessThenMin()) {
+                log.debug("Cache is less Then min. Will refill");
+                refillCache();
+            }
+            return hash;
         }
-
-        if (lessThenMin()) {
-            refillCache();
-        }
-        return hash;
+        log.warn("Cache is Empty, generate hashes");
+        return getHashNow();
     }
 
     private boolean lessThenMin() {
         return cache.size() < (maxCacheSize / 100 * minPercent);
+    }
+    private String getHashNow() {
+        List<String> hashes = hashRepository.getHashBatch();
+        cache.addAll(hashes);
+        return cache.poll();
     }
 
     private void refillCache() {
