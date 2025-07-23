@@ -116,9 +116,15 @@ tasks.jacocoTestReport {
 }
 
 val jacocoClassExclude = listOf(
-    "faang.school.urlshortenerservice.*", // !!!! убрать после написания тестов !!!!
+    //"faang.school.urlshortenerservice.*", // !!!! убрать после написания тестов !!!!
     "faang.school.urlshortenerservice.config.*",
     "faang.school.urlshortenerservice.dto.*",
+    "faang.school.urlshortenerservice.mapper.*",
+    "faang.school.urlshortenerservice.exception.*",
+    "faang.school.urlshortenerservice.model.*",
+    "faang.school.urlshortenerservice.repository.*",
+    "faang.school.urlshortenerservice.controller.UrlExceptionHandler",
+    "faang.school.urlshortenerservice.service.HashCache",
     "faang.school.urlshortenerservice.ServiceTemplateApplication",
     "faang.school.urlshortenerservice.client.Feign*"
 )

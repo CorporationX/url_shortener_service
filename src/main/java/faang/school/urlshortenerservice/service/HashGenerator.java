@@ -12,21 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * <h2>Задание</h2>
- * <div>Создать бин HashGenerator для генерации и помещения новых хэшей в БД. Метод generateBatch().</div>
- * <h2>Критерии приема</h2>
- * <li>HashGenerator — Spring bean</li>
- * <li>Метод generateBatch сначала обращается к HashRepository, чтобы получить n уникальных
- * чисел из БД. Это n хранится в конфиге, а не захардкожено.</li>
- * <li>Затем generateBatch отдаёт полученный список чисел в Base62Encoder, который возвращает уже список хэшей.</li>
- * <li>Далее generateBatch список этих хэшей сохраняет в БД через HashRepository в таблицу hash.</li>
- * <li>Метод должен быть Async.</li>
- * <li>Async имеет свой кастомный трэд пул.</li>
- * <li>Трэд пул создаётся в конфигурации отдельным бином с соответсвующим именем. Его размер, и размер
- * его очереди задач, задаются через конфиг.</li>
- * <li>Везде используются lombok аннотации.</li>
- */
 @Slf4j
 @Setter
 @Service

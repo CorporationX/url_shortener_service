@@ -12,31 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * <h2>Задание</h2>
- * <div>Реализовать класс HashCache, который осуществляет внутреннее кэширование свободных хэшей, асинхронно
- * заполняет этот кэш без блокирования запросов и является полностью потокобезопасным</div>
- * <h2>Критерии приема</h2>
- * <li>HashCache — Spirng bean с соответствующими аннотациями.</li>
- * <li>HashCache хранит себе структуру данных, в которой и будут кэшироваться хэши. Она должна быть
- * потокобезопасной и иметь удобный интерфейс для получения ровно одного случайного хэша. Используем
- * готовое решение из пакета concurrency. Нужно подумать, какую структуру данных выбрать. Подсказка:
- * это не ConcurrentHashMap. Её размер должен определяться из конфига.</li>
- * <li>HashCache содержит в себе ExecutorService бин для запуска асинхронных задач.</li>
- * <li>Этот ExecutorService бин создаётся в отдельной конфигурации бинов. Его размер и размер его
- * очереди задач задаётся из конфига.</li>
- * <li>Если количество доступных элементов в структуре данных внутри HashCache больше 20% от её
- * максимального размера, то метод getHash() в классе HashCache просто возвращает первый элемент на
- * поверхности этой коллекции. Значение процентов хранится в конфиге.</li>
- * <li>Если количество элементов в ней менее 20%, то РОВНО ОДИН РАЗ, асинхронно через ExecutorService
- * запускается получение хэшей из HashRepository, и заполнение ими внутренней коллекции HashCache.
- * РОВНО ОДИН РАЗ значит, что никакой другой поток не должен ещё раз запустить эту активность,
- * пока она не завершилась полностью после предыдущего запуска. Т.е. здесь должен быть механизм
- * эксклюзивного доступа. Также здесь происходит асинхронный запуск HashGenerator, который
- * генерирует дополнительные хэши в БД, раз уж мы потащили пачку в память.</li>
- * <p>
- * Используются аннотации lombok.</li>
- */
 @Slf4j
 @Service
 public class HashCache {
@@ -68,15 +43,12 @@ public class HashCache {
     @PostConstruct
     public void init() {
         log.info("Init class HashCache");
-        if (isNeedExtend()) {
-            log.debug("Need extend cache. Filling the cache synchronously");
-            fillCache();
-        }
+        fillCache();
     }
 
     public String getNewHash() {
         do {
-            String hash = hashQueue.poll(); // String hash = setOps().pop(FREE_HASH);
+            String hash = hashQueue.poll();
             if (hash == null) {
                 if (lock.compareAndExchange(false, true)) {
                     log.info("Redis Hash Cache is empty. Filling the cache Synchronously.");
@@ -111,6 +83,10 @@ public class HashCache {
                 return hash;
             }
         } while (true);
+    }
+
+    protected Queue<String> getHashQueueForTesting() {
+        return hashQueue;
     }
 
     private boolean isNeedExtend() {

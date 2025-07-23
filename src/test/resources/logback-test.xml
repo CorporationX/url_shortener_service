@@ -15,7 +15,7 @@
         <appender-ref ref="CONSOLE2"/>
     </logger>
 
-    <root level="INFO">
+    <root level="OFF">
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

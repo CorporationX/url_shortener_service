@@ -26,8 +26,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private static final String URL_NOT_FOUND = "url by hash [{}] not found";
-    private static final String INVALID_URL = "invalid url";
+    public static final String URL_NOT_FOUND = "url by hash [{}] not found";
+    public static final String INVALID_URL = "invalid url";
 
     private final UrlCacheRepository urlCacheRepository;
     private final UrlRepository urlRepository;
@@ -36,7 +36,7 @@ public class UrlService {
     private final UrlMapper urlMapper;
     private final Utils utils;
 
-    public String redirectByHash(String hash) {
+    public String getUrlByHash(String hash) {
         try {
             String url = urlCacheRepository.findByHash(hash)
                 .orElseGet(() -> findHashInRepository(hash));
