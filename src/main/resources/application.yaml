@@ -40,7 +40,7 @@ logging:
     root: info
 
 hash:
-    cron_clean: "0 0 * * *"
+    cron_clean: "0 0 * * * *"
     years_count: 1
     get_batch_size: 1600
     save_batch_size: 500
@@ -56,4 +56,4 @@ hash:
         max_cache_size: 2000
         cache_pool_size: 5
 url:
-    short_prefix: https://rob.ert/
+    short_prefix: "https://rob.ert/"

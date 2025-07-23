@@ -29,7 +29,7 @@ public class UrlServiceImpl implements UrlService {
     private final HashRepository hashRepository;
 
     @Value("${url.short_prefix}")
-    private final String shortUrlPrefix;
+    private String shortUrlPrefix;
 
     @Transactional
     @Override
