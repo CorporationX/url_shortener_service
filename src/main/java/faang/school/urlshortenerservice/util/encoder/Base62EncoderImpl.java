@@ -43,8 +43,10 @@ public class Base62EncoderImpl implements Base62Encoder {
                 byteBuffer.clear();
                 byte[] bytes = base62.encode(byteBuffer.putLong(number).array());
                 String hash = new String(bytes, StandardCharsets.UTF_8);
+                log.info("Encode done full hash: {}", hash);
                 if (hash.length() > hashLength) {
-                    encodedHashes.add(hash.substring(0, hashLength));
+                    encodedHashes.add(hash.substring(hash.length()-hashLength
+                            ));
                 } else {
                     encodedHashes.add(hash);
                 }

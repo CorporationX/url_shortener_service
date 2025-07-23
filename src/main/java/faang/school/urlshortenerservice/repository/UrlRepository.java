@@ -20,4 +20,6 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             RETURNING hash
             """, nativeQuery = true)
     List<String> reuseOldUrls(@Param("yearsCount")int yearsCount);
+
+    List<Url> findByUrl(String url);
 }

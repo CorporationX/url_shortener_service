@@ -29,11 +29,13 @@ public class HashGeneratorImpl implements HashGenerator {
         try {
             log.info("Hashes Generation started");
             List<Long> numbers = hashRepository.getUniqueNumbers(generateBatchSize);
+            log.info("HAshes from repo: {}", numbers);
             if (numbers.isEmpty()) {
                 log.warn("List of unique numbers is empty");
                 return;
             }
             List<String> hashes = base62Encoder.encode(numbers);
+            log.info("Encoded Hashes: {}", hashes);
             hashRepository.save(hashes);
             log.info("{} hashes was generated, from {} to {}",
                     hashes.size(),

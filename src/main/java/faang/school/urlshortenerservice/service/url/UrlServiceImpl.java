@@ -9,6 +9,8 @@ import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.util.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +29,26 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
     private final HashRepository hashRepository;
+    private final HashGenerator hashGenerator;
 
     @Value("${url.short_prefix}")
     private String shortUrlPrefix;
 
+    @PostConstruct
+    public void hashInit() {
+        hashGenerator.generateBatch();
+    }
+
     @Transactional
     @Override
     public ShortUrlDto createShortUrl(UrlDto urlDto) {
+        if(!urlRepository.findByUrl(urlDto.getUrl()).isEmpty()){
+            String hash = urlRepository.findByUrl(urlDto.getUrl()).get(0).getHash();
+            String shortUrl = shortUrlPrefix + hash;
+            return (ShortUrlDto.builder()
+                    .shortUrl(shortUrl)
+                    .hash(hash).build());
+        }
         log.info("Start create Short Url");
         String hash = hashCache.getHash();
         Url url = urlMapper.toEntity(urlDto);
@@ -42,7 +57,8 @@ public class UrlServiceImpl implements UrlService {
         String shortUrl = shortUrlPrefix + hash;
         urlCacheRepository.save(hash, url);
         return (ShortUrlDto.builder()
-                .shortUrl(shortUrl).build());
+                .shortUrl(shortUrl)
+                .hash(hash).build());
     }
 
 

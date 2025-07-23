@@ -43,6 +43,7 @@ public class HashRepositoryImpl implements HashRepository {
         String sql = "INSERT INTO hashes(hash) VALUES (?)";
         jdbcTemplate.batchUpdate(sql, hashes, saveBatchSize, (ps, hash)
                 -> ps.setString(1, hash));
+        log.info("Hashes was saved");
     }
 
     @Transactional
