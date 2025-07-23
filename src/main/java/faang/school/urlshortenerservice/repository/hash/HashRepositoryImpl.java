@@ -1,7 +1,8 @@
 package faang.school.urlshortenerservice.repository.hash;
 
+import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
 

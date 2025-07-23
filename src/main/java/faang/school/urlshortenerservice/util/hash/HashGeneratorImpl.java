@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.util.hash;
 
-import faang.school.urlshortenerservice.repository.hash.HashRepository;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class HashGeneratorImpl implements HashGenerator {
     private final TaskExecutor hashGeneratorPool;
 
     @Value("${hash.generate_batch_size}")
-    private final int generateBatchSize;
+    private int generateBatchSize;
 
     @Override
     @Async("hashGeneratorPool")

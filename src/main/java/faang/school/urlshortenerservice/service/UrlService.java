@@ -1,0 +1,10 @@
+package faang.school.urlshortenerservice.service;
+
+import faang.school.urlshortenerservice.dto.ShortUrlDto;
+import faang.school.urlshortenerservice.dto.UrlDto;
+
+public interface UrlService {
+    ShortUrlDto createShortUrl(UrlDto urlDto);
+    UrlDto getUrl(String hash);
+    void reuseOldUrls(int yearsCount);
+    }
