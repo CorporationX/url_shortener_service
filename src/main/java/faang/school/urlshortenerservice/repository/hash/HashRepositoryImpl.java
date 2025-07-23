@@ -19,7 +19,7 @@ public class HashRepositoryImpl implements HashRepository {
 
     @Value("${hash.save_batch_size}")
     private int saveBatchSize;
-    @Value("${get_batch_size}")
+    @Value("${hash.get_batch_size}")
     private int getBatchSize;
 
     @Override

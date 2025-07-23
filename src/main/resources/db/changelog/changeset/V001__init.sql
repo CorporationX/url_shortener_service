@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS hashes (
     hash VARCHAR(6) PRIMARY KEY not null unique);
 
 CREATE TABLE IF NOT EXISTS urls (
-    hash VARCHAR(6) PRIMARY KEY not null unique
-    url TEXT NOT NULL
-    created_at TIMESTAMP DEFAULT current_timestamp
+    hash VARCHAR(6) PRIMARY KEY not null unique,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT current_timestamp,
     CONSTRAINT fk_hash FOREIGN KEY(hash) REFERENCES hashes(hash)
     );
 

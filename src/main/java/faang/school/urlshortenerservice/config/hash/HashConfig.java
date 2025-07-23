@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.config.hash;
 
 import io.seruco.encoding.base62.Base62;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +11,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @EnableAsync
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HashConfig {
     @Value("${hash.core_pool_size}")
     private int corePoolSize;
     @Value("${hash.max_pool_size}")
     private int maxPoolSize;
-    @Value("${queue_capacity}")
+    @Value("${hash.queue_capacity}")
     private int queueCapacity;
     @Value("${hash.prefix}")
     private String prefix;
