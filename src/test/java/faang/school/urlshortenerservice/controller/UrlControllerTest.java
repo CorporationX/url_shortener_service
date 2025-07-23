@@ -55,7 +55,8 @@ class UrlControllerTest {
     void testEncodeUrl_ShouldReturnEncodedUrl() throws Exception {
         UrlEncodeDto urlDto = new UrlEncodeDto("https://example.com");
 
-        String encodedUrl = "http://short.url/abc123";
+        String encodedUrl = "https://localhost/abc123";
+
         when(urlService.encodeUrl(any(UrlEncodeDto.class))).thenReturn(encodedUrl);
 
         mockMvc.perform(post("/")
