@@ -23,3 +23,6 @@ server:
 logging:
   level:
     root: info
+
+short-url:
+  target-length: 6
