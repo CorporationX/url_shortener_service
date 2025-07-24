@@ -33,7 +33,7 @@ public class UrlHashCache {
         String key = KEY_PREFIX + hash;
         ValueOperations<String, String> valueOps = urlHashCacheRedisTemplate.opsForValue();
 
-        Boolean isNewKey = valueOps.setIfAbsent(key, fullUrl, ttlSeconds*3, TimeUnit.SECONDS); // сюда брать из properties.ttl? или настройка в application.yaml?
+        Boolean isNewKey = valueOps.setIfAbsent(key, fullUrl); // сюда брать из properties.ttl? или настройка в application.yaml?
 
         if (Boolean.TRUE.equals(isNewKey)) {
             valueOps.increment(URL_MAPPINGS_COUNT_KEY);
@@ -44,8 +44,7 @@ public class UrlHashCache {
 
     public String get(String hash) {
         String key = KEY_PREFIX + hash;
-        ValueOperations<String, String> valueOps = urlHashCacheRedisTemplate.opsForValue();
-        String fullUrl = valueOps.get(key);
+        String fullUrl = urlHashCacheRedisTemplate.opsForValue().get(key);
         if (fullUrl != null) {
             log.info("Retrieved fullUrl: {} for hash: {} from URL mappings cache.", fullUrl, hash);
         } else {

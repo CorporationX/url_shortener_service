@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
 
+    private static final String DOMAIN_URL = "mylink.com/";
+
     private final HashCache hashCache;
     private final UrlHashRepository urlHashRepository;
     private final UrlHashCache urlHashCache;
@@ -22,23 +24,39 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getFullUrl(String shortUrl) {
-        String fullUrl = urlHashCache.get(shortUrl);
+        String hash = extractHashFromShortUrl(shortUrl);
+
+        if (hash == null) {
+            throw new IllegalArgumentException(String.format("Wasn't able to extract hash from short url: %s", shortUrl));
+        }
+
+        String fullUrl = urlHashCache.get(hash);
         if (fullUrl != null) {
             log.info("Full URL for hash {} retrieved from cache: {}", shortUrl, fullUrl);
             return fullUrl;
         }
 
         // Если не в кэше, ищем в Cassandra
-        UrlHash urlHash = urlHashRepository.findById(shortUrl)
-                .orElseThrow(() -> {
-                    log.warn("Short URL {} not found in Cassandra.", shortUrl);
-                    return new EntityNotFoundException("Short URL not found");
-                });
+        String urlHash = urlHashRepository.findByHash(hash);
+//                .orElseThrow(() -> {
+//                    log.warn("Short URL {} not found in Cassandra.", shortUrl);
+//                    return new EntityNotFoundException("Short URL not found");
+//                });
 
         // Кладем найденный URL в кэш для будущих запросов (с TTL)
-        urlHashCache.put(urlHash.getHash(), urlHash.getFullUrl(), 120); // TTL 120 секунд
-        log.info("Full URL for hash {} retrieved from Cassandra and cached: {}", shortUrl, urlHash.getFullUrl());
-        return urlHash.getFullUrl();
+//        urlHashCache.put(urlHash.getHash(), urlHash.getFullUrl(), 120); // TTL 120 секунд
+        log.info("Full URL for hash {} retrieved from Cassandra and cached: {}", shortUrl, urlHash);
+        return urlHash;
+    }
+
+    private String extractHashFromShortUrl(String shortUrl) {
+        if (shortUrl.startsWith(DOMAIN_URL)) {
+            String hash = shortUrl.substring(DOMAIN_URL.length());
+            log.info("returning hash: {} from shortUrl: {}", hash, shortUrl);
+            return hash;
+        }
+
+        return null;
     }
 
     // Заменить на ДТО что-бы повесить проверку на URL
@@ -63,6 +81,7 @@ public class UrlServiceImpl implements UrlService {
 
         log.info("In UrlHashCache -> {}", urlHashCache.getSize());
 
+        log.info("returning short_url: {}", shortUrl);
         return shortUrl;
     }
 
