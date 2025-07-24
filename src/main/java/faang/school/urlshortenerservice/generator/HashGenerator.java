@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class HashGenerator {
     @Transactional
     @Async("executorForBase62")
     public void generatedHash() {
-        List<String> stringList = base62Generated.encodeBase62Long(sequenceNextRange());
+        List<String> stringList = base62Generated.encodeBase62(sequenceNextRange());
         List<Hash> hashList = stringList.stream()
                 .map(Hash::new)
                 .toList();

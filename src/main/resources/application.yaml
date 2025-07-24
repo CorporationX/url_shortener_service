@@ -15,6 +15,11 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 100
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: password
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -28,7 +33,8 @@ logging:
 
 hash:
   batch:
-    limit: 10
+    limit: 10000
+    size: 10000
   range:
     maxRange: 1000
 
@@ -37,6 +43,7 @@ moderation:
     cron: "0 0 * * * *"
     batch_size: 1000
     limit: 10
+    hash: "0 * * * * ?"
   executor:
     core_pool_size: 5
     max_thread_pool_size: 20
@@ -47,3 +54,6 @@ executor:
     max: 10
     prefix: 'CustomExecutor-'
     queue: 50
+  cache:
+    core: 10
+    max_thread_pool: 20

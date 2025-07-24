@@ -14,7 +14,6 @@ import java.util.List;
 public class UrlServiceImpl {
 
     private final UrlRepository urlRepository;
-    private final HashService hashService;
     @Transactional
     public void deleteUrlOlderOneYearAndSaveByHash(int limit) {
         List<String> hashes = urlRepository.findExpiredUrlsHashes(limit);

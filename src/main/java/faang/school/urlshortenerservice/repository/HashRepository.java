@@ -20,7 +20,8 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (
                 SELECT hash 
                 FROM hash
-                ORDER BI RANDOM()
+                FOR UPDATE
+                SKIP LOCKED
                 LIMIT :limit
             )
             RETURNING *;"

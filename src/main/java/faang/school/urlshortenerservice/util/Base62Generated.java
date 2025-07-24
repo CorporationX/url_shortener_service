@@ -18,7 +18,7 @@ public class Base62Generated {
         return stringBuilder.toString();
     }
 
-    public List<String> encodeBase62Long(List<Long> base62List) {
+    public List<String> encodeBase62(List<Long> base62List) {
         return base62List.stream().map(this::generateHashBase62).toList();
     }
 }
