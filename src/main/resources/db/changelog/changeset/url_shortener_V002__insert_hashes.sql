@@ -59,3 +59,7 @@ SELECT *,
                 LIMIT 100;
 
 ALTER SEQUENCE table_name_column_name_seq RESTART WITH 1;
+
+insert into url (hash, url, created_at) values ('sleueh', 'http://21it.ru', CURRENT_TIMESTAMP - INTERVAL '2 years');
+insert into url (hash, url, created_at) values ('7leueh', 'http://21it.ru', CURRENT_TIMESTAMP - INTERVAL '2 years');
+insert into url (hash, url) values ('sleif', 'http://21it.ru');
