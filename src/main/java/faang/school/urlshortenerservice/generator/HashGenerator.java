@@ -38,7 +38,7 @@ public class HashGenerator {
         List<String> hashes = nextRange.stream()
                 .map(Base62::encode)
                 .collect(Collectors.toList());
-        hashRepository.save(hashes);
+        hashRepository.saveAll(hashes);
     }
 
     @Transactional

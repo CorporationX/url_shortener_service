@@ -3,6 +3,9 @@ package faang.school.urlshortenerservice.scheduler;
 import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.UrlCacheService;
+import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.service.UrlServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,26 +22,15 @@ import java.util.List;
 @Slf4j
 public class CleanerScheduler {
 
-    private final UrlRepository urlRepository;
-    private final HashRepository hashRepository;
+    private final UrlService urlService;
+    private final UrlCacheService urlCacheService;
 
     @Value("${cleaner.cron.cleanTime:0 0 0 * * ?}")
     private String cleanTime;
 
     @Scheduled(cron = "${cleaner.cron.expression}")
-    @Transactional
     public void cleanOldUrls() {
-        log.info("Запуск очистки устаревших URL...");
-        LocalDateTime oneYearAgo = LocalDateTime.now(ZoneOffset.UTC).minusYears(1);
-        List<String> deletedHashes = urlRepository.deleteOlderThan(oneYearAgo);
-        log.info("Удалено {} записей из urls", deletedHashes.size());
-
-        List<Hash> hashesToSave = deletedHashes.stream()
-                .map(hashValue -> new Hash(hashValue))
-                .toList();
-//todo:saveAll
-        hashRepository.saveAll(hashesToSave);
-
-        log.info("Добавлено {} записей в таблицу hash", hashesToSave.size());
+        log.info("Starting cleaning of obsolete URLs...");
+        urlService.deleteOldUrls();
     }
 }

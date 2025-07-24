@@ -3,14 +3,19 @@ package faang.school.urlshortenerservice.service;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.generator.HashCache;
+import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +25,10 @@ public class UrlServiceImpl implements UrlService {
     private final UrlCacheService cacheService;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+
+    @Value("${url.validity-period.days:100}")
+    private int validityPeriodDays;
 
     @Override
     @Transactional
@@ -61,7 +70,13 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public void deleteShortUrl(String shortUrl) {
-        //todo очистка из базы и кеша по расписанию и по требованию?
+    @Transactional
+    public void deleteOldUrls(){
+        LocalDateTime validityPeriodStart = LocalDateTime.now(ZoneOffset.UTC).minusDays(validityPeriodDays);
+        List<String> deletedHashes = urlRepository.deleteOlderThan(validityPeriodStart);
+        log.info("Removed {} lines from urls", deletedHashes.size());
+        hashRepository.saveAll(deletedHashes);
+        log.info("Added {} lines to hash table", deletedHashes.size());
     }
+
 }

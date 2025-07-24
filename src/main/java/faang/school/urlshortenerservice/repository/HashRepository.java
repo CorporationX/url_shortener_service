@@ -9,7 +9,7 @@ public interface HashRepository {
 
     List<Long> getUniqueNumbers(int n);
 
-    void save(List<String> hashes);
+    void saveAll(List<String> hashes);
 
     List<Hash> getHashBatch(int batchSize);
 }
