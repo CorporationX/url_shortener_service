@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CleanerScheduler {
+public class ExpiredUrlsHashCleanScheduler {
     private final ConstantsProperties constantsProperties;
     private final ExpiredHashCleanerService hashCleanerService;
     private final UrlRepository urlRepository;

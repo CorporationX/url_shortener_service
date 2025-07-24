@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.repository;
 
+import faang.school.urlshortenerservice.config.ConstantsProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -16,9 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepositoryJdbcImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
-
-    @Value("${constants.local_hash_cache_butch_size}")
-    private int LOCAL_BATCH_SIZE;
+    private final ConstantsProperties constantsProperties;
 
     @Override
     @Transactional
@@ -48,7 +46,7 @@ public class HashRepositoryJdbcImpl implements HashRepository {
     @Transactional
     public List<String> getHashBatch() {
         String sql = "DELETE FROM hash WHERE hash IN (SELECT hash FROM hash LIMIT ?) RETURNING hash";
-        return jdbcTemplate.queryForList(sql, String.class, LOCAL_BATCH_SIZE);
+        return jdbcTemplate.queryForList(sql, String.class, constantsProperties.getLocalHashCacheButchSize());
     }
 
     @Override
