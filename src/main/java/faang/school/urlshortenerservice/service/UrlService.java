@@ -1,13 +1,14 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 
 import java.util.List;
 
 public interface UrlService {
-    UrlDto createShortUrl(UrlDto url);
+    UrlResponseDto createShortUrl(UrlRequestDto url);
 
-    UrlDto getUrl(String hash);
+    UrlResponseDto getUrl(String hash);
 
     List<String> retrieveOldUrls(int daysCount);
 }

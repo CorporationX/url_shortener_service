@@ -1,8 +1,7 @@
-package faang.school.urlshortenerservice.util;
+package faang.school.urlshortenerservice.hash;
 
 import java.util.List;
 
 public interface Base62Encoder {
     List<String> encodeBatch(List<Long> numbers);
-    String encode(Long number);
 }

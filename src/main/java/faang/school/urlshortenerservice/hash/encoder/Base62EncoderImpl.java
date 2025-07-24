@@ -1,9 +1,9 @@
-package faang.school.urlshortenerservice.util.encoder;
+package faang.school.urlshortenerservice.hash.encoder;
 
-import faang.school.urlshortenerservice.util.Base62Encoder;
+import faang.school.urlshortenerservice.config.hash.HashProperties;
+import faang.school.urlshortenerservice.hash.Base62Encoder;
 import io.seruco.encoding.base62.Base62;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
@@ -15,9 +15,7 @@ import java.util.List;
 public class Base62EncoderImpl implements Base62Encoder {
     private final Base62 base62;
     private final ByteBuffer byteBuffer;
-
-    @Value("${hash.max_length}")
-    private int hashLength;
+    private final HashProperties hashProperties;
 
     @Override
     public List<String> encodeBatch(List<Long> numbers) {
@@ -26,12 +24,11 @@ public class Base62EncoderImpl implements Base62Encoder {
                 .toList();
     }
 
-    @Override
-    public synchronized String encode(Long number) {
+    private String encode(Long number) {
         byte[] bytes = base62.encode(byteBuffer.clear().putLong(number).array());
         String hash = new String(bytes, StandardCharsets.UTF_8);
-        if (hash.length() > hashLength) {
-            return hash.substring(hashLength);
+        if (hash.length() > hashProperties.maxLength()) {
+            return hash.substring(hashProperties.maxLength());
         }
 
         return hash;

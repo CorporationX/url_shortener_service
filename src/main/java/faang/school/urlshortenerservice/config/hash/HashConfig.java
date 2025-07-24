@@ -1,23 +1,15 @@
 package faang.school.urlshortenerservice.config.hash;
 
 import io.seruco.encoding.base62.Base62;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.nio.ByteBuffer;
 
-@EnableAsync
 @Configuration
 public class HashConfig {
-    @Value("${hash.pool_size}")
-    private int hashGeneratorPoolSize;
-    @Value("${hash.queue_size}")
-    private int hashGeneratorQueueSize;
-
     @Bean
     public Base62 base62() {
         return Base62.createInstance();
@@ -29,10 +21,10 @@ public class HashConfig {
     }
 
     @Bean
-    public TaskExecutor hashGeneratorPool() {
+    public TaskExecutor hashGeneratorPool(HashProperties hashProperties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(hashGeneratorPoolSize);
-        executor.setQueueCapacity(hashGeneratorQueueSize);
+        executor.setMaxPoolSize(hashProperties.poolSize());
+        executor.setQueueCapacity(hashProperties.queueSize());
         executor.initialize();
         return executor;
     }

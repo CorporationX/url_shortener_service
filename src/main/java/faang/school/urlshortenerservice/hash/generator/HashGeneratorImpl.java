@@ -1,12 +1,11 @@
-package faang.school.urlshortenerservice.util.hash;
+package faang.school.urlshortenerservice.hash.generator;
 
+import faang.school.urlshortenerservice.config.hash.HashProperties;
+import faang.school.urlshortenerservice.hash.Base62Encoder;
+import faang.school.urlshortenerservice.hash.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
-import faang.school.urlshortenerservice.util.Base62Encoder;
-import faang.school.urlshortenerservice.util.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -18,17 +17,14 @@ import java.util.List;
 public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
-    private final TaskExecutor hashGeneratorPool;
-
-    @Value("${hash.generated_count}")
-    private int generatedCount;
+    private final HashProperties hashProperties;
 
     @Async("hashGeneratorPool")
     @Override
     public void generateBatch() {
         log.info("Hashes generation started.");
 
-        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(generatedCount);
+        List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(hashProperties.generatedCount());
         List<String> hashes = encoder.encodeBatch(uniqueNumbers);
         hashRepository.saveBatch(hashes);
 

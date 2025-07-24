@@ -1,9 +1,9 @@
 package faang.school.urlshortenerservice.repository;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 
 public interface UrlCacheRepository {
-    void set(String hash, UrlDto url, int ttl);
+    void set(String hash, UrlResponseDto url);
 
-    UrlDto get(String hash);
+    UrlResponseDto get(String hash);
 }

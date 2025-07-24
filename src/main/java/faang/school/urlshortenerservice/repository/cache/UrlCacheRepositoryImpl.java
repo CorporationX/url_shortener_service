@@ -1,6 +1,7 @@
 package faang.school.urlshortenerservice.repository.cache;
 
-import faang.school.urlshortenerservice.dto.UrlDto;
+import faang.school.urlshortenerservice.config.hash.CacheProperties;
+import faang.school.urlshortenerservice.dto.UrlResponseDto;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,14 +13,15 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class UrlCacheRepositoryImpl implements UrlCacheRepository {
     private final RedisTemplate<String, Object> redisTemplate;
+    private final CacheProperties cacheProperties;
 
     @Override
-    public void set(String hash, UrlDto url, int ttl) {
-        redisTemplate.opsForValue().set(hash, url, ttl, TimeUnit.DAYS);
+    public void set(String hash, UrlResponseDto url) {
+        redisTemplate.opsForValue().set(hash, url, cacheProperties.ttlDays(), TimeUnit.DAYS);
     }
 
     @Override
-    public UrlDto get(String hash) {
-        return (UrlDto) redisTemplate.opsForValue().get(hash);
+    public UrlResponseDto get(String hash) {
+        return (UrlResponseDto) redisTemplate.opsForValue().get(hash);
     }
 }

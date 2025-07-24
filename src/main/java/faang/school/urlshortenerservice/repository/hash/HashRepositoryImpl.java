@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.repository.hash;
 
+import faang.school.urlshortenerservice.config.hash.HashProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,14 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepositoryImpl implements HashRepository {
     private final JdbcTemplate jdbcTemplate;
-
-    @Value("${hash.max_batch_size}")
-    private int maxBatchSize;
+    private final HashProperties hashProperties;
 
     @Override
     public List<Long> getUniqueNumbers(int count) {
-        String sql = "select nextval('unique_number_seq') from generate_series(1, ?)";
-        return jdbcTemplate.queryForList(sql, Long.class, count);
+        String query = "select nextval('unique_number_seq') from generate_series(1, ?)";
+        return jdbcTemplate.queryForList(query, Long.class, count);
     }
 
     @Modifying
@@ -53,7 +51,7 @@ public class HashRepositoryImpl implements HashRepository {
     @Transactional
     @Override
     public List<String> getHashBatch() {
-        String sql = "delete from hash where hash in (select hash from hash limit ?) returning hash";
-        return jdbcTemplate.queryForList(sql, String.class, maxBatchSize);
+        String query = "delete from hash where hash in (select hash from hash limit ?) returning hash";
+        return jdbcTemplate.queryForList(query, String.class, hashProperties.maxBatchSize());
     }
 }

@@ -44,3 +44,8 @@ hash:
 
 cron:
     old_hash_cleaner: 0 0 1 * * *
+
+scheduler_names:
+    hash_cleaner: CleanerScheduler_clean
+
+api_version: /api/v1
