@@ -5,6 +5,21 @@ spring:
     username: user
     password: password
 
+  hash:
+    range: 1000
+    cache:
+      size: 10
+      fill: 20
+
+  cleaner:
+    cron: "0 0 * * * *"
+
+  thread-executor:
+    corePoolSize: 10
+    maxPoolSize: 20
+    waitForTasksToCompleteOnShutdown: true
+    threadNamePrefix: gen-hashes-async
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -13,12 +28,23 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        generate_statistics: false
+        jdbc.batch_size: 100
+        order_inserts: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
-  port: 8080
+  port: 8089
 
 logging:
   level:
