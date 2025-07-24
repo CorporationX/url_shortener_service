@@ -55,7 +55,7 @@ class UrlServiceTest {
         ResponseUrlDto result = urlService.getShortenedUrl(dto);
 
         assertEquals("abc123", result.getHash()); // проверяем, что хэш сохранён правильно
-        verify(urlCacheRepository, times(1)).cacheHash(eq("abc123"), eq("https://example.com")); // проверка вызова метода кэширования
+        verify(urlCacheRepository, times(1)).cacheHash(eq("abc123"), eq("https://example.com"), 1); // проверка вызова метода кэширования
     }
 
     @Test
@@ -112,12 +112,5 @@ class UrlServiceTest {
         when(urlRepository.getLongUrlByHash(hash)).thenReturn(null);
 
         assertThrows(UrlNotFoundException.class, () -> urlService.getLongUrlByHash(hash)); // ожидаем исключение
-    }
-
-    // Тест валидности URL
-    @Test
-    void testIsInvalidURL() {
-        RequestUrlDto dto = new RequestUrlDto("not a valid url");
-        assertThrows(UrlValidateException.class, () -> urlService.getShortenedUrl(dto));
     }
 }

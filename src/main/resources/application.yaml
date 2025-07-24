@@ -11,8 +11,11 @@ spring:
       size: 10
       fill: 20
 
+  redis-ttl:
+    expireTimeMinutes: 10
+
   cleaner:
-    cron: "0 0 * * * *"
+    cron: "0 * * * * *"
 
   thread-executor:
     corePoolSize: 10

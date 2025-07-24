@@ -4,19 +4,16 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.RequestUrlDto;
 import faang.school.urlshortenerservice.dto.ResponseUrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.exception.UrlValidateException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Objects;
 
 @Service
@@ -24,6 +21,8 @@ import java.util.Objects;
 @Slf4j
 public class UrlService {
     private static final String ERROR_DUPLICATE = "duplicate key value violates unique constraint \"url_url_key\"";
+    @Value("${spring.redis-ttl.expireTimeMinutes:1}")
+    private int expireTimeMinutes;
 
     private final UrlMapper urlMapper;
     private final HashCache hashCache;
@@ -31,9 +30,6 @@ public class UrlService {
     private final UrlCacheRepository urlCacheRepository;
 
     public ResponseUrlDto getShortenedUrl(RequestUrlDto requestUrlDto) {
-        if (!isValidURL(requestUrlDto.getUrl())) {
-            throw new UrlValidateException("The URL provided is not valid");
-        }
         String hash = hashCache.getHash();
         Url url = urlMapper.toEntity(requestUrlDto);
         url.setHash(hash);
@@ -46,7 +42,7 @@ public class UrlService {
                 url.setHash(getHashByUrl(url.getUrl()));
             }
         }
-        urlCacheRepository.cacheHash(url.getHash(), url.getUrl());
+        urlCacheRepository.cacheHash(url.getHash(), url.getUrl(), expireTimeMinutes);
         return urlMapper.toDto(url);
     }
 
@@ -63,14 +59,5 @@ public class UrlService {
 
     private String getHashByUrl(String url) {
         return urlRepository.getHashByUrl(url);
-    }
-
-    private boolean isValidURL(String url) {
-        try {
-            new URL(url).toURI();
-            return true;
-        } catch (MalformedURLException | URISyntaxException e) {
-            return false;
-        }
     }
 }

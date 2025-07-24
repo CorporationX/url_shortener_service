@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UrlRepository extends CrudRepository<Url, Long> {
     @Query(nativeQuery = true, value = """
@@ -25,7 +27,7 @@ public interface UrlRepository extends CrudRepository<Url, Long> {
                 )
                     INSERT INTO free_hash_pool (hash)
                     SELECT hash
-                    FROM deleted_urls
+                    FROM deleted_urls RETURNING *
             """)
-    void removeOldUrlsToHash();
+    List<String> removeOldUrlsToHash();
 }
