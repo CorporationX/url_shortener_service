@@ -1,0 +1,4 @@
+CREATE TABLE prepared_hashes (
+    hash VARCHAR(6) PRIMARY KEY,
+    taken BOOLEAN NOT NULL DEFAULT FALSE
+);

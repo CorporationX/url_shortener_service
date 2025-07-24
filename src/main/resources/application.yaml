@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/shortener_postgres_db
     username: user
     password: password
 
@@ -9,13 +9,50 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  cassandra:
+    port: 9042
+    contact-points: localhost
+    keyspace-name: shortener_keyspace
+    local-datacenter: datacenter1
+    schema-action: CREATE_IF_NOT_EXISTS
+
+  data:
+    redis:
+      hash-cache:
+        variables:
+          key: "short_url_hashes"
+          hash-length: 6
+          batch-size: 1000
+          capacity: 5000
+        port: 6379
+        host: localhost
+      url-hash-cache:
+        variables:
+          key: "full_url_hashes"
+          capacity: 10000
+        port: 6380
+        host: localhost
+
+
+  task:
+    execution:
+      pool:
+        size: 2
+        max-size: 5
+        prefix: url_shortener_thread_pool
+
+cron:
+  hash_generator:
+    every_hour: "0 0 * * * *"
+    every_minute: "0 * * * * *"
 
 server:
   port: 8080
