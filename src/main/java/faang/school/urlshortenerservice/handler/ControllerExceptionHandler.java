@@ -27,6 +27,7 @@ public class ControllerExceptionHandler {
         String errorMessage = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining());
+        log.info("PR");
         return new ErrorResponseDto(HttpStatus.BAD_REQUEST.name(),
                 errorMessage,
                 LocalDateTime.now().format(formatter));

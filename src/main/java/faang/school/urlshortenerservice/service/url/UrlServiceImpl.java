@@ -42,6 +42,7 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     @Override
     public ShortUrlDto createShortUrl(UrlDto urlDto) {
+        log.debug("Url dto {}", urlDto);
         if(!urlRepository.findByUrl(urlDto.getUrl()).isEmpty()){
             String hash = urlRepository.findByUrl(urlDto.getUrl()).get(0).getHash();
             String shortUrl = shortUrlPrefix + hash;
