@@ -4,6 +4,7 @@ import faang.school.urlshortenerservice.config.hash.HashProperties;
 import faang.school.urlshortenerservice.hash.Base62Encoder;
 import faang.school.urlshortenerservice.hash.HashGenerator;
 import faang.school.urlshortenerservice.repository.HashRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +19,11 @@ public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder encoder;
     private final HashProperties hashProperties;
+
+    @PostConstruct
+    private void postConstruct() {
+        generateBatch();
+    }
 
     @Async("hashGeneratorPool")
     @Override

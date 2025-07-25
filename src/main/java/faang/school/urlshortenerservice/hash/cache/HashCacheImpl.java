@@ -26,6 +26,11 @@ public class HashCacheImpl implements HashCache {
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
     private final ReentrantLock lock = new ReentrantLock();
 
+    @PostConstruct
+    private void postConstruct() {
+        refillCache();
+    }
+
     @Override
     public String getHash() {
         if (isMinSizeReached()) {
@@ -58,10 +63,5 @@ public class HashCacheImpl implements HashCache {
         } finally {
             lock.unlock();
         }
-    }
-
-    @PostConstruct
-    private void postConstruct() {
-        this.refillCache();
     }
 }
