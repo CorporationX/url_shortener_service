@@ -7,7 +7,8 @@ import java.util.stream.Stream;
 
 @Component
 public class Base62Encoder {
-    private static final String BASE62_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final String BASE62_CHARS =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     public String encode(long number) {
         StringBuilder base62 = new StringBuilder();

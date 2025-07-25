@@ -1,15 +1,13 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,39 +23,25 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        log.error(ex.getMessage());
+        log.warn("Validation failed: {}", errors);
         return ResponseEntity.badRequest().body(errors);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, IOException.class})
-    public ResponseEntity<Object> handleWrongInputException(RuntimeException ex) {
-        return badRequest(ex);
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<Object> handleUrlNotFound(UrlNotFoundException ex) {
+        log.warn("Hash not found: {}", ex.getMessage());
+        return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Bad request: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleServerErrors(Exception ex) {
-        return internalServerError(ex);
-    }
-
-    @ExceptionHandler(ObjectNotFoundException.class)
-    public ResponseEntity<Object> handleObjectNotFoundExceptions(ObjectNotFoundException ex) {
-        log.error(Arrays.toString(ex.getStackTrace()));
-        return ResponseEntity
-                .notFound()
-                .build();
-    }
-
-    private ResponseEntity<Object> internalServerError(Exception ex) {
-        log.error(Arrays.toString(ex.getStackTrace()));
-        return ResponseEntity
-                .internalServerError()
-                .body(ex.getMessage());
-    }
-
-    private ResponseEntity<Object> badRequest(Exception ex) {
-        log.error(Arrays.toString(ex.getStackTrace()));
-        return ResponseEntity
-                .badRequest()
-                .body(ex.getMessage());
+        log.error("Internal server error", ex);
+        return ResponseEntity.internalServerError().body(Map.of("error", "Internal server error"));
     }
 }
