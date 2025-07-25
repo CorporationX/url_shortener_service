@@ -19,37 +19,40 @@ public class UrlExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponseDto handleNotFound(EntityNotFoundException e) {
-        log.error("EntityNotFoundException was thrown", e);
-        return new ErrorResponseDto(
+    public ErrorResponseDto handleNotFound(EntityNotFoundException exception) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.name(),
-                "The required object was not found.",
-                e.getMessage(),
+                ErrorReasons.getMessageFor(exception),
+                exception.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("EntityNotFoundException was thrown, errorResponseDto: {}", errorResponseDto, exception);
+        return errorResponseDto;
     }
 
     @ExceptionHandler(DataValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto handleBadRequestExceptions(DataValidationException e) {
-        log.error("DataValidationException was thrown", e);
-        return new ErrorResponseDto(
+    public ErrorResponseDto handleBadRequestExceptions(DataValidationException exception) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.name(),
-                "Incorrectly made request.",
-                e.getMessage(),
+                ErrorReasons.getMessageFor(exception),
+                exception.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("DataValidationException was thrown, errorResponseDto: {}", errorResponseDto, exception);
+        return errorResponseDto;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponseDto handleException(Exception e) {
-        log.error("Exception was thrown", e);
-        return new ErrorResponseDto(
+    public ErrorResponseDto handleException(Exception exception) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Something went wrong.",
-                e.getMessage(),
+                ErrorReasons.getMessageFor(exception),
+                exception.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("Exception was thrown, errorResponseDto: {}", errorResponseDto, exception);
+        return errorResponseDto;
     }
 }
