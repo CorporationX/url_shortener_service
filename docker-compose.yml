@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  urlshortener:
+    build: .
+    container_name: urlshortener-app
+    ports:
+      - "8098:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xmx512m -Xms256m
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    restart: unless-stopped
+
+    labels:
+      - "app=urlshortener"
+      - "service=api"
+      - "environment=docker"
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=8080"
+      - "prometheus.io/path=/actuator/prometheus"
+
+    external_links:
+      - "master_postgres:postgres"
+      - "master_redis:redis"
+
+    networks:
+      - urlshortener-network
+
+networks:
+  urlshortener-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+# Для будущего масштабирования можно будет добавить:
+# volumes:
+#   app-logs:
+#     driver: local
+#
+# И дополнительные сервисы:
+# nginx-proxy:
+#   image: nginx:alpine
+#   ports:
+#     - "80:80"
+#   depends_on:
+#     - urlshortener
+#   networks:
+#     - urlshortener-network

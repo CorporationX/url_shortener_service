@@ -22,7 +22,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
-    implementation("commons-validator:commons-validator:1.7")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     /**
@@ -35,6 +34,7 @@ dependencies {
     /**
      * Utils & Logging
      */
+    implementation("org.sqids:sqids:0.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.6")
@@ -42,6 +42,12 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("commons-validator:commons-validator:1.7")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:5.12.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-redis-spring:5.12.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     /**
      * Test containers
@@ -67,4 +73,10 @@ val test by tasks.getting(Test::class) { testLogging.showStandardStreams = true 
 
 tasks.bootJar {
     archiveFileName.set("service.jar")
+}
+tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.getByName<Jar>("jar") {
+    enabled = false
 }
