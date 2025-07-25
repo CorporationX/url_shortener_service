@@ -12,6 +12,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
 

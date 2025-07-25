@@ -9,4 +9,5 @@ public interface UrlService {
     void deleteUrlOlderOneYearAndSaveByHash(int limit);
     int countUrlsOlder();
     Optional<Url> findUrlByHash(String hash);
+    Url createUrl (Url url);
 }

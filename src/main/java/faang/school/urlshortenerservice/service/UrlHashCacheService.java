@@ -23,7 +23,6 @@ public class UrlHashCacheService {
     public RedissonClient connectionToRedis() {
         Config config = new Config();
         config.useSingleServer()
-                //.setPassword(redisConfig.getPassword())
                 .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
 
         return Redisson.create(config);
@@ -33,7 +32,16 @@ public class UrlHashCacheService {
         RedissonClient redisson = connectionToRedis();
         RMap<String, String> hashUrlMap = redisson.getMap(KEY);
         hashUrlMap.put(hash, url);
+    }
 
+    public String getUrlByRedis(String hash) {
+        RedissonClient redisson = connectionToRedis();
+        RMap<String, String> hashUrlMap = redisson.getMap(KEY);
+        String url = hashUrlMap.get(hash);
+        if (url == null) {
+            throw new NoSuchElementException("Url Nof Found");
+        }
+        return url;
     }
 
     public String getUrlByHash(String hash) {

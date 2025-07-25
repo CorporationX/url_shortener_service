@@ -16,6 +16,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
     private final UrlRepository urlRepository;
+    private final UrlHashCacheService urlHashCacheService;
+    private final HashCache hashCache;
     @Transactional
     @Override
     public void deleteUrlOlderOneYearAndSaveByHash(int limit) {
@@ -31,5 +33,14 @@ public class UrlServiceImpl implements UrlService{
     @Override
     public Optional<Url> findUrlByHash(String hash) {
         return urlRepository.findById(hash);
+    }
+    @Override
+    public Url createUrl (Url url){
+        RList<Hash> hashes = hashCache.saveToRedisHash();
+        Hash hashRList = hashCache.randomIndex(hashes);
+        url.setHash(hashRList.getHash());
+        urlHashCacheService.cacheHashUrl(hashRList.getHash(), url.getUrl());
+        hashes.remove(hashRList);
+        return urlRepository.save(url);
     }
 }

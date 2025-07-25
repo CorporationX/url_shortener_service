@@ -13,6 +13,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 @Service
@@ -39,20 +40,19 @@ public class HashCache {
     public RedissonClient connectionToRedis() {
         Config config = new Config();
         config.useSingleServer()
-                //.setPassword(redisConfig.getPassword())
                 .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
 
         return Redisson.create(config);
     }
 
-    public void saveToRedisHash() {
+    public RList<Hash> saveToRedisHash() {
         List<Hash> hashes = hashService.deleteHashFromDataBase();
 
         RedissonClient redisson = connectionToRedis();
 
         RList<Hash> hashRList = redisson.getList(KEY);
 
-        addedToRedis(hashes, hashRList);
+        return addedToRedis(hashes, hashRList);
     }
 
     public void checkMemoryRedis() {
@@ -68,13 +68,21 @@ public class HashCache {
             });
         }
     }
+    public Hash randomIndex(RList<Hash> hashes) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(hashes.size());
+        return hashes.get(randomIndex);
+    }
 
-    private void addedToRedis(List<Hash> hashes, RList<Hash> hashRList) {
+    private RList<Hash> addedToRedis(List<Hash> hashes, RList<Hash> hashRList) {
         for (Hash hash : hashes) {
             if (hash != null) {
                 hashRList.add(hash);
             }
         }
+        return hashRList;
     }
+
+
 
 }
