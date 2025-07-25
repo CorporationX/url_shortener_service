@@ -16,16 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/url")
 public class UrlController {
 
-    private final UrlHashCacheService urlHashCacheService;
     private final UrlService urlService;
     @GetMapping("/{hash}")
     public ResponseEntity<Void> getByHash(@RequestParam("hash") String hash) {
-        String url = urlHashCacheService.getUrlByHash(hash);
+        String url = urlService.findUrlByHash(hash);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", url)
                 .build();

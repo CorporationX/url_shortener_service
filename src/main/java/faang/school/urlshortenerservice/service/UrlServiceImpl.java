@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -31,8 +32,15 @@ public class UrlServiceImpl implements UrlService{
     }
 
     @Override
-    public Optional<Url> findUrlByHash(String hash) {
-        return urlRepository.findById(hash);
+    public String findUrlByHash(String hash) {
+        urlHashCacheService.getUrlByHash(hash);
+        Optional<Url> urlFromDb = urlRepository.findById(hash);
+        if(urlFromDb.isPresent()) {
+            urlHashCacheService.cacheHashUrl(hash, urlFromDb.get().getUrl());
+            return urlFromDb.get().getUrl();
+        } else{
+            throw new NoSuchElementException();
+        }
     }
     @Override
     public Url createUrl (Url url){

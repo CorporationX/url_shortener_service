@@ -18,7 +18,6 @@ import java.util.Optional;
 public class UrlHashCacheService {
     private static final String KEY = "hash_url_map";
     private final RedisConfig redisConfig;
-    private final UrlService urlService;
 
     public RedissonClient connectionToRedis() {
         Config config = new Config();
@@ -51,11 +50,6 @@ public class UrlHashCacheService {
         String url = hashUrlMap.get(hash);
         if (url != null) {
             return url;
-        }
-        Optional<Url> urlFromDb = urlService.findUrlByHash(hash);
-        if(urlFromDb.isPresent()) {
-            cacheHashUrl(hash, urlFromDb.get().getUrl());
-            return urlFromDb.get().getUrl();
         } else{
             throw new NoSuchElementException();
         }
