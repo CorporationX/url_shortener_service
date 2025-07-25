@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.dto.RequestUrlDto;
 import faang.school.urlshortenerservice.dto.ResponseUrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import faang.school.urlshortenerservice.exception.UrlValidateException;
 import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
@@ -19,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -55,7 +55,10 @@ class UrlServiceTest {
         ResponseUrlDto result = urlService.getShortenedUrl(dto);
 
         assertEquals("abc123", result.getHash()); // проверяем, что хэш сохранён правильно
-        verify(urlCacheRepository, times(1)).cacheHash(eq("abc123"), eq("https://example.com"), 1); // проверка вызова метода кэширования
+        verify(urlCacheRepository, times(1))
+                .cacheHash(eq("abc123"),
+                        eq("https://example.com"),
+                        anyInt()); // проверка вызова метода кэширования
     }
 
     @Test

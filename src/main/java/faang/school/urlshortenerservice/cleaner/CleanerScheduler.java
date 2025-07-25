@@ -23,7 +23,7 @@ public class CleanerScheduler {
         try {
             List<String> hashes = urlRepository.removeOldUrlsToHash();
             log.info("Removed old urls from hashes: {}", hashes);
-            hashes.forEach(urlCacheRepository::deleteUrl);
+            urlCacheRepository.deleteUrl(hashes);
             log.info("Old urls removed");
         } catch (Exception e) {
             log.error("Error when cleaning:", e);
