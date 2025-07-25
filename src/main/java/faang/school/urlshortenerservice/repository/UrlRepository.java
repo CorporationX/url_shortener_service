@@ -21,4 +21,5 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     WHERE  u.expiration_time < NOW()
             """)
     Integer countOfOldUrl();
+    String findByUrl(String hash);
 }

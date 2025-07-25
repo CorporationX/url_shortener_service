@@ -34,4 +34,11 @@ public class Url {
 
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
+
+    @Override
+    public String toString() {
+        return "Url{" +
+                "url='" + url + '\'' +
+                '}';
+    }
 }

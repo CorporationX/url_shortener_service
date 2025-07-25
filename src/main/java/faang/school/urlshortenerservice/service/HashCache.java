@@ -39,8 +39,8 @@ public class HashCache {
     public RedissonClient connectionToRedis() {
         Config config = new Config();
         config.useSingleServer()
-                .setPassword(redisConfig.getPassword())
-                .setAddress("redis://127.0.0.1:6379");
+                //.setPassword(redisConfig.getPassword())
+                .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
 
         return Redisson.create(config);
     }
@@ -48,9 +48,6 @@ public class HashCache {
     public void saveToRedisHash() {
         List<Hash> hashes = hashService.deleteHashFromDataBase();
 
-        for (int i = 0; i < hashes.size(); i++) {
-            hashAtomicReference.set(i, hashes.get(i));
-        }
         RedissonClient redisson = connectionToRedis();
 
         RList<Hash> hashRList = redisson.getList(KEY);
@@ -58,7 +55,7 @@ public class HashCache {
         addedToRedis(hashes, hashRList);
     }
 
-    public void checkMemoryRedis () {
+    public void checkMemoryRedis() {
         RList<Hash> hashRList = connectionToRedis().getList(KEY);
 
         if (hashRList.size() < sizeAtomicReference * 0.20) {
@@ -73,8 +70,7 @@ public class HashCache {
     }
 
     private void addedToRedis(List<Hash> hashes, RList<Hash> hashRList) {
-        for (int i = 0; i < hashes.size(); i++) {
-            Hash hash = hashAtomicReference.get(i);
+        for (Hash hash : hashes) {
             if (hash != null) {
                 hashRList.add(hash);
             }
@@ -82,30 +78,3 @@ public class HashCache {
     }
 
 }
-
-
-/*
-HashCache хранит себе структуру данных, в которой и будут кэшироваться хэши.
-Она должна быть потокобезопасной и иметь удобный интерфейс для получения ровно одного случайного хэша.
-Используем готовое решение из пакета concurrency.
-Нужно подумать, какую структуру данных выбрать. Подсказка: это не ConcurrentHashMap.
-Её размер должен определяться из конфига.
-
-HashCache содержит в себе ExecutorService бин для запуска асинхронных задач.
-
-Этот ExecutorService бин создаётся в отдельной конфигурации бинов.
-Его размер и размер его очереди задач задаётся из конфига.
-
-Если количество доступных элементов в структуре данных внутри HashCache больше 20% от её максимального размера,
-то метод getHash() в классе HashCache просто возвращает первый элемент на поверхности этой коллекции.
-Значение процентов хранится в конфиге.
-
-Если количество элементов в ней менее 20%, то РОВНО ОДИН РАЗ,
-асинхронно через ExecutorService запускается получение хэшей из HashRepository,
-и заполнение ими внутренней коллекции HashCache. РОВНО ОДИН РАЗ значит,
-что никакой другой поток не должен ещё раз запустить эту активность,
-пока она не завершилась полностью после предыдущего запуска.
-Т.е. здесь должен быть механизм эксклюзивного доступа.
-Также здесь происходит асинхронный запуск HashGenerator, который генерирует дополнительные хэши в БД,
-раз уж мы потащили пачку в память.
- */
