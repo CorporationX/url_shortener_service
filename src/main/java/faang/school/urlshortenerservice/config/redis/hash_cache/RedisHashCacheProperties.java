@@ -6,10 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "spring.data.redis.hash-cache.variables")
+@ConfigurationProperties(prefix = "spring.data.redis.hash-cache")
 public class RedisHashCacheProperties {
     private String key;
     private int hashLength;
     private long batchSize;
     private int capacity;
+    int port;
+    String host;
 }

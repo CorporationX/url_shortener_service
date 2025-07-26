@@ -27,17 +27,15 @@ spring:
   data:
     redis:
       hash-cache:
-        variables:
-          key: "short_url_hashes"
-          hash-length: 6
-          batch-size: 10000
-          capacity: 250000
+        key: "short_url_hashes"
+        hash-length: 6
+        batch-size: 10000
+        capacity: 250000
         port: 6379
         host: localhost
       url-hash-cache:
-        variables:
-          key: "full_url_hashes"
-          capacity: 10000
+        key: "full_url_hashes"
+        capacity: 10000
         port: 6380
         host: localhost
 
@@ -59,4 +57,4 @@ server:
 
 logging:
   level:
-    root: info
+    root: debug
