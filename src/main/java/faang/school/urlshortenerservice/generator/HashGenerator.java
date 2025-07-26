@@ -32,7 +32,6 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-    @Scheduled(cron = "${hash.schedule.cron:0 0/5 * * * ?}")
     public void generateHashes() {
         List<Long> nextRange = hashRepository.getUniqueNumbers(range);
         List<String> hashes = nextRange.stream()

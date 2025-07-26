@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService {
-    private final UrlCacheService cacheService;
+    private final UrlCacheService urlCacheService;
     private final HashCache hashCache;
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
@@ -36,7 +36,7 @@ public class UrlServiceImpl implements UrlService {
         String hash = hashCache.getHash().getHash();
         Url url = new Url(hash, longUrl);
         urlRepository.save(url);
-        cacheService.saveNewPair(hash, longUrl);
+        urlCacheService.saveNewPair(hash, longUrl);
         String baseUrl = getBaseUrl(request);
         String shortUrl = baseUrl + "/redirect/" + hash;
         log.info("Short URL created: {} -> {}", hash, longUrl);
@@ -55,7 +55,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getLongUrl(String hash) {
-        String url = cacheService.getByHash(hash);
+        String url = urlCacheService.getByHash(hash);
         if (url != null) {
             return url;
         }
@@ -77,6 +77,6 @@ public class UrlServiceImpl implements UrlService {
         log.info("Removed {} lines from urls", deletedHashes.size());
         hashRepository.saveAll(deletedHashes);
         log.info("Added {} lines to hash table", deletedHashes.size());
+        deletedHashes.forEach(urlCacheService::deletePairByHash);
     }
-
 }
