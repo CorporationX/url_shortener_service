@@ -1,0 +1,268 @@
+
+# Упрощенный конфиг без распределения и failover
+
+version: '3.8' # Используем версию 3.8 для поддержки всех функций
+
+services:
+
+  # Redis для HashCache
+  redis-hash-cache:
+    image: redis:latest # Используем последнюю стабильную версию Redis
+    container_name: redis-hash-cache
+    ports:
+      - "6379:6379" # Пробрасываем порт на хост для доступа из IDE
+
+  # Redis для UrlHashCache (на другом порту)
+  redis-url-hash-cache:
+    image: redis:latest
+    container_name: redis-url-hash-cache
+    command:
+      - redis-server
+      - --appendonly yes
+      - --notify-keyspace-events "Exe" # E-Events x-expired(TTL) e-evicted(LFU)
+    ports:
+      - "6380:6379"
+
+  # Cassandra
+  cassandra:
+    image: cassandra:latest # Используем последнюю стабильную версию Cassandra
+    container_name: cassandra
+    ports:
+      - "9042:9042" # Пробрасываем стандартный порт Cassandra на хост
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCassandraCluster # Имя кластера Cassandra
+      - CASSANDRA_DC=datacenter1 # Центр обработки данных
+      - CASSANDRA_RACK=rack1 # Стойка
+
+  # PostgreSQL
+  postgres:
+    image: postgres:13.3 # Используем версию 13.3, как вы указали ранее
+    container_name: shortener_postgres_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=shortener_postgres_db
+    ports:
+      - '5432:5432' # Пробрасываем стандартный порт PostgreSQL на хост
+
+
+#MASTER-REPLICA // url-shortener-services in the same Docker-container
+
+#version: '1'
+#services:
+
+#  app:
+#    build: . # Указывает Docker на текущую директорию (где находится Dockerfile) для сборки образа
+#    container_name: shortener-app # Имя контейнера для вашего приложения
+#    ports:
+#      - "8080:8080" # Пробрасываем порт 8080 контейнера на порт 8080 вашей хост-машины
+#    environment:
+#      # Переменные окружения для конфигурации Spring Boot внутри контейнера
+#      # Используем ИМЕНА СЕРВИСОВ Docker Compose для подключения к другим контейнерам
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shortener_postgres_db # 'postgres' - это имя сервиса PostgreSQL
+#      SPRING_DATASOURCE_USERNAME: user
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_DATA_REDIS_SENTINEL_MASTER: mymaster
+#      SPRING_DATA_REDIS_SENTINEL_NODES: redis-sentinel:26379 # 'redis-sentinel' - это имя сервиса Sentinel
+#      SPRING_DATA_REDIS_PASSWORD: your_redis_password # Пароль для Redis
+#      # Добавьте другие необходимые переменные окружения, если они у вас есть в application.yaml
+#      # Например:
+#      # APP_SCHEDULING_HASH_GENERATION_CRON: "0 0 * * * *"
+#    depends_on:
+#      - redis-sentinel # Убедитесь, что Sentinel запущен перед приложением
+#      - postgres     # Убедитесь, что PostgreSQL запущен перед приложением
+#    networks:
+#      - redis_net # Приложение должно быть в той же сети, что и Redis/Postgres
+
+#  redis-master:
+#    image: redis:latest
+#    container_name: redis-master
+#    # Включаем AOF(Append-Only File) и устанавливаем пароль
+#    command:
+#      - redis-server
+#      - --appendonly yes
+#      - --masterauth your_redis_password
+#      - --requirepass your_redis_password
+#      - --replica-announce-ip redis-master # Важно для Sentinel
+#      - --replica-announce-port 6379
+#      - --bind 0.0.0.0 # Убедитесь, что слушает на всех интерфейсах
+#    ports:
+#      - "6379:6379"
+#    # Копирование данных на локальном хосте
+#    # При перезагрузке, восстанавливает сохраненные данные и запрашивает новые(накопившиеся за время отказа)
+#    volumes:
+#      - redis_master_data:/data
+#    # Все Redis-сервисы в одной сети
+#    networks:
+#      - redis_net
+#
+#  redis-slave:
+#    image: redis:latest
+#    container_name: redis-slave
+#    command:
+#      - redis-server
+#      - --replicaof redis-master 6379
+#      - --appendonly yes
+#      - --masterauth your_redis_password
+#      - --requirepass your_redis_password
+#      - --replica-announce-ip redis-slave # Важно для Sentinel
+#      - --replica-announce-port 6379
+#      - --bind 0.0.0.0 # Убедитесь, что слушает на всех интерфейсах
+#    depends_on:
+#      - redis-master
+#    volumes:
+#      - redis_slave_data:/data
+#    networks:
+#      - redis_net
+#
+#  # Redis Sentinels (минимум 3 для кворума на проде)
+#  redis-sentinel:
+#    image: redis:latest
+#    container_name: redis-sentinel
+#    command:
+#      - redis-sentinel
+#      - /etc/redis/sentinel_config/sentinel.conf
+#    # Файл конфигурации для Sentinel
+#    volumes:
+#      - ./sentinel_config:/etc/redis/sentinel_config
+#    depends_on:
+#      - redis-master
+#      - redis-slave
+#    networks:
+#      - redis_net
+#    ports:
+#      - "26379:26379"
+#
+#  postgres:
+#    image: postgres:13.3
+#    container_name: shortener_postgres_db
+#    environment:
+#      - POSTGRES_USER=user
+#      - POSTGRES_PASSWORD=password
+#      - POSTGRES_DB=shortener_postgres_db
+#    ports:
+#      - '5432:5432'
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data # Том для сохранения данных PostgreSQL
+#    networks:
+#      - redis_net
+#
+#volumes:
+#  redis_master_data:
+#  redis_slave_data:
+#  postgres_data:
+#
+#networks:
+#  redis_net: # Отдельная сеть для Redis-кластера
+#    driver: bridge
+
+#====================================================================
+
+#REDIS CLUSTER
+
+#redis-node-1: &redis-node-config # Якорь для переиспользования конфигурации
+#  image: redis:6.2-alpine # Или redis:latest, redis/redis-stack, но alpine легче
+#  command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes --requirepass your_redis_password --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --port 6379
+#  volumes:
+#    - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#    - redis-node-1-data:/data
+#  networks:
+#    - redis_cluster_net # Все узлы кластера в одной сети
+#  ports:
+#    - "6379" # Redis Cluster автоматически выбирает свободный порт для внутренней коммуникации
+#  healthcheck: # Проверка готовности узла к кластеру
+#    test: ["CMD", "redis-cli", "-a", "your_redis_password", "ping"]
+#    interval: 1s
+#    timeout: 3s
+#    retries: 5
+#    start_period: 10s
+#
+#  redis-node-2:
+#    <<: *redis-node-config # Использование якоря
+#    container_name: redis-node-2
+#    volumes:
+#      - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#      - redis-node-2-data:/data
+#    ports:
+#      - "6380" # Отдельный порт для этого узла, если хотим доступ извне по этому порту
+#
+#  redis-node-3:
+#    <<: *redis-node-config
+#    container_name: redis-node-3
+#    volumes:
+#      - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#      - redis-node-3-data:/data
+#    ports:
+#      - "6381"
+#
+#  redis-node-4:
+#    <<: *redis-node-config
+#    container_name: redis-node-4
+#    volumes:
+#      - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#      - redis-node-4-data:/data
+#    ports:
+#      - "6382"
+#
+#  redis-node-5:
+#    <<: *redis-node-config
+#    container_name: redis-node-5
+#    volumes:
+#      - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#      - redis-node-5-data:/data
+#    ports:
+#      - "6383"
+#
+#  redis-node-6:
+#    <<: *redis-node-config
+#    container_name: redis-node-6
+#    volumes:
+#      - ./redis/redis-node.conf:/usr/local/etc/redis/redis.conf
+#      - redis-node-6-data:/data
+#    ports:
+#      - "6384"
+#
+#  # Конфигурационный сервис для инициализации кластера
+#  redis-cluster-init:
+#    image: redis:6.2-alpine
+#    container_name: redis-cluster-init
+#    command: >
+#      sh -c "
+#        sleep 5; # Ждем, пока все ноды запустятся
+#        echo 'yes' | redis-cli -a your_redis_password --cluster create redis-node-1:6379 redis-node-2:6379 redis-node-3:6379 redis-node-4:6379 redis-node-5:6379 redis-node-6:6379 --cluster-replicas 1
+#      "
+#    depends_on:
+#      - redis-node-1
+#      - redis-node-2
+#      - redis-node-3
+#      - redis-node-4
+#      - redis-node-5
+#      - redis-node-6
+#    networks:
+#      - redis_cluster_net
+
+#volumes:
+#  redis_node_1_data:
+#  redis_node_2_data:
+#  redis_node_3_data:
+#  redis_node_4_data:
+#  redis_node_5_data:
+#  redis_node_6_data:
+#  # ... (другие ваши тома) ...
+#
+#networks:
+#  redis_cluster_net:
+#    driver: bridge
+
+
+#redis-node.conf
+
+#bind 0.0.0.0
+#protected-mode no # Не рекомендуется для продакшена без фаервола
+#port 6379
+#cluster-enabled yes
+#cluster-config-file nodes.conf
+#cluster-node-timeout 5000
+#appendonly yes
+#masterauth your_redis_password
+#requirepass your_redis_password
