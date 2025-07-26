@@ -34,6 +34,8 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
@@ -53,6 +55,7 @@ app:
       lock-name: "cleaningUnusedTask"
       lock-at-least-for: "5m"
       lock-at-most-for: "10m"
+      period: 1y
 
 shedlock:
   enabled: true

@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.cache.HashCache;
+import faang.school.urlshortenerservice.hash.cache.HashCache;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
@@ -10,6 +10,7 @@ import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -29,6 +31,9 @@ public class UrlServiceImpl implements UrlService {
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
     private final HashRepository hashRepository;
+
+    @Value("${app.scheduler.clean-unused.period}")
+    private Period removeUnusedPeriod;
 
     @Override
     @Cacheable(key = "#hash")
@@ -46,15 +51,14 @@ public class UrlServiceImpl implements UrlService {
         Url urlToSave = urlMapper.toUrlModel(urlDto);
         urlToSave.setHash(cachedHash);
         urlRepository.save(urlToSave);
-        String requestBaseUrl = httpServletRequest.getRequestURL().toString()
-                .replace("url", "");
-        return new UrlDto(String.format("%s%s", requestBaseUrl, cachedHash));
+        String requestBaseUrl = httpServletRequest.getRequestURL().toString();
+        return new UrlDto(String.format("%s/%s", requestBaseUrl, cachedHash));
     }
 
     @Override
     @Transactional
     public void removeUnusedUrls() {
-        List<Url> oldUrls = urlRepository.findAllUrlsOlderThan(LocalDateTime.now().minusYears(1));
+        List<Url> oldUrls = urlRepository.findAllUrlsOlderThan(LocalDateTime.now().minus(removeUnusedPeriod));
         urlRepository.deleteAll(oldUrls);
         List<Hash> hashes = oldUrls.stream()
                 .map(oldUrl -> new Hash(oldUrl.getHash()))

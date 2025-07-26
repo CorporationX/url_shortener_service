@@ -1,7 +1,7 @@
-package faang.school.urlshortenerservice.cache;
+package faang.school.urlshortenerservice.hash.cache;
 
 import faang.school.urlshortenerservice.config.properties.CacheConfig;
-import faang.school.urlshortenerservice.generator.HashGenerator;
+import faang.school.urlshortenerservice.hash.generator.HashGenerator;
 import faang.school.urlshortenerservice.model.Hash;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class HashCache {
+public class HashCacheImpl implements HashCache {
     private final CacheConfig cacheConfig;
     private final HashGenerator hashGenerator;
 
@@ -28,6 +28,7 @@ public class HashCache {
         generateAndFillCacheAsync();
     }
 
+    @Override
     public String getHash() {
         if ((hashQueue.size() / cacheConfig.getCapacity()) * 100 < cacheConfig.getFillPercentage()) {
             if (isGeneratingHashes.compareAndSet(false, true)) {

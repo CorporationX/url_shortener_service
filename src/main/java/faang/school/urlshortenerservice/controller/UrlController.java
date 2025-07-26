@@ -19,7 +19,7 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "/url")
 public class UrlController {
     private final UrlService urlService;
 
@@ -33,7 +33,7 @@ public class UrlController {
                 .build();
     }
 
-    @PostMapping("/url")
+    @PostMapping
     public UrlDto shortenOriginalUrl(@RequestBody UrlDto urlDto, HttpServletRequest httpServletRequest) {
         log.debug("Getting short url for original url {} - Started", urlDto.getUrl());
         UrlDto shortUrlDto = urlService.getShortUrl(urlDto, httpServletRequest);
