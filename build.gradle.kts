@@ -60,6 +60,10 @@ dependencies {
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:6.3.1")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.3.1")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-core")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 tasks.withType<Test> {

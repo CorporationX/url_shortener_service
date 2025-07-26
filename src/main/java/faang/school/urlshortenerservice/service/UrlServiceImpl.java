@@ -8,6 +8,7 @@ import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import io.micrometer.core.annotation.Timed;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @Cacheable(key = "#hash")
+    @Timed(value = "findOriginalUrl.request.time", description = "Time taken to find original url")
     public String findOriginalUrl(String hash) {
         Url foundUrl = urlRepository.findById(hash)
                 .orElseThrow(() -> new UrlNotFoundException("Original url for hash %s was not found".formatted(hash)));
@@ -45,6 +47,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @CachePut(key = "#result.url.substring(#result.url.lastIndexOf('/') + 1)", value = "#urlDto.url")
+    @Timed(value = "getShortUrl.request.time", description = "Time taken to get short url")
     @Transactional
     public UrlDto getShortUrl(UrlDto urlDto, HttpServletRequest httpServletRequest) {
         String cachedHash = hashCache.getHash();
