@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.client;
+package faang.school.urlshortenerservice.config.client.feign;
 
 import faang.school.urlshortenerservice.config.context.UserContext;
 import feign.RequestInterceptor;
