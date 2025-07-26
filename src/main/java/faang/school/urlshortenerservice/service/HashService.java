@@ -110,24 +110,32 @@ public class HashService {
     }
 
     private List<Hash> getHashesFromSequence(long missingCount) {
-        List<CompletableFuture<List<Hash>>> futureBatchHash = LongStream.range(0, missingCount)
-                .boxed()
-                .collect(Collectors.groupingBy(i -> i / batchSize))
-                .values()
-                .stream()
-                .map(indexes -> CompletableFuture.supplyAsync(() -> {
-                    List<Long> numbers = hashRepository.getNextSequenceValues(indexes.size());
-                    return encodeBatch(numbers);
-                }, saveHashBatchExecutor))
-                .toList();
+        List<Integer> batches = splitIntoBatches(missingCount);
 
-        List<Hash> hashes = futureBatchHash.stream()
+        List<Hash> hashes = batches.stream()
+                .map(this::getHashesForBatchAsync)
                 .map(CompletableFuture::join)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
         Collections.shuffle(hashes);
-
         return hashes;
+    }
+
+    private List<Integer> splitIntoBatches(long count) {
+        return LongStream.range(0, count)
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / batchSize))
+                .values()
+                .stream()
+                .map(List::size)
+                .toList();
+    }
+
+    private CompletableFuture<List<Hash>> getHashesForBatchAsync(int batchSize) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Long> numbers = hashRepository.getNextSequenceValues(batchSize);
+            return encodeBatch(numbers);
+        }, saveHashBatchExecutor);
     }
 }
