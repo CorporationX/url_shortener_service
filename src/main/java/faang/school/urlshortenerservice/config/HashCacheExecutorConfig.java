@@ -10,15 +10,18 @@ import java.util.concurrent.Executors;
 @Configuration
 public class HashCacheExecutorConfig {
 
+    @Value("${hash.cache.pool-name:HashCache-}")
+    private String poolName;
+
     @Value("${hash.cache.pool-size:4}")
     private int poolSize;
 
     @Bean(name = "hashCacheExecutor")
     public Executor hashCacheExecutor() {
         return Executors.newFixedThreadPool(poolSize, runnable -> {
-            Thread t = new Thread(runnable);
-            t.setName("HashCache-" + t.getId());
-            return t;
+            Thread thread = new Thread(runnable);
+            thread.setName(poolName + thread.getId());
+            return thread;
         });
     }
 

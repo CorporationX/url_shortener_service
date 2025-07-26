@@ -9,7 +9,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Configuration
-@EnableAsync
 public class AsyncConfig {
 
     @Value("${hashgen.pool-size:4}")
@@ -18,9 +17,9 @@ public class AsyncConfig {
     @Bean(name = "hashGenExecutor")
     public Executor hashGenExecutor() {
         return Executors.newFixedThreadPool(poolSize, runnable -> {
-            Thread t = new Thread(runnable);
-            t.setName("HashGen-" + t.getId());
-            return t;
+            Thread thread = new Thread(runnable);
+            thread.setName("HashGen-" + thread.getId());
+            return thread;
         });
     }
 }
