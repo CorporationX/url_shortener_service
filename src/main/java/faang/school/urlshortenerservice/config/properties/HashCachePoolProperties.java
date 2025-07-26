@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.executors;
+package faang.school.urlshortenerservice.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record HashCachePoolProperties(
         int poolSize,
         int queueCapacity,
-        int awaitSeconds
+        int awaitSeconds,
+        String threadNamePrefix
 ) {
 }

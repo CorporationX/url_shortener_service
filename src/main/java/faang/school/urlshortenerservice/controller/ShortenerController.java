@@ -2,7 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.OriginalUrl;
 import faang.school.urlshortenerservice.dto.ShortUrl;
-import faang.school.urlshortenerservice.service.UrlServiceImpl;
+import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,20 +14,20 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/v1/shortener")
+@RequestMapping("${api.path}/shortener")
 @RequiredArgsConstructor
 public class ShortenerController {
-    private final UrlServiceImpl urlService;
+    private final UrlService urlService;
 
     @PostMapping
     public ShortUrl shorten(@RequestBody @Valid OriginalUrl originalUrl) {
-        String hash = urlService.shorten(originalUrl);
-        URI location = ServletUriComponentsBuilder
+        String hash = urlService.shorten(originalUrl.url());
+        URI shortUrl = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/{hash}")
                 .buildAndExpand(hash)
                 .toUri();
 
-        return new ShortUrl(location.toString());
+        return new ShortUrl(shortUrl.toString());
     }
 }

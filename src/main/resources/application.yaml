@@ -20,15 +20,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  mvc:
-#    servlet:
-#      path: "/api/v1"
+
+api:
+  path: "/api/v1"
 
 shortener:
   generator:
     unique-numbers-count: 20000
   encoder:
-    alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345678"
+    alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     length: 6
     multiplier: 15485863
   cache:
@@ -61,11 +61,12 @@ executors:
     pool-size: 4
     queue-capacity: 12
     await-seconds: 20
+    thread-name-prefix: "hash-gen-"
   hash-cache:
     pool-size: 4
     queue-capacity: 12
     await-seconds: 20
-
+    thread-name-prefix: "hash-cache-"
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

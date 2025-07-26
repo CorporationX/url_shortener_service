@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -18,32 +19,21 @@ public class UrlCacheRepository {
     private long ttlHours;
 
     public void save(String hash, String url) {
-        try {
-            redisTemplate.opsForValue().set(hash, url, ttlHours, TimeUnit.HOURS);
-            log.info("Saved data in Redis: hash='{}', URL='{}'", hash, url);
-        } catch (Exception e) {
-            log.error("Error occurred when trying to save data in Redis: {}", e.getMessage());
-        }
+        redisTemplate.opsForValue().set(hash, url, ttlHours, TimeUnit.HOURS);
+        log.debug("Saved data in Redis: hash='{}', URL='{}'", hash, url);
     }
 
-    public String get(String hash) {
-        try {
-            String url = redisTemplate.opsForValue().get(hash);
-            log.debug("Got data from Redis: hash='{}', URL='{}'", hash, url);
-            updateTtl(hash);
-            return url;
-        } catch (Exception e) {
-            log.error("Error occurred when trying to get data from Redis: {}", e.getMessage());
-            return null;
-        }
+    public Optional<String> get(String hash) {
+        String url = redisTemplate.opsForValue().get(hash);
+        log.debug("Got data from Redis: hash='{}', URL='{}'", hash, url);
+        updateTtl(hash);
+
+        return Optional.ofNullable(url);
     }
 
     private void updateTtl(String hash) {
-        try {
-            redisTemplate.expire(hash, ttlHours, TimeUnit.HOURS);
-            log.debug("TTL updated in Redis: hash='{}', URL='{}'", hash, ttlHours);
-        } catch (Exception e) {
-            log.error("Error occurred when trying to update TTL in Redis: {}", e.getMessage());
-        }
+        redisTemplate.expire(hash, ttlHours, TimeUnit.HOURS);
+        log.debug("TTL updated in Redis: hash='{}', URL='{}'", hash, ttlHours);
+
     }
 }

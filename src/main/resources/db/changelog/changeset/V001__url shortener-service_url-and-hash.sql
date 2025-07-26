@@ -11,6 +11,5 @@ CREATE TABLE url
         CHECK (url ~ '^https?://.*' OR url ~ '^[a-zA-Z][a-zA-Z0-9+.-]*://.*'),
     created_at timestamptz NOT NULL
 );
-CREATE INDEX idx_url_created_at_hash ON url(created_at, hash);
 
 CREATE SEQUENCE unique_number_seq START WITH 1 INCREMENT BY 1;

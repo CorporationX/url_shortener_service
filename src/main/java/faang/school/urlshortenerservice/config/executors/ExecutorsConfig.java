@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.config.executors;
 
+import faang.school.urlshortenerservice.config.properties.HashCachePoolProperties;
+import faang.school.urlshortenerservice.config.properties.HashGeneratorPoolProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,28 +12,28 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class ExecutorsConfig {
 
     @Bean(name = "hashGeneratorExecutor")
-    public ThreadPoolTaskExecutor hashGeneratorExecutor(HashGeneratorPoolProperties p) {
-        ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
-        ex.setCorePoolSize(p.poolSize());
-        ex.setMaxPoolSize(p.poolSize());
-        ex.setQueueCapacity(p.queueCapacity());
-        ex.setWaitForTasksToCompleteOnShutdown(true);
-        ex.setAwaitTerminationSeconds(p.awaitSeconds());
-        ex.setThreadNamePrefix("hash-gen-");
-        ex.initialize();
-        return ex;
+    public ThreadPoolTaskExecutor hashGeneratorExecutor(HashGeneratorPoolProperties properties) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(properties.poolSize());
+        executor.setMaxPoolSize(properties.poolSize());
+        executor.setQueueCapacity(properties.queueCapacity());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(properties.awaitSeconds());
+        executor.setThreadNamePrefix(properties.threadNamePrefix());
+        executor.initialize();
+        return executor;
     }
 
     @Bean(name = "hashCacheExecutor")
-    public ThreadPoolTaskExecutor hashCacheExecutor(HashCachePoolProperties p) {
-        ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
-        ex.setCorePoolSize(p.poolSize());
-        ex.setMaxPoolSize(p.poolSize());
-        ex.setQueueCapacity(p.queueCapacity());
-        ex.setWaitForTasksToCompleteOnShutdown(true);
-        ex.setAwaitTerminationSeconds(p.awaitSeconds());
-        ex.setThreadNamePrefix("hash-cache-");
-        ex.initialize();
-        return ex;
+    public ThreadPoolTaskExecutor hashCacheExecutor(HashCachePoolProperties properties) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(properties.poolSize());
+        executor.setMaxPoolSize(properties.poolSize());
+        executor.setQueueCapacity(properties.queueCapacity());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(properties.awaitSeconds());
+        executor.setThreadNamePrefix(properties.threadNamePrefix());
+        executor.initialize();
+        return executor;
     }
 }

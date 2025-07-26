@@ -1,6 +1,6 @@
-package faang.school.urlshortenerservice.service;
+package faang.school.urlshortenerservice.encoder;
 
-import faang.school.urlshortenerservice.config.EncoderProperties;
+import faang.school.urlshortenerservice.config.properties.EncoderProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,15 +11,15 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class Base62EncoderImpl implements Base62Encoder {
-    private final EncoderProperties props;
+    private final EncoderProperties properties;
 
     @Override
     public List<String> encode(List<Long> numbers) {
-        int base = props.base();
-        int length = props.length();
-        long space = props.space();
-        long multiplier = props.multiplier();
-        char[] alphabet = props.alphabet().toCharArray();
+        int base = properties.base();
+        int length = properties.length();
+        long space = properties.space();
+        long multiplier = properties.multiplier();
+        char[] alphabet = properties.alphabet().toCharArray();
 
         List<String> out = new ArrayList<>(numbers.size());
 

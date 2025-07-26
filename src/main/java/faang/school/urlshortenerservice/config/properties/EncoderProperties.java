@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config;
+package faang.school.urlshortenerservice.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -12,5 +12,5 @@ public record EncoderProperties(
         return alphabet.length();
     }
 
-    public long space() { return (long) Math.pow(base(), length); } // новый
+    public long space() { return (long) Math.pow(base(), length); }
 }

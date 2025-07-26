@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.config.shedlock;
+package faang.school.urlshortenerservice.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

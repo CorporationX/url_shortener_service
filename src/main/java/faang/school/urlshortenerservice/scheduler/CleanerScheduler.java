@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.scheduler;
 
-import faang.school.urlshortenerservice.config.CleanerProperties;
-import faang.school.urlshortenerservice.exception.CleanupException;
-import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.config.properties.CleanerProperties;
 import faang.school.urlshortenerservice.service.CleanupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +15,8 @@ import java.util.List;
 @Component
 @Slf4j
 public class CleanerScheduler {
-    private final UrlRepository urlRepository;
     private final CleanupService cleanupService;
-    private final CleanerProperties cleanerProps;
+    private final CleanerProperties properties;
 
     @Scheduled(cron = "${scheduler.cleaner.cron}")
     @SchedulerLock(
@@ -28,55 +25,25 @@ public class CleanerScheduler {
             lockAtMostFor = "${scheduler.cleaner.lock-at-most-for}"
     )
     public void cleanUp() {
-        log.info("Starting cleanup job for URLs older than {} days", cleanerProps.expiryDate());
+        LocalDateTime expiryDate = LocalDateTime.now().minusDays(properties.expiryDate());
+        log.info("Starting cleanup job for URLs older than {} days", expiryDate);
 
         try {
-            LocalDateTime expiryDate = LocalDateTime.now().minusDays(cleanerProps.expiryDate());
-
-            long totalExpired = urlRepository.countExpiredUrls(expiryDate);
-            if (totalExpired == 0) {
-                log.info("No expired URLs found");
-                return;
-            }
-
-            log.info("Found {} expired URLs to clean up. Processing in batches of {}",
-                    totalExpired, cleanerProps.batchSize());
-
-            long totalProcessed = processBatchCleanup(expiryDate);
-
-            log.info("Cleanup job completed successfully. Processed {} URLs", totalProcessed);
-
+            processBatchCleanup(expiryDate);
+            log.info("Cleanup job completed successfully.");
         } catch (Exception e) {
             log.error("Error during cleanup job execution", e);
-            throw new CleanupException("Failed to execute cleanup job", e);
         }
     }
 
-    private long processBatchCleanup(LocalDateTime cutoffDate) {
-        long totalProcessed = 0;
-        int batchCount = 0;
-        while (batchCount < cleanerProps.maxBatches()) {
-            try {
-                List<String> batchHashes = cleanupService.deleteExpiredBatch(
-                        cutoffDate, cleanerProps.batchSize());
-
-                if (batchHashes.isEmpty()) {
-                    log.info("No more expired URLs to process. Cleanup complete.");
-                    break;
-                }
-
-                cleanupService.returnHashesToPool(batchHashes);
-                totalProcessed += batchHashes.size();
-                batchCount++;
-
-                log.info("Processed batch {}/{}: {} URLs (total: {})",
-                        batchCount, cleanerProps.maxBatches(), batchHashes.size(), totalProcessed);
-
-            } catch (Exception e) {
-                log.error("Error processing batch {}", batchCount + 1, e);
-                batchCount++;
+    private void processBatchCleanup(LocalDateTime expiryDate) {
+        for (int i = 0; i < properties.maxBatches(); i++) {
+            List<String> batchHashes = cleanupService.deleteExpiredBatch(
+                    expiryDate, properties.batchSize());
+            if (batchHashes.isEmpty()) {
+                return;
             }
+            cleanupService.returnHashesToPool(batchHashes);
         }
-        return totalProcessed;
     }
 }

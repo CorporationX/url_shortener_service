@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
-    Url findByUrl(String url);
+    Optional<Url> findByUrl(String url);
 
     @Modifying
     @Query(value = """
@@ -27,7 +28,4 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             """, nativeQuery = true)
     List<String> deleteExpiredUrlsBatch(@Param("expiryDate") LocalDateTime expiryDate,
                                         @Param("batchSize") int batchSize);
-
-    @Query(value = "SELECT COUNT(*) FROM url WHERE created_at < :expiryDate", nativeQuery = true)
-    long countExpiredUrls(@Param("expiryDate") LocalDateTime expiryDate);
 }

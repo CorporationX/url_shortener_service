@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.config.shedlock;
 
+import faang.school.urlshortenerservice.config.properties.ShedLockProperties;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;

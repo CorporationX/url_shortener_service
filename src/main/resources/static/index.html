@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сокращение ссылок</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input[type="url"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Сократи ссылку!</h1>
+    <input type="url" id="originalUrl" placeholder="Вставьте длинную ссылку">
+    <button onclick="shortenUrl()">Сократить</button>
+    <div id="result"></div>
+</div>
+<script>
+    async function shortenUrl() {
+        const originalUrl = document.getElementById('originalUrl').value;
+        const resultDiv = document.getElementById('result');
+
+        try {
+            const response = await fetch('/api/v1/shortener', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': '1'
+                },
+                body: JSON.stringify({ url: originalUrl })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            resultDiv.innerHTML = `<a href="${data.url}" target="_blank">${data.url}</a>`;
+        } catch (error) {
+            console.error('Ошибка:', error);
+            resultDiv.innerHTML = 'Произошла ошибка при сокращении ссылки.';
+        }
+    }
+</script>
+</body>
+</html>

@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class FilterConfig {
+public class UserFilterConfig {
     @Bean
-    public FilterRegistrationBean<UserHeaderFilter> userFilter(UserHeaderFilter f) {
-        FilterRegistrationBean<UserHeaderFilter> reg = new FilterRegistrationBean<>(f);
+    public FilterRegistrationBean<UserHeaderFilter> userFilter(UserHeaderFilter filter) {
+        FilterRegistrationBean<UserHeaderFilter> reg = new FilterRegistrationBean<>(filter);
         reg.addUrlPatterns("/api/*");
 
         return reg;
