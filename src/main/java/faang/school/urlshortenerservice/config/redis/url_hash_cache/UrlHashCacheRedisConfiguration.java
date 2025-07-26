@@ -1,6 +1,8 @@
 package faang.school.urlshortenerservice.config.redis.url_hash_cache;
 
 import faang.school.urlshortenerservice.redis.RedisKeyExpirationListener;
+import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
+import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +66,9 @@ public class UrlHashCacheRedisConfiguration {
     }
 
     @Bean
-    public RedisKeyExpirationListener redisKeyExpirationListener(RedisTemplate<String, String> urlHashCacheRedisTemplate) {
-        return new RedisKeyExpirationListener(urlHashCacheRedisTemplate);
+    public RedisKeyExpirationListener redisKeyExpirationListener(RedisTemplate<String, String> urlHashCacheRedisTemplate,
+                                                                 UrlHashRepository urlHashRepository,
+                                                                 PreparedUrlHashRepository preparedUrlHashRepository) {
+        return new RedisKeyExpirationListener(urlHashCacheRedisTemplate, urlHashRepository, preparedUrlHashRepository);
     }
 }

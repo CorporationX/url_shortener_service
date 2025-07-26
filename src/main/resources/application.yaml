@@ -57,4 +57,4 @@ server:
 
 logging:
   level:
-    root: debug
+    root: info

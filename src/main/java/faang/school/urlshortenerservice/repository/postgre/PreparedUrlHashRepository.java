@@ -27,5 +27,13 @@ public interface PreparedUrlHashRepository extends JpaRepository<PreparedUrlHash
             """, nativeQuery = true)
     int markHashesAsTaken(Set<String> hashes);
 
+    @Modifying
+    @Query(value = """
+                UPDATE prepared_hashes
+                SET taken = false
+                WHERE hash = :hash
+            """, nativeQuery = true)
+    int markHashesAsUntaken(String hash);
+
     long count();
 }

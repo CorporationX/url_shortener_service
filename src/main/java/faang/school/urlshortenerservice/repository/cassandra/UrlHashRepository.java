@@ -10,4 +10,7 @@ public interface UrlHashRepository extends CassandraRepository<UrlHash, String> 
 
     @Query("SELECT full_url FROM urls WHERE hash = ?0")
     String findByHash(String hash);
+
+    @Query("UPDATE urls SET full_url = null WHERE hash = ?0")
+    String freeReusedEntityByHash(String hash);
 }
