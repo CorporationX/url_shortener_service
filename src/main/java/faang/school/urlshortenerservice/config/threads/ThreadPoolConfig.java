@@ -10,7 +10,7 @@ public class ThreadPoolConfig {
     @Bean
     public ThreadPoolTaskExecutor taskExecutor(ThreadPoolProperties threadPoolProperties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(threadPoolProperties.coreSize());
+        executor.setCorePoolSize(threadPoolProperties.size());
         executor.setMaxPoolSize(threadPoolProperties.maxSize());
         executor.setThreadNamePrefix(threadPoolProperties.prefix());
         executor.initialize();

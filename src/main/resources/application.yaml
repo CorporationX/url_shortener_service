@@ -30,8 +30,8 @@ spring:
         variables:
           key: "short_url_hashes"
           hash-length: 6
-          batch-size: 1000
-          capacity: 5000
+          batch-size: 10000
+          capacity: 250000
         port: 6379
         host: localhost
       url-hash-cache:
@@ -45,8 +45,8 @@ spring:
   task:
     execution:
       pool:
-        size: 2
-        max-size: 5
+        size: 5
+        max-size: 8
         prefix: url_shortener_thread_pool
 
 cron:

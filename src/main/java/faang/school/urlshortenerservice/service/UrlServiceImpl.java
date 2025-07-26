@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.cache.UrlHashCache;
 import faang.school.urlshortenerservice.entity.UrlHash;
 import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
 import faang.school.urlshortenerservice.scheduler.HashGeneratorScheduler;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,36 +26,14 @@ public class UrlServiceImpl implements UrlService {
         String hash = extractHashFromShortUrl(shortUrl);
 
         if (hash == null) {
-            throw new IllegalArgumentException(String.format("Wasn't able to extract hash from short url: %s", shortUrl));
+            throw new IllegalArgumentException(
+                    String.format("Wasn't able to extract hash from short url: %s", shortUrl));
         }
 
         String fullUrl = urlHashCache.get(hash);
-        if (fullUrl != null) {
-            log.info("Full URL for hash {} retrieved from cache: {}", shortUrl, fullUrl);
-            return fullUrl;
-        }
 
-        // Если не в кэше, ищем в Cassandra
-        String urlHash = urlHashRepository.findByHash(hash);
-//                .orElseThrow(() -> {
-//                    log.warn("Short URL {} not found in Cassandra.", shortUrl);
-//                    return new EntityNotFoundException("Short URL not found");
-//                });
-
-        // Кладем найденный URL в кэш для будущих запросов (с TTL)
-//        urlHashCache.put(urlHash.getHash(), urlHash.getFullUrl(), 120); // TTL 120 секунд
-        log.info("Full URL for hash {} retrieved from Cassandra and cached: {}", shortUrl, urlHash);
-        return urlHash;
-    }
-
-    private String extractHashFromShortUrl(String shortUrl) {
-        if (shortUrl.startsWith(DOMAIN_URL)) {
-            String hash = shortUrl.substring(DOMAIN_URL.length());
-            log.info("returning hash: {} from shortUrl: {}", hash, shortUrl);
-            return hash;
-        }
-
-        return null;
+        log.info("Full URL for hash {} retrieved from Cassandra and cached: {}", shortUrl, fullUrl);
+        return fullUrl;
     }
 
     // Заменить на ДТО что-бы повесить проверку на URL
@@ -66,7 +43,7 @@ public class UrlServiceImpl implements UrlService {
 
         if (hashCache.getCapacity() / 10 > hashCache.getCurrentSize()) {
             log.info("{}/{}", hashCache.getCapacity(), hashCache.getCurrentSize());
-            hashGeneratorScheduler.generateBatch();
+            hashGeneratorScheduler.triggerGeneration();
         }
 
         String shortUrl = shortenFullUrl(hash);
@@ -79,13 +56,20 @@ public class UrlServiceImpl implements UrlService {
         // UrlHashCache
         urlHashCache.put(hash, fullUrl, 120);
 
-        log.info("In UrlHashCache -> {}", urlHashCache.getSize());
-
-        log.info("returning short_url: {}", shortUrl);
         return shortUrl;
     }
 
-    private String shortenFullUrl(String hash){
+    private String shortenFullUrl(String hash) {
         return "mylink.com/" + hash;
+    }
+
+    private String extractHashFromShortUrl(String shortUrl) {
+        if (shortUrl.startsWith(DOMAIN_URL)) {
+            String hash = shortUrl.substring(DOMAIN_URL.length());
+            log.info("returning hash: {} from shortUrl: {}", hash, shortUrl);
+            return hash;
+        }
+
+        return null;
     }
 }

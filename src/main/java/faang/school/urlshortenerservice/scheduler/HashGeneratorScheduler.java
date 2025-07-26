@@ -6,6 +6,7 @@ import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashReposi
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,18 +25,24 @@ public class HashGeneratorScheduler {
     @PostConstruct
     protected void init() {
         indexOfPreparedHashes = preparedUrlHashRepository.count();
-        generateBatch();
+        triggerCacheFilling();
     }
 
     @Scheduled(cron = "${cron.hash_generator.every_hour}")
     protected void generateScheduledBatch() {
-        generateBatch();
+        triggerCacheFilling();
     }
 
-    public void generateBatch() {
+    @Async("taskExecutor")
+    public void triggerGeneration() {
+        log.info("{}: Triggered new hashes generation from HashCache", Thread.currentThread().getName());
+        triggerCacheFilling();
+    }
+
+    private void triggerCacheFilling() {
         long currentCacheSize = hashCache.getCurrentSize();
         if (currentCacheSize < properties.getCapacity()) {
-            log.info("CurrentCacheSize: {} | CACHE_CAPACITY: {}", currentCacheSize, properties.getCapacity());
+            log.info("{}: CurrentCacheSize: {} | CACHE_CAPACITY: {}", Thread.currentThread().getName(), currentCacheSize, properties.getCapacity());
             indexOfPreparedHashes = hashGenerator.generateMoreHashes(indexOfPreparedHashes,
                     properties.getCapacity() - currentCacheSize);
         } else {

@@ -1,14 +1,14 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.redis.url_hash_cache.RedisUrlHashCacheProperties;
+import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -19,6 +19,7 @@ public class UrlHashCache {
     private static final String URL_MAPPINGS_COUNT_KEY = "url_mappings_count";
 
     private final RedisUrlHashCacheProperties properties;
+    private final UrlHashRepository urlHashRepository;
     @Qualifier("urlHashCacheRedisTemplate")
     private final RedisTemplate<String, String> urlHashCacheRedisTemplate;
 
@@ -50,6 +51,13 @@ public class UrlHashCache {
         } else {
             // go to DB find there if not throw error
             log.info("Hash: {} not found in URL mappings cache (might have expired).", hash);
+            // Если не в кэше, ищем в Cassandra
+            fullUrl = urlHashRepository.findByHash(hash);
+            if (fullUrl == null || fullUrl.isEmpty()) {
+                throw new EntityNotFoundException(String.format("Short URL %s not found in Cassandra either.", fullUrl));
+            }
+            // Кладем найденный URL в кэш для будущих запросов (с TTL)
+            put(hash, fullUrl, 120); // TTL 120 секунд
         }
         return fullUrl;
     }
