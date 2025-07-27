@@ -1,4 +1,11 @@
 spring:
+  redis:
+    port: 6379
+    host: localhost
+
+  cache:
+    type: redis
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -23,3 +30,31 @@ server:
 logging:
   level:
     root: info
+
+app:
+  short-url: https://short.adress/
+
+  hash:
+    length: 6
+    storage:
+      size: 100
+      refill_percentage: 20
+    cache:
+      size: 10
+      refill_percentage: 20
+
+  executor:
+    hash:
+      core-pool-size: 5
+      max-pool-size: 25
+      thread-name-prefix: 'HashGeneratorExecutor-'
+
+  job:
+    hash-cleaner:
+      cron: "* */5 * * * *"
+
+  redis-cache:
+    hash:
+      key-prefix: hash
+      ttl: 30
+
