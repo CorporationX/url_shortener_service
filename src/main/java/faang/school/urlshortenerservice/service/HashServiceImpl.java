@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HashServiceImpl implements HashService{
-    //@Value("${hash.batch}")
+    @Value("${hash.batch}")
     private int limit;
     private final HashRepository hashRepository;
     @Override
