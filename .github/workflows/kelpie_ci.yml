@@ -2,9 +2,9 @@ name: Vladimir's Shortener Service CI
 
 on:
     push:
-        branches: [ "kelpie-stream10-vladimir" ]
+        branches: [ "kelpie-stream10-vladimir", "kelpie-stream10-vladimir-develop" ]
     pull_request:
-        branches: [ "kelpie-stream10-vladimir" ]
+        branches: [ "kelpie-stream10-vladimir", "kelpie-stream10-vladimir-develop" ]
 
 jobs:
     build:
