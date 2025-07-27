@@ -15,20 +15,20 @@ public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Modifying
     @Query(value = """
-    WITH old AS (
-      SELECT hash
-      FROM url
-      WHERE created_at < (NOW() - :ageIntervalSql::INTERVAL)
-      LIMIT :batchSize
-      FOR UPDATE SKIP LOCKED
-    )
-    DELETE FROM url u
-    USING old o
-    WHERE u.hash = o.hash
-    RETURNING o.hash
-    """, nativeQuery = true)
-    List<String> deleteOldReturningHashes(
-            @Param("ageIntervalSql") String ageIntervalSql,
+            WITH old AS (
+              SELECT hash
+              FROM url
+              WHERE created_at < :cutoff
+              LIMIT :batchSize
+              FOR UPDATE SKIP LOCKED
+            )
+            DELETE FROM url u
+            USING old o
+            WHERE u.hash = o.hash
+            RETURNING o.hash
+            """, nativeQuery = true)
+    List<String> deleteOldHashes(
+            @Param("cutoff") LocalDateTime cutoff,
             @Param("batchSize") int batchSize
     );
 }

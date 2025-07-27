@@ -48,4 +48,6 @@ app:
     cleaner-cron: "0 0 0 * * ?"
   cleaner:
     batch-size: 500
-    age-interval: "INTERVAL '1 year'"
+    age-days: 365
+  cache:
+    url-ttl: 1h

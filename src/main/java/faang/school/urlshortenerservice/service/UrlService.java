@@ -8,7 +8,6 @@ import faang.school.urlshortenerservice.model.Url;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,19 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private final UrlCacheRepository cache;
-    private final UrlRepository repo;
+    private final UrlCacheRepository cacheRepository;
+    private final UrlRepository urlRepository;
     private final HashCache hashCache;
     private final UrlProperties baseUrl;
 
     @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
-        return cache.find(hash)
+        return cacheRepository.find(hash)
                 .orElseGet(() -> {
-                    Url entity = repo.findById(hash)
+                    Url entity = urlRepository.findById(hash)
                             .orElseThrow(() -> new UrlNotFoundException(hash));
                     String longUrl = entity.getUrl();
-                    cache.save(hash, longUrl);
+                    cacheRepository.save(hash, longUrl);
                     return longUrl;
                 });
     }
@@ -41,9 +40,9 @@ public class UrlService {
         Url entity = new Url();
         entity.setHash(hash);
         entity.setUrl(longUrl);
-        repo.save(entity);
+        urlRepository.save(entity);
 
-        cache.save(hash, longUrl);
+        cacheRepository.save(hash, longUrl);
 
         return baseUrl + "/" + hash;
     }
