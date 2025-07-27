@@ -17,6 +17,7 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             WHERE ctid IN (
                 SELECT ctid FROM url
                 WHERE expires_at < now()
+                FOR UPDATE SKIP LOCKED
             )
             RETURNING *;
             """)
