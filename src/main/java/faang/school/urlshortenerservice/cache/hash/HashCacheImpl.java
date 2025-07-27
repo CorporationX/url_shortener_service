@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,7 +29,7 @@ public class HashCacheImpl implements HashCache {
     @PostConstruct
     public void init() {
         this.freeHashes = new ArrayBlockingQueue<>(hashCacheConfig.getCapacity());
-        freeHashes.addAll(hashCacheService.getStartHashes());
+        offerHashesToQueue(hashCacheService.getStartHashes());
     }
 
     @Override
@@ -54,11 +55,21 @@ public class HashCacheImpl implements HashCache {
                 if (exception != null) {
                     log.error("Error during hash generation", exception);
                 } else if (hashes != null && !hashes.isEmpty()) {
-                    freeHashes.addAll(hashes);
+                    offerHashesToQueue(hashes);
                 }
             } finally {
                 isGenerating.set(false);
             }
         });
+    }
+
+    private void offerHashesToQueue (List<Hash> hashes){
+        for (Hash hash : hashes) {
+            if (!freeHashes.offer(hash)) {
+                log.warn("Queue is full, stopping adding hashes");
+                break;
+            }
+        }
+
     }
 }
