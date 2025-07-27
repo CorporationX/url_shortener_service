@@ -75,7 +75,7 @@ public class HashService {
     }
 
     private void generateHashBatchIfNeeded() {
-        if (!hashRepository.tryLock(lockId)) {
+        if (hashRepository.tryLock(lockId)) {
             long currentHashCount = hashRepository.count();
             if (checkCurrentPercent(currentHashCount)) {
                 getHashesFromSequenceAsync(tableSize - currentHashCount)
