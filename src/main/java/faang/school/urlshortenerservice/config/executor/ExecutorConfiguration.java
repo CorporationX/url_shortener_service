@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.config.executor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -14,7 +13,6 @@ public class ExecutorConfiguration {
 
     private final HashGeneratorExecutorProperties hashGeneratorExecutorProperties;
 
-    @Primary
     @Bean(name = "hashGeneratorExecutor")
     public ThreadPoolTaskExecutor hashGeneratorExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

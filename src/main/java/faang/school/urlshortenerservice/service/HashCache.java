@@ -26,9 +26,6 @@ public class HashCache {
 
     public String takeHash() {
         try {
-            if (hashQueue.isEmpty()) {
-                log.debug("Nothing to take");
-            }
             refillCacheIfDepleted();
             return hashQueue.take();
         } catch (InterruptedException e) {
