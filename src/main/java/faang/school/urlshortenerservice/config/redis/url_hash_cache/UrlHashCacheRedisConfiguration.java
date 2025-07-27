@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.config.redis.url_hash_cache;
 
-import faang.school.urlshortenerservice.redis.RedisKeyExpirationListener;
+import faang.school.urlshortenerservice.listener.redis.RedisKeyExpirationListener;
 import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
 import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashRepository;
 import lombok.RequiredArgsConstructor;

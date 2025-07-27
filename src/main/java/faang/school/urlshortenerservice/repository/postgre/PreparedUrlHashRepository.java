@@ -17,7 +17,7 @@ public interface PreparedUrlHashRepository extends JpaRepository<PreparedUrlHash
                 WHERE p.taken = false
                 LIMIT :limit
             """, nativeQuery = true)
-    Set<String> findUntakenHashes(int limit);
+    Set<String> findFreeHashes(int limit);
 
     @Modifying
     @Query(value = """
@@ -25,7 +25,7 @@ public interface PreparedUrlHashRepository extends JpaRepository<PreparedUrlHash
                 SET taken = true
                 WHERE hash IN (:hashes)
             """, nativeQuery = true)
-    int markHashesAsTaken(Set<String> hashes);
+    void markHashesAsTaken(Set<String> hashes);
 
     @Modifying
     @Query(value = """
@@ -33,7 +33,7 @@ public interface PreparedUrlHashRepository extends JpaRepository<PreparedUrlHash
                 SET taken = false
                 WHERE hash = :hash
             """, nativeQuery = true)
-    int markHashesAsUntaken(String hash);
+    void markHashAsReusable(String hash);
 
     long count();
 }

@@ -5,7 +5,6 @@ import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashReposi
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,28 +15,16 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class HashCache {
 
-    @Qualifier("hashCacheRedisTemplate")
     private final RedisTemplate<String, String> hashCacheRedisTemplate;
     private final PreparedUrlHashRepository preparedUrlHashRepository;
     private final RedisHashCacheProperties properties;
 
-    public Long addNewHashesToSet(Set<String> hashes) {
-        if (hashes == null || hashes.isEmpty()) {
-            return 0L;
-        }
-
-        Long addedCount = hashCacheRedisTemplate.opsForSet().add(properties.getKey(), hashes.toArray(new String[0]));
-        log.info("HashCache: Added {} new hashes into Redis Set: {}.", addedCount, properties.getKey());
-
-        return addedCount;
-    }
-
-    public String getAnyFirstHash() {
+    public String get() {
         String hash = hashCacheRedisTemplate.opsForSet().pop(properties.getKey());
 
         if (hash == null) {
-            log.info("HashCache: Redis Set {} is empty.", properties.getKey());
-            Set<String> newHash = preparedUrlHashRepository.findUntakenHashes(1);
+            log.info("Redis Set {} is empty.", properties.getKey());
+            Set<String> newHash = preparedUrlHashRepository.findFreeHashes(1);
             hash = newHash.stream()
                     .findFirst()
                     .orElseThrow(() -> new EntityNotFoundException("There are no available hashes right now"));
@@ -47,12 +34,23 @@ public class HashCache {
         return hash;
     }
 
+    public Long put(Set<String> hashes) {
+        if (hashes == null || hashes.isEmpty()) {
+            return 0L;
+        }
+
+        Long addedCount = hashCacheRedisTemplate.opsForSet().add(properties.getKey(), hashes.toArray(new String[0]));
+        log.info("Added {} new hashes into Redis Set: {}.", addedCount, properties.getKey());
+
+        return addedCount;
+    }
+
     public long getCurrentSize() {
         Long size = hashCacheRedisTemplate.opsForSet().size(properties.getKey());
         return size != null ? size : 0;
     }
 
-    public long getCapacity() {
-        return properties.getCapacity();
+    public boolean isNotEnoughHashes() {
+        return getCurrentSize() < properties.getCapacity() / 10;
     }
 }

@@ -19,8 +19,8 @@ public class HashCacheRedisConfiguration {
     @Bean("hashCacheRedisConnectionFactory")
     public RedisConnectionFactory hashCacheRedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(properties.host);
-        config.setPort(properties.port);
+        config.setHostName(properties.getHost());
+        config.setPort(properties.getPort());
 
         return new LettuceConnectionFactory(config);
     }

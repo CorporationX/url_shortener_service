@@ -38,6 +38,7 @@ spring:
         capacity: 10000
         port: 6380
         host: localhost
+        ttl: 20
 
 
   task:

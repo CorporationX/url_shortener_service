@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.redis;
+package faang.school.urlshortenerservice.listener.redis;
 
 import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
 import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashRepository;
@@ -33,6 +33,6 @@ public class RedisKeyExpirationListener implements MessageListener {
         log.info("Key {} expired. Decremented URL mappings count to: {}", expiredKey, newCount);
 
         urlHashRepository.freeReusedEntityByHash(expiredKey);
-        preparedUrlHashRepository.markHashesAsUntaken(expiredKey);
+        preparedUrlHashRepository.markHashAsReusable(expiredKey);
     }
 }
