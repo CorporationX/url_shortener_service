@@ -1,6 +1,6 @@
-package faang.school.urlshortenerservice.cache.Url;
+package faang.school.urlshortenerservice.repository.cache;
 
-import faang.school.urlshortenerservice.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

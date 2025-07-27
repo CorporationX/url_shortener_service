@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortUrlDto {
@@ -19,4 +18,4 @@ public class ShortUrlDto {
     @NotNull(message = "Hash must be not null")
     @NotBlank(message = "Hash can not be Empty")
     private String hash;
-    }
+}

@@ -2,8 +2,10 @@ package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 
+import faang.school.urlshortenerservice.config.cache.HashCashProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,35 +24,28 @@ public class HashCacheImpl implements HashCache {
     private final ExecutorService hashCachePool;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
+    private final HashCashProperties hashCashProperties;
 
-    @Value("${hash.cache.min_percent}")
-    private int minPercent;
-    @Value("${hash.cache.max_cache_size}")
-    private int maxCacheSize;
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
     private final ReentrantLock lock = new ReentrantLock();
+
+    @PostConstruct
+    private void initCache() {
+        cache.addAll(hashRepository.getHashBatch());
+    }
 
     @Override
     public String getHash() {
         String hash = cache.poll();
-        if (hash != null) {
-            if (lessThenMin()) {
-                log.debug("Cache is less Then min. Will refill");
-                refillCache();
-            }
-            return hash;
+        if (lessThenMinCachePercent()) {
+            log.debug("Cache is less Then min cache percent. Will refill");
+            refillCache();
         }
-        log.warn("Cache is Empty, generate hashes");
-        return getHashNow();
+        return hash;
     }
 
-    private boolean lessThenMin() {
-        return cache.size() < (maxCacheSize / 100 * minPercent);
-    }
-    private String getHashNow() {
-        List<String> hashes = hashRepository.getHashBatch();
-        cache.addAll(hashes);
-        return cache.poll();
+    private boolean lessThenMinCachePercent() {
+        return cache.size() < (hashCashProperties.getMaxCacheSize() / 100 * hashCashProperties.getMinPercent());
     }
 
     private void refillCache() {
@@ -67,12 +62,12 @@ public class HashCacheImpl implements HashCache {
                     .thenRun(lock::unlock)
                     .exceptionally(throwable -> {
                         log.error("Cache refill failed", throwable);
-                        lock.unlock();
                         return null;
                     });
         } catch (Exception e) {
-            lock.unlock();
             log.error("Cache refill initialization failed", e);
+        } finally {
+            lock.unlock();
         }
     }
 }

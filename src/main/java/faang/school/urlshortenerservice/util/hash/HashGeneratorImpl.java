@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.util.hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import faang.school.urlshortenerservice.util.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +19,14 @@ import java.util.List;
 public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    private final TaskExecutor hashGeneratorPool;
 
     @Value("${hash.generate_batch_size}")
     private int generateBatchSize;
+
+    @PostConstruct
+    public void hashInit() {
+        generateBatch();
+    }
 
     @Override
     @Async("hashGeneratorPool")

@@ -27,19 +27,11 @@ public class Base62EncoderImpl implements Base62Encoder {
 
     @Override
     public List<String> encode(List<Long> numbers) {
-        if (numbers == null || numbers.isEmpty()) {
-            log.debug("Empty List for hash encode");
-            return Collections.emptyList();
-        }
         ByteBuffer byteBuffer = byteBufferThreadLocal.get();
         List<String> encodedHashes = new ArrayList<>(numbers.size());
         try {
             log.debug("Hash encode was started");
             for (Long number : numbers) {
-                if (number == null) {
-                    log.error("Encoding Error number is null");
-                    throw new IllegalArgumentException("Number can not be null");
-                }
                 byteBuffer.clear();
                 byte[] bytes = base62.encode(byteBuffer.putLong(number).array());
                 String hash = new String(bytes, StandardCharsets.UTF_8);

@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.service.url;
 
 import faang.school.urlshortenerservice.cache.HashCache;
-import faang.school.urlshortenerservice.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.entity.Url;
@@ -34,32 +34,23 @@ public class UrlServiceImpl implements UrlService {
     @Value("${url.short_prefix}")
     private String shortUrlPrefix;
 
-    @PostConstruct
-    public void hashInit() {
-        hashGenerator.generateBatch();
-    }
-
     @Transactional
     @Override
     public ShortUrlDto createShortUrl(UrlDto urlDto) {
-        log.debug("Url dto {}", urlDto);
-        if(!urlRepository.findByUrl(urlDto.getUrl()).isEmpty()){
-            String hash = urlRepository.findByUrl(urlDto.getUrl()).get(0).getHash();
+        log.debug("Received Dto {},", urlDto);
+        if(urlRepository.findByUrl(urlDto.getUrl()).isPresent()){
+            String hash = urlRepository.findByUrl(urlDto.getUrl()).get().getHash();
             String shortUrl = shortUrlPrefix + hash;
-            return (ShortUrlDto.builder()
-                    .shortUrl(shortUrl)
-                    .hash(hash).build());
+            return (new ShortUrlDto(shortUrl, hash));
         }
-        log.info("Start create Short Url");
+        log.info("Start create Short Url for Url: {}", urlDto.getUrl());
         String hash = hashCache.getHash();
         Url url = urlMapper.toEntity(urlDto);
         url.setHash(hash);
         urlRepository.save(url);
         String shortUrl = shortUrlPrefix + hash;
         urlCacheRepository.save(hash, url);
-        return (ShortUrlDto.builder()
-                .shortUrl(shortUrl)
-                .hash(hash).build());
+        return (new ShortUrlDto(shortUrl, hash));
     }
 
 
@@ -71,11 +62,10 @@ public class UrlServiceImpl implements UrlService {
                     hash);
             Url urlFromRepo = urlRepository.findById(hash)
                     .orElseThrow(() -> {
-                        log.error("Url for Hash: {} was not found in url repo",
-                                hash);
+                        String errorMessage = String.format("Url for Hash: %s was not found in url repo", hash);
+                        log.error(errorMessage);
 
-                        return new EntityNotFoundException();
-
+                        return new EntityNotFoundException(errorMessage);
                     });
             return urlMapper.tDto(urlFromRepo);
         }

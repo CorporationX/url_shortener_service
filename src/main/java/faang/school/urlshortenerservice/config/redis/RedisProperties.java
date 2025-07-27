@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class RedisProperties {
-    public String host;
-    public int port;
+    private String host;
+    private int port;
 }

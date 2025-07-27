@@ -11,16 +11,13 @@ import org.hibernate.validator.constraints.URL;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlDto {
     private String hash;
     @URL(message = """
-            Invalid URL, URL must start with http:// or https://,
-             and must have be valid URL
+            Invalid URL, URL must look like https://yourwebsite.com
             """)
-    @NotNull(message = "URL must be not Null")
     @NotBlank(message = "Url can not be Empty")
     private String url;
     private LocalDateTime createdAt;

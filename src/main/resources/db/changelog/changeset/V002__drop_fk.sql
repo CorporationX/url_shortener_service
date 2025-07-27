@@ -1,1 +1,0 @@
-ALTER TABLE urls DROP CONSTRAINT fk_hash;

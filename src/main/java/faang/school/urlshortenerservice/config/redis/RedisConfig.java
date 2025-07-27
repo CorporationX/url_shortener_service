@@ -41,8 +41,8 @@ public class RedisConfig {
     }
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisProperties.host,
-                redisProperties.port);
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisProperties.getHost(),
+                redisProperties.getPort());
         LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
                 .clientResources(ClientResources.builder()
                         .ioThreadPoolSize(6)
