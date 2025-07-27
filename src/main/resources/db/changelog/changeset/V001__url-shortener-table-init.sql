@@ -1,0 +1,14 @@
+CREATE SEQUENCE unique_number_seq
+START WITH 1
+INCREMENT BY 1;
+
+CREATE TABLE hash (
+    hash            VARCHAR(7) PRIMARY KEY
+);
+
+CREATE TABLE url (
+    hash            VARCHAR(6) PRIMARY KEY,
+    url             VARCHAR(128) NOT NULL,
+    created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    expiration_time TIMESTAMP NOT NULL
+);
