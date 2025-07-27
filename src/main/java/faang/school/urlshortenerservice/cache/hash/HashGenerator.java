@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.cache.hash;
 
 
-import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
 
-    @Value("${hash.batch-size:100}")
+    @Value("${hash.batch-size:10}")
     private int batchSize;
 
     @Transactional
@@ -30,6 +29,7 @@ public class HashGenerator {
         List<Long> nextBatch = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = nextBatch.stream()
                 .map(Base62::encode)
+                .map(hash -> hash.replaceFirst("^0+(?!$)", ""))
                 .collect(Collectors.toList());
         hashRepository.saveAll(hashes);
     }

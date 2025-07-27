@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @RequiredArgsConstructor
 public class HashCacheServiceImpl implements HashCacheService{
-    @Value("${hash.batch-size:100}")
+    @Value("${hash.batch-size:10}")
     private int batchSize;
 
     private final HashRepository hashRepository;

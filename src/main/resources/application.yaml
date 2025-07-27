@@ -36,7 +36,7 @@ logging:
     root: info
 
 hash:
-  batch-size: 1000
+  batch-size: 10
 
 hashgen:
   pool-size: 4

@@ -32,7 +32,7 @@ public class HashCacheImpl implements HashCache {
     }
 
     @Override
-    @Async("value = hashCacheExecutor")
+    @Async("hashCacheExecutor")
     public Hash getHash() {
         Hash hash = freeHashes.poll();
 
@@ -43,6 +43,7 @@ public class HashCacheImpl implements HashCache {
         }
         return hash;
     }
+
 
     private void fillHashesAsync() {
         if (!isGenerating.compareAndSet(false, true)) {
@@ -57,10 +58,6 @@ public class HashCacheImpl implements HashCache {
                 }
             } finally {
                 isGenerating.set(false);
-
-                if (freeHashes.size() < hashCacheConfig.getCapacity() * hashCacheConfig.getThresholdPercent()) {
-                    fillHashesAsync();
-                }
             }
         });
     }

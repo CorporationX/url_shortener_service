@@ -11,10 +11,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class UrlCacheServiceImpl implements UrlCacheService {
     @Value("${redis.ttl.seconds:3600}")
-    private final long redisTtlSeconds;
+    private long redisTtlSeconds;
 
     private final RedisTemplate<String, String> redisTemplate;
-
 
     @Override
     public void saveNewPair(String hash, String longUrl) {

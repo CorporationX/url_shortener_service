@@ -24,7 +24,7 @@ public class HashRepositoryImpl implements HashRepository {
 
     @Override
     public void saveAll(List<String> hashes) {
-        String sql = "INSERT INTO hash(hash) VALUES (?)";
+        String sql = "INSERT INTO hashes(hash) VALUES (?)";
         jdbcTemplate.batchUpdate(sql, hashes, hashes.size(),
                 (preparedStatement, hash) -> preparedStatement.setString(1, hash));
     }
