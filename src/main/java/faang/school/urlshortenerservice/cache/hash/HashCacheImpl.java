@@ -1,7 +1,8 @@
-package faang.school.urlshortenerservice.generator;
+package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.config.HashCacheConfig;
 import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.service.HashCacheService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class HashCacheImpl implements HashCache {
 
-    private final HashGenerator hashGenerator;
+    private final HashCacheService hashCacheService;
     private final HashCacheConfig hashCacheConfig;
 
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
@@ -27,7 +28,7 @@ public class HashCacheImpl implements HashCache {
     @PostConstruct
     public void init() {
         this.freeHashes = new ArrayBlockingQueue<>(hashCacheConfig.getCapacity());
-        freeHashes.addAll(hashGenerator.getStartHashes());
+        freeHashes.addAll(hashCacheService.getStartHashes());
     }
 
     @Override
@@ -44,22 +45,23 @@ public class HashCacheImpl implements HashCache {
     }
 
     private void fillHashesAsync() {
-        hashGenerator.getHashBatch().whenComplete((hashes, ex) -> {
+        if (!isGenerating.compareAndSet(false, true)) {
+            return;
+        }
+        hashCacheService.getHashBatchAsync().whenComplete((hashes, exception) -> {
             try {
-                if (ex != null) {
-                    log.error("Error during hash generation", ex);
+                if (exception != null) {
+                    log.error("Error during hash generation", exception);
                 } else if (hashes != null && !hashes.isEmpty()) {
                     freeHashes.addAll(hashes);
                 }
-                if (freeHashes.size() < hashCacheConfig.getCapacity() * (1 - hashCacheConfig.getThresholdPercent())) {
-                    fillHashesAsync();
-                }
             } finally {
-                if (freeHashes.size() >= hashCacheConfig.getCapacity() * (1 - hashCacheConfig.getThresholdPercent())) {
-                    isGenerating.set(false);
+                isGenerating.set(false);
+
+                if (freeHashes.size() < hashCacheConfig.getCapacity() * hashCacheConfig.getThresholdPercent()) {
+                    fillHashesAsync();
                 }
             }
         });
     }
-
 }
