@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -18,6 +17,16 @@ import java.util.List;
 @Slf4j
 public class HashDao {
     private final JdbcTemplate jdbcTemplate;
+
+    public boolean tryLock(int key) {
+        String sql = "SELECT pg_try_advisory_lock(?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, key);
+    }
+
+    public void unlock(int key) {
+        String sql = "SELECT pg_advisory_unlock(?)";
+        jdbcTemplate.queryForObject(sql, Boolean.class, key);
+    }
 
     public long countHashes() {
         String sql = "SELECT COUNT(*) FROM hash";
@@ -51,7 +60,6 @@ public class HashDao {
         });
     }
 
-    @Transactional
     public List<String> getHashBatch(int batch) {
         if (batch <= 0) {
             return Collections.emptyList();

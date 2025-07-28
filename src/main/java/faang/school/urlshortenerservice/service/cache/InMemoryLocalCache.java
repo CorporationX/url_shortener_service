@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @Slf4j
 public class InMemoryLocalCache implements LocalCache {
-    private final HashDao hashDao;
+    private final HashDao hashDa;
     private final Executor taskExecutor;
     private final AtomicBoolean isReplenishing = new AtomicBoolean(false);
 
@@ -44,7 +44,7 @@ public class InMemoryLocalCache implements LocalCache {
     public InMemoryLocalCache(HashDao hashDao,
                               @Qualifier("taskExecutor") Executor taskExecutor,
                               HashDbMaintainer hashDbMaintainer) {
-        this.hashDao = hashDao;
+        this.hashDa = hashDao;
         this.taskExecutor = taskExecutor;
         this.hashDbMaintainer = hashDbMaintainer;
     }
@@ -107,7 +107,7 @@ public class InMemoryLocalCache implements LocalCache {
             return;
         }
         log.info("Attempting to refill queue by fetching {} hashes from the database", hashesNeeded);
-        List<String> hashesFromDb = hashDao.getHashBatch(hashesNeeded);
+        List<String> hashesFromDb = hashDa.getHashBatch(hashesNeeded);
         if (!hashesFromDb.isEmpty()) {
             hashQueue.addAll(hashesFromDb);
             log.info("Successfully added {} hashes to the queue. New queue size: {}",
