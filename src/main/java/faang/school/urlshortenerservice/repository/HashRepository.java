@@ -17,6 +17,26 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             """)
     List<Long> getUniqueNumbers(@Param("count") int count);
 
+    @Query(nativeQuery = true, value = """
+            DELETE FROM hash
+                WHERE hash in (
+                    SELECT hash FROM hash
+                        FOR UPDATE SKIP LOCKED
+                    LIMIT :count
+                )
+            RETURNING hash
+            """)
+    List<String> getAndDeleteHashBatch(@Param("count") int count);
+
+    @Query(nativeQuery = true, value = """
+            SELECT pg_try_advisory_lock(:key)
+            """)
+    boolean tryAdvisoryLock(@Param("key") long key);
+
+    @Query(nativeQuery = true, value = """
+            SELECT pg_advisory_unlock(:key)
+            """)
+    boolean unlockAdvisoryLock(@Param("key") long key);
 
 
 
