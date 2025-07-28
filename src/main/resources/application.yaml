@@ -13,13 +13,65 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+          batch_versioned_data: true
+          order_inserts: true
+          order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  redis:
+    host: localhost
+    port: 6379
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 24h
+      cache-null-values: false
+
 server:
   port: 8080
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
     root: info
+
+app:
+  thread-pool:
+    size: 5
+  hash:
+    batch-size: 1000
+  cache:
+    capacity: 5000
+    fill-percentage: 20
+  scheduler:
+    clean-unused:
+      cron: "0 0 0 * * ?"
+      lock-name: "cleaningUnusedTask"
+      lock-at-least-for: "5m"
+      lock-at-most-for: "10m"
+      period: 1y
+
+shedlock:
+  enabled: true
+  defaults:
+    lock-at-most-for: "10m"
+  provider:
+    jdbc:
+      table-name: "shedlock"
+      use-db-time: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
