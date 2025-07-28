@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class HashCacheImpl implements HashCache {
 
     @Override
     @Async("hashCacheExecutor")
-    public Hash getHash() {
+    public CompletableFuture<String> getHashAsync() {
         Hash hash = freeHashes.poll();
 
         if (freeHashes.size() < hashCacheConfig.getCapacity() * hashCacheConfig.getThresholdPercent()) {
@@ -42,9 +43,8 @@ public class HashCacheImpl implements HashCache {
                 fillHashesAsync();
             }
         }
-        return hash;
+        return CompletableFuture.completedFuture(hash.getHash());
     }
-
 
     private void fillHashesAsync() {
         if (!isGenerating.compareAndSet(false, true)) {

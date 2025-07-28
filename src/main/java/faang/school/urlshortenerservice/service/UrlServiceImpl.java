@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -31,16 +33,20 @@ public class UrlServiceImpl implements UrlService {
     private int validityPeriodDays;
 
     @Override
+    @Async("hashCacheExecutor")
     @Transactional
-    public ShortUrlDto createShortUrl(String longUrl, HttpServletRequest request) {
-        String hash = hashCache.getHash().getHash();
-        Url url = new Url(hash, longUrl);
-        urlRepository.save(url);
-        urlCacheService.saveNewPair(hash, longUrl);
-        String baseUrl = getBaseUrl(request);
-        String shortUrl = baseUrl + "/redirect/" + hash;
-        log.info("Short URL created: {} -> {}", hash, longUrl);
-        return new ShortUrlDto(shortUrl);
+    public CompletableFuture<ShortUrlDto> createShortUrl(String longUrl, HttpServletRequest request) {
+        return hashCache.getHashAsync().thenApply(hash -> {
+            Url url = new Url(hash, longUrl);
+            urlRepository.save(url);
+            urlCacheService.saveNewPair(hash, longUrl);
+
+            String baseUrl = getBaseUrl(request);
+            String shortUrl = baseUrl + "/redirect/" + hash;
+
+            log.info("Short URL created asynchronously: {} -> {}", hash, longUrl);
+            return new ShortUrlDto(shortUrl);
+        });
     }
 
 

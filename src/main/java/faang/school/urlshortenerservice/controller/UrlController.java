@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -22,9 +24,8 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UrlController {
     private final UrlService urlService;
 
-
     @PostMapping
-    public ShortUrlDto createShortUrl
+    public CompletableFuture<ShortUrlDto> createShortUrl
             (@Valid @RequestBody UrlRequestDto requestDto, HttpServletRequest request) {
         String longUrl = requestDto.getUrl();
         log.info("Creating a new short URL for {} - Started", longUrl);
