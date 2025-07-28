@@ -34,21 +34,26 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @Async("hashCacheExecutor")
-    @Transactional
     public CompletableFuture<ShortUrlDto> createShortUrl(String longUrl, HttpServletRequest request) {
-        return hashCache.getHashAsync().thenApply(hash -> {
-            Url url = new Url(hash, longUrl);
-            urlRepository.save(url);
-            urlCacheService.saveNewPair(hash, longUrl);
-
-            String baseUrl = getBaseUrl(request);
-            String shortUrl = baseUrl + "/redirect/" + hash;
-
-            log.info("Short URL created asynchronously: {} -> {}", hash, longUrl);
-            return new ShortUrlDto(shortUrl);
-        });
+        return hashCache.getHashAsync().thenCompose(hash ->
+                CompletableFuture.supplyAsync(() -> {
+                    saveUrlTransactional(hash, longUrl);
+                    String baseUrl = getBaseUrl(request);
+                    String shortUrl = baseUrl + "/url/redirect/" + hash;
+                    log.info("Short URL created asynchronously: {} -> {}", hash, longUrl);
+                    return new ShortUrlDto(shortUrl);
+                })
+        );
     }
 
+    @Transactional
+    public void saveUrlTransactional(String hash, String longUrl) {
+        Url url = Url.builder()
+                .hash(hash)
+                .url(longUrl).build();
+        urlRepository.save(url);
+        urlCacheService.saveNewPair(hash, longUrl);
+    }
 
     private String getBaseUrl(HttpServletRequest request) {
         String scheme = request.getScheme();
@@ -56,7 +61,7 @@ public class UrlServiceImpl implements UrlService {
         int serverPort = request.getServerPort();
         String contextPath = request.getContextPath();
         String servletPath = request.getServletPath();
-        return scheme + "://" + serverName + serverPort + contextPath + servletPath;
+        return scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
     }
 
     @Override

@@ -4,7 +4,6 @@ import faang.school.urlshortenerservice.cache.hash.HashGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +14,7 @@ public class FillInScheduler {
 
     private final HashGenerator hashGenerator;
 
-    @Value("${cleaner.cron.fillInTime:0 0 0 * * ?}")
-    private String fillInTime;
-
-    @Scheduled(cron = "${hash.schedule.fill-in.cron:0 0/5 * * * ?}")
+    @Scheduled(cron = "${hash.schedule.fill-in.cron:0 0 * * * ?}")
     @SchedulerLock(name = "FillInScheduler_addNewFreeHashes",
             lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
     public void addNewFreeHashes(){
