@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,8 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping("/url")
-    public ShortUrlDto createShortUrl(@Valid @RequestBody UrlDto urlDto ) {
-        return urlService.createShortUrl(urlDto);
+    public ShortUrlDto createShortUrl(@Valid @RequestBody UrlDto urlDto, HttpServletRequest httpServletRequest) {
+        return urlService.createShortUrl(urlDto, httpServletRequest);
     }
 
     @GetMapping("/{hash}")

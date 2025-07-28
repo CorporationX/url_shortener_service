@@ -17,10 +17,10 @@ public interface UrlRepository extends JpaRepository<Url, String> {
     @Modifying
     @Query(value = """
             DELETE FROM urls
-            WHERE created_at <  current_date - make_interval(years => :yearsCount)
+            WHERE created_at <  current_date - make_interval(days => :daysCount)
             RETURNING hash
             """, nativeQuery = true)
-    List<String> reuseOldUrls(@Param("yearsCount")int yearsCount);
+    List<String> reuseOldUrls(@Param("daysCount")int daysCount);
 
     Optional<Url> findByUrl(String url);
 }

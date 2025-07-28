@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @RequiredArgsConstructor
 public class HashConfig {
-    HashProperties hashProperties;
+    private final HashProperties hashProperties;
 
     @Bean
     public Base62 base62() {

@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Configuration
-public class CacheConfig {
+public class HashCacheConfig {
 
     @Value("${hash.cache.cache_pool_size}")
     private int cachePoolSize;

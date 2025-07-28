@@ -2,16 +2,14 @@ package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 
-import faang.school.urlshortenerservice.config.cache.HashCashProperties;
+import faang.school.urlshortenerservice.config.cache.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +22,7 @@ public class HashCacheImpl implements HashCache {
     private final ExecutorService hashCachePool;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
-    private final HashCashProperties hashCashProperties;
+    private final HashCacheProperties hashCashProperties;
 
     private final ConcurrentLinkedQueue<String> cache = new ConcurrentLinkedQueue<>();
     private final ReentrantLock lock = new ReentrantLock();

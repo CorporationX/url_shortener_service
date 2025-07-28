@@ -48,8 +48,7 @@ hash:
         max_pool_size: 10
         queue_capacity: 500
         prefix: "HashGenPool"
-    cron_clean: "0 0 * * * *"
-    years_count: 1
+    time_before_clean_old_hashes: 365
     get_batch_size: 1600
     save_batch_size: 500
     generate_batch_size: 5000
@@ -57,8 +56,24 @@ hash:
     cache:
         ttl_days: 5
         cache_pool_size: 5
-url:
-    short_prefix: "https://rob.ert/"
+
+scheduler:
+    properties:
+        lock_name: "cleanerScheduler"
+        lock_at_most_for: "PT10M"
+        lock_at_least_for: "PT5M"
+    cleaner:
+        cron_scheduler_to_clean_old_hashes: "0 0 * * * *"
+        time_before_clean_old_hashes: 365
+
+shedlock:
+    enabled: true
+    defaults:
+        lock_at_most_for: "PT10M"
+    provider: jdbc
+    jdbc:
+         table_name: "shedlock"
+         use_db_time: true
 
 controller:
     general_url: "/api/v1"

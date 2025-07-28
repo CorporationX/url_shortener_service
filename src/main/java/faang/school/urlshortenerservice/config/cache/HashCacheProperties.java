@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties("hash.properties")
-public class HashCashProperties {
+public class HashCacheProperties {
     private int minPercent;
     private int maxCacheSize;
 }
