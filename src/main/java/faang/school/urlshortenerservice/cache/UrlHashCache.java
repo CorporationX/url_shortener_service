@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.redis.url_hash_cache.RedisUrlHashCacheProperties;
+import faang.school.urlshortenerservice.exceptions.NonExistingHashProvided;
 import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,7 +29,7 @@ public class UrlHashCache {
         if (fullUrl != null) {
             log.info("Retrieved fullUrl: {} for hash: {} from URL mappings cache.", fullUrl, hash);
         } else {
-            fullUrl = urlHashRepository.findByHash(hash).orElseThrow(() -> new EntityNotFoundException(
+            fullUrl = urlHashRepository.findByHash(hash).orElseThrow(() -> new NonExistingHashProvided(
                     String.format("Full url for hash: %s not found in both Cache/DB.", hash)));
 
             put(hash, fullUrl);

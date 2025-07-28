@@ -25,8 +25,8 @@ public class UrlHashCacheRedisConfiguration {
     @Bean("urlHashCacheRedisConnectionFactory")
     public RedisConnectionFactory urlHashCacheRedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(properties.host);
-        config.setPort(properties.port);
+        config.setHostName(properties.getHost());
+        config.setPort(properties.getPort());
 
         return new LettuceConnectionFactory(config);
     }

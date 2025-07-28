@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "spring.data.redis.url-hash-cache")
 public class RedisUrlHashCacheProperties {
-    String key;
-    long capacity;
-    int port;
-    String host;
-    int ttl;
+    private String key;
+    private long capacity;
+    private int port;
+    private String host;
+    private int ttl;
 }

@@ -30,7 +30,7 @@ public class UrlServiceImpl implements UrlService {
 
         if (hashCache.isNotEnoughHashes()) hashCacheFiller.triggerRefill();
 
-        urlHashRepository.save(new UrlHash(fullUrl, hash));
+        urlHashRepository.save(new UrlHash(hash, fullUrl));
 
         urlHashCache.put(hash, fullUrl);
 

@@ -1,5 +1,7 @@
 package faang.school.urlshortenerservice.utils;
 
+import faang.school.urlshortenerservice.exceptions.IllegalHashLength;
+import faang.school.urlshortenerservice.exceptions.IllegalIdForHash;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -9,10 +11,10 @@ public class Base62Encoder {
 
     public String encode(long num, int requiredLength) {
         if (num < 0) {
-            throw new IllegalArgumentException("Number must be non-negative.");
+            throw new IllegalIdForHash("Id provided for hash generation must be non-negative.");
         }
         if (requiredLength <= 0) {
-            throw new IllegalArgumentException("Required length must be positive.");
+            throw new IllegalHashLength("Hash required length must be positive.");
         }
 
         StringBuilder sb = new StringBuilder();
@@ -31,7 +33,7 @@ public class Base62Encoder {
         }
 
         if (encoded.length() > requiredLength) {
-            throw new IllegalArgumentException("Generated hash is too long for required length " + requiredLength);
+            throw new IllegalHashLength("Generated hash is too long for required length: " + requiredLength);
         }
 
         return encoded.toString();

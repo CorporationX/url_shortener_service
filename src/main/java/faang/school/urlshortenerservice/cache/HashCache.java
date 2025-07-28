@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.cache;
 
 import faang.school.urlshortenerservice.config.redis.hash_cache.RedisHashCacheProperties;
+import faang.school.urlshortenerservice.exceptions.NoAvailableHashesFound;
 import faang.school.urlshortenerservice.repository.postgre.PreparedUrlHashRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,22 +27,20 @@ public class HashCache {
             Set<String> newHash = preparedUrlHashRepository.findFreeHashes(1);
             hash = newHash.stream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException("There are no available hashes right now"));
+                    .orElseThrow(() -> new NoAvailableHashesFound("There are no available hashes right now"));
             preparedUrlHashRepository.markHashesAsTaken(newHash);
         }
 
         return hash;
     }
 
-    public Long put(Set<String> hashes) {
+    public void put(Set<String> hashes) {
         if (hashes == null || hashes.isEmpty()) {
-            return 0L;
+            return;
         }
 
         Long addedCount = hashCacheRedisTemplate.opsForSet().add(properties.getKey(), hashes.toArray(new String[0]));
         log.info("Added {} new hashes into Redis Set: {}.", addedCount, properties.getKey());
-
-        return addedCount;
     }
 
     public long getCurrentSize() {
