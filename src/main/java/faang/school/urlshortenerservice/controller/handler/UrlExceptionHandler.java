@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.controller.handler;
 
 import faang.school.urlshortenerservice.dto.ErrorResponseDto;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,25 +18,13 @@ import java.time.format.DateTimeFormatter;
 public class UrlExceptionHandler {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponseDto handleNotFound(EntityNotFoundException e) {
-        log.error("EntityNotFoundException with message {} was thrown", e.getMessage());
-        return new ErrorResponseDto(
-                HttpStatus.NOT_FOUND.name(),
-                "The required object was not found.",
-                e.getMessage(),
-                LocalDateTime.now().format(formatter)
-        );
-    }
-
     @ExceptionHandler(UrlNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleUrlNotFound(UrlNotFoundException e) {
-        log.error("UrlNotFoundException with message {} was thrown", e.getMessage());
+        log.error("UrlNotFoundException was thrown", e);
         return new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.name(),
-                "Url was not found.",
+                ErrorMessage.URL_NOT_FOUND.errorMessage,
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
@@ -46,10 +33,10 @@ public class UrlExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException with message {} was thrown", e.getMessage());
+        log.error("MethodArgumentNotValidException was thrown", e);
         return new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.name(),
-                "Incorrectly made request.",
+                ErrorMessage.BAD_REQUEST.errorMessage,
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
@@ -58,10 +45,10 @@ public class UrlExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleConstraintViolation(ConstraintViolationException e) {
-        log.error("ConstraintViolationException with message {} was thrown", e.getMessage());
+        log.error("ConstraintViolationException was thrown", e);
         return new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.name(),
-                "Incorrectly made request.",
+                ErrorMessage.BAD_REQUEST.errorMessage,
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
@@ -70,10 +57,10 @@ public class UrlExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleException(Exception e) {
-        log.error("Exception with message {} was thrown", e.getMessage());
+        log.error("Exception was thrown", e);
         return new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Something get wrong.",
+                ErrorMessage.INTERNAL_ERROR.errorMessage,
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );

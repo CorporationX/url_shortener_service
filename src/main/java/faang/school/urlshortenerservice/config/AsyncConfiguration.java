@@ -11,10 +11,8 @@ import java.util.concurrent.Executors;
 @Configuration
 @RequiredArgsConstructor
 public class AsyncConfiguration {
-    private final ThreadPoolConfig threadPoolConfig;
-
     @Bean
-    public ExecutorService fixedThreadPool() {
+    public ExecutorService fixedThreadPool(ThreadPoolConfig threadPoolConfig) {
         return Executors.newFixedThreadPool(threadPoolConfig.getSize());
     }
 }

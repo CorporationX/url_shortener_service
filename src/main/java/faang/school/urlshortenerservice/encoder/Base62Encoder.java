@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class Base62Encoder implements Encoder{
+public class Base62Encoder implements Encoder {
     private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Override

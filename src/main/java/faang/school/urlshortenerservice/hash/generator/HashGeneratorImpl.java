@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.generator;
+package faang.school.urlshortenerservice.hash.generator;
 
 import faang.school.urlshortenerservice.config.properties.HashConfig;
 import faang.school.urlshortenerservice.encoder.Encoder;
@@ -17,13 +17,14 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class HashGenerator {
+public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
     private final HashConfig hashConfig;
     private final Encoder encoder;
 
     @Async("fixedThreadPool")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
     public CompletableFuture<List<Hash>> generateBatch() {
         log.debug("Start async generation of new hashes batch");
         List<Long> numbers = hashRepository.getUniqueNumbers(hashConfig.getBatchSize());
