@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice;
 
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -11,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "${shedlock.defaults.lock-at-most-for}")
 @EnableFeignClients("faang.school.urlshortenerservice.client")
 @EnableAsync
 @EnableCaching

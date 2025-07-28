@@ -50,7 +50,6 @@ hash:
     replenish-cron: 0 * * * * *
     low-data-mark: 200
     replenish-batch-size: 1_000
-    replenish-lock-at-most-for: "PT4M"
 
 async:
   executor:
@@ -64,7 +63,3 @@ url:
   cleanup:
     cron: 0 0 2 * * *
     batch-size: 1_000
-
-shedlock:
-  defaults:
-    lock-at-most-for: "PT30S"
