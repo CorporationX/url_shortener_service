@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5437/postgres
     username: user
     password: password
 
@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,9 +17,45 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: redis
+
 server:
-  port: 8080
+  port: 9081
 
 logging:
   level:
     root: info
+
+app:
+  hash:
+    memory-cache-min-percent: 20.0
+    memory-cache-size: 2000
+    table-size: 10000
+    table-min-percent: 20.0
+    batch-size: 500
+    lock-id: 42
+  url:
+    url-prefix: https://com.shortner/api/v1/url/
+
+  executor:
+    filling-memory-cache:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: filling-memory-cache-
+    save-hash-batch:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: save-hash-batch-
+
+  cache:
+    hash:
+      key-prefix: hash
+      ttl: 30 # 30 секунд
