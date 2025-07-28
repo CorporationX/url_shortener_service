@@ -3,12 +3,12 @@ package faang.school.urlshortenerservice.executor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "executor.hash")
-@Component
+@Configuration
 public class HashGeneratorExecutorConfig {
 
     private int corePoolSize;

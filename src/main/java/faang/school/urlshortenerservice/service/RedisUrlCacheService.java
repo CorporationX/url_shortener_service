@@ -2,11 +2,9 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.ShortUrl;
 import faang.school.urlshortenerservice.util.ObjectMapperUtil;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -29,33 +27,17 @@ public class RedisUrlCacheService {
 
     public void cacheUrl(ShortUrl shortUrl, long ttlSeconds) {
         String json = objectMapper.writeAsString(shortUrl);
-        redisTemplate.opsForValue().set(shortUrl.getHash(), json, Duration.ofSeconds(ttlSeconds));
+        redisTemplate.opsForValue()
+                .set(shortUrl.getHash(), json, Duration.ofSeconds(ttlSeconds));
     }
 
     public Optional<ShortUrl> getUrl(String hash) {
-        String json = getJsonByScript(hash);
+        String json = redisTemplate.opsForValue()
+                .getAndExpire(hash, Duration.ofSeconds(defaultTtlSeconds));
         return json == null ? Optional.empty() : Optional.of(objectMapper.readValueAs(json, ShortUrl.class));
-    }
-
-    public void deleteUrlFromCache(String hash) {
-        redisTemplate.delete(hash);
     }
 
     public void deleteUrlFromCacheAllIn(List<String> hash) {
         redisTemplate.delete(hash);
-    }
-
-    @Nullable
-    private String getJsonByScript(String hash) {
-        String script = """
-                local value = redis.call('GET', KEYS[1])
-                if value then
-                    redis.call('EXPIRE', KEYS[1], ARGV[1])
-                end
-                return value
-                """;
-
-        RedisScript<String> redisScript = RedisScript.of(script, String.class);
-        return redisTemplate.execute(redisScript, List.of(hash), String.valueOf(defaultTtlSeconds));
     }
 }

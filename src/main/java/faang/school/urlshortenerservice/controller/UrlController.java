@@ -22,9 +22,11 @@ public class UrlController {
     private final UrlControllerFacade urlControllerFacade;
 
     @GetMapping("/{hash}")
-    public ResponseEntity<RedirectResponse> getResource(@PathVariable String hash) {
-        RedirectResponse redirectResponse = urlControllerFacade.getResource(hash);
-        return ResponseEntity.status(HttpStatus.FOUND).body(redirectResponse);
+    public ResponseEntity<RedirectResponse> getActualUrl(@PathVariable String hash) {
+        RedirectResponse redirectResponse = urlControllerFacade.getActualUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(redirectResponse.url())
+                .build();
     }
 
     @PostMapping

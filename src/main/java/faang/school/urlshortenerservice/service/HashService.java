@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class HashService {
 
+    private static final int HASH_GENERATION_LOCK_ID = 17;
+
     private final HashConfig hashConfig;
     private final HashRepository hashRepository;
     private final HashGenerator hashGenerator;
     private final ThreadPoolTaskExecutor executor;
-    private final AtomicBoolean refilling = new AtomicBoolean(false);
 
     @Transactional
     public void refillHashStorage() {
@@ -35,27 +35,39 @@ public class HashService {
 
     @Transactional
     public List<String> getFreeHashes(long count) {
-        List<String> freeHashes = hashRepository.getFreeHashBatch(count);
-        hashRepository.deleteAllByHashIn(freeHashes);
-        startRefillIfNeeded();
-        return freeHashes;
-    }
+        List<String> freeHashes = hashRepository.getFreeHashBatchWithLockAndDelete(count);
+        boolean lessThanNeeded = freeHashes.size() < hashConfig.getStorage().getSize();
+        if (lessThanNeeded) {
+            int missingCount = hashConfig.getStorage().getSize() - freeHashes.size();
+            List<String> missingHashes = hashGenerator.generateHashes(missingCount);
+            freeHashes.addAll(missingHashes);
+        }
 
-    private void startRefillIfNeeded() {
-        boolean needRefill = hashRepository.count() < hashConfig.getStorageUpdateCount()
-                && refilling.compareAndSet(false, true);
+        boolean needRefill = lessThanNeeded || hashRepository.count() < hashConfig.getStorageUpdateCount();
+
         if (needRefill) {
             refillStorageAsync();
         }
+        return freeHashes;
     }
 
     private void refillStorageAsync() {
         executor.submit(() -> {
+            boolean successfullyLockedByCurrentThread;
             try {
+                log.info("Attempting to acquire advisory lock for storage refill...");
+                successfullyLockedByCurrentThread = hashRepository.tryLock(HASH_GENERATION_LOCK_ID);
+                if (!successfullyLockedByCurrentThread) {
+                    log.info("Another instance is already refilling storage. Skipping...");
+                    return;
+                }
+
                 log.info("Start refiling hash storage...");
                 refillHashStorage();
+            } catch (Exception e) {
+                log.error("Error during storage refill", e);
             } finally {
-                refilling.set(false);
+                hashRepository.unlock(HASH_GENERATION_LOCK_ID);
             }
         });
     }

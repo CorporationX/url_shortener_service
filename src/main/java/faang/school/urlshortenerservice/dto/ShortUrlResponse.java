@@ -1,9 +1,10 @@
 package faang.school.urlshortenerservice.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
 public record ShortUrlResponse(
-        String shortUrl,
+        URI shortUrl,
         LocalDateTime expirationTime
 ) {
 }

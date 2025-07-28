@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
+
 @Component
 @RequiredArgsConstructor
 public class UrlControllerFacade {
@@ -17,9 +19,9 @@ public class UrlControllerFacade {
     private String shorterAddress;
     private final UrlService urlService;
 
-    public RedirectResponse getResource(String hash) {
-        ShortUrl shortUrl = urlService.getResource(hash);
-        return new RedirectResponse(shortUrl.getActualUrl());
+    public RedirectResponse getActualUrl(String hash) {
+        String actualUrl = urlService.getActualUrl(hash).getActualUrl();
+        return new RedirectResponse(URI.create(actualUrl));
     }
 
     public ShortUrlResponse createShortUrl(ShortUrlRequest shortUrlRequest) {
@@ -28,7 +30,7 @@ public class UrlControllerFacade {
     }
 
     private ShortUrlResponse createShortUrlResponse(ShortUrl shortUrl) {
-        String shortUrlValue = shorterAddress.concat(shortUrl.getHash());
+        URI shortUrlValue = URI.create(shorterAddress.concat(shortUrl.getHash()));
         return new ShortUrlResponse(
                 shortUrlValue,
                 shortUrl.getExpirationTime());

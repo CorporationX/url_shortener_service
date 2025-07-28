@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.service.config.HashConfig;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class HashCache {
     private final HashConfig hashConfig;
-    private final HashRepository hashRepository;
     private final HashService hashService;
     private final ThreadPoolTaskExecutor executor;
 
@@ -44,19 +42,14 @@ public class HashCache {
         log.info("Cache updated with {} values", hashConfig.getCache().getSize());
     }
 
-
     @PostConstruct
     private void initCache() {
-        long currentFreeHashes = hashRepository.count();
-        if(currentFreeHashes < hashConfig.getCache().getSize()) {
-            hashService.refillHashStorage();
-        }
         refillCache();
     }
 
     private void startRefillIfNeeded() {
-        boolean needRefilling = hashQueue.size() < hashConfig.getCacheUpdateCount()
-                && refilling.compareAndSet(false, true);
+        boolean needRefilling = refilling.compareAndSet(false, true) &&
+                hashQueue.size() < hashConfig.getCacheUpdateCount();
         if(needRefilling) {
             refillCacheAsync();
         }

@@ -31,16 +31,15 @@ public class UrlService {
                 .orElseThrow(() -> new RecordNotFoundException("Invalid short url. Corresponding url not found."));
     }
 
-    public ShortUrl getResource(String hash) {
-        ShortUrl shortUrl;
+    public ShortUrl getActualUrl(String hash) {
         Optional<ShortUrl> redisShortUrl = redisUrlCacheService.getUrl(hash);
 
-        if(redisShortUrl.isPresent()) {
-            shortUrl = redisShortUrl.get();
-        } else {
-            shortUrl = findByHash(hash);
-            redisUrlCacheService.cacheUrl(shortUrl);
+        if (redisShortUrl.isPresent()) {
+            return redisShortUrl.get();
         }
+
+        ShortUrl shortUrl = findByHash(hash);
+        redisUrlCacheService.cacheUrl(shortUrl);
 
         validator.validateNotExpired(shortUrl);
 
@@ -65,7 +64,7 @@ public class UrlService {
     public void deleteExpiredShortUrls(int limit) {
         List<String> expiredHashes = urlRepository.findExpiredUrlsHashes(limit);
         log.info("Batch contains {} hashes.", expiredHashes.size());
-        if(!expiredHashes.isEmpty()) {
+        if (!expiredHashes.isEmpty()) {
             urlRepository.deleteAllByIdInBatch(expiredHashes);
             redisUrlCacheService.deleteUrlFromCacheAllIn(expiredHashes);
         }
