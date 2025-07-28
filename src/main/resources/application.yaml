@@ -5,9 +5,6 @@ spring:
     username: user
     password: password
 
-  application:
-    name: url-service
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -20,46 +17,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-  data:
-    redis:
-      port: 6379
-      host: localhost
-      channels:
-        calculating_channel:
-          name: calculating_channel
-
 server:
   port: 8080
 
 logging:
   level:
     root: info
-
-redis:
-  cache:
-    ttl:
-      hash-hours: 1
-
-hash:
-  cache:
-    capacity: 100
-    low-cache-mark-percentage: 20
-    poll-timeout-ms: 300
-    startup-timeout-seconds: 120
-  db:
-    replenish-cron: 0 * * * * *
-    low-data-mark: 200
-    replenish-batch-size: 1_000
-
-async:
-  executor:
-    hash-refiller:
-      core-pool-size: 2
-      max-pool-size: 4
-      queue-capacity: 500
-      thread-name-prefix: "Hash-Refiller-"
-
-url:
-  cleanup:
-    cron: 0 0 2 * * *
-    batch-size: 1_000
