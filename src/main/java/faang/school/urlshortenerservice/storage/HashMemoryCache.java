@@ -30,7 +30,7 @@ public class HashMemoryCache {
     }
 
     public String getHash() {
-        if (isFilling.compareAndExchange(false, true) && checkCurrentPercent()) {
+        if (checkCurrentPercent() && isFilling.compareAndExchange(false, true)) {
             hashService.getHashesAsync(defaultCacheSize - hashCacheQueue.size())
                     .thenAccept(hashCacheQueue::addAll)
                     .whenComplete((result, throwable) -> {
