@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/app_test
+    username: test
+    password: test
+
+custom-thread-pool:
+  core-pool-size: 2
+  max-pool-size: 4
+  queue-capacity: 30
+  thread-name-prefix: "url-hash-"
+  wait-for-tasks-to-complete-on-shutdown: true
+  await-termination-seconds: 60
+
+scheduler:
+  daily-cron: "0 0 3 * * *"
+
+hashes:
+  generate:
+    batch-size: 30
+    chunk-size: 10
+  local-cache:
+    capacity: 20
+    threshold: 5
+  expired:
+    delete:
+      batch: 10
+    cutoff-days: 1
