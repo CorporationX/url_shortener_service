@@ -24,9 +24,6 @@ logging:
   level:
     root: info
 
-short-url:
-  target-length: 6
-
 hash:
   batch-size:
       generation: 1000

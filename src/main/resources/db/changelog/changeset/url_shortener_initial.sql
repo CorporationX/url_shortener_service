@@ -12,7 +12,7 @@ CREATE TABLE url (
 );
 
 CREATE SEQUENCE unique_number_seq
-    START WITH 1
+    START WITH 916132832 -- 62^5
     INCREMENT BY 1
     NO MAXVALUE;
 
