@@ -1,8 +1,6 @@
 package faang.school.urlshortenerservice.handler;
 
 import faang.school.urlshortenerservice.dto.response.ErrorResponseDto;
-import faang.school.urlshortenerservice.exceptions.IllegalHashLength;
-import faang.school.urlshortenerservice.exceptions.IllegalIdForHash;
 import faang.school.urlshortenerservice.exceptions.NoAvailableHashesFound;
 import faang.school.urlshortenerservice.exceptions.NonExistingHashProvided;
 import lombok.extern.slf4j.Slf4j;
@@ -26,32 +24,6 @@ public class ControllerExceptionHandler {
         return new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.name(),
                 "Non-existing hash provided.",
-                e.getMessage(),
-                LocalDateTime.now().format(formatter)
-        );
-    }
-
-    // Как будто пользователю похер? Он ведь даже этого никогда не увидит?
-    @ExceptionHandler(IllegalHashLength.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponseDto handleIllegalHashLengthException(IllegalHashLength e) {
-        log.error("Hash generation resulted in error, provided or resulted hash length was incorrect:", e);
-        return new ErrorResponseDto(
-                HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Service stumbled into an error during request procession, retry later.",
-                e.getMessage(),
-                LocalDateTime.now().format(formatter)
-        );
-    }
-
-    // Как будто пользователю похер?
-    @ExceptionHandler(IllegalIdForHash.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponseDto handleIllegalIdForHashException(IllegalIdForHash e) {
-        log.error("Id provided for hash generation must be non-negative:", e);
-        return new ErrorResponseDto(
-                HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Service stumbled into an error during request procession, retry later.",
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );

@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.controller;
 
 import faang.school.urlshortenerservice.dto.request.FullUrlRequestDto;
 import faang.school.urlshortenerservice.dto.request.ShortUrlRequestDto;
+import faang.school.urlshortenerservice.dto.response.FullUrlResponseDto;
 import faang.school.urlshortenerservice.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UrlControllerImpl {
     private final UrlService urlService;
 
     @GetMapping
-    public RedirectView redirectToOriginalUrl(@Valid @RequestBody FullUrlRequestDto dto) {
+    public RedirectView redirectToOriginalUrl(@Valid @RequestBody ShortUrlRequestDto dto) {
         String originalUrl = urlService.getFullUrl(dto.getHash());
 
         RedirectView redirectView = new RedirectView();
@@ -32,7 +33,7 @@ public class UrlControllerImpl {
     }
 
     @PostMapping("${spring.controller.api}${spring.controller.version}/url")
-    public String createShortUrl(@Valid @RequestBody ShortUrlRequestDto dto) {
+    public FullUrlResponseDto createShortUrl(@Valid @RequestBody FullUrlRequestDto dto) {
         return urlService.createShortUrl(dto.getFullUrl());
     }
 }

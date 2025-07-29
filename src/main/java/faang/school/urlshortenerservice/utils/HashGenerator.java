@@ -26,6 +26,7 @@ public class HashGenerator {
     private final HashCache hashCache;
     private final PreparedUrlHashRepository preparedUrlHashRepository;
     private final ThreadPoolTaskExecutor taskExecutor;
+    private final Base62Encoder base62Encoder;
 
     @Transactional
     public Long generateHashes(long startIndex) {
@@ -73,7 +74,7 @@ public class HashGenerator {
         log.info("Generating hashes from index: {} to index: {}", fromIndex, toIndex);
 
         return LongStream.range(fromIndex, toIndex)
-                .mapToObj(i -> Base62Encoder.encode(i, properties.getHashLength()))
+                .mapToObj(i -> base62Encoder.encode(i, properties.getHashLength()))
                 .collect(Collectors.toSet());
     }
 

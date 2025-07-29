@@ -49,13 +49,10 @@ public class UrlHashCacheRedisConfiguration {
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
             @Qualifier("urlHashCacheRedisConnectionFactory") RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter // Это адаптер для нашего слушателя
+            MessageListenerAdapter listenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        // Подписываемся на канал событий истечения срока действия ключей
-        // __keyevent@<db>__:expired
-        // @0 означает базу данных по умолчанию (DB 0).
         container.addMessageListener(listenerAdapter, new ChannelTopic("__keyevent@0__:expired"));
         return container;
     }

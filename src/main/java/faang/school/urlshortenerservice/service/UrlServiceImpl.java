@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.HashCache;
 import faang.school.urlshortenerservice.cache.UrlHashCache;
+import faang.school.urlshortenerservice.dto.response.FullUrlResponseDto;
 import faang.school.urlshortenerservice.entity.UrlHash;
 import faang.school.urlshortenerservice.repository.cassandra.UrlHashRepository;
 import faang.school.urlshortenerservice.utils.HashCacheFiller;
@@ -25,7 +26,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String createShortUrl(String fullUrl) {
+    public FullUrlResponseDto createShortUrl(String fullUrl) {
         String hash = hashCache.get();
 
         if (hashCache.isNotEnoughHashes()) hashCacheFiller.triggerRefill();
@@ -34,6 +35,6 @@ public class UrlServiceImpl implements UrlService {
 
         urlHashCache.put(hash, fullUrl);
 
-        return hash;
+        return new FullUrlResponseDto(hash);
     }
 }
