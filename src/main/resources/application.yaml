@@ -34,7 +34,7 @@ hashes:
   numberOfHashes: 1
 
 scheduler:
-  frequencyDays: 1
+  cronCleanHash: "0 0 2 * * *" # daily 2am
 
 async:
   corePoolSize: 5
