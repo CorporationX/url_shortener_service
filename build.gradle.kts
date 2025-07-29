@@ -14,6 +14,11 @@ repositories {
 
 dependencies {
     /**
+     * Shedlock
+     */
+    implementation("net.javacrumbs.shedlock:shedlock-spring:6.3.1")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.3.1")
+    /**
      * Spring boot starters
      */
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -41,6 +46,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("io.seruco.encoding:base62:0.1.3")
 
     /**
      * Test containers
