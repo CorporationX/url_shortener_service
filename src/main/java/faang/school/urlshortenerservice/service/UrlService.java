@@ -35,6 +35,7 @@ public class UrlService {
         Optional<ShortUrl> redisShortUrl = redisUrlCacheService.getUrl(hash);
 
         if (redisShortUrl.isPresent()) {
+            log.debug("Url from cache");
             return redisShortUrl.get();
         }
 
@@ -42,7 +43,7 @@ public class UrlService {
         redisUrlCacheService.cacheUrl(shortUrl);
 
         validator.validateNotExpired(shortUrl);
-
+        log.debug("Url from db");
         return shortUrl;
     }
 
