@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import faang.school.urlshortenerservice.util.UriUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +27,7 @@ public class UrlController {
 
     @PostMapping("/url")
     public UrlDto createUrl(@RequestBody UrlDto urlDto) {
-        URI uri = converToUri(urlDto.getUrl());
+        URI uri = UriUtils.converToUri(urlDto.getUrl());
         UrlDto generatedUrl = urlService.generateUrl(uri);
 
         return generatedUrl;
@@ -40,15 +41,5 @@ public class UrlController {
             .status(HttpStatus.FOUND)
             .location(URI.create(urlDto.getUrl()))
             .build();
-    }
-
-    private URI converToUri(String stringUrl) {
-        try {
-            URI uri = new URL(stringUrl).toURI();
-            return uri;
-        } catch (URISyntaxException | MalformedURLException e) {
-            log.error(stringUrl + " is not a valid url", e);
-            throw new IllegalArgumentException("Invalid URL");
-        }
     }
 }

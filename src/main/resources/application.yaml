@@ -26,6 +26,8 @@ spring:
         follower: follower_channel
         comment: comment_channel
         postCreated: post_created
+      ttlMins: 10
+
 
 cache:
   type: redis

@@ -13,6 +13,9 @@ public class MainConfig {
     @Value("${hashes.numberOfNumbers}")
     private int numberOfNumbers;
 
+    @Value("${data.redis.ttlMins}")
+    private int ttlMins;
+
     @Value("${hashes.numberOfHashes}")
     private int numberOfHashes;
 
