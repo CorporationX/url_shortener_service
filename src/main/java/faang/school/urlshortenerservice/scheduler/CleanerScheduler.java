@@ -14,7 +14,7 @@ public class CleanerScheduler {
 
     private final UrlService urlService;
 
-    @Scheduled(cron = "${cleaner.cron.cleanTime:0 0 0 * * ?}")
+    @Scheduled(cron = "${cleaner.cron.cleanTime:0 * * * * ?}")
     @SchedulerLock(name = "CleanerScheduler_cleanOldUrls",
             lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
     public void cleanOldUrls() {

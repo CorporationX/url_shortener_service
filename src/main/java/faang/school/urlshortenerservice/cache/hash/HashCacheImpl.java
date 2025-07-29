@@ -70,6 +70,5 @@ public class HashCacheImpl implements HashCache {
                 break;
             }
         }
-
     }
 }

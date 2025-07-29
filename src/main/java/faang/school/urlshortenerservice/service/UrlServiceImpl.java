@@ -29,8 +29,8 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
 
-    @Value("${url.validity-period.days:100}")
-    private int validityPeriodDays;
+    @Value("${url.validity-period.hours:5}")
+    private int validityPeriodHours;
 
     @Override
     @Async("hashCacheExecutor")
@@ -83,7 +83,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional
     public void deleteOldUrls(){
-        LocalDateTime validityPeriodStart = LocalDateTime.now(ZoneOffset.UTC).minusDays(validityPeriodDays);
+        LocalDateTime validityPeriodStart = LocalDateTime.now(ZoneOffset.UTC).minusHours(validityPeriodHours);
         List<String> deletedHashes = urlRepository.deleteOlderThan(validityPeriodStart);
         log.info("Removed {} lines from urls", deletedHashes.size());
         hashRepository.saveAll(deletedHashes);
