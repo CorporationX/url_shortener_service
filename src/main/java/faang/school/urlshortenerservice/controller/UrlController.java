@@ -1,9 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
