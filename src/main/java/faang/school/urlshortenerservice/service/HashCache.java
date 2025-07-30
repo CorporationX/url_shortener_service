@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -19,14 +21,20 @@ public class HashCache {
     private final HashConfig hashConfig;
     private final HashService hashService;
     private final ThreadPoolTaskExecutor executor;
+    private final AtomicInteger cacheCounter = new AtomicInteger();
 
     private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean refilling = new AtomicBoolean(false);
 
     public String getHash() {
         try {
-            log.debug("Getting hash from cache");
-            String hash = hashQueue.take();
+            String hash = hashQueue.poll(30, TimeUnit.SECONDS);
+            if(hash == null) {
+                log.error("Cache refiling stopped!");
+                throw new IllegalStateException("Failed to get hash from cache");
+            }
+            int left = cacheCounter.decrementAndGet();
+            log.debug("Getting hash from cache. Left {}", left);
             startRefillIfNeeded();
             return hash;
         } catch (InterruptedException e) {
@@ -39,7 +47,8 @@ public class HashCache {
     public void refillCache() {
         List<String> freeHashes = hashService.getFreeHashes(hashConfig.getCache().getSize());
         hashQueue.addAll(freeHashes);
-        log.info("Cache updated with {} values", hashConfig.getCache().getSize());
+        cacheCounter.set(hashQueue.size());
+        log.info("Cache updated with {} values, current size {}", hashConfig.getCache().getSize(), hashQueue.size());
     }
 
     @PostConstruct
@@ -48,9 +57,13 @@ public class HashCache {
     }
 
     private void startRefillIfNeeded() {
-        boolean needRefilling = refilling.compareAndSet(false, true) &&
-                hashQueue.size() < hashConfig.getCacheUpdateCount();
+        int left = cacheCounter.get();
+        boolean needRefilling = left < hashConfig.getCacheUpdateCount()
+                && refilling.compareAndSet(false, true);
         if(needRefilling) {
+            log.warn("Start refilling hash cache. Current cache size - {}, limit - {}",
+                    left,
+                    hashConfig.getCacheUpdateCount());
             refillCacheAsync();
         }
     }

@@ -1,3 +1,4 @@
+
 spring:
   data:
     redis:
@@ -6,7 +7,7 @@ spring:
       password: yourpassword
       timeout: 1000ms
       client-type: lettuce
-      default_ttl_seconds: 3600
+      default-ttl-seconds: 3600
       lettuce:
         pool:
           max-active: 10
