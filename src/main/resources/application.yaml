@@ -17,6 +17,13 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 3734
+      default-ttl: 180
+
+
 server:
   port: 8080
 
@@ -32,7 +39,7 @@ app:
     percentage-filling: 20
 
   url:
-    prefix: https://shortener.ru
+    prefix: "http://localhost:${server.port}/"
     expire-period-year: 1
 
   async:
@@ -49,3 +56,4 @@ app:
       queue-capacity: 100
 
   lock-value: 12345
+

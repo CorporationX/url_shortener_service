@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
+import faang.school.urlshortenerservice.service.redis.UrlRedisCacheService;
 import faang.school.urlshortenerservice.storage.HashInMemoryCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final HashInMemoryCache hashInMemoryCache;
+    private final UrlRedisCacheService urlRedisCacheService;
     @Value("${app.url.expire-period-year}")
     private int expirePeriodInYear;
 
@@ -28,7 +30,7 @@ public class UrlService {
         urlMapping.setExpireAt(actualExpireAt);
         urlMapping.setHash(hashInMemoryCache.getHash());
         Url savedUrl = urlRepository.save(urlMapping);
-        // todo add to cache
+        urlRedisCacheService.saveUrlMapping(savedUrl.getHash(), savedUrl.getUrl());
         return savedUrl;
     }
 
