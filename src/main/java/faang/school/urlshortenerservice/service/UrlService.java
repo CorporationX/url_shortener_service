@@ -56,4 +56,8 @@ public class UrlService {
             }
         }
     }
+
+    public void deleteExpiredUrls() {
+        urlRepository.deleteExpiredUrls();
+    }
 }

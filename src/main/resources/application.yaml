@@ -55,5 +55,7 @@ app:
       max-pool-size: 10
       queue-capacity: 100
 
+  cleaning-job:
+    cron: "0 0 * * * *"
   lock-value: 12345
 
