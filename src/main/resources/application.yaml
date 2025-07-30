@@ -49,4 +49,3 @@ app:
       queue-capacity: 100
 
   lock-value: 12345
-
