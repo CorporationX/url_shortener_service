@@ -13,6 +13,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 100
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +29,34 @@ server:
 logging:
   level:
     root: info
+
+app:
+  redis-cache:
+    hash:
+      key: hash
+      ttl: 30
+  hash:
+    length: 6
+    storage:
+      size: 100
+      refill_percentage: 20
+    cache:
+      size: 10
+      refill_percentage: 20
+    batch:
+      limit: 100
+      size: 100
+  executor:
+    hash:
+      core: 5
+      max: 10
+      prefix: 'CustomExecutor-'
+      queue: 50
+    cache:
+      core: 10
+      max_thread_pool: 20
+  shortener:
+    cron: "0 0 * * * *"
+    batch_size: 1000
+    limit: 10
+  short-url: https://short.adress/
