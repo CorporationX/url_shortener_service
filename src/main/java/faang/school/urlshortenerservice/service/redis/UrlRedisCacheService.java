@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service.redis;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import static faang.school.urlshortenerservice.utils.ConstantsUtilClass.NO_MAPPING_URL_FOR_HASH;
 
@@ -27,12 +27,12 @@ public class UrlRedisCacheService {
         redisTemplate.opsForValue().set(hash, url, Duration.ofSeconds(ttlInSeconds));
     }
 
-    public String getActualUrl(String hash) {
+    public Optional<String> getActualUrl(String hash) {
         String url = (String) redisTemplate.opsForValue().get(hash);
         if (url == null) {
             log.error(String.format(NO_MAPPING_URL_FOR_HASH, hash));
-            throw new EntityNotFoundException(String.format(NO_MAPPING_URL_FOR_HASH, hash));
+            return Optional.empty();
         }
-        return url;
+        return Optional.of(url);
     }
 }
