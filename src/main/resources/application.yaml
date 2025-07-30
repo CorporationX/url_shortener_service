@@ -24,23 +24,29 @@ logging:
   level:
     root: info
 
-hash:
-  batch-size:
-      generation: 1000
-      cache-storage: 1000
-  percentage-filling: 20
+app:
+  hash:
+    batch-size:
+        generation: 3000
+        cache-storage: 500
+    percentage-filling: 20
 
-async:
-  hash-generator-executor:
-    thread-name-prefix: hash-generator-
-    core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 100
+  url:
+    prefix: https://shortener.ru
+    expire-period-year: 1
 
-  hash-cache-executor:
-    thread-name-prefix: hash-cache-
-    core-pool-size: 5
-    max-pool-size: 10
-    queue-capacity: 100
+  async:
+    hash-generator-executor:
+      thread-name-prefix: hash-generator-
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
 
-lock-value: 12345
+    hash-cache-executor:
+      thread-name-prefix: hash-cache-
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
+
+  lock-value: 12345
+

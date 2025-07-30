@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "async.hash-cache-executor")
+@ConfigurationProperties(prefix = "app.async.hash-cache-executor")
 @Configuration
 public class HashCashExecutorProperties {
     private String threadNamePrefix;

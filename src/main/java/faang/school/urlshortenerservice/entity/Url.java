@@ -30,8 +30,8 @@ public class Url {
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", updatable = false, insertable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Column(name = "expire_at")
-    private LocalDateTime expire_at;
+    private LocalDateTime expireAt;
 }

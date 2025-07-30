@@ -19,11 +19,11 @@ public class HashGiver {
     private final HashGenerator hashGenerator;
     private final Executor hashGeneratorExecutor;
 
-    @Value("${hash.batch-size.generation}")
+    @Value("${app.hash.batch-size.generation}")
     private int batchSize;
-    @Value("${hash.percentage-filling}")
+    @Value("${app.hash.percentage-filling}")
     private int percentageFilling;
-    @Value("${lock-value}")
+    @Value("${app.lock-value}")
     private long lockFieldKey;
 
     public HashGiver(

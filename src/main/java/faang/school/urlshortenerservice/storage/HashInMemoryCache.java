@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.storage;
 
-
 import faang.school.urlshortenerservice.service.HashGiver;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +20,14 @@ public class HashInMemoryCache {
     private final HashGiver hashGiver;
     private final Executor hashCacheExecutor;
 
-    @Value("${hash.batch-size.cache-storage}")
+    @Value("${app.hash.batch-size.cache-storage}")
     private int cacheSize;
-    @Value("${hash.percentage-filling}")
+    @Value("${app.hash.percentage-filling}")
     private int percentageFilling;
 
     private final AtomicBoolean isFilling = new AtomicBoolean(false);
 
-    private final Queue<String> hashes = new ArrayBlockingQueue<>(cacheSize);
+    private Queue<String> hashes;
 
     public HashInMemoryCache(
             HashGiver hashGiver,
@@ -40,6 +39,7 @@ public class HashInMemoryCache {
 
     @PostConstruct
     public void init() {
+        this.hashes = new ArrayBlockingQueue<>(cacheSize);
         hashes.addAll(hashGiver.getHashes(cacheSize));
     }
 

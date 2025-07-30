@@ -19,7 +19,7 @@ import java.util.List;
 public class HashGenerator {
     private final HashRepository hashRepository;
     private final Base62Encoder base62Encoder;
-    @Value("${hash.batch-size.generation}")
+    @Value("${app.hash.batch-size.generation}")
     private int batchSize;
 
     @Transactional

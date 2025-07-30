@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "async.hash-generator-executor")
+@ConfigurationProperties(prefix = "app.async.hash-generator-executor")
 @Configuration
 public class HashGeneratorExecutorProperties {
     private String threadNamePrefix;
