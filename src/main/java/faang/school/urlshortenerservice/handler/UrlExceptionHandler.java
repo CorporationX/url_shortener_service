@@ -17,7 +17,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class UrlExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String,String>> handleInternalServiceAll(Exception exception){
+    public ResponseEntity<Map<String, String>> handleInternalServiceAll(Exception exception) {
         Map<String, String> bodyException = new HashMap<>();
         String message = "Internal System Error";
         bodyException.put(message, exception.getClass().getName());
@@ -32,7 +32,7 @@ public class UrlExceptionHandler {
             NumberFormatException.class,
             IndexOutOfBoundsException.class
     })
-    public ResponseEntity<Map<String,String>> handleBadRequest(Exception exception) {
+    public ResponseEntity<Map<String, String>> handleBadRequest(Exception exception) {
         Map<String, String> bodyException = new HashMap<>();
         String message = "Bad argument request";
         bodyException.put(message, exception.getClass().getName());
@@ -43,7 +43,7 @@ public class UrlExceptionHandler {
             DatabaseException.class,
             MethodArgumentNotValidException.class
     })
-    public ResponseEntity<Map<String,String>> handleInternalSpecific(Exception exception){
+    public ResponseEntity<Map<String, String>> handleInternalSpecific(Exception exception) {
         Map<String, String> bodyException = new HashMap<>();
         String message = "Specific internal Exception";
         bodyException.put(message, exception.getClass().getName());

@@ -3,14 +3,12 @@ package faang.school.urlshortenerservice.dto.url;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
+import org.hibernate.validator.constraints.URL;
 
 @Getter
 @AllArgsConstructor
 @Builder
-public class ResponseShortUrlDto {
-
-    private String urlResponseDto;
-    private LocalDateTime createdAt;
+public class UrlRequestDto {
+    @URL
+    private String urlDto;
 }

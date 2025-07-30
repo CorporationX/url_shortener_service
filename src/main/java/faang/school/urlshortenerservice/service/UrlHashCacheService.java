@@ -1,57 +1,54 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.config.redis.RedisConfig;
+import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
+import faang.school.urlshortenerservice.dto.url.UrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class UrlHashCacheService {
-    private static final String KEY = "hash_url_map";
-    private final RedisConfig redisConfig;
 
-    public RedissonClient connectionToRedis() {
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
+    private final UrlService urlService;
+    @Value("${app.short-url}")
+    private String shortUrl;
 
-        return Redisson.create(config);
+    public UrlResponseDto createShortUrl(UrlRequestDto urlRequest) {
+        String hashUrl = urlService.createShortUrl(urlRequest);
+
+        URI newUrl = UriComponentsBuilder
+                .fromHttpUrl(shortUrl)
+                .path(hashUrl)
+                .build()
+                .toUri();
+        return UrlResponseDto.builder()
+                .urlResponseDto(newUrl)
+                .build();
     }
 
-    public void cacheHashUrl(String hash, String url) {
-        RedissonClient redisson = connectionToRedis();
-        RMap<String, String> hashUrlMap = redisson.getMap(KEY);
-        hashUrlMap.put(hash, url);
-    }
+    public UrlResponseDto getShortUrl(String hash) {
+        String url = urlService.findUrlByHash(hash);
 
-    public String getUrlByRedis(String hash) {
-        RedissonClient redisson = connectionToRedis();
-        RMap<String, String> hashUrlMap = redisson.getMap(KEY);
-        String url = hashUrlMap.get(hash);
-        if (url == null) {
-            throw new NoSuchElementException("Url Nof Found");
-        }
-        return url;
-    }
+        URI newUrl = UriComponentsBuilder.fromHttpUrl(url)
+                .build()
+                .toUri();
 
-    public String getUrlByHash(String hash) {
-
-        RedissonClient redisson = connectionToRedis();
-        RMap<String, String> hashUrlMap = redisson.getMap(KEY);
-        String url = hashUrlMap.get(hash);
-        if (url != null) {
-            return url;
-        } else{
-            throw new NoSuchElementException();
-        }
+        return UrlResponseDto.builder()
+                .urlResponseDto(newUrl)
+                .build();
     }
 }

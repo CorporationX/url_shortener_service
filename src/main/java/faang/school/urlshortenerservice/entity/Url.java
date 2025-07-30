@@ -11,6 +11,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 
@@ -19,13 +20,14 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @Data
+@ToString
 @Table(name = "url")
 public class Url {
 
     @Id
-    @Column(name = "hashes", length = 6)
+    @Column(name = "hash", length = 6)
     private String hash;
-    @Column(name = "urls", length = 128)
+    @Column(name = "url", unique = true)
     private String url;
 
     @CreationTimestamp
@@ -36,10 +38,4 @@ public class Url {
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
 
-    @Override
-    public String toString() {
-        return "Url{" +
-                "url='" + url + '\'' +
-                '}';
-    }
 }

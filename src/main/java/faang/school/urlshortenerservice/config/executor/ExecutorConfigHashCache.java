@@ -8,10 +8,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class ExecutorConfigHashCache {
 
-    @Value("${executor.cache.max_thread_pool}")
+    @Value("${app.executor.cache.max_thread_pool}")
     private int maxThreadPool;
 
-    @Value("${executor.cache.core}")
+    @Value("${app.executor.cache.core}")
     private int core;
 
     @Bean(name = "taskExecutorHashCache")

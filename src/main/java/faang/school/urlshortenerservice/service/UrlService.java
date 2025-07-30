@@ -1,13 +1,17 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.entity.Url;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface UrlService {
 
-    void deleteUrlOlderOneYearAndSaveByHash(int limit);
-    int countUrlsOlder();
+    List<Url> findExpiredUrl();
+
+    String createShortUrl(UrlRequestDto urlRequest);
+
     String findUrlByHash(String hash);
-    Url createUrl (Url url);
+
+    int countOldUrl();
 }

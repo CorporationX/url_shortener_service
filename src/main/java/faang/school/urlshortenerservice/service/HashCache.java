@@ -1,88 +1,47 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.redis.AtomicReferenceConfig;
-import faang.school.urlshortenerservice.config.redis.RedisConfig;
-import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.config.hash.HashConfig;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
-import org.redisson.api.RList;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class HashCache {
-    private static final String KEY = "hash_cache";
     private final HashService hashService;
-    private final RedisConfig redisConfig;
-    private final ThreadPoolTaskExecutor executorService;
-    private final AtomicReferenceArray<Hash> hashAtomicReference;
-    private final Integer sizeAtomicReference;
+    private final HashConfig hashConfig;
+    private final BlockingQueue<String> hashQueue = new LinkedBlockingQueue<>();
+    private final AtomicBoolean blocked = new AtomicBoolean(false);
+    private final static String STORAGE_TYPE = "cache";
 
-    public HashCache(HashService hashService, RedisConfig redisConfig,
-                     @Qualifier("taskExecutorHashCache") ThreadPoolTaskExecutor executorService,
-                     AtomicReferenceArray<Hash> hashAtomicReference,
-                     AtomicReferenceConfig config) {
-        this.hashService = hashService;
-        this.redisConfig = redisConfig;
-        this.executorService = executorService;
-        this.hashAtomicReference = hashAtomicReference;
-        this.sizeAtomicReference = config.getSize();
-    }
-
-    public RedissonClient connectionToRedis() {
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
-
-        return Redisson.create(config);
-    }
-
-    public RList<Hash> saveToRedisHash() {
-        List<Hash> hashes = hashService.deleteHashFromDataBase();
-
-        RedissonClient redisson = connectionToRedis();
-
-        RList<Hash> hashRList = redisson.getList(KEY);
-
-        return addedToRedis(hashes, hashRList);
-    }
-
-    public void checkMemoryRedis() {
-        RList<Hash> hashRList = connectionToRedis().getList(KEY);
-
-        if (hashRList.size() < sizeAtomicReference * 0.20) {
-            executorService.submit(() -> {
-                List<Hash> hashes = hashService.deleteHashFromDataBase();
-                for (int i = hashRList.size(); i < hashes.size(); i++) {
-                    hashAtomicReference.set(i, hashes.get(i));
-                }
-                addedToRedis(hashes, hashRList);
-            });
+    public String getHashFromQueue() {
+        try {
+            refillCache();
+            return hashQueue.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
-    public Hash randomIndex(RList<Hash> hashes) {
-        Random random = new Random();
-        int randomIndex = random.nextInt(hashes.size());
-        return hashes.get(randomIndex);
+
+    @PostConstruct
+    public void getFreeHashes() {
+        List<String> freeHashesList = hashService.getFreeHashes();
+        hashQueue.addAll(freeHashesList);
     }
 
-    private RList<Hash> addedToRedis(List<Hash> hashes, RList<Hash> hashRList) {
-        for (Hash hash : hashes) {
-            if (hash != null) {
-                hashRList.add(hash);
-            }
+    public void refillCache() {
+        boolean checkHashSize = (hashQueue.size() < hashConfig.getCurrentOccupancyCache())
+                && blocked.compareAndSet(false, true);
+
+        if (checkHashSize) {
+            hashService.refillHashAsync(this::refillCache, STORAGE_TYPE, blocked);
         }
-        return hashRList;
     }
-
-
-
 }

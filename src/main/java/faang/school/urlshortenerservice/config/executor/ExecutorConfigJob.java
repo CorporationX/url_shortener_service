@@ -7,10 +7,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class ExecutorConfigJob {
-    @Value("${moderation.executor.max_thread_pool_size}")
+    @Value("${app.executor.cache.max_thread_pool}")
     private int maxThreadPoolSize;
 
-    @Value("${moderation.executor.core_pool_size}")
+    @Value("${app.executor.cache.core}")
     private int corePoolSize;
 
     @Bean(name = "taskExecutor")

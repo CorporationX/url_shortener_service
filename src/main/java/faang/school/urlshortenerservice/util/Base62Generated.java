@@ -7,7 +7,7 @@ import java.util.List;
 @Component
 public class Base62Generated {
 
-    private static final String BASE_62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String BASE_62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public String generateHashBase62(long number) {
         StringBuilder stringBuilder = new StringBuilder();

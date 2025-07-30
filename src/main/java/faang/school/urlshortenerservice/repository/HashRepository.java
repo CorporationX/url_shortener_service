@@ -20,11 +20,12 @@ public interface HashRepository extends JpaRepository<Hash, String> {
             WHERE hash IN (
                 SELECT hash 
                 FROM hash
+                ORDER BY RANDOM()
                 FOR UPDATE
                 SKIP LOCKED
                 LIMIT :limit
             )
             RETURNING *;
             """)
-    List<Hash> getHashBatch(int limit);
+    List<String> getHashBatch(int limit);
 }

@@ -19,7 +19,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-#      password: "password"
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -31,29 +30,33 @@ logging:
   level:
     root: info
 
-hash:
-  batch:
-    limit: 10000
-    size: 10000
-  range:
-    maxRange: 10000
-
-moderation:
+app:
+  redis-cache:
+    hash:
+      key: hash
+      ttl: 30
+  hash:
+    length: 6
+    storage:
+      size: 100
+      refill_percentage: 20
+    cache:
+      size: 10
+      refill_percentage: 20
+    batch:
+      limit: 100
+      size: 100
+  executor:
+    hash:
+      core: 5
+      max: 10
+      prefix: 'CustomExecutor-'
+      queue: 50
+    cache:
+      core: 10
+      max_thread_pool: 20
   shortener:
     cron: "0 0 * * * *"
     batch_size: 1000
     limit: 10
-    hash: "0 * * * * ?"
-  executor:
-    core_pool_size: 5
-    max_thread_pool_size: 20
-
-executor:
-  hash:
-    core: 5
-    max: 10
-    prefix: 'CustomExecutor-'
-    queue: 50
-  cache:
-    core: 10
-    max_thread_pool: 20
+  short-url: https://short.adress/

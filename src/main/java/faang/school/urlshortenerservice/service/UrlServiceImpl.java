@@ -1,54 +1,64 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.entity.Hash;
+import faang.school.urlshortenerservice.dto.url.UrlRequestDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RList;
-import org.redisson.api.RedissonClient;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UrlServiceImpl implements UrlService{
+@Slf4j
+public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
-    private final UrlHashCacheService urlHashCacheService;
     private final HashCache hashCache;
+
+    @Override
+    public List<Url> findExpiredUrl() {
+        return urlRepository.getExpiredUrlsHashes();
+    }
+
+    @CachePut(cacheManager = "cacheManager",
+            cacheNames = "hash",
+            key = "#result"
+    )
     @Transactional
     @Override
-    public void deleteUrlOlderOneYearAndSaveByHash(int limit) {
-        List<String> hashes = urlRepository.findExpiredUrlsHashes(limit);
-        urlRepository.deleteAllByIdInBatch(hashes);
+    public String createShortUrl(UrlRequestDto urlRequest) {
+        String hash = hashCache.getHashFromQueue();
+        Url url = Url.builder()
+                .hash(hash)
+                .url(urlRequest.getUrlDto())
+                .expirationTime(LocalDateTime.now())
+                .build();
+        urlRepository.save(url);
+        return hash;
     }
-    @Transactional(readOnly = true)
+
+    @CachePut(cacheManager = "cacheManager",
+            cacheNames = "hash",
+            key = "#hash"
+    )
     @Override
-    public int countUrlsOlder(){
-        return urlRepository.countOfOldUrl();
+    public String findUrlByHash(String hash) {
+        Url url = urlRepository.findById(hash)
+                .orElseThrow(() -> {
+                    log.error("Url By Hash Not Found");
+                    return new NoSuchElementException("Url not found");
+                });
+        return url.getUrl();
     }
 
     @Override
-    public String findUrlByHash(String hash) {
-        urlHashCacheService.getUrlByHash(hash);
-        Optional<Url> urlFromDb = urlRepository.findById(hash);
-        if(urlFromDb.isPresent()) {
-            urlHashCacheService.cacheHashUrl(hash, urlFromDb.get().getUrl());
-            return urlFromDb.get().getUrl();
-        } else{
-            throw new NoSuchElementException();
-        }
-    }
-    @Override
-    public Url createUrl (Url url){
-        RList<Hash> hashes = hashCache.saveToRedisHash();
-        Hash hashRList = hashCache.randomIndex(hashes);
-        url.setHash(hashRList.getHash());
-        urlHashCacheService.cacheHashUrl(hashRList.getHash(), url.getUrl());
-        hashes.remove(hashRList);
-        return urlRepository.save(url);
+    public int countOldUrl() {
+        return urlRepository.countOfOldUrl();
     }
 }

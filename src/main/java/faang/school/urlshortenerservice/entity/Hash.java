@@ -7,20 +7,20 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
 @Table(name = "hash")
 public class Hash {
     @Id
-    @Column(name = "hash", length = 7)
+    @Column(name = "hash", length = 6)
     private String hash;
 
     public Hash(String hash) {
         this.hash = hash;
     }
 
-    public Hash() {
-    }
 }
