@@ -13,6 +13,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -20,6 +23,31 @@ spring:
 server:
   port: 8080
 
+redis:
+  host: localhost
+  port: 6379
+
 logging:
   level:
     root: info
+
+hash:
+  generator:
+    batch-size: 100
+    refill-threshold-percent: 0.2
+async:
+  pool:
+    core-size: 4        # базовое число потоков
+    max-size: 8         # максимум
+    queue-capacity: 50  # длина очереди задач
+
+app:
+  url:
+    base: "https://sh.c"
+  scheduler:
+    cleaner-cron: "0 0 0 * * ?"
+  cleaner:
+    batch-size: 500
+    age-days: 365
+  cache:
+    url-ttl: 1h
