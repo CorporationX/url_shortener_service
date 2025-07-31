@@ -1,9 +1,11 @@
 package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.cache.LocalCache;
+import faang.school.urlshortenerservice.dto.ShortenedUrlDto;
 import faang.school.urlshortenerservice.dto.UrlShortenerDto;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.model.ShortenedUrl;
+import faang.school.urlshortenerservice.redis.RedisFacade;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.ShortenedUrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,15 +27,19 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     private final LocalCache cache;
     private final ShortenedUrlRepository shortenedUrlRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisFacade redisFacade;
     private final HashRepository hashRepository;
+
     @Value("${spring.data.redis.cashingDuration}")
     private int cachingDuration;
     @Value("${staticUrl}")
     private String staticUrl;
+    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    int batchSize;
 
+    @Override
     @Transactional
-    public String create(UrlShortenerDto urlShortenerDto) {
+    public ShortenedUrlDto create(UrlShortenerDto urlShortenerDto) {
         String hashToSave = cache.getHash();
         String LongUrl = urlShortenerDto.getLongUrl();
         ShortenedUrl shortenedUrl = new ShortenedUrl();
@@ -42,17 +48,18 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         shortenedUrlRepository.save(shortenedUrl);
 
         String key = "shortUrl:" + hashToSave;
-        redisTemplate.opsForValue()
-                .set(key, shortenedUrl, Duration.ofHours(cachingDuration));
-        return staticUrl + hashToSave;
+        redisFacade.saveToRedisCache(key, shortenedUrl,cachingDuration);
+        String staticUrlPlushHash =  staticUrl + hashToSave;
+        return new ShortenedUrlDto(staticUrlPlushHash);
     }
 
+    @Override
     public String findUrlByHash(String hash) {
         String key = "shortUrl:" + hash;
-        Object cached = redisTemplate.opsForValue().get(key);
-        if (cached instanceof ShortenedUrl su) {
+        Object cachedObject = redisFacade.checkCache(key);
+        if (cachedObject instanceof ShortenedUrl shortedUrl) {
             increasePopularityIndex(hash);
-            return su.getLongUrl();
+            return shortedUrl.getLongUrl();
         }
         ShortenedUrl shortenedUrl = shortenedUrlRepository
                 .findByHash(hash)
@@ -66,38 +73,27 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         return shortenedUrl.getLongUrl();
     }
 
+    @Override
     @Transactional
     public void deleteCreatedAYearAgo() {
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
         List<ShortenedUrl> oldUrls = shortenedUrlRepository.findShortenedUrlsByCreatedAtBefore(oneYearAgo);
         if (!oldUrls.isEmpty()) {
-            int batchSize;
             List<String> hashesToRecycle = oldUrls.stream().map(ShortenedUrl::getHash).toList();
-            int total = hashesToRecycle.size();
-            if (total <= 1000) {
-                batchSize = 100;
-            } else if (total <= 5000) {
-                batchSize = 500;
-            } else {
-                batchSize = 1000;
-            }
             List<Hash> hashes = hashesToRecycle.stream()
                     .map(Hash::new)
                     .toList();
-
             for (int i = 0; i < hashes.size(); i += batchSize) {
                 List<Hash> part = hashes.subList(i, Math.min(i + batchSize, hashes.size()));
                 hashRepository.saveAll(part);
                 hashRepository.flush();
             }
-
             shortenedUrlRepository.deleteAll(oldUrls);
             log.warn("Deleted {} old shortened URLs (recycled {} hashes)", oldUrls.size(), hashes.size());
         }
     }
 
     private void increasePopularityIndex(String hash) {
-        redisTemplate.opsForZSet()
-                .incrementScore("popular:urls", hash, 1);
+      redisFacade.increasePopularity(hash);
     }
 }

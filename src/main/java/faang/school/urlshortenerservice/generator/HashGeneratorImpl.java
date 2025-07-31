@@ -1,5 +1,6 @@
 package faang.school.urlshortenerservice.generator;
 
+import faang.school.urlshortenerservice.config.properties.HashGenerationProperties;
 import faang.school.urlshortenerservice.model.Hash;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.transaction.Transactional;
@@ -13,18 +14,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
+    private final HashGenerationProperties hashGenerationProperties;
 
     private static final String BASE_62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-    @Value("${hashRange.maximum}")
-    private int maximumHashRange;
 
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private int batchSize;
 
+    @Override
     @Transactional
     public void generateHash() {
-        List<Long> range = hashRepository.getNextRange(maximumHashRange);
+        List<Long> range = hashRepository.getNextRange(hashGenerationProperties.getMaximum());
         List<Hash> hashes = range.stream()
                 .map(this::applyBase62)
                 .map(Hash::new)
@@ -36,6 +36,7 @@ public class HashGeneratorImpl implements HashGenerator {
         }
     }
 
+    @Override
     @Transactional
     public List<String> fetchHashes(int amount) {
         List<Hash> hashes = hashRepository.findAndDelete(amount);

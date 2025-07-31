@@ -1,13 +1,13 @@
 package faang.school.urlshortenerservice.cache;
 
-import faang.school.urlshortenerservice.async.AsyncHashGeneratorImpl;
+import faang.school.urlshortenerservice.async.AsyncHashGenerator;
+import faang.school.urlshortenerservice.config.properties.HashGenerationProperties;
 import faang.school.urlshortenerservice.exception.NoHashAvailableException;
 import faang.school.urlshortenerservice.generator.HashGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -20,22 +20,22 @@ import java.util.concurrent.locks.ReentrantLock;
 @Data
 @Slf4j
 public class LocalCache {
-    @Value("${hashRange.queue_capacity}")
+    private final HashGenerationProperties hashGenerationProperties;
+    private final HashGenerator hashGenerator;
+    private final AsyncHashGenerator asyncHashGenerator;
+    private final ReentrantLock lock = new ReentrantLock();
+
     private int queueSize;
-
-    @Value("${hashRange.queue_critical_load}")
     double criticalLoadFactor;
-
-    @Value("${hashRange.amount_to_pull}")
     private int amountToPull;
 
-    private final HashGenerator hashGenerator;
-    private final AsyncHashGeneratorImpl asyncHashGenerator;
-    private final ReentrantLock lock = new ReentrantLock();
     private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
+        this.queueSize = hashGenerationProperties.getQueueCapacity();
+        this.criticalLoadFactor = hashGenerationProperties.getQueueCriticalLoad();
+        this.amountToPull = hashGenerationProperties.getAmountToPull();
         this.hashes = new ArrayBlockingQueue<>(queueSize);
         hashes.addAll(hashGenerator.fetchHashes(queueSize));
     }

@@ -24,6 +24,8 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
 
     /**
      * Database
