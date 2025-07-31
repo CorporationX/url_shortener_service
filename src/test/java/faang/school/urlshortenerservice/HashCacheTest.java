@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.config.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.FreeHashRepository;
+import faang.school.urlshortenerservice.schedule.HashGeneratorScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,8 @@ class HashCacheTest {
     @Mock
     private ExecutorService executorService;
     @Mock
+    private HashGeneratorScheduler hashGeneratorScheduler;
+    @Mock
     private HashCacheProperties properties;
 
     private HashCache hashCache;
@@ -48,7 +51,8 @@ class HashCacheTest {
                 freeHashRepository,
                 hashGenerator,
                 executorService,
-                properties
+                properties,
+                hashGeneratorScheduler
         );
     }
 
@@ -103,7 +107,7 @@ class HashCacheTest {
 
         // then
         verify(executorService, atLeastOnce()).submit(any(Runnable.class));
-        verify(hashGenerator).generateBatch();
+        verify(hashGeneratorScheduler).schedule();
 
         // итоговый размер: capacity-1 (первый hash мы забрали)
         assertThat(cache).hasSize(9);

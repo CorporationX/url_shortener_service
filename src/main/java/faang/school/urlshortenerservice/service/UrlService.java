@@ -37,8 +37,7 @@ public class UrlService {
 
        String fromDB = urlRepository
                .findUrlByHash(hash)
-               .orElseThrow(()
-               -> new UrlNotFoundException("Url for hash %s not found".formatted(hash)));
+               .orElseThrow(() -> new UrlNotFoundException("Url for hash %s not found".formatted(hash)));
 
         urlCacheRepository.putUrl(hash, fromDB);
         return fromDB;

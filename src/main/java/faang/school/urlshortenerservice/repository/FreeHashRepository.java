@@ -20,6 +20,7 @@ public interface FreeHashRepository extends JpaRepository<Hash, String> {
             LIMIT :count
             """, nativeQuery = true)
     List<String> fetchFreeHashes(@Param("count") int count);
+
     default String fetchFreeHash() {
         List<String> list = fetchFreeHashes(1);
         if (list.isEmpty()) {

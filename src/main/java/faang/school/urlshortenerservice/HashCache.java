@@ -2,10 +2,11 @@ package faang.school.urlshortenerservice;
 
 import faang.school.urlshortenerservice.config.HashCacheProperties;
 import faang.school.urlshortenerservice.repository.FreeHashRepository;
-import faang.school.urlshortenerservice.repository.JdbcHashRepository;
+import faang.school.urlshortenerservice.schedule.HashGeneratorScheduler;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,10 +18,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class HashCache {
+    @Value("${hash.batch-size}")
+    private int batchSize;
     private final FreeHashRepository freeHashRepository;
     private final HashGenerator hashGenerator;
     private final ExecutorService hashCacheExecutorService;
     private final HashCacheProperties hashCacheProperties;
+    private final HashGeneratorScheduler hashGeneratorScheduler;
 
     private final ConcurrentLinkedDeque<String> cache = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
@@ -67,7 +71,7 @@ public class HashCache {
             }
             log.info("Fetched {} hashes from DB", fresh.size());
 
-            hashCacheExecutorService.submit(hashGenerator::generateBatch);
+            hashCacheExecutorService.submit(hashGeneratorScheduler::schedule);
         } catch (Exception e) {
             log.error("Error while refilling cache", e);
         } finally {

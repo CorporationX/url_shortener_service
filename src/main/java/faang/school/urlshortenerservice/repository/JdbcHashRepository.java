@@ -23,7 +23,7 @@ public class JdbcHashRepository implements HashRepository{
                 SELECT nextval('unique_number_seq')
                 FROM generate_series(1, ?)
                 """;
-        return jdbcTemplate.queryForList(sql, new Object[]{n}, Long.class);
+        return jdbcTemplate.queryForList(sql, Long.class, n);
     }
 
     @Override
