@@ -23,3 +23,26 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  batch-size: 1000
+  schedule-cron: "0 0 * * * *"
+
+uniqueIdsPerBatch: 1000
+
+generator:
+  pool-core-size: 4
+  queue-capacity: 200
+
+base-url: https://corpx.com
+
+hash-cache:
+  max-size: 1000
+  refill-threshold: 0.2
+
+executor:
+    pool-size: 5
+    queue-size: 100
+
+cleaner:
+  schedule-cron: "0 0 3 * * *"
