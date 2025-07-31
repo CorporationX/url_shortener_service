@@ -17,6 +17,23 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        achievement: achievement_channel
+        follower: follower_channel
+        comment: comment_channel
+        postCreated: post_created
+      ttlMins: 10
+
+
+cache:
+  type: redis
+  redis:
+    ttl: 3600
+
 logging:
   level:
     root: info
@@ -30,8 +47,9 @@ base:
   chars: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 hashes:
-  numberOfNumbers: 7
-  numberOfHashes: 1
+  numberOfNumbers: 10
+  numberOfHashes: 10
+  mimThresholdPercent: 20
 
 scheduler:
   cronCleanHash: "0 0 2 * * *" # daily 2am
@@ -40,4 +58,4 @@ async:
   corePoolSize: 5
   maxPoolSize: 10
   queueCapacity: 50
-  threadNamePrefix: async-
+  threadNamePrefix: HashGen-
