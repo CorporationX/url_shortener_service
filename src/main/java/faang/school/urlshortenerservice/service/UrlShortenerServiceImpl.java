@@ -13,10 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Value("${spring.data.redis.cashingDuration}")
     private int cachingDuration;
-    @Value("${staticUrl}")
+    @Value("${static_url}")
     private String staticUrl;
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     int batchSize;
@@ -41,9 +39,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Transactional
     public ShortenedUrlDto create(UrlShortenerDto urlShortenerDto) {
         String hashToSave = cache.getHash();
-        String LongUrl = urlShortenerDto.getLongUrl();
+        String longUrl = urlShortenerDto.getLongUrl();
         ShortenedUrl shortenedUrl = new ShortenedUrl();
-        shortenedUrl.setLongUrl(LongUrl);
+        shortenedUrl.setLongUrl(longUrl);
         shortenedUrl.setHash(hashToSave);
         shortenedUrlRepository.save(shortenedUrl);
 
@@ -61,8 +59,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
             increasePopularityIndex(hash);
             return shortedUrl.getLongUrl();
         }
-        ShortenedUrl shortenedUrl = shortenedUrlRepository
-                .findByHash(hash)
+        ShortenedUrl shortenedUrl = shortenedUrlRepository.findByHash(hash)
                 .orElseThrow(() -> {
                     log.error("URL for the given hash {} does not exist", hash);
                     return new EntityNotFoundException(

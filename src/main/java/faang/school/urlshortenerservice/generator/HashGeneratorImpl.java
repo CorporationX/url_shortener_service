@@ -13,10 +13,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class HashGeneratorImpl implements HashGenerator {
+    private static final String BASE_62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     private final HashRepository hashRepository;
     private final HashGenerationProperties hashGenerationProperties;
-
-    private static final String BASE_62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private int batchSize;
@@ -24,8 +24,8 @@ public class HashGeneratorImpl implements HashGenerator {
     @Override
     @Transactional
     public void generateHash() {
-        List<Long> range = hashRepository.getNextRange(hashGenerationProperties.getMaximum());
-        List<Hash> hashes = range.stream()
+        List<Long> uniqueHashValues = hashRepository.getNextRange(hashGenerationProperties.getMaximum());
+        List<Hash> hashes = uniqueHashValues.stream()
                 .map(this::applyBase62)
                 .map(Hash::new)
                 .toList();

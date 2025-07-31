@@ -21,36 +21,39 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleNotFound(EntityNotFoundException e) {
-        log.error("EntityNotFoundException with message {} was thrown", e.getMessage());
-        return new ErrorResponseDto(
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.name(),
-                "The required object was not found.",
+                "The required entity was not found.",
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("Handled EntityNotFoundException - error response: {}, exception: ", errorResponseDto, e);
+        return errorResponseDto;
     }
 
     @ExceptionHandler(NoHashAvailableException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleNotFound(NoHashAvailableException e) {
-        log.error("No url available for the given hash. {}", e.getMessage());
-        return new ErrorResponseDto(
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.name(),
-                "No url available for the given hash",
+                "No url available for the given hash.",
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("Handled NoHashAvailableException - error response: {}, exception: ", errorResponseDto, e);
+        return errorResponseDto;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleException(Exception e) {
-        log.error("Exception with message {} was thrown", e.getMessage());
-        return new ErrorResponseDto(
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Something get wrong.",
+                "Something went wrong.",
                 e.getMessage(),
                 LocalDateTime.now().format(formatter)
         );
+        log.error("Handled generic Exception - error response: {}, exception: ", errorResponseDto, e);
+        return errorResponseDto;
     }
 }

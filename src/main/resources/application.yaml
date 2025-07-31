@@ -48,5 +48,5 @@ hash-generation:
   queue_critical_load: 10.0
   amount_to_pull: 750
   scheduled_cleanup_rate: 0 0 0 * * *
-staticUrl: localhost:8080/api/v1/urlShortener/
+static_url: localhost:8080/api/v1/urlShortener/
 

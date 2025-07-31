@@ -38,6 +38,6 @@ public class UrlShortenerController {
         String originalUrl = urlShortenerService.findUrlByHash(hash);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", originalUrl);
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 }
