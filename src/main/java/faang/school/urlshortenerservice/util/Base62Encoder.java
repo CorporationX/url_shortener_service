@@ -8,9 +8,8 @@ import java.util.List;
 @Component
 @UtilityClass
 public class Base62Encoder {
-    private static final String BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = 62;
-    private static final int MIN_LENGTH = 4;
     private static final int MAX_LENGTH = 6;
 
     public static List<String> encode(List<Long> numbers) {
@@ -32,10 +31,6 @@ public class Base62Encoder {
         }
 
         sb.reverse();
-
-        while (sb.length() < MIN_LENGTH) {
-            sb.insert(0, '0');
-        }
 
         if (sb.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Encoded Base62 string exceeds 6 characters — input number too large");
