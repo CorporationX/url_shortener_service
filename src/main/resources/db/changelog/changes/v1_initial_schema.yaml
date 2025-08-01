@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Nikita Nikitin
+      changes:
+        - createSequence:
+            sequenceName: unique_hash_number_sequence
+            startValue: 1
+            incrementBy: 1
+
+  - changeSet:
+      id: 2
+      author: Nikita Nikitin
+      changes:
+        - createTable:
+            tableName: hash
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: actual_hash
+                  type: VARCHAR(7)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: 3
+      author: Nikita Nikitin
+      changes:
+        - createTable:
+            tableName: urls
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: long_url
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash
+                  type: VARCHAR(7)
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 4
+      author: Nikita Nikitin
+      changes:
+        - createIndex:
+            indexName: idx_urls_hash
+            tableName: urls
+            unique: true
+            columns:
+              - column:
+                  name: hash
+
+  - changeSet:
+      id: 5
+      author: Nikita Nikitin
+      changes:
+        - createTable:
+            tableName: shedlock
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: lock_until
+                  type: TIMESTAMP(3)
+              - column:
+                  name: locked_at
+                  type: TIMESTAMP(3)
+              - column:
+                  name: locked_by
+                  type: VARCHAR(255)

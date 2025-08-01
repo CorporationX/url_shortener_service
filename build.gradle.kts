@@ -22,7 +22,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
+    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
 
     /**
      * Database
@@ -34,6 +37,7 @@ dependencies {
     /**
      * Utils & Logging
      */
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.6")
