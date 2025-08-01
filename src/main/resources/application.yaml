@@ -21,7 +21,6 @@ spring:
       hibernate:
         format_sql: true
         jdbc:
-          batch_size: 5000
           order_inserts: true
           order_updates: true
 
@@ -48,5 +47,6 @@ hash-generation:
   queue_critical_load: 10.0
   amount_to_pull: 750
   scheduled_cleanup_rate: 0 0 0 * * *
+  batch_size: 5000
 static_url: localhost:8080/api/v1/urlShortener/
 

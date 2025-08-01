@@ -32,8 +32,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     private int cachingDuration;
     @Value("${static_url}")
     private String staticUrl;
-    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
-    int batchSize;
+    @Value("${hash-generation.batch_size}")
+    private int batchSize;
 
     @Override
     @Transactional
@@ -46,7 +46,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         shortenedUrlRepository.save(shortenedUrl);
 
         String key = "shortUrl:" + hashToSave;
-        redisFacade.saveToRedisCache(key, shortenedUrl,cachingDuration);
+        redisFacade.saveToRedisCache(key, shortenedUrl);
         String staticUrlPlushHash =  staticUrl + hashToSave;
         return new ShortenedUrlDto(staticUrlPlushHash);
     }

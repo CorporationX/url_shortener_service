@@ -18,7 +18,7 @@ public class HashGeneratorImpl implements HashGenerator {
     private final HashRepository hashRepository;
     private final HashGenerationProperties hashGenerationProperties;
 
-    @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    @Value("${hash-generation.batch_size}")
     private int batchSize;
 
     @Override

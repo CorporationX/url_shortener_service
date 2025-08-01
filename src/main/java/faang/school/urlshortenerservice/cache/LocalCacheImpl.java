@@ -25,17 +25,11 @@ public class LocalCacheImpl implements LocalCache {
     private final AsyncHashGenerator asyncHashGenerator;
     private final ReentrantLock lock = new ReentrantLock();
 
-    private int queueSize;
-    double criticalLoadFactor;
-    private int amountToPull;
-
     private Queue<String> hashes;
 
     @PostConstruct
     public void init() {
-        this.queueSize = hashGenerationProperties.getQueueCapacity();
-        this.criticalLoadFactor = hashGenerationProperties.getQueueCriticalLoad();
-        this.amountToPull = hashGenerationProperties.getAmountToPull();
+        int queueSize = hashGenerationProperties.getQueueCapacity();
         this.hashes = new ArrayBlockingQueue<>(queueSize);
         hashes.addAll(hashGenerator.fetchHashes(queueSize));
     }
@@ -51,6 +45,8 @@ public class LocalCacheImpl implements LocalCache {
     }
 
     private void refillHashQueueIfCriticalLoad() {
+        int queueSize = hashGenerationProperties.getQueueCapacity();
+        double criticalLoadFactor = hashGenerationProperties.getQueueCriticalLoad();
         if (hashes.size() < ((double) queueSize / 100) * criticalLoadFactor) {
             if (lock.tryLock()) {
                 try {

@@ -37,7 +37,7 @@ public class UrlShortenerController {
                                               String hash) {
         String originalUrl = urlShortenerService.findUrlByHash(hash);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", originalUrl);
+        headers.add(HttpHeaders.LOCATION, originalUrl);
         return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 }
