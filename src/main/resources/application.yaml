@@ -21,7 +21,7 @@ spring:
     redis:
       host: localhost
       port: 3734
-      default-ttl: 180
+      default-ttl: 3600
 
 
 server:

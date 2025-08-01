@@ -27,14 +27,11 @@ public class UrlService {
     private int expirePeriodInYear;
 
     public Url createUrlMapping(String url, LocalDateTime expireAt) {
-        Url urlMapping = new Url();
-        urlMapping.setUrl(url);
-        LocalDateTime actualExpireAt = LocalDateTime.now().plusYears(expirePeriodInYear);
-        if (expireAt!=null && actualExpireAt.isAfter(expireAt)) {
-            actualExpireAt = expireAt;
-        }
-        urlMapping.setExpireAt(actualExpireAt);
-        urlMapping.setHash(hashInMemoryCache.getHash());
+        Url urlMapping = Url.builder()
+                .url(url)
+                .expireAt(getActualExpireAt(expireAt))
+                .hash(hashInMemoryCache.getHash())
+                .build();
         Url savedUrl = urlRepository.save(urlMapping);
         urlRedisCacheService.saveUrlMapping(savedUrl.getHash(), savedUrl.getUrl());
         return savedUrl;
@@ -44,20 +41,26 @@ public class UrlService {
         Optional<String> optUrlValue = urlRedisCacheService.getActualUrl(hash);
         if (optUrlValue.isPresent()) {
             return URI.create(optUrlValue.get());
-        } else {
-            Optional<Url> optDBUrlValue = urlRepository.findByHash(hash);
-            if (optDBUrlValue.isPresent()) {
-                String actualUrl = optDBUrlValue.get().getUrl();
-                urlRedisCacheService.saveUrlMapping(hash, actualUrl);
-                return URI.create(actualUrl);
-            } else {
-                log.error(String.format(NO_MAPPING_URL_FOR_HASH, hash));
-                throw new EntityNotFoundException(String.format(NO_MAPPING_URL_FOR_HASH, hash));
-            }
         }
+        Optional<Url> optDBUrlValue = urlRepository.findByHash(hash);
+        Url DBUrlValue = optDBUrlValue.orElseThrow(() -> {
+            log.error(String.format(NO_MAPPING_URL_FOR_HASH, hash));
+            return new EntityNotFoundException(String.format(NO_MAPPING_URL_FOR_HASH, hash));
+        });
+        String actualUrl = DBUrlValue.getUrl();
+        urlRedisCacheService.saveUrlMapping(hash, actualUrl);
+        return URI.create(actualUrl);
     }
 
     public void deleteExpiredUrls() {
         urlRepository.deleteExpiredUrls();
+    }
+
+    private LocalDateTime getActualExpireAt(LocalDateTime expireAt) {
+        LocalDateTime actualExpireAt = LocalDateTime.now().plusYears(expirePeriodInYear);
+        if (expireAt != null && actualExpireAt.isAfter(expireAt)) {
+            actualExpireAt = expireAt;
+        }
+        return actualExpireAt;
     }
 }

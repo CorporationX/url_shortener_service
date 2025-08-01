@@ -22,19 +22,24 @@ public class HashGenerator {
     private int batchSize;
 
     @Transactional
-    public void generateHashBatch() {
-        generateHashBatch(batchSize);
+    public void generateHashBatchAndSaveInDB() {
+        generateHashBatchAndSaveInDB(batchSize);
     }
 
     @Transactional
-    public void generateHashBatch(int amountOfGeneration) {
-        List<Long> sequenceValues = hashRepository.getUniqueNumbers(amountOfGeneration);
-        Collections.shuffle(sequenceValues);
-        List<String> generatedHashValues = base62Encoder.encodeBatch(sequenceValues);
+    public void generateHashBatchAndSaveInDB(int amountOfGeneration) {
+        List<String> generatedHashValues = generateHashValues(amountOfGeneration);
         List<Hash> hashes = generatedHashValues.stream()
                 .map(Hash::new)
                 .toList();
         hashRepository.saveAll(hashes);
         log.info("{} hashes generated and inserted", hashes.size());
+    }
+
+    @Transactional
+    public List<String> generateHashValues(int amountOfGeneration) {
+        List<Long> sequenceValues = hashRepository.getUniqueNumbers(amountOfGeneration);
+        Collections.shuffle(sequenceValues);
+        return base62Encoder.encodeBatch(sequenceValues);
     }
 }

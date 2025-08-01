@@ -28,7 +28,7 @@ public class UrlRedisCacheService {
     }
 
     public Optional<String> getActualUrl(String hash) {
-        String url = (String) redisTemplate.opsForValue().get(hash);
+        String url = (String) redisTemplate.opsForValue().getAndExpire(hash, Duration.ofSeconds(defaultTtlInSeconds));
         if (url == null) {
             log.error(String.format(NO_MAPPING_URL_FOR_HASH, hash));
             return Optional.empty();

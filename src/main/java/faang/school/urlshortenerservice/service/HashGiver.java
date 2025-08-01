@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Slf4j
@@ -39,20 +38,15 @@ public class HashGiver {
     @Transactional
     public List<String> getHashes(int amount) {
         List<String> hashes = hashRepository.getAndDeleteHashBatch(amount);
-        if (requiredFillingTable() && hashRepository.tryAdvisoryLock(lockFieldKey)) {
-            CompletableFuture.runAsync(() -> {
-                        try {
-                            hashGenerator.generateHashBatch();
-                        } finally {
-                            hashRepository.unlockAdvisoryLock(lockFieldKey);
-                        }
-                    }
-                    , hashGeneratorExecutor);
-        }
-        if (hashes.size() < amount) {
+        boolean lessThanNeeded = hashes.size() < amount;
+        if (lessThanNeeded) {
             int missingAmount = amount - hashes.size();
-            hashGenerator.generateHashBatch(missingAmount);
+            hashGenerator.generateHashValues(missingAmount);
             hashes.addAll(hashRepository.getAndDeleteHashBatch(missingAmount));
+            generateHashBatchAndSaveInDBAsync();
+        }
+        if (!lessThanNeeded && requiredFillingTable()) {
+            generateHashBatchAndSaveInDBAsync();
         }
         return hashes;
     }
@@ -61,5 +55,17 @@ public class HashGiver {
         long amountInDB = hashRepository.count();
         double currentPercentageFilling = amountInDB * 100.0 / batchSize;
         return currentPercentageFilling <= percentageFilling;
+    }
+
+    private void generateHashBatchAndSaveInDBAsync() {
+        if (hashRepository.tryAdvisoryLock(lockFieldKey)) {
+            hashGeneratorExecutor.execute(() -> {
+                try {
+                    hashGenerator.generateHashBatchAndSaveInDB();
+                } finally {
+                    hashRepository.unlockAdvisoryLock(lockFieldKey);
+                }
+            });
+        }
     }
 }
