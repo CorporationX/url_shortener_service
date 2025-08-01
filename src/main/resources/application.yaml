@@ -23,3 +23,19 @@ server:
 logging:
   level:
     root: info
+
+url-shortener:
+  hash:
+    batch-size: 100
+    cache:
+      size: 1000
+      refill-threshold-percent: 20
+  thread-pool:
+    hash-generator:
+      core-size: 4
+      max-size: 8
+      queue-capacity: 100
+    hash-cache:
+      core-size: 2
+      max-size: 4
+      queue-capacity: 50
