@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @Service
 @Slf4j
@@ -40,6 +40,10 @@ public class UrlServiceImpl implements UrlService {
                     String shortUrl = baseUrl + "/url/redirect/" + hash;
                     log.info("Short URL created asynchronously: {} -> {}", hash, longUrl);
                     return new ShortUrlDto(shortUrl);
+                })
+                .exceptionally(exception -> {
+                    log.error("Error creating short URL", exception);
+                    throw new CompletionException(exception);
                 });
     }
 
