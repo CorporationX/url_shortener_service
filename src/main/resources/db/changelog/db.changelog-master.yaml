@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/01-create-initial-schema.sql
+      relativeToChangelogFile: false
