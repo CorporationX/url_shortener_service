@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/url_shortener
     username: user
     password: password
 
@@ -17,9 +17,45 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 3734
+      default-ttl: 3600
+
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+app:
+  hash:
+    batch-size:
+        generation: 3000
+        cache-storage: 500
+    percentage-filling: 20
+
+  url:
+    prefix: "http://localhost:${server.port}/"
+    expire-period-year: 1
+
+  async:
+    hash-generator-executor:
+      thread-name-prefix: hash-generator-
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
+
+    hash-cache-executor:
+      thread-name-prefix: hash-cache-
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
+
+  cleaning-job:
+    cron: "0 0 * * * *"
+  lock-value: 12345
+

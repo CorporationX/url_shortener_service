@@ -1,0 +1,18 @@
+CREATE TABLE hash (
+    hash VARCHAR(6)
+        CONSTRAINT hash_pk PRIMARY KEY
+);
+
+CREATE TABLE url (
+    hash VARCHAR(6)
+        CONSTRAINT url_pk PRIMARY KEY,
+    url VARCHAR(1000) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expire_at TIMESTAMP NOT NULL
+);
+
+CREATE SEQUENCE unique_number_seq
+    START WITH 916132832 -- 62^5
+    INCREMENT BY 1
+    NO MAXVALUE;
+

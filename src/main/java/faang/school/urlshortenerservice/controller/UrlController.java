@@ -1,0 +1,42 @@
+package faang.school.urlshortenerservice.controller;
+
+import faang.school.urlshortenerservice.dto.UrlRequest;
+import faang.school.urlshortenerservice.dto.UrlResponse;
+import faang.school.urlshortenerservice.entity.Url;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
+import faang.school.urlshortenerservice.service.UrlService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+
+@RestController
+@RequiredArgsConstructor
+public class UrlController {
+
+    private final UrlService urlService;
+    private final UrlMapper urlMapper;
+
+    @PostMapping("/url")
+    public ResponseEntity<UrlResponse> createUrl(@Valid @RequestBody UrlRequest urlRequest) {
+        Url url = urlService.createUrlMapping(urlRequest.getUrl(), urlRequest.getExpireAt());
+        UrlResponse urlResponse = urlMapper.toUrlResponse(url);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(urlResponse);
+    }
+
+    @GetMapping("/{hash}")
+    public ResponseEntity<URI> getActualUrl(@PathVariable String hash) {
+        URI actualUrl = urlService.getActualUrl(hash);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(actualUrl)
+                .build();
+    }
+}
