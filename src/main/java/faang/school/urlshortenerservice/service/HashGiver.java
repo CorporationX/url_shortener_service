@@ -41,8 +41,8 @@ public class HashGiver {
         boolean lessThanNeeded = hashes.size() < amount;
         if (lessThanNeeded) {
             int missingAmount = amount - hashes.size();
-            hashGenerator.generateHashValues(missingAmount);
-            hashes.addAll(hashRepository.getAndDeleteHashBatch(missingAmount));
+            List<String> hashValues = hashGenerator.generateHashValues(missingAmount);
+            hashes.addAll(hashValues);
             generateHashBatchAndSaveInDBAsync();
         }
         if (!lessThanNeeded && requiredFillingTable()) {
