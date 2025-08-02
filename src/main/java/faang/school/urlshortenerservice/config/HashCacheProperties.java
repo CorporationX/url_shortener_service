@@ -6,9 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "retry.hash-generator")
-public class RetryConfig {
-    private int maxAttempts;
-    private long delay;
-    private double multiplier;
+@ConfigurationProperties(prefix = "hash.cache")
+public class HashCacheProperties {
+    private int capacity;
+    private double refillThresholdPercentage;
 }

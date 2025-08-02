@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.repository.impl;
 
-import faang.school.urlshortenerservice.config.HashConfig;
+import faang.school.urlshortenerservice.config.HashProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -16,7 +16,7 @@ import java.util.List;
 public class HashRepositoryImpl implements HashRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final HashConfig hashConfig;
+    private final HashProperties hashProperties;
 
     @Override
     public List<Long> getUniqueNumbers(int n) {
@@ -53,6 +53,6 @@ public class HashRepositoryImpl implements HashRepository {
                 RETURNING hash
                 """;
 
-        return jdbcTemplate.queryForList(sql, String.class, hashConfig.getBatchSize());
+        return jdbcTemplate.queryForList(sql, String.class, hashProperties.getBatchSize());
     }
 }

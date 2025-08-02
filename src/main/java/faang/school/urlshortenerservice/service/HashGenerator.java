@@ -1,7 +1,6 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.config.HashConfig;
-import faang.school.urlshortenerservice.config.RetryConfig;
+import faang.school.urlshortenerservice.config.HashProperties;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.util.Base62Encoder;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +18,7 @@ import java.util.List;
 public class HashGenerator {
 
     private final HashRepository hashRepository;
-    private final Base62Encoder base62Encoder;
-    private final HashConfig hashConfig;
-    private final RetryConfig retryConfig;
+    private final HashProperties hashProperties;
 
     @Async("hashGeneratorExecutor")
     @Retryable(
@@ -34,7 +31,7 @@ public class HashGenerator {
     public void generateBatch() {
         try {
             List<Long> uniqueNumbers = hashRepository.getUniqueNumbers(
-                    hashConfig.getBatchSize()
+                    hashProperties.getBatchSize()
             );
             if (uniqueNumbers.isEmpty()) {
                 log.warn("HashGenerator: получен пустой список уникальных чисел. Хэши не будут сгенерированы.");

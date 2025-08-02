@@ -7,6 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "hash")
-public class HashConfig {
+public class HashProperties {
     private int batchSize;
 }
