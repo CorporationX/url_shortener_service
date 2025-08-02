@@ -20,6 +20,23 @@ spring:
 server:
   port: 8080
 
+hash:
+  batch-size: 10_000
+  cache:
+    capacity: 1000
+    refill-threshold-percentage: 0.2
+
+async:
+  hash-generator:
+    thread-pool-size: 2
+    thread-pool-queue-capacity: 100
+
+retry:
+  hash-generator:
+    max-attempts: 3
+    delay: 1000
+    multiplier: 2.0
+
 logging:
   level:
     root: info
