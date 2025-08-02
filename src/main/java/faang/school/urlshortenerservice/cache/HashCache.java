@@ -34,7 +34,7 @@ public class HashCache {
     private final ConcurrentLinkedQueue<String> hashQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean isRefilling = new AtomicBoolean(false);
 
-      @PostConstruct
+    @PostConstruct
     public void init() {
         log.info("Initializing hash cache with size: {}", cacheSize);
         refillCache();
@@ -60,6 +60,8 @@ public class HashCache {
         if (isRefilling.compareAndSet(false, true)) {
             log.info("Starting async cache refill");
             executorService.submit(this::refillCache);
+        } else {
+            log.debug("Cache refill already in progress, skipping additional refill request");
         }
     }
 
@@ -67,13 +69,18 @@ public class HashCache {
         try {
             log.info("Refilling hash cache");
 
+            hashGenerator.generateBatch();
+            log.debug("Generated new hash batch");
+
             List<String> hashes = hashRepository.getHashBatch();
             log.debug("Retrieved {} hashes from repository", hashes.size());
 
-            hashQueue.addAll(hashes);
-            log.info("Added {} hashes to cache, new size: {}", hashes.size(), hashQueue.size());
-
-            hashGenerator.generateBatch();
+            if (hashes.isEmpty()) {
+                log.warn("No hashes available in repository after generation");
+            } else {
+                hashQueue.addAll(hashes);
+                log.info("Added {} hashes to cache, new size: {}", hashes.size(), hashQueue.size());
+            }
         } catch (Exception e) {
             log.error("Error while refilling hash cache", e);
         } finally {
