@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.dto.ShortUrlDto;
 import faang.school.urlshortenerservice.entity.Url;
-import faang.school.urlshortenerservice.cache.hash.HashCache;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -33,21 +32,18 @@ public class UrlServiceImpl implements UrlService {
     private int validityPeriodHours;
 
     @Override
-    @Async("hashCacheExecutor")
+    @Transactional
     public CompletableFuture<ShortUrlDto> createShortUrl(String longUrl, HttpServletRequest request) {
-        return hashCache.getHashAsync().thenCompose(hash ->
-                CompletableFuture.supplyAsync(() -> {
-                    saveUrlTransactional(hash, longUrl);
+        return hashCache.getHashAsync().thenApply(hash -> {
+                    saveUrl(hash, longUrl);
                     String baseUrl = getBaseUrl(request);
                     String shortUrl = baseUrl + "/url/redirect/" + hash;
                     log.info("Short URL created asynchronously: {} -> {}", hash, longUrl);
                     return new ShortUrlDto(shortUrl);
-                })
-        );
+                });
     }
 
-    @Transactional
-    public void saveUrlTransactional(String hash, String longUrl) {
+    public void saveUrl(String hash, String longUrl) {
         Url url = Url.builder()
                 .hash(hash)
                 .url(longUrl).build();
@@ -71,13 +67,9 @@ public class UrlServiceImpl implements UrlService {
             return url;
         }
 
-        Optional<Url> urlOptional = urlRepository.findByHash(hash);
-        if (urlOptional.isPresent()) {
-            url = urlOptional.get().getUrl();
-            return url;
-        }
-
-        throw new EntityNotFoundException("URL not found for hash: " + hash);
+        return urlRepository.findByHash(hash)
+                .map(Url::getUrl)
+                .orElseThrow(() -> new EntityNotFoundException("URL not found for hash: " + hash));
     }
 
     @Override

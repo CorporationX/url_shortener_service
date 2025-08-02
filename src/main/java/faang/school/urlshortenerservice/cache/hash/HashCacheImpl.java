@@ -22,7 +22,6 @@ public class HashCacheImpl implements HashCache {
 
     private final HashCacheService hashCacheService;
     private final HashCacheConfig hashCacheConfig;
-
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
 
     private Queue<Hash> freeHashes;
@@ -63,7 +62,7 @@ public class HashCacheImpl implements HashCache {
         });
     }
 
-    private void offerHashesToQueue (List<Hash> hashes){
+    private void offerHashesToQueue(List<Hash> hashes) {
         for (Hash hash : hashes) {
             if (!freeHashes.offer(hash)) {
                 log.warn("Queue is full, stopping adding hashes");

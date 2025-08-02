@@ -11,6 +11,9 @@ import java.util.concurrent.Executors;
 @Configuration
 public class AsyncConfig {
 
+    @Value("${hashgen.pool-name:HashGen-}")
+    private String poolName;
+
     @Value("${hashgen.pool-size:4}")
     private int poolSize;
 
@@ -18,7 +21,7 @@ public class AsyncConfig {
     public Executor hashGenExecutor() {
         return Executors.newFixedThreadPool(poolSize, runnable -> {
             Thread thread = new Thread(runnable);
-            thread.setName("HashGen-" + thread.getId());
+            thread.setName(poolName + thread.getId());
             return thread;
         });
     }

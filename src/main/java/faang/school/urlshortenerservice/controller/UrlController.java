@@ -43,8 +43,7 @@ public class UrlController {
     @GetMapping("/redirect/{hash}")
     public RedirectView redirectToLongUrl(@PathVariable String hash) {
         validateHash(hash);
-        String longUrl = urlService.getLongUrl(hash);
-        return new RedirectView(longUrl);
+        return new RedirectView(urlService.getLongUrl(hash));
     }
 
     private void validateHash(String hash) {

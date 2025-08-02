@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.cache.hash;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class HashGenerator {
 
     private final HashRepository hashRepository;

@@ -54,5 +54,6 @@ url:
 
 hashgen:
   pool-size: 4
+  name: "HashGen-"
 
 
