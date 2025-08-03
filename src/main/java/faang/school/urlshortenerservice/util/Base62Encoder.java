@@ -1,0 +1,40 @@
+package faang.school.urlshortenerservice.util;
+
+import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@UtilityClass
+public class Base62Encoder {
+    private static final String BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE = 62;
+    private static final int MAX_LENGTH = 6;
+
+    public static List<String> encode(List<Long> numbers) {
+        return numbers.stream()
+                .map(Base62Encoder::encodeBase62)
+                .toList();
+    }
+
+    private String encodeBase62(long number) {
+        if (number < 0) {
+            throw new IllegalArgumentException("Number must be non-negative");
+        }
+        StringBuilder sb = new StringBuilder();
+
+        while (number > 0) {
+            sb.append(BASE62_CHARS.charAt((int) (number % BASE)));
+            number /= BASE;
+        }
+
+        sb.reverse();
+
+        if (sb.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("Encoded Base62 string exceeds 6 characters — input number too large");
+        }
+
+        return sb.toString();
+    }
+}

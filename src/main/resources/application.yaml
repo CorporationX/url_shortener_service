@@ -17,8 +17,37 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+
 server:
   port: 8080
+
+app:
+  base-url: https://sh.com/
+
+hash:
+  batch-size: 10_000
+  cache:
+    capacity: 1000
+    refill-threshold-percentage: 0.2
+
+async:
+  hash-generator:
+    thread-pool-size: 2
+    thread-pool-queue-capacity: 100
+
+retry:
+  hash-generator:
+    max-attempts: 3
+    delay: 1000
+    multiplier: 2.0
+
+cleaner:
+  cron: "0 0 2 * * ?" # Каждый день в 2:00 ночи
 
 logging:
   level:
