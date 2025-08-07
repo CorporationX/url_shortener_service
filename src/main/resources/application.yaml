@@ -5,6 +5,20 @@ spring:
     username: user
     password: password
 
+  config:
+    import: 'optional:consul:'
+  application:
+    name: url-shortener-service
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery: url-shortener-service-i1
+      config:
+        enabled: true
+        watch:
+          enabled: true
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
