@@ -21,18 +21,32 @@ spring:
       db.owner: ${DB_USERNAME:user}
       db.schema: ${DB_SCHEMA:public}
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8080
 
 url-shortener-service:
+  cleaner:
+    cron: "0 0 3 * * ?"
+    expired-period-seconds: 31536000
+  hash-cache:
+    hashes-queue:
+      size: 100
+      fill-threshold-percent: 20
+    thread-pool:
+      core-size: 5
+      max-size: 10
+      queue-capacity: 100
   hash-generator:
     hashes-batch-size: 200
     thread-pool:
       core-size: 5
       max-size: 10
       queue-capacity: 100
-      thread-name-prefix: hash-generator-thread-
-
 
 logging:
   level:

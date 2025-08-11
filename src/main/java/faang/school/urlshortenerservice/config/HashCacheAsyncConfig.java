@@ -11,24 +11,24 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @RequiredArgsConstructor
-public class HashGeneratorAsyncConfig {
+public class HashCacheAsyncConfig {
 
-    @Value("${url-shortener-service.hash-generator.thread-pool.core-size:5}")
+    @Value("${url-shortener-service.hash-cache.thread-pool.core-size:5}")
     private int corePoolSize;
 
-    @Value("${url-shortener-service.hash-generator.thread-pool.max-size:10}")
+    @Value("${url-shortener-service.hash-cache.thread-pool.max-size:10}")
     private int maxPoolSize;
 
-    @Value("${url-shortener-service.hash-generator.thread-pool.queue-capacity:100}")
+    @Value("${url-shortener-service.hash-cache.thread-pool.queue-capacity:100}")
     private int queueCapacity;
 
-    @Bean(name = "hashGeneratorTaskExecutor")
-    public Executor hashGeneratorTaskExecutor() {
+    @Bean(name = "hashCacheTaskExecutor")
+    public Executor hashCacheTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("hash-generator-thread-");
+        executor.setThreadNamePrefix("hash-cache-thread-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;

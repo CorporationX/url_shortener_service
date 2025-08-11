@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +20,10 @@ public class HashGenerator {
     private long batchSize;
 
     @Async("hashGeneratorTaskExecutor")
-    public void generateBatch() {
+    public CompletableFuture<Boolean> generateBatch() {
         List<Long> numbers = hashesRepository.getUniqueNumbers(this.batchSize).stream().map(BigInteger::longValue).toList();
         List<String> hashes = base62Encoder.encode(numbers);
         hashesRepository.save(hashes.toArray(new String[0]));
+        return CompletableFuture.completedFuture(true);
     }
 }
