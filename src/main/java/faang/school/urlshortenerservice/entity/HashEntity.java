@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.model;
+package faang.school.urlshortenerservice.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

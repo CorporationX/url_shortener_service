@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-url-table
+      author: url-shortener
+      changes:
+        - sqlFile:
+            path: url-table.sql
+            relativeToChangelogFile: true

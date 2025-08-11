@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.encoder.Base62Encoder;
-import faang.school.urlshortenerservice.model.HashEntity;
+import faang.school.urlshortenerservice.entity.HashEntity;
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
