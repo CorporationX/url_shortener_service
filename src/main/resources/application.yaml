@@ -1,4 +1,22 @@
 spring:
+  shortener:
+    domain: http://localhost:8080
+    length: 7
+    ttl: 604800
+    max-attempts: 5
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mongo
+      username: user
+      password: password
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -20,7 +38,9 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     group-id: url_shortener_service
-
+    topics:
+      short-url-visit:
+        name: short-url.visit
 server:
   port: 8080
 
