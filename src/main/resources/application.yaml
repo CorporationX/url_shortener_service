@@ -4,6 +4,7 @@ spring:
     length: 7
     ttl: 604800
     max-attempts: 5
+    prefix: "urls:"
 
   data:
     redis:

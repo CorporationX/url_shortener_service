@@ -29,7 +29,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
     @Override
     public String create(CreateShortUrlDto dto) {
-        ShortUrl shortUrl = mapper.toUrlMapping(dto);
+        ShortUrl shortUrl = mapper.toShortUrl(dto);
 
         String code = generateUniqueCode();
         shortUrl.setCode(code);

@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface ShortUrlMapper {
-    ShortUrl toUrlMapping(CreateShortUrlDto dto);
+    ShortUrl toShortUrl(CreateShortUrlDto dto);
 }

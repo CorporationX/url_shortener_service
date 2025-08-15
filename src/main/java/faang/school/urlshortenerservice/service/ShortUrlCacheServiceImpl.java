@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class ShortUrlCacheServiceImpl implements ShortUrlCacheService {
     @Value("${spring.shortener.ttl}")
     private int ttl;
+    @Value("${spring.shortener.prefix}")
+    private String cachePrefix;
     private final StringRedisTemplate cache;
 
     @Override
@@ -21,6 +23,6 @@ public class ShortUrlCacheServiceImpl implements ShortUrlCacheService {
 
     @Override
     public void set(String code, String url) {
-        cache.opsForValue().set(code, url, ttl, TimeUnit.SECONDS);
+        cache.opsForValue().set(cachePrefix + code, url, ttl, TimeUnit.SECONDS);
     }
 }
