@@ -3,7 +3,6 @@ package faang.school.urlshortenerservice.controller;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import faang.school.urlshortenerservice.exception.ApiException;
-import jakarta.validation.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -54,15 +53,6 @@ public class ApiExceptionHandler {
                 ? UNKNOWN_FIELD
                 : path.get(path.size() - 1).getFieldName();
     }
-
-    private String extractFieldName(Path propertyPath) {
-        String fieldName = null;
-        for (Path.Node node : propertyPath) {
-            fieldName = node.getName();
-        }
-        return fieldName;
-    }
-
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Map<String, String>> handleApiException(ApiException ex) {

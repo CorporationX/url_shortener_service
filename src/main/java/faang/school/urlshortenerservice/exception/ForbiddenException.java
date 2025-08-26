@@ -11,7 +11,6 @@ public class ForbiddenException extends ApiException {
         super(message, debugMessage);
     }
 
-
     @Override
     protected HttpStatus getDefaultStatus() {
         return HttpStatus.FORBIDDEN;

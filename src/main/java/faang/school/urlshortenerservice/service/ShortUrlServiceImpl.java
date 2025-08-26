@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.config.property.ShortenerProperties;
 import faang.school.urlshortenerservice.document.ShortUrl;
 import faang.school.urlshortenerservice.dto.short_url.CreateShortUrlDto;
 import faang.school.urlshortenerservice.exception.ConflictException;
-import faang.school.urlshortenerservice.kafka.dto.ShortUrlVisitDto;
-import faang.school.urlshortenerservice.kafka.producer.ShortUrlVisitProducer;
 import faang.school.urlshortenerservice.mapper.ShortUrlMapper;
 import faang.school.urlshortenerservice.repository.ShortUrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class ShortUrlServiceImpl implements ShortUrlService {
-    @Value("${spring.shortener.max-attempts}")
-    private int maxAttempts;
+    private final ShortenerProperties shortenerProperties;
     @Value("${spring.shortener.domain}")
     private String domain;
     @Value("${spring.shortener.length}")
@@ -25,7 +23,6 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     private final ShortUrlRepository repository;
     private final UrlShortenerService shortenerService;
     private final ShortUrlCacheService cacheService;
-    private final ShortUrlVisitProducer producer;
 
     @Override
     public String create(CreateShortUrlDto dto) {
@@ -33,22 +30,21 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
         String code = generateUniqueCode();
         shortUrl.setCode(code);
-        repository.save(shortUrl);
+        repository.insert(shortUrl);
         cacheService.set(code, shortUrl.getOriginalUrl());
 
         return buildShortUrl(code);
     }
 
     private String generateUniqueCode() {
-        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+        for (int attempt = 0; attempt < shortenerProperties.getMaxAttempts(); attempt++) {
             String code = shortenerService.generateCode(length);
             if (!repository.existsByCode(code)) {
                 return code;
             }
         }
-        throw new ConflictException("Could not create unique short url after " + maxAttempts + " attempts");
+        throw new ConflictException("Could not create unique short url after " + shortenerProperties.getMaxAttempts() + " attempts");
     }
-
 
     private String buildShortUrl(String code) {
         return String.format("%s/%s", domain, code);
@@ -62,7 +58,6 @@ public class ShortUrlServiceImpl implements ShortUrlService {
             url = mappingDocument.getOriginalUrl();
             cacheService.set(mappingDocument.getCode(), url);
         }
-        producer.onVisit(new ShortUrlVisitDto(code));
         return url;
     }
 }

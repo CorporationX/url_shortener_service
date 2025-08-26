@@ -39,9 +39,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     group-id: url_shortener_service
-    topics:
-      short-url-visit:
-        name: short-url.visit
+
 server:
   port: 8080
 

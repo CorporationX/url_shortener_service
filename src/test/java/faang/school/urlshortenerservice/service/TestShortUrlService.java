@@ -1,10 +1,9 @@
 package faang.school.urlshortenerservice.service;
 
+import faang.school.urlshortenerservice.config.property.ShortenerProperties;
 import faang.school.urlshortenerservice.document.ShortUrl;
 import faang.school.urlshortenerservice.dto.short_url.CreateShortUrlDto;
 import faang.school.urlshortenerservice.exception.ConflictException;
-import faang.school.urlshortenerservice.kafka.dto.ShortUrlVisitDto;
-import faang.school.urlshortenerservice.kafka.producer.ShortUrlVisitProducer;
 import faang.school.urlshortenerservice.mapper.ShortUrlMapper;
 import faang.school.urlshortenerservice.repository.ShortUrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +40,9 @@ public class TestShortUrlService {
     @InjectMocks
     private ShortUrlServiceImpl service;
 
+    @Mock
+    private ShortenerProperties properties;
+
     @Spy
     private ShortUrlMapper mapper = Mappers.getMapper(ShortUrlMapper.class);
     @Mock
@@ -49,8 +51,6 @@ public class TestShortUrlService {
     private UrlShortenerService shortenerService;
     @Mock
     private ShortUrlCacheService cacheService;
-    @Mock
-    private ShortUrlVisitProducer producer;
     @Captor
     private ArgumentCaptor<String> codeCaptor;
     @Captor
@@ -58,13 +58,13 @@ public class TestShortUrlService {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(service, "maxAttempts", MAX_ATTEMPTS);
         ReflectionTestUtils.setField(service, "domain", DOMAIN);
         ReflectionTestUtils.setField(service, "length", LENGTH);
     }
 
     @Test
     public void testSuccessfulCreateShortUrl() {
+        when(properties.getMaxAttempts()).thenReturn(MAX_ATTEMPTS);
         when(shortenerService.generateCode(LENGTH)).thenReturn(CODE);
         when(repository.existsByCode(CODE)).thenReturn(false);
         CreateShortUrlDto dto = new CreateShortUrlDto(URL);
@@ -73,7 +73,7 @@ public class TestShortUrlService {
         String result = service.create(dto);
 
         verify(repository, times(1)).existsByCode(CODE);
-        verify(repository, times(1)).save(shortUrlArgumentCaptor.capture());
+        verify(repository, times(1)).insert(shortUrlArgumentCaptor.capture());
         assertTrue(result.contains(result));
         verify(cacheService, times(1)).set(
                 codeCaptor.capture(),
@@ -83,6 +83,7 @@ public class TestShortUrlService {
 
     @Test
     public void testfailCreateShortUrl() {
+        when(properties.getMaxAttempts()).thenReturn(MAX_ATTEMPTS);
         when(shortenerService.generateCode(LENGTH)).thenReturn(CODE);
         when(repository.existsByCode(CODE)).thenReturn(true);
         CreateShortUrlDto dto = new CreateShortUrlDto(URL);
@@ -98,7 +99,6 @@ public class TestShortUrlService {
         String url = service.find(CODE);
 
         verify(cacheService, times(1)).get(CODE);
-        verify(producer, times(1)).onVisit(any(ShortUrlVisitDto.class));
         verify(repository, never()).findByCodeOrThrow(any());
         verify(cacheService, never()).set(any(), any());
         assertEquals(URL, url);
@@ -116,7 +116,6 @@ public class TestShortUrlService {
         verify(cacheService, times(1)).get(CODE);
         verify(repository, times(1)).findByCodeOrThrow(CODE);
         verify(cacheService, times(1)).set(shortUrl.getCode(), shortUrl.getOriginalUrl());
-        verify(producer, times(1)).onVisit(any(ShortUrlVisitDto.class));
         assertEquals(URL, url);
         verifyNoMoreInteractions(cacheService);
     }
