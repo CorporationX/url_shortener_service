@@ -20,7 +20,7 @@ public class UserHeaderFilter implements Filter {
         String userId = req.getHeader("x-user-id");
         if (userId != null) {
             userContext.setUserId(Long.parseLong(userId));
-        }else {
+        } else {
             throw new IllegalArgumentException("Missing required header 'x-user-id'. Please include 'x-user-id' header with a valid user ID in your request.");
         }
         try {
