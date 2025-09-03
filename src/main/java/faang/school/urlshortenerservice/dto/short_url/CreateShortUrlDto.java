@@ -8,6 +8,6 @@ public record CreateShortUrlDto(
         @NotBlank(message = "URL is required")
         @URL(message = "Must be a valid URL")
         @Schema(description = "Target URL to generate a short link for (must start with http/https)")
-        String originalUrl
+        String url
 ) {
 }
