@@ -25,7 +25,7 @@ public class CleanerScheduler {
 
     @Transactional
     @Scheduled(cron = "${shortener.hash.cleaner.cron}")
-    void cleanUpExpiredUrls() {
+    public void cleanUpExpiredUrls() {
         List<String> strings = urlRepository.deleteUrlBeforeCreatedAt(
                 LocalDateTime.now().minusDays(afterDays)
         );

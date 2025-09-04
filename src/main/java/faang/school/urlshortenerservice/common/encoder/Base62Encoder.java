@@ -23,9 +23,9 @@ public class Base62Encoder implements Encoder {
 
             StringBuilder base62 = new StringBuilder();
             while (number > 0) {
-                int remainder = (int) (number % 62);
+                int remainder = (int) (number % BASE_62.length());
                 base62.append(BASE_62.charAt(remainder));
-                number /= 62;
+                number /= BASE_62.length();
             }
             hashes.add(base62.toString());
         });

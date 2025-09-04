@@ -27,9 +27,11 @@ public class HashGeneratorImpl implements HashGenerator {
         List<Long> uniqueNumbers = repository.getUniqueNumbers(quantity);
         List<String> hashes = encoder
                 .encode(uniqueNumbers);
-        repository.saveAll(
-                hashes.stream().map(Hash::new).toList()
-        );
+        if (!uniqueNumbers.isEmpty()) {
+            repository.saveAll(
+                    hashes.stream().map(Hash::new).toList()
+            );
+        }
         return hashes;
     }
 
