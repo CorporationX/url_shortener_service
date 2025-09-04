@@ -1,23 +1,4 @@
 spring:
-  shortener:
-    domain: http://localhost:8080
-    length: 7
-    ttl: 604800
-    max-attempts: 5
-    prefix: "urls:"
-
-  data:
-    redis:
-      port: 6379
-      host: localhost
-
-    mongodb:
-      host: localhost
-      port: 27017
-      database: mongo
-      username: user
-      password: password
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
