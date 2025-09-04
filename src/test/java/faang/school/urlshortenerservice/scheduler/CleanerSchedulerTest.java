@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,13 +34,13 @@ public class CleanerSchedulerTest {
     @Test
     void testClearExistsExpiredUrl() {
         List<String> strings = new ArrayList<>(List.of("1", "2"));
-        when(urlRepository.deleteUrlBeforeCreatedAt(any()))
+        when(urlRepository.deleteUrlBeforeCreatedAt(any(), anyInt()))
                 .thenReturn(strings);
 
         scheduler.cleanUpExpiredUrls();
 
         verify(urlRepository, times(1))
-                .deleteUrlBeforeCreatedAt(any());
+                .deleteUrlBeforeCreatedAt(any(), anyInt());
         verify(hashRepository, times(1))
                 .saveAll(any());
         verify(urlCache, times(1))
@@ -50,13 +51,13 @@ public class CleanerSchedulerTest {
     @Test
     void testClearNonExistsExpiredUrl() {
         List<String> strings = new ArrayList<>();
-        when(urlRepository.deleteUrlBeforeCreatedAt(any()))
+        when(urlRepository.deleteUrlBeforeCreatedAt(any(), anyInt()))
                 .thenReturn(strings);
 
         scheduler.cleanUpExpiredUrls();
 
         verify(urlRepository, times(1))
-                .deleteUrlBeforeCreatedAt(any());
+                .deleteUrlBeforeCreatedAt(any(), anyInt());
         verify(hashRepository, never())
                 .saveAll(any());
         verify(urlCache, never())

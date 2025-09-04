@@ -19,7 +19,8 @@ shortener:
         queue-capacity: 50
     cleaner:
       cron: "0 0 0 * * *"
-      after-days: 1
+      after-days: 365
+      limit: 1000
 
 spring:
   datasource:

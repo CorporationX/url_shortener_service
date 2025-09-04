@@ -18,6 +18,8 @@ import java.util.List;
 public class CleanerScheduler {
     @Value("${shortener.hash.cleaner.after-days}")
     private int afterDays;
+    @Value("${shortener.hash.cleaner.limit}")
+    private int limit;
 
     private final UrlRepository urlRepository;
     private final HashRepository hashRepository;
@@ -27,7 +29,7 @@ public class CleanerScheduler {
     @Scheduled(cron = "${shortener.hash.cleaner.cron}")
     public void cleanUpExpiredUrls() {
         List<String> strings = urlRepository.deleteUrlBeforeCreatedAt(
-                LocalDateTime.now().minusDays(afterDays)
+                LocalDateTime.now().minusDays(afterDays), limit
         );
         if (!strings.isEmpty()) {
             List<Hash> hashes = strings.stream()

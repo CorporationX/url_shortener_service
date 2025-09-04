@@ -16,11 +16,12 @@ public interface UrlRepository extends JpaRepository<Url, String> {
             value = """
                     DELETE FROM url
                     WHERE created_at < :dateTime
+                    AND hash IN (SELECT hash FROM url LIMIT :limit)
                     RETURNING hash
                     """
     )
     @Modifying
-    List<String> deleteUrlBeforeCreatedAt(LocalDateTime dateTime);
+    List<String> deleteUrlBeforeCreatedAt(LocalDateTime dateTime, int limit);
 
     default Url findByIdOrThrow(String id) {
         return findById(id).orElseThrow(() -> new EntityNotFoundException("Url not found"));
