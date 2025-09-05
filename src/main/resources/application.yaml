@@ -14,12 +14,48 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: redis
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
-  port: 8080
+  port: 9081
 
 logging:
   level:
     root: info
+
+app:
+  hash:
+    memory-cache-min-percentage: 20.0
+    memory-cache-size: 2000
+    table-size: 10000
+    table-min-percentage: 20.0
+    batch-size: 500
+    lock-id: 21
+  url:
+    prefix: https://com.shortener/api/v1/url/
+
+  async:
+    hash-cache-executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: hash-cache-
+    hash-generator-executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+      prefix: hash-generator-
+
+  cache:
+    hash:
+      prefix: hash
+      ttl: 60 # 60 sec
