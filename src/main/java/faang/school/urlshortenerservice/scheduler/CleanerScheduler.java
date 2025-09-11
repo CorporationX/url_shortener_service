@@ -23,17 +23,17 @@ public class CleanerScheduler {
     @Scheduled(cron = "${shortener.cleaner.cron}")
     public void run() {
         LocalDateTime deleteBefore = LocalDateTime.now().minus(cleanerProperties.retention());
-        log.info("Cleaner started, deleteBefore {}", deleteBefore);
+        log.info("Cleaner started, deleteBefore = {}", deleteBefore);
 
-        List<String> freed = urlService.cleanOldUrls(deleteBefore);
+        List<String> deletedHashes = urlService.cleanOldUrls(deleteBefore);
 
-        if (freed.isEmpty()) {
+        if (deletedHashes.isEmpty()) {
             log.info("Cleaner finished: nothing to delete");
             return;
         }
         try {
-            urlCacheRepository.delete(freed);
-            log.info("Cleaner finished: evicted {} keys from Redis", freed.size());
+            urlCacheRepository.delete(deletedHashes);
+            log.info("Cleaner finished: deleted {} keys from Redis", deletedHashes.size());
         } catch (Exception e) {
             log.warn("Cleaner: Redis eviction failed", e);
         }
