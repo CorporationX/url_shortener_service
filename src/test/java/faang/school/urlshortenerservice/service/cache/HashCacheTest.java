@@ -48,7 +48,7 @@ public class HashCacheTest {
     @DisplayName("init fills entirely from DB when enough hashes are available")
     public void initFillsFromDb() {
         HashCacheProperties props = new HashCacheProperties(5, 20);
-        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, directExecutor, props);
+        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, props, directExecutor);
 
         when(hashRepository.getHashBatch(5)).thenReturn(List.of("h1","h2","h3","h4","h5"));
 
@@ -63,7 +63,7 @@ public class HashCacheTest {
     @DisplayName("init generates when DB returns fewer hashes than capacity")
     public void initGeneratesWhenDbInsufficient() {
         HashCacheProperties props = new HashCacheProperties(5, 20);
-        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, directExecutor, props);
+        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, props, directExecutor);
 
         when(hashRepository.getHashBatch(5)).thenReturn(List.of("h1","h2"));
         when(hashRepository.getHashBatch(3)).thenReturn(List.of("h3","h4","h5"));
@@ -79,7 +79,7 @@ public class HashCacheTest {
     @DisplayName("getHash does not trigger refill when above threshold")
     public void getHashNoRefillAboveLimit() {
         HashCacheProperties props = new HashCacheProperties(5, 20);
-        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, directExecutor, props);
+        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, props, directExecutor);
 
         when(hashRepository.getHashBatch(5)).thenReturn(List.of("h1","h2","h3","h4","h5"));
         cache.init();
@@ -96,7 +96,7 @@ public class HashCacheTest {
     @DisplayName("getHash triggers single refill below threshold and fills back to capacity")
     public void getHashTriggersRefillOnceBelowLimit() {
         HashCacheProperties props = new HashCacheProperties(4, 75);
-        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, directExecutor, props);
+        cache = new HashCacheImpl(hashGenerator, hashBatchGenerator, hashRepository, props, directExecutor);
 
         when(hashRepository.getHashBatch(4)).thenReturn(List.of("h1"));
         when(hashRepository.getHashBatch(3)).thenReturn(List.of());

@@ -6,12 +6,10 @@ import faang.school.urlshortenerservice.entity.Hash;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
-import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.cache.UrlCache;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
-import faang.school.urlshortenerservice.service.url.UrlServiceImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,7 +47,7 @@ public class UrlServiceTest {
     private UrlMapper urlMapper = Mappers.getMapper(UrlMapper.class);
 
     @Mock
-    private UrlCacheRepository urlCacheRepository;
+    private UrlCache urlCache;
 
     @Mock
     private HashRepository hashRepository;
@@ -68,7 +65,7 @@ public class UrlServiceTest {
         UrlProperties urlProperties = new UrlProperties(URI.create("http://localhost:8080"));
         service = new UrlServiceImpl(
                 urlProperties, hashCache, urlMapper,
-                urlCacheRepository, hashRepository, urlRepository
+                urlCache, hashRepository, urlRepository
         );
     }
 
@@ -89,27 +86,27 @@ public class UrlServiceTest {
         verify(hashCache).getHash();
         verify(urlMapper).toEntity(dto, "abc123");
         verify(urlRepository).save(entity);
-        verify(urlCacheRepository).put("abc123", "https://example.com/page");
-        verifyNoMoreInteractions(urlRepository, urlCacheRepository, hashRepository);
+        verify(urlCache).put("abc123", "https://example.com/page");
+        verifyNoMoreInteractions(urlRepository, urlCache, hashRepository);
     }
 
     @Test
     @DisplayName("Should return original URL from cache when cache hit")
     public void getOriginalUrlReturnsFromCacheOnHit() {
-        when(urlCacheRepository.get("abc")).thenReturn("https://example.com");
+        when(urlCache.get("abc")).thenReturn("https://example.com");
 
         String result = service.getOriginalUrl("abc");
 
         assertEquals("https://example.com", result);
-        verify(urlCacheRepository).get("abc");
+        verify(urlCache).get("abc");
         verify(urlRepository, never()).findById(anyString());
-        verify(urlCacheRepository, never()).put(anyString(), anyString());
+        verify(urlCache, never()).put(anyString(), anyString());
     }
 
     @Test
     @DisplayName("Should load from DB and put into cache when cache miss")
     public void getOriginalUrlLoadsAndCachesOnMiss() {
-        when(urlCacheRepository.get("abc")).thenReturn(null);
+        when(urlCache.get("abc")).thenReturn(null);
 
         Url entity = new Url();
         entity.setHash("abc");
@@ -119,23 +116,23 @@ public class UrlServiceTest {
         String result = service.getOriginalUrl("abc");
 
         assertEquals("https://example.com", result);
-        verify(urlCacheRepository).get("abc");
+        verify(urlCache).get("abc");
         verify(urlRepository).findById("abc");
-        verify(urlCacheRepository).put("abc", "https://example.com");
+        verify(urlCache).put("abc", "https://example.com");
         verifyNoMoreInteractions(urlRepository);
     }
 
     @Test
     @DisplayName("Should throw UrlNotFoundException when hash is not found")
     public void getOriginalUrlThrowsWhenNotFound() {
-        when(urlCacheRepository.get("missing")).thenReturn(null);
+        when(urlCache.get("missing")).thenReturn(null);
         when(urlRepository.findById("missing")).thenReturn(Optional.empty());
 
         assertThrows(UrlNotFoundException.class, () -> service.getOriginalUrl("missing"));
 
-        verify(urlCacheRepository).get("missing");
+        verify(urlCache).get("missing");
         verify(urlRepository).findById("missing");
-        verify(urlCacheRepository, never()).put(anyString(), anyString());
+        verify(urlCache, never()).put(anyString(), anyString());
     }
 
     @Test

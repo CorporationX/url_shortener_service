@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class UrlCacheRepositoryImpl implements UrlCacheRepository {
+public class UrlCacheImpl implements UrlCache {
 
     private final UrlCacheProperties urlCacheProperties;
 

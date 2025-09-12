@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.service.generator.HashBatchGenerator;
 import faang.school.urlshortenerservice.service.generator.HashGenerator;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -19,31 +20,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HashCacheImpl implements HashCache {
 
     private final HashGenerator hashGenerator;
     private final HashBatchGenerator hashBatchGenerator;
     private final HashRepository hashRepository;
-    private final Executor refillExecutor;
     private final HashCacheProperties cacheProperties;
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
     private BlockingQueue<String> cache;
 
-    private static final int PERCENT_SCALE = 100;
+    @Qualifier("hashCacheExecutor")
+    private final Executor refillExecutor;
 
-    public HashCacheImpl(
-            HashGenerator hashGenerator,
-            HashBatchGenerator hashBatchGenerator,
-            HashRepository hashRepository,
-            @Qualifier("hashCacheExecutor") Executor refillExecutor,
-            HashCacheProperties cacheProperties
-    ) {
-        this.hashGenerator = hashGenerator;
-        this.hashBatchGenerator = hashBatchGenerator;
-        this.hashRepository = hashRepository;
-        this.refillExecutor = refillExecutor;
-        this.cacheProperties = cacheProperties;
-    }
+    private static final int PERCENT_SCALE = 100;
 
     @PostConstruct
     public void init() {

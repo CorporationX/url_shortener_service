@@ -7,7 +7,7 @@ import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.UrlNotFoundException;
 import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.hash.HashRepository;
-import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.cache.UrlCache;
 import faang.school.urlshortenerservice.repository.url.UrlRepository;
 import faang.school.urlshortenerservice.service.cache.HashCache;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class UrlServiceImpl implements UrlService {
     private final UrlProperties urlProperties;
     private final HashCache hashCache;
     private final UrlMapper urlMapper;
-    private final UrlCacheRepository urlCacheRepository;
+    private final UrlCache urlCache;
     private final HashRepository hashRepository;
     private final UrlRepository urlRepository;
 
@@ -36,20 +36,20 @@ public class UrlServiceImpl implements UrlService {
         String hash = hashCache.getHash();
         Url url = urlMapper.toEntity(dto, hash);
         urlRepository.save(url);
-        urlCacheRepository.put(hash, dto.url());
+        urlCache.put(hash, dto.url());
         return buildShortUrl(hash);
     }
 
     @Override
     @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
-        String url = urlCacheRepository.get(hash);
+        String url = urlCache.get(hash);
         if (url != null && !url.isBlank()) {
             return url;
         }
         Url entity = urlRepository.findById(hash)
                 .orElseThrow(() -> new UrlNotFoundException(hash));
-        urlCacheRepository.put(hash, entity.getUrl());
+        urlCache.put(hash, entity.getUrl());
         return entity.getUrl();
     }
 

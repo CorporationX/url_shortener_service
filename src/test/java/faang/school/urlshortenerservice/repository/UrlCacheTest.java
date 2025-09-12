@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.config.properties.url.UrlCacheProperties;
-import faang.school.urlshortenerservice.repository.cache.UrlCacheRepositoryImpl;
+import faang.school.urlshortenerservice.repository.cache.UrlCacheImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UrlCacheRepositoryTest {
+public class UrlCacheTest {
 
     @Mock
     private StringRedisTemplate redisTemplate;
@@ -43,12 +43,12 @@ public class UrlCacheRepositoryTest {
     @Captor
     private ArgumentCaptor<List<String>> keysCaptor;
 
-    private UrlCacheRepositoryImpl repository;
+    private UrlCacheImpl repository;
 
     @BeforeEach
     public void setUp() {
         UrlCacheProperties props = new UrlCacheProperties("urls:", Duration.ofSeconds(60));
-        repository = new UrlCacheRepositoryImpl(props, redisTemplate);
+        repository = new UrlCacheImpl(props, redisTemplate);
     }
 
     @Test

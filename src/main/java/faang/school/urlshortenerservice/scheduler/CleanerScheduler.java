@@ -1,7 +1,7 @@
 package faang.school.urlshortenerservice.scheduler;
 
 import faang.school.urlshortenerservice.config.properties.url.CleanerProperties;
-import faang.school.urlshortenerservice.repository.cache.UrlCacheRepository;
+import faang.school.urlshortenerservice.repository.cache.UrlCache;
 import faang.school.urlshortenerservice.service.url.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 public class CleanerScheduler {
 
     private final UrlService urlService;
-    private final UrlCacheRepository urlCacheRepository;
+    private final UrlCache urlCache;
     private final CleanerProperties cleanerProperties;
 
     @Scheduled(cron = "${shortener.cleaner.cron}")
@@ -32,7 +32,7 @@ public class CleanerScheduler {
             return;
         }
         try {
-            urlCacheRepository.delete(deletedHashes);
+            urlCache.delete(deletedHashes);
             log.info("Cleaner finished: deleted {} keys from Redis", deletedHashes.size());
         } catch (Exception e) {
             log.warn("Cleaner: Redis eviction failed", e);
