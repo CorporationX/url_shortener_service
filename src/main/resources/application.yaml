@@ -4,6 +4,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      max-lifetime: 120000     # 2 minutes
+      idle-timeout: 60000     # 1 minute
+      leak-detection-threshold: 20000  # 20s, for debugging leaks
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,6 +23,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   kafka:
     bootstrap-servers: localhost:9092
     group-id: url_shortener_service
@@ -27,3 +38,26 @@ server:
 logging:
   level:
     root: info
+
+scheduler:
+  thread-pool-size: 5
+
+hash:
+    generator:
+      generate-batch-size: 100
+      save-batch-size: 10
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 100
+    cache:
+      capacity: 3
+      low-threshold-percent: 20
+      max-await-on-empty-ms: 3000
+    cleaner:
+      cron: "0 0 3 * * ?"
+      release-after-days: 360
+      save-batch-size: 10
+
+url:
+  protocol: https
+  domain: myshortener.com
