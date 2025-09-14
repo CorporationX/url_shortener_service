@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.NewUrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapperImpl;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -20,7 +22,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
@@ -33,6 +37,9 @@ class UrlServiceTest {
 
     @Mock
     private UrlCacheRepository urlCacheRepository;
+
+    @Spy
+    private UrlMapperImpl urlMapper;
 
     @InjectMocks
     private UrlService urlService;

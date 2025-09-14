@@ -5,6 +5,7 @@ import faang.school.urlshortenerservice.dto.HashDto;
 import faang.school.urlshortenerservice.dto.NewUrlResponseDto;
 import faang.school.urlshortenerservice.entity.Url;
 import faang.school.urlshortenerservice.exception.EntityNotFoundException;
+import faang.school.urlshortenerservice.mapper.UrlMapper;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;
 import faang.school.urlshortenerservice.repository.UrlRepository;
 import lombok.NonNull;
@@ -29,11 +30,12 @@ public class UrlService {
     private final LocalCacheService localCacheService;
     private final UrlRepository urlRepository;
     private final UrlCacheRepository urlCacheRepository;
+    private final UrlMapper urlMapper;
 
     public NewUrlResponseDto createShort(@NonNull CreateUrlDto createUrlDto) {
         log.info("Creating a shor URL for: {}", createUrlDto.targetUrl());
         String hash = localCacheService.getHash();
-        Url url = Url.builder().hash(hash).url(createUrlDto.targetUrl()).build();
+        Url url = urlMapper.toEntity(createUrlDto, hash);
         urlRepository.save(url);
         urlCacheRepository.put(hash, createUrlDto.targetUrl());
         return new NewUrlResponseDto(composeShortUrl(hash));
