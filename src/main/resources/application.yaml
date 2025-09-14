@@ -61,3 +61,6 @@ hash:
 url:
   protocol: https
   domain: myshortener.com
+
+url-cache:
+  ttlDays: 10

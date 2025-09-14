@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -34,6 +35,7 @@ public class UrlController {
 
     @Operation(summary = "Convert long URL into short one")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public NewUrlResponseDto post(@Valid @RequestBody CreateUrlDto createUrlDto) {
         return urlService.createShort(createUrlDto);
     }

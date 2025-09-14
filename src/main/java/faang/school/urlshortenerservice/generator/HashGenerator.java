@@ -18,7 +18,6 @@ public class HashGenerator {
 
     private final HashRepository hashRepository;
 
-    @Qualifier("hashGeneratorExecutorService")
     private final Executor hashGeneratorExecutorService;
 
     private final Base62Encoder base62Encoder;
