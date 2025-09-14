@@ -71,7 +71,7 @@ public class HashCacheImpl implements HashCache {
             List<String> batch = hashRepository.getHashBatch(free);
             addToCache(batch);
             if (!batch.isEmpty()) {
-                log.debug("Refilled from DB: +{} (size={}/{})", batch.size(), cache.size(), cacheProperties.capacity());
+                log.debug("Refilled from DB: {}, size={}/{}", batch.size(), cache.size(), cacheProperties.capacity());
             }
         }
     }
