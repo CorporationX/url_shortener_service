@@ -22,7 +22,6 @@ public class UrlCacheRepository {
 
     public void put(String hash, String url) {
         redisTemplate.opsForValue().set(URL_CACHE_PREFIX + hash, url, Duration.ofDays(ttlDays));
-        redisTemplate.opsForValue().set(URL_CACHE_PREFIX + hash, url);
         log.info("Hash: {}, URL: {} added to Redis cache.", hash, url);
     }
 
