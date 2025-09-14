@@ -41,7 +41,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public String getOriginalUrl(String hash) {
         String url = urlCache.get(hash);
         if (url != null && !url.isBlank()) {
