@@ -1,3 +1,6 @@
 databaseChangeLog:
   - include:
-     file: db/changelog/001-initial-schema.sql
+      file: db/changelog/001-initial-schema.sql
+  - include:
+      file: db/changelog/002-fix-hash-length.sql
+

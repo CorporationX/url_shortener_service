@@ -4,19 +4,25 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgresSQLDialect
-    hibernate:
-      ddl-auto: none
-      jdbc:
-        batch_size=100
-      order_inserts: true
-      order_updates: true
-    show-sql: true
-    properties:
+    
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
-        format_sql: true
+        ddl-auto: none
+        jdbc:
+          batch_size: 100
+          unique_number_count: 100
+        order_inserts: true
+        order_updates: true
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   liquibase:
     change-log: classpath:db.changelog-master.yaml
@@ -27,3 +33,16 @@ server:
 logging:
   level:
     root: info
+
+async:
+  thread-pool:
+    queue-capacity: 100
+    size: 5
+
+app:
+  cache:
+    max-size: 10000
+    refill-percent: 20
+  cleanup:
+    cron: "0 0 3 * * ?"
+    retention-period: '1 year'
