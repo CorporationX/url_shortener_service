@@ -22,7 +22,11 @@ public interface HashRepository extends JpaRepository<Hash, String> {
     @Query(value = """
             DELETE FROM hash
             WHERE hash IN (
-                SELECT hash FROM hash ORDER BY random() LIMIT :limit
+                SELECT h.hash
+                FROM hash h
+                ORDER BY h.hash
+                FOR UPDATE SKIP LOCKED
+                LIMIT :limit
             )
             RETURNING hash
             """, nativeQuery = true)

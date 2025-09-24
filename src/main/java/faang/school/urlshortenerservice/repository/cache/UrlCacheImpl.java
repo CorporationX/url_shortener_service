@@ -20,6 +20,7 @@ public class UrlCacheImpl implements UrlCache {
     @Override
     public String get(String hash) {
         if (hash == null || hash.isBlank()) {
+            log.warn("Skip get: invalid hash='{}'", hash);
             return null;
         }
         return redisTemplate.opsForValue().get(buildKey(hash));
@@ -28,10 +29,12 @@ public class UrlCacheImpl implements UrlCache {
     @Override
     public void put(String hash, String url) {
         if (hash == null || hash.isBlank() || url == null || url.isBlank()) {
+            log.warn("Skip caching: invalid arguments hash='{}', url='{}'", hash, url);
             return;
         }
         try {
             redisTemplate.opsForValue().set(buildKey(hash), url, urlCacheProperties.ttl());
+            log.debug("Cached url for hash={} with ttl={}", hash, urlCacheProperties.ttl());
         } catch (RuntimeException e) {
             log.warn("Redis put failed for hash={}", hash, e);
         }
@@ -40,6 +43,7 @@ public class UrlCacheImpl implements UrlCache {
     @Override
     public void delete(List<String> hashes) {
         if (hashes == null || hashes.isEmpty()) {
+            log.warn("Skip delete: empty hashes");
             return;
         }
         try {
@@ -49,6 +53,7 @@ public class UrlCacheImpl implements UrlCache {
                     .toList();
             if (!keys.isEmpty()) {
                 redisTemplate.delete(keys);
+                log.debug("Deleted {} keys from cache", keys.size());
             }
         } catch (RuntimeException e) {
             log.warn("Redis delete failed", e);
