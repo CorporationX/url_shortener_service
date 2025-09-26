@@ -29,7 +29,6 @@ public class LocalCacheService {
 
     private final AtomicBoolean isRefilling = new AtomicBoolean();
 
-
     private ArrayBlockingQueue<String> localCache;
 
     @PostConstruct
