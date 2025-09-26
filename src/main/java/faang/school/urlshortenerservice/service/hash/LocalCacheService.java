@@ -52,13 +52,18 @@ public class LocalCacheService {
         }
     }
 
-    private void maybeRefill() {
+    protected void maybeRefill() {
         double fillPercent = (localCache.size() * 100.0) / capacity;
         if (fillPercent <= lowPercent) {
             if (isRefilling.compareAndSet(false, true)) {
-                hashGenerator.getHashes(capacity)
-                        .thenAccept(localCache::addAll);
-                isRefilling.set(false);
+                hashGenerator.getHashes(capacity - localCache.size())
+                        .thenAccept(localCache::addAll)
+                        .whenComplete((result, e) -> {
+                            if (e != null) {
+                                log.error("Hash cache refill failed: {}", e.getMessage(), e);
+                            }
+                            isRefilling.set(false);
+                        });
             }
         }
     }
@@ -68,5 +73,4 @@ public class LocalCacheService {
         localCache.addAll(hashGenerator.getHashes(capacity).join());
         log.info("Cache seeding completed");
     }
-
 }

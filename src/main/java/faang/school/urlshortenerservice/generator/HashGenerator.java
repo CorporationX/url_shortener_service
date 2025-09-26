@@ -52,7 +52,11 @@ public class HashGenerator {
             log.info("Got {} amount of hashes from DB", hashes.size());
             while (hashes.size() < amount) {
                 generateHashes();
-                hashes.addAll(hashRepository.findAndDelete(amount - hashes.size()));
+                List<String> newHashes = hashRepository.findAndDelete(amount - hashes.size());
+                if (newHashes.isEmpty()){
+                   throw new IllegalStateException("Could not generate or retrieve any new hashes.");
+                }
+                hashes.addAll(newHashes);
             }
             return hashes;
         }, hashGeneratorExecutorService);

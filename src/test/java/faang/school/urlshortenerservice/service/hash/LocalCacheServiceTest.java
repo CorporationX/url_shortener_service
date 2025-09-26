@@ -40,8 +40,9 @@ class LocalCacheServiceTest {
 
     @Test
     void init_seedsCacheWithHashes() {
-        when(hashGenerator.getHashes(capacity))
-                .thenReturn(CompletableFuture.completedFuture(seedHashes));
+        when(hashGenerator.getHashes(anyLong()))
+                .thenReturn(CompletableFuture.completedFuture(seedHashes))
+                .thenReturn(CompletableFuture.completedFuture(List.of("h11")));
 
         localCacheService.init();
 
@@ -89,7 +90,7 @@ class LocalCacheServiceTest {
         assertThat(lastInCache).isEqualTo(initialCache.get(0));
         assertThat(fromRefilledCache).isIn(refilledCache);
 
-        verify(hashGenerator, times(2)).getHashes(capacity);
+        verify(hashGenerator, times(2)).getHashes(anyLong());
     }
 
     private List<String> drainQueue() {

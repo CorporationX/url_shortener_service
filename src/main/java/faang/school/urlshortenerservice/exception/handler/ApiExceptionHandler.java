@@ -1,8 +1,8 @@
 package faang.school.urlshortenerservice.exception.handler;
 
+import faang.school.urlshortenerservice.dto.ErrorResponse;
 import faang.school.urlshortenerservice.exception.ApiException;
 import faang.school.urlshortenerservice.exception.DataValidationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +16,7 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
-@RequiredArgsConstructor
 public class ApiExceptionHandler {
-
-
-    public record ErrorResponse(int status, String message) {
-    }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
@@ -33,6 +28,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleJakartaValidation(MethodArgumentNotValidException ex) {
+        log.warn("Data validation error: {}", ex.getMessage());
         String message = ex.getBindingResult().getAllErrors().stream()
                 .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.joining(", "));

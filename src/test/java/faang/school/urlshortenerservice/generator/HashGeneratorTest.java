@@ -11,9 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -121,6 +125,24 @@ class HashGeneratorTest {
         List<String> result = hashGenerator.getHashes(amountOnEmptyDB).get();
 
         assertThat(result).containsExactly("h1", "h2", "h3");
+        verify(hashGenerator).generateHashes();
+        verify(hashRepository, times(2)).findAndDelete(anyLong());
+    }
+
+    @Test
+    void getHashes_ThrowsIfNotAbleToGetHashes() throws Exception {
+        int amountOnEmptyDB = 3;
+        when(hashRepository.findAndDelete(anyLong()))
+                .thenReturn(List.of("h1"))
+                .thenReturn(List.of());
+        doNothing().when(hashGenerator).generateHashes();
+
+        CompletableFuture<List<String>> hashesFuture = hashGenerator.getHashes(amountOnEmptyDB);
+
+        ExecutionException ee = assertThrows(ExecutionException.class, hashesFuture::get);
+        Throwable cause = ee.getCause();
+        assertInstanceOf(IllegalStateException.class, cause);
+
         verify(hashGenerator).generateHashes();
         verify(hashRepository, times(2)).findAndDelete(anyLong());
     }

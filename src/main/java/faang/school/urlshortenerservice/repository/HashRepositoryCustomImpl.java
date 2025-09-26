@@ -2,7 +2,6 @@ package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,9 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HashRepositoryCustomImpl implements HashRepositoryCustom {
 
-    @PersistenceContext
     private final EntityManager entityManager;
-
     private final PlatformTransactionManager transactionManager;
 
     @Override

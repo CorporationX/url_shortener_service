@@ -10,7 +10,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class ExecutorConfig {
 
-    @Bean(name = "hashGeneratorExecutorService")
+    @Bean
     public Executor hashGeneratorExecutorService(
             @Value("${hash.generator.core-pool-size:2}") int corePoolSize,
             @Value("${hash.generator.max-pool-size:4}") int maxPoolSize,
