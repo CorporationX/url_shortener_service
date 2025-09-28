@@ -1,20 +1,31 @@
 package faang.school.urlshortenerservice.utilities;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RequiredArgsConstructor
+
 @AllArgsConstructor
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Data
+@RequiredArgsConstructor
 public class Base62EncoderImplTest {
     @Mock
     private Base62EncoderImpl encoder = new Base62EncoderImpl();
     @Test
     void testEncodeSingleNumber(){
-        Long inputNumber = 123L;
+        long inputNumber = 123L;
         String expected = "B9";
         assertEquals(expected, encoder.coding(inputNumber), "Тest for one number was not passed");
 
