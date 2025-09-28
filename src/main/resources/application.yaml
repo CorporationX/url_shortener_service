@@ -23,3 +23,20 @@ server:
 logging:
   level:
     root: info
+
+scheduler:
+  clean-unused:
+     cron: "0 0 0 * * ?"
+     lock-name: "cleaningUnusedTask"
+     lock-at-least-for: "5m"
+     lock-at-most-for: "10m"
+     period: 1y
+
+shedlock:
+   enabled: true
+   defaults:
+   lock-at-most-for: "10m"
+   provider:
+    jdbc:
+    table-name: "shedlock"
+    use-db-time: true
