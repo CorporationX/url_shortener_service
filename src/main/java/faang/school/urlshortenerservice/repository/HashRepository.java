@@ -1,15 +1,15 @@
 package faang.school.urlshortenerservice.repository;
 
 import faang.school.urlshortenerservice.entity.Hash;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface HashRepository extends CrudRepository<Hash, String> {
+public interface HashRepository extends JpaRepository<Hash, String> {
 
     @Query(nativeQuery = true,
             value = """
@@ -27,10 +27,9 @@ public interface HashRepository extends CrudRepository<Hash, String> {
                                 WHERE hash IN (
                                     SELECT hash
                                     FROM hashes
-                                    ORDER BY hash
                                     LIMIT :n
                                 )
                                 RETURNING *
                     """)
-    List<Hash> deleteHashBatch(long n);
+    List<Hash> getHashBatch(long n);
 }
