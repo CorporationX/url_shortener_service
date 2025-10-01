@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-url-table" author="avzag1">
+        <preConditions>
+            <not>
+                <tableExists tableName="url"/>
+            </not>
+        </preConditions>
+        <createTable tableName="url">
+            <column name="hash" type="java.lang.string">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="url" type="java.lang.string">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="unique-number-sequence" author="avzag1">
+        <createSequence
+                sequenceName="unique_number_seq"
+                startValue="1"
+                incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="create-hash-table" author="avzag1">
+        <preConditions>
+            <not>
+                <tableExists tableName="hash"/>
+            </not>
+        </preConditions>
+        <createTable tableName="hash">
+            <column name="hash" type="java.lang.string">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

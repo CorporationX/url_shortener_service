@@ -1,4 +1,7 @@
 spring:
+  cache:
+    type: redis
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -23,3 +26,11 @@ server:
 logging:
   level:
     root: info
+
+service:
+  number-of-hashes: 10
+  unique-numbers-count: 20
+  max-hash-length: 5
+  min-hash-percent: 0.2
+
+remove-old-hashes-crone: 0 0 0 * * *
