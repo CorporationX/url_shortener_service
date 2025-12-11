@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +31,8 @@ public class HashCache {
         refillCache();
     }
 
+    private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
+
     @Transactional
     public String getHash() {
         String hash = pool.poll();
@@ -38,8 +41,10 @@ public class HashCache {
             hashRepository.markUsed(id);
             return encodeBase62(id);
         }
-        if (pool.size() < hashCapacity / hashRefillRatio) {
+        if ((pool.size() < hashCapacity / hashRefillRatio) && (refillInProgress
+                .compareAndSet(false,true))) {
             refillCache();
+            refillInProgress.set(false);
         }
         return hash;
     }
