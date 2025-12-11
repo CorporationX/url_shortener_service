@@ -18,7 +18,7 @@ public class HashCache {
 
     private final HashRepository hashRepository;
 
-    private final ConcurrentLinkedQueue<String> pool = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> hashPool = new ConcurrentLinkedQueue<>();
 
     @Value("${hash.cache.capacity}")
     private int hashCapacity;
@@ -35,13 +35,13 @@ public class HashCache {
 
     @Transactional
     public String getHash() {
-        String hash = pool.poll();
+        String hash = hashPool.poll();
         if (hash == null) {
             long id = hashRepository.findNextUnusedId();
             hashRepository.markUsed(id);
-            return encodeBase62(id);
+            hash = encodeBase62(id);
         }
-        if ((pool.size() < hashCapacity / hashRefillRatio) && (refillInProgress
+        if ((hashPool.size() < hashCapacity / hashRefillRatio) && (refillInProgress
                 .compareAndSet(false,true))) {
             refillCache();
             refillInProgress.set(false);
@@ -52,7 +52,7 @@ public class HashCache {
     @Async
     public void refillCache() {
         List<Long> ids = hashRepository.getFreeIds(hashCapacity);
-        ids.forEach(id -> pool.add(encodeBase62(id)));
+        ids.forEach(id -> hashPool.add(encodeBase62(id)));
     }
 
     private String encodeBase62(long num) {
