@@ -38,7 +38,7 @@ hash:
   cache:
     capacity: 10000
     fill:
-      ratio: 0.2
+      ratio: 0.2f
 
 cleanup:
   cron: 0 0 0 * * *
