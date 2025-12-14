@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: url-shortener-service
+      changes:
+        - sqlFile:
+            path: db/changelog/changeset/V001__initial_schema.sql
+            relativeToChangelogFile: false
