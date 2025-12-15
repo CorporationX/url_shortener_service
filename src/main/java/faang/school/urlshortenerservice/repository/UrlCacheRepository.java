@@ -7,8 +7,6 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Repository;
-
-
 import java.time.Duration;
 
 @Repository
@@ -24,10 +22,16 @@ public class UrlCacheRepository {
         redis.execute(new SessionCallback<Object>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForValue().set(PREFIX_HASH + urlEntity.getOriginalUrl(), urlEntity.getHash(), TTL);
-                operations.opsForValue().set(PREFIX_URL + urlEntity.getHash(), urlEntity.getOriginalUrl(), TTL);
-                return operations.exec();
+                RedisOperations<String, String> ops =
+                        (RedisOperations<String, String>) operations;
+                ops.multi();
+                ops.opsForValue().set(PREFIX_HASH + urlEntity.getOriginalUrl(),
+                        urlEntity.getHash(),
+                        TTL);
+                ops.opsForValue().set(PREFIX_URL + urlEntity.getHash(),
+                        urlEntity.getOriginalUrl(),
+                        TTL);
+                return ops.exec();
             }
         });
     }
