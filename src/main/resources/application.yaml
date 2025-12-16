@@ -12,14 +12,55 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        order_inserts: true
+        order_updates: true
         format_sql: true
+        jdbc:
+          batch_size: 50
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
+  host: localhost
   port: 8080
+  domain: localhost:8080
+
+request_mapping:
+  url_controller: /api/v1/urls
 
 logging:
   level:
     root: info
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+        engine:
+          jdbc:
+            batch:
+              internal:
+                BatchingBatch: debug
+                BatcherImpl: debug
+
+async:
+  core_pool_size: 3
+  max_pool_size: 10
+  queue_capacity: 100
+
+hash:
+  cache:
+    capacity: 2
+    min_percent_filling: 60
+
+deleting_old_url:
+  cron: 0 0 4 * * *
+  storage_life_in_days: 365
