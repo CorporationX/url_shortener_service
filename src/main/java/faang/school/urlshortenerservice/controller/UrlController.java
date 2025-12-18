@@ -1,6 +1,6 @@
 package faang.school.urlshortenerservice.controller;
 
-import faang.school.urlshortenerservice.Service.UrlService;
+import faang.school.urlshortenerservice.service.UrlService;
 import faang.school.urlshortenerservice.config.UrlProperties;
 import faang.school.urlshortenerservice.dto.UrlRequestDto;
 import jakarta.validation.Valid;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/url")
+@RequestMapping("/api/v1/urls")
 @RequiredArgsConstructor
 public class UrlController {
 
     private final UrlService urlService;
     private final UrlProperties props;
 
-    @PostMapping("/shorten")
+    @PostMapping
     public ResponseEntity<String> createShortUrl(@RequestBody @Valid UrlRequestDto request) {
         String hash = urlService.generateShortUrl(request.originalUrl());
         return ResponseEntity.ok(props.getBaseUrl() + hash);
@@ -37,5 +37,3 @@ public class UrlController {
                 .build();
     }
 }
-
-

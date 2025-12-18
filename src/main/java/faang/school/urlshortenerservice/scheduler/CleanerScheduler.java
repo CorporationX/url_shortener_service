@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @EnableScheduling
@@ -19,11 +21,12 @@ public class CleanerScheduler {
     private final HashRepository hashRepository;
 
     @Scheduled(cron = "${cleanup.cron}")
+    @Transactional
     public void cleanupOld() {
         List<UrlEntity> expired = urlRepository.findExpired();
-        expired.forEach(e -> {
-            hashRepository.returnHash(e.getHash());
-            urlRepository.delete(e);
-        });
+        hashRepository.returnHashes(
+                expired.stream().map(UrlEntity::getHash).collect(Collectors.toList())
+        );
+        urlRepository.deleteAll(expired);
     }
 }

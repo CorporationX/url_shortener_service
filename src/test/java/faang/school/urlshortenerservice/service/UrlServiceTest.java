@@ -1,6 +1,5 @@
 package faang.school.urlshortenerservice.service;
 
-import faang.school.urlshortenerservice.Service.UrlService;
 import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.generator.HashCache;
 import faang.school.urlshortenerservice.repository.UrlCacheRepository;

@@ -44,9 +44,9 @@ public interface HashRepository extends JpaRepository<HashEntity, Long> {
             value = """
                     UPDATE hashes h
                     SET h.used = FALSE
-                    WHERE h.hash = :hash
+                    WHERE h.hash IN :hashes
                     """,
             nativeQuery = true
     )
-    void returnHash(@Param("hash") String hash);
+    void returnHashes(@Param("hashes") List<String> hashes);
 }

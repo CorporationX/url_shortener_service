@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.Service;
+package faang.school.urlshortenerservice.service;
 
 import faang.school.urlshortenerservice.entity.UrlEntity;
 import faang.school.urlshortenerservice.generator.HashCache;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class UrlService {
     private final UrlCacheRepository cacheRepository;
     private final HashCache hashCache;
 
+    @Transactional
     public String generateShortUrl(String original) {
         log.info("Checking whether short URL exists in cache");
         String cachedHash = cacheRepository.getHashByOriginal(original);
@@ -35,6 +37,7 @@ public class UrlService {
         return hash;
     }
 
+    @Transactional(readOnly = true)
     public String getOriginalUrl(String hash) {
         log.info("Checking whether original URL exists in cache");
         String original = cacheRepository.getOriginalByHash(hash);

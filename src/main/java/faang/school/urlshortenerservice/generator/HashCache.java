@@ -2,15 +2,15 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HashCache {
 
     private final HashRepository hashRepository;
-
-    private final ConcurrentLinkedQueue<String> hashPool = new ConcurrentLinkedQueue<>();
-
+    private final ThreadPoolTaskExecutor asyncHashGenerationExecutor;
+    private final HashEncoder hashEncoder;
+    private final ConcurrentLinkedDeque<String> hashPool = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean refillInProgress = new AtomicBoolean(false);
 
     @Value("${hash.cache.capacity}")
@@ -33,9 +33,8 @@ public class HashCache {
     @PostConstruct
     public void init() {
         log.info("Performing startup hash pool refill");
-        refillCache();
+        asyncHashGenerationExecutor.execute(this::refillCache);
     }
-
     @Transactional
     public String getHash() {
         log.info("Checking hash pool");
@@ -44,33 +43,25 @@ public class HashCache {
             log.info("Hash pool is empty, generating one now");
             long id = hashRepository.findNextUnusedId();
             hashRepository.markUsed(id);
-            hash = encodeBase62(id);
+            hash = hashEncoder.encodeBase62(id);
         }
         if ((hashPool.size() < (hashCapacity * hashRefillRatio)) && (refillInProgress
                 .compareAndSet(false, true))) {
             log.info("Available hash pool size is lower than 20%");
-            refillCache();
-            refillInProgress.set(false);
-            log.info("Hash pool refilled");
+            asyncHashGenerationExecutor.execute(this::refillCache);
         }
         return hash;
     }
 
-    @Async("asyncHashGenerationExecutor")
-    public void refillCache() {
-        log.info("{} is refilling hash pool.",Thread.currentThread().getName());
-        List<Long> ids = hashRepository.getFreeIds(hashCapacity);
-        ids.forEach(id -> hashPool.add(encodeBase62(id)));
-    }
-
-    private String encodeBase62(long num) {
-        final String b62Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder sb = new StringBuilder();
-        log.info("Generating hash value");
-        while (num > 0) {
-            sb.append(b62Chars.charAt((int) (num % 62)));
-            num /= 62;
+    @Transactional
+    protected void refillCache() {
+        log.info("Refilling hash pool");
+        try {
+            List<Long> ids = hashRepository.getFreeIds(hashCapacity);
+            ids.forEach(id -> hashPool.add(hashEncoder.encodeBase62(id)));
+        } finally {
+            refillInProgress.set(false);
+            log.info("Hash pool refilled");
         }
-        return sb.reverse().toString();
     }
 }
