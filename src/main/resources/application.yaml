@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: password
+    username:
+    password:
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,9 +17,44 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      timeout: 2000ms
+      jedis:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
 server:
   port: 8080
 
 logging:
   level:
     root: info
+
+url-shortener:
+  base-url: "https://url-shortner/"
+  
+  cache:
+    ttl-seconds: 3600
+  
+  hash:
+    range: 10000
+    batch-size: 1000
+    fill-percent: 20
+    base62-characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    generation:
+      cron: "0 0 */6 * * *"
+  
+  async:
+    executor:
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 100
+      thread-name-prefix: async-
+      await-termination-seconds: 60
+      wait-for-tasks-to-complete-on-shutdown: true
