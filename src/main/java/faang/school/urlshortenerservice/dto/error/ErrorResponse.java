@@ -1,4 +1,4 @@
-package faang.school.urlshortenerservice.dto;
+package faang.school.urlshortenerservice.dto.error;
 
 import java.time.LocalDateTime;
 

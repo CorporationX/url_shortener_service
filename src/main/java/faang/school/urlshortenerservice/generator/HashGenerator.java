@@ -2,6 +2,7 @@ package faang.school.urlshortenerservice.generator;
 
 import faang.school.urlshortenerservice.repository.HashRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HashGenerator {
@@ -22,8 +24,10 @@ public class HashGenerator {
     @Scheduled(cron = "0 */5 * * * ?")
     @Async("hashGeneratorExecutor")
     public void generateBatch() {
+        log.info("Starting hash generation batch");
         List<Long> numbers = hashRepository.getUniqueNumbers(batchSize);
         List<String> hashes = encoder.encode(numbers);
+        log.info("Generated and saved {} hashes", hashes.size());
         hashRepository.save(hashes);
     }
 }

@@ -1,0 +1,30 @@
+package faang.school.urlshortenerservice.scheduler;
+
+import faang.school.urlshortenerservice.repository.HashRepository;
+import faang.school.urlshortenerservice.repository.UrlRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class CleanerScheduler {
+
+    private final UrlRepository urlRepository;
+    private final HashRepository hashRepository;
+
+    @Transactional
+    @Scheduled(cron = "0 0 3 * * ?")  // ← какое расписание? (например, раз в день)
+    public void cleanOldUrls() {
+        log.info("Starting scheduled cleanup");
+            List<String> hashes = urlRepository.deleteOldUrls();
+            hashRepository.save(hashes);
+        log.info("Deleted {} URLs", hashes.size());
+
+    }
+}

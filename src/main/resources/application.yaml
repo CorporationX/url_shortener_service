@@ -4,6 +4,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  data:
+    redis:
+      host: localhost
+      port: 6379
   task:
     scheduling:
       pool:
@@ -40,3 +44,7 @@ hash:
   cache:
     min:
       size: 20
+
+url:
+  shortener:
+    base-url: "https://int.com"
