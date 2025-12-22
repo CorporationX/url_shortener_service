@@ -1,25 +1,74 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 2000
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 10000
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  redis:
+    host: localhost
+    port: 6379
+    password: ''
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+        max-wait: -1ms
+
 server:
-  port: 8080
+  port: 8089
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types:
+      - application/json
+      - application/xml
+      - text/html
+      - text/xml
+      - text/plain
+  tomcat:
+    threads:
+      max: 10000
+      min-spare: 50
+    accept-count: 200
+    max-connections: 10000
+
+cache:
+  max-size: 100_000
+  min-threshold-percent: 35
+
+retention:
+  days: 365
+
+service:
+  base-url: http://localhost:8089/api/v1/urls/
 
 logging:
   level:
-    root: info
+    root: warn
