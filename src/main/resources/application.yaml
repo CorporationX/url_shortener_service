@@ -16,6 +16,7 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    drop-first: false
 
 server:
   port: 8080
@@ -23,3 +24,20 @@ server:
 logging:
   level:
     root: info
+
+hash:
+  hash-generator:
+    generate-batch: 100000
+  hash-cache:
+    get-batch: 50000
+    limit: 100000
+    bound: 20000
+
+thread-pool:
+  amount:
+    hash-generator: 2
+
+hash-cleaner:
+  cron: 0 0 1 * * *
+  retention-period:
+    years: 1
