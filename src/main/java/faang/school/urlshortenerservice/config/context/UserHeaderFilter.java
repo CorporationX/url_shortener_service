@@ -19,12 +19,13 @@ public class UserHeaderFilter extends OncePerRequestFilter {
     private static final String HTTP_METHOD_GET = "GET";
 
     private static final String CONTENT_TYPE_JSON = "application/json";
-    private static final Pattern TOP_LEVEL_PATH_PATTERN = Pattern.compile("^/[^/]+$");
-
+    private static final Pattern REDIRECT_TAIL_PATTERN = Pattern.compile("^/[0-9A-Za-z]{6}$");
     private static final String MISSING_USER_ID_JSON = """
-            {"code":"bad_request","message":"Missing required header 'x-user-id'.\s
-            Please include 'x-user-id' with a valid user ID."}
-           \s""";
+        {
+          "code": "bad_request",
+          "message": "Missing required header 'x-user-id'. Please include 'x-user-id' with a valid user ID."
+        }
+        """;
     private static final String INVALID_USER_ID_JSON = """
             {"code":"bad_request","message":"Invalid 'x-user-id' header value. Must be a number."}
             """;
@@ -36,8 +37,16 @@ public class UserHeaderFilter extends OncePerRequestFilter {
         if (!HTTP_METHOD_GET.equalsIgnoreCase(request.getMethod())) {
             return false;
         }
-        String path = request.getRequestURI();
-        return path != null && TOP_LEVEL_PATH_PATTERN.matcher(path).matches();
+
+        String uri = request.getRequestURI();
+        String ctx = request.getContextPath();
+
+        if (uri == null || ctx == null || !uri.startsWith(ctx)) {
+            return false;
+        }
+
+        String tail = uri.substring(ctx.length());
+        return REDIRECT_TAIL_PATTERN.matcher(tail).matches();
     }
 
     @Override

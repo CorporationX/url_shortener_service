@@ -133,16 +133,18 @@ class UrlControllerTest {
     @Test
     @DisplayName("GET /{hash} → 404 + url_not_found when service throws UrlNotFoundException")
     void redirect_notFound_returns404_errorResponse() throws Exception {
-        when(urlService.getOriginalUrl("missing"))
-                .thenThrow(new UrlNotFoundException("Invalid hash: missing"));
+        String hash = "Ab12Xy"; // 6 символов Base62
 
-        mvc.perform(get("/missing"))
+        when(urlService.getOriginalUrl(hash))
+                .thenThrow(new UrlNotFoundException("Invalid hash: " + hash));
+
+        mvc.perform(get("/" + hash))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value("url_not_found"))
-                .andExpect(jsonPath("$.message").value("Invalid hash: missing"));
+                .andExpect(jsonPath("$.message").value("Invalid hash: " + hash));
 
-        verify(urlService).getOriginalUrl("missing");
+        verify(urlService).getOriginalUrl(hash);
     }
 
     @Test
