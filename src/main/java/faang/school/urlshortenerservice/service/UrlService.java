@@ -29,7 +29,7 @@ public class UrlService {
         urlRepository.save(hash, longUrl);
         urlCacheRepository.save(hash, longUrl);
 
-        String shortUrl = baseUrl + "/" + hash;
+        String shortUrl = String.format("%s/%s", baseUrl, hash);
         log.info("Successfully created short URL: {}", shortUrl);
         return shortUrl;
     }

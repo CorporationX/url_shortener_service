@@ -48,3 +48,7 @@ hash:
 url:
   shortener:
     base-url: "https://int.com"
+
+scheduler:
+  cleaner:
+    cron: "0 0 3 * * ?"  # Каждый день в 3:00

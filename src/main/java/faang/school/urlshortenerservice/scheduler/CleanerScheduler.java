@@ -19,12 +19,16 @@ public class CleanerScheduler {
     private final HashRepository hashRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 3 * * ?")  // ← какое расписание? (например, раз в день)
+    @Scheduled(cron = "${scheduler.cleaner.cron}")
     public void cleanOldUrls() {
         log.info("Starting scheduled cleanup");
-            List<String> hashes = urlRepository.deleteOldUrls();
-            hashRepository.save(hashes);
-        log.info("Deleted {} URLs", hashes.size());
+        List<String> hashes = urlRepository.deleteOldUrls();
 
+        if (!hashes.isEmpty()) {
+            hashRepository.save(hashes);
+            log.info("Deleted {} URLs and returned hashes to pool", hashes.size());
+        } else {
+            log.info("No old URLs to delete");
+        }
     }
 }
