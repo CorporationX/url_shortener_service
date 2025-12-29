@@ -41,6 +41,38 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    
+    /**
+     * Retry & Resilience
+     */
+    implementation("net.jodah:failsafe:2.4.4")
+    implementation("org.springframework.retry:spring-retry:2.0.2")
+    implementation("org.springframework:spring-aspects")
+    
+    /**
+     * Rate Limiting
+     */
+    implementation("com.bucket4j:bucket4j-core:8.7.0")
+    implementation("com.bucket4j:bucket4j-redis:8.7.0")
+    implementation("io.lettuce:lettuce-core:6.2.4.RELEASE")
+    
+    /**
+     * Scheduler Lock (ShedLock)
+     */
+    implementation("net.javacrumbs.shedlock:shedlock-spring:5.9.1")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.9.1")
+    
+    /**
+     * Metrics
+     */
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-core")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    
+    /**
+     * API Documentation (Swagger/OpenAPI)
+     */
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
     /**
      * Test containers

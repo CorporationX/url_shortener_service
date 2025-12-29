@@ -53,3 +53,13 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+logs/
+*.log
+
+### k6 Load Test Results ###
+summary.json
+results.json
+load-tests/summary.json
+load-tests/results.json

@@ -1,9 +1,21 @@
 spring:
+  application:
+    name: url-shortener-service
+  
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      # Increased connection pool for high load
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 30000  # 30 seconds
+      idle-timeout: 600000  # 10 minutes
+      max-lifetime: 1800000  # 30 minutes
+      leak-detection-threshold: 60000  # 1 minute - for leak detection
+      pool-name: UrlShortenerHikariPool
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,9 +29,110 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8080
+  host: localhost
+
+app:
+  base-url: "http://localhost:8080"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
 
 logging:
   level:
     root: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics,mappings
+  endpoint:
+    health:
+      show-details: when-authorized
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name:url-shortener-service}
+      environment: ${ENVIRONMENT:local}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+
+hash:
+  batch-size: 100
+  cache:
+    type: redis
+    max-size: 1000
+    refill-threshold-percent: 20
+    fallback:
+      max-concurrent: 5
+    executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 50
+      keep-alive-seconds: 60
+  generator:
+    cron: "0 */5 * * * *"
+    retry:
+      max-attempts: 3
+      delay-ms: 1000
+    thread-pool:
+      size: 5
+      queue-capacity: 100
+
+cleaner:
+  cron: "0 0 2 * * ?"
+  retention-years: 1
+  batch-size: 1000
+  retry:
+    max-attempts: 3
+    delay-ms: 1000
+
+rate-limit:
+  capacity: 10
+  refill-tokens: 10
+  refill-duration-seconds: 60
+  bucket-expiration-minutes: 10
+
+url:
+  cache:
+    default-ttl-hours: 24
+  validation:
+    max-length: 2048
+    forbidden-schemes:
+      - javascript
+      - data
+      - file
+      - about
+      - vbscript
+      - mailto
+      - tel
+  retry:
+    max-attempts: 3
+    delay-ms: 100
+
+redirect:
+  validation:
+    blacklisted-domains:
+      # Known malicious domains can be added here
+      # Examples:
+      # - malicious-site.com
+      # - phishing-bank.net
+      # - iplogger.org
+      # - grabify.link

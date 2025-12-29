@@ -1,0 +1,120 @@
+groups:
+  - name: url_shortener_alerts
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          rate(url_creation_failure_total[5m]) > 0.1
+          or
+          rate(url_redirect_not_found_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec for the last 5 minutes"
+
+      - alert: ServiceDown
+        expr: up{job="url-shortener-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "URL Shortener Service is down"
+          description: "Service has been down for more than 1 minute"
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.99, rate(url_creation_duration_seconds_bucket[5m])) > 2
+          or
+          histogram_quantile(0.99, rate(url_redirect_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "P99 latency is {{ $value }}s (threshold: 2s for creation, 1s for redirect)"
+
+      - alert: HashCacheExhausted
+        expr: |
+          rate(hash_cache_miss_total[5m]) > 10
+          and
+          rate(hash_cache_fallback_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hash cache frequently exhausted"
+          description: "High cache miss rate ({{ $value }}/sec) and fallback to database"
+
+      - alert: HighRateLimitViolations
+        expr: rate(rate_limit_exceeded_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit violations"
+          description: "Rate limit exceeded {{ $value }} times/sec"
+
+      - alert: DatabaseConnectionIssues
+        expr: |
+          rate(jdbc_connections_active[5m]) > 80
+          or
+          rate(jdbc_connections_idle[5m]) == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database connection pool issues"
+          description: "High connection pool usage or no idle connections"
+
+      - alert: RedisConnectionIssues
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis connection lost for more than 1 minute"
+
+      - alert: HighOnTheFlyHashGeneration
+        expr: rate(hash_generation_on_the_fly_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frequent on-the-fly hash generation"
+          description: "Hash generation on-the-fly rate is {{ $value }}/sec. Check hash pool."
+
+      - alert: HighValidationFailures
+        expr: |
+          rate(url_validation_failure_total[5m]) > 0.05
+          or
+          rate(redirect_validation_failure_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High validation failure rate"
+          description: "Validation failures: {{ $value }}/sec. Possible attack or misconfiguration."
+
+      - alert: HighMemoryUsage
+        expr: |
+          (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      - alert: HighCPUUsage
+        expr: |
+          process_cpu_usage > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }}"
+

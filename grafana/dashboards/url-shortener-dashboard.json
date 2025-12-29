@@ -1,0 +1,327 @@
+{
+  "dashboard": {
+    "title": "URL Shortener Service Dashboard",
+    "tags": ["url-shortener", "microservice"],
+    "timezone": "browser",
+    "schemaVersion": 27,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(url_creation_total[5m])",
+            "legendFormat": "URL Creation",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(url_redirect_total[5m])",
+            "legendFormat": "URL Redirect",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Error Rate",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(url_creation_failure_total[5m])",
+            "legendFormat": "Creation Failures",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(url_redirect_not_found_total[5m])",
+            "legendFormat": "Redirect Not Found",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Errors/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Response Time (P50, P95, P99)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(url_creation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50 Creation",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(url_creation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Creation",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(url_creation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99 Creation",
+            "refId": "C"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(url_redirect_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50 Redirect",
+            "refId": "D"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(url_redirect_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Redirect",
+            "refId": "E"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(url_redirect_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99 Redirect",
+            "refId": "F"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Seconds"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Success Rate",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "rate(url_creation_success_total[5m]) / rate(url_creation_total[5m]) * 100",
+            "legendFormat": "Creation Success Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(url_redirect_success_total[5m]) / rate(url_redirect_total[5m]) * 100",
+            "legendFormat": "Redirect Success Rate",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "percent", "label": "Success %", "max": 100, "min": 0},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Hash Cache Performance",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "rate(hash_cache_hit_total[5m])",
+            "legendFormat": "Cache Hits",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(hash_cache_miss_total[5m])",
+            "legendFormat": "Cache Misses",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(hash_cache_fallback_total[5m])",
+            "legendFormat": "Fallback to DB",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Operations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Hash Cache Hit Rate",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "rate(hash_cache_hit_total[5m]) / (rate(hash_cache_hit_total[5m]) + rate(hash_cache_miss_total[5m])) * 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 80, "color": "yellow"},
+                {"value": 95, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Hash Pool Size",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+        "targets": [
+          {
+            "expr": "hash_pool_size",
+            "legendFormat": "Pool Size",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 200, "color": "yellow"},
+                {"value": 500, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Rate Limit Violations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(rate_limit_exceeded_total[5m])",
+            "legendFormat": "Rate Limit Exceeded",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Violations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 8,
+        "title": "URL Cache Performance",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(url_cache_hit_total[5m])",
+            "legendFormat": "Cache Hits",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(url_cache_miss_total[5m])",
+            "legendFormat": "Cache Misses",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Operations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Hash Generation",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+        "targets": [
+          {
+            "expr": "rate(hash_generation_total[5m])",
+            "legendFormat": "Total Generations",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(hash_generation_on_the_fly_total[5m])",
+            "legendFormat": "On-the-fly Generations",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Generations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Validation Failures",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+        "targets": [
+          {
+            "expr": "rate(url_validation_failure_total[5m])",
+            "legendFormat": "URL Validation Failures",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(redirect_validation_failure_total[5m])",
+            "legendFormat": "Redirect Validation Failures",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Failures/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 11,
+        "title": "JVM Memory Usage",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40},
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+            "legendFormat": "Used",
+            "refId": "A"
+          },
+          {
+            "expr": "jvm_memory_max_bytes{area=\"heap\"}",
+            "legendFormat": "Max",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "bytes", "label": "Memory"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "HTTP Request Rate",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40},
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count[5m])",
+            "legendFormat": "{{method}} {{uri}} {{status}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"},
+          {"format": "short"}
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+    }
+  }
+}

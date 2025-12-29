@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/url_V000__initial.sql
+  - include:
+      file: db/changelog/changeset/url_V001__create_shedlock_table.sql
+  - include:
+      file: db/changelog/changeset/url_V002__add_unique_url_constraint.sql
