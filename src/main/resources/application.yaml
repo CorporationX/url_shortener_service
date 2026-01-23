@@ -4,6 +4,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: false
+      connection-test-query: SELECT 1
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -13,6 +21,41 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  redis:
+    host: localhost
+    port: 6379
+    pool:
+      max-active: 50
+      max-idle: 20
+      min-idle: 5
+      max-wait: 5000ms
+      shutdown-timeout: 200ms
+    timeout: 5000ms
+    connect-timeout: 2000ms
+
+app:
+  base-url: http://localhost:8080
+  hash:
+    batch-size: 10000
+    cache:
+      max-size: 100000
+      refill-threshold-percentage: 60
+      executor:
+        core-pool-size: 20
+        max-pool-size: 50
+        queue-capacity: 1000
+        thread-name-prefix: "hash-cache-"
+    generator:
+      enabled: true
+      executor:
+        core-pool-size: 10
+        max-pool-size: 20
+        queue-capacity: 10
+        thread-name-prefix: "hash-generator-"
+  cleaner:
+    delete-older-than-days: 365
+    cron: 0 0 2 * * ?
+    enabled: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -23,3 +66,5 @@ server:
 logging:
   level:
     root: info
+    faang.school.urlshortenerservice.scheduler: debug
+    com.example.repository: debug
