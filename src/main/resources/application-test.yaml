@@ -1,0 +1,20 @@
+url:
+  cache:
+    entry-ttl-hours: 500ms
+    key:
+      prefix: "url:"
+
+hash:
+  cache:
+    size: 10
+    refill-threshold-percent: 20
+    executor:
+      pool-size: 1
+  repository:
+    fetch-batch-size: 5
+  generator:
+    batch-size: 10
+    executor:
+      core-pool-size: 1
+      max-pool-size: 1
+      queue-capacity: 0
