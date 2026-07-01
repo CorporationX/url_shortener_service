@@ -3,6 +3,7 @@ package faang.school.urlshortenerservice.controller;
 import faang.school.urlshortenerservice.dto.ShortUrlResponse;
 import faang.school.urlshortenerservice.dto.UrlDto;
 import faang.school.urlshortenerservice.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,10 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping(HASH_PATH)
+    @Operation(
+            summary = "Redirect to original URL",
+            description = "Redirects to the original long URL associated with the provided hash"
+    )
     public RedirectView getOriginalUrl(@PathVariable String hash) {
         log.info("Received hash {} for url", hash);
         String url = urlService.getUrl(hash).url();
@@ -38,6 +43,10 @@ public class UrlController {
     }
 
     @PostMapping(URL_PATH)
+    @Operation(
+            summary = "Create short URL",
+            description = "Accepts the original long URL and returns a hash and the corresponding short URL"
+    )
     public ResponseEntity<ShortUrlResponse> createShortUrl(@Valid @RequestBody UrlDto url) {
         log.info("Received request to shorten URL: {}", url.url());
 
